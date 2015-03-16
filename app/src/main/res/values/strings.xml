@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Start Demo</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_list">ListActivity</string>
+    <string name="title_activity_image">ImageActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_cross">CrossActivity</string>
+    <string name="title_activity_xrx">XrxActivity</string>
+    <string name="title_activity_slide_page">ScreenSlidePagerActivity</string>
+    <string name="description_image_1">android</string>
+    <string name="card_back_title">card_back_title</string>
+    <string name="card_back_description">card_back_description</string>
+    <string name="title_activity_card_flip">CardFlipActivity</string>
+    <string name="description_zoom_touch_close">description_zoom_touch_close</string>
+    <string name="title_activity_zoom">ZoomActivity</string>
+    <string name="title_activity_4_list">Activity4List</string>
+
+</resources>
