@@ -3,22 +3,17 @@ package com.example.jianming.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.Environment;
-import android.support.v7.app.ActionBarActivity;
+
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.download.ImageDownloader;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+
 
 
 public class MainActivity extends Activity {
@@ -37,7 +32,7 @@ public class MainActivity extends Activity {
         mButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                self.startActivity(new Intent(self, ImageActivity.class));
+                self.startActivity(new Intent(self, ImageTraningActivity.class));
             }
         });
 
@@ -83,14 +78,7 @@ public class MainActivity extends Activity {
                 self.startActivity(new Intent(self, Activity4List.class));
             }
         });
-//        ImageLoader.getInstance().loadImage(imageUrl, new SimpleImageLoadingListener(){
-//
-//            @Override
-//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-//                super.onLoadingComplete(imageUri, view, loadedImage);
-//                mImageView.setImageBitmap(loadedImage);
-//            }
-//        });
+
     }
 
 
@@ -103,12 +91,9 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
-        Log.i("MainActivity", "onOptionsItemSelected" + id);
-        //noinspection SimplifiableIfStatement
+
         if (id == R.id.action_settings) {
             return true;
         }

@@ -43,10 +43,15 @@
         </activity>
         <activity
             android:name=".CardFlipActivity"
-            android:label="@string/title_activity_card_flip">
+            android:label="@string/title_activity_card_flip" >
         </activity>
-        <activity android:name=".ZoomActivity"
-            android:label="@string/title_activity_zoom">
+        <activity
+            android:name=".ZoomActivity"
+            android:label="@string/title_activity_zoom" >
+        </activity>
+        <activity
+            android:name=".ImageTraningActivity"
+            android:label="@string/title_activity_image_traning" >
         </activity>
     </application>
 
