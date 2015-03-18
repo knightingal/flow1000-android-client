@@ -1,4 +1,4 @@
-package Utils;
+package com.example.jianming.Utils;
 
 import android.graphics.Bitmap;
 

@@ -1,8 +1,6 @@
 package com.example.jianming.myapplication;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -13,7 +11,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
-import Utils.DIOptions;
+import com.example.jianming.Utils.DIOptions;
 
 
 public class XrxActivity extends Activity {
