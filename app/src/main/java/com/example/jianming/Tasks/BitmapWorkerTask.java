@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
@@ -50,7 +51,11 @@ public class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         if (imageViewReference != null && bitmap != null) {
             final ImageView imageView = imageViewReference.get();
             if (imageView != null) {
+
                 imageView.setImageBitmap(bitmap);
+                int height = imageView.getHeight();
+                int width = imageView.getWidth();
+                Log.i("BitmapWorkerTask", height + "*" + width);
             }
         }
     }

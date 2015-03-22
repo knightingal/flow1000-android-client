@@ -53,6 +53,7 @@
             android:name=".ImageTraningActivity"
             android:label="@string/title_activity_image_traning" >
         </activity>
+
     </application>
 
 </manifest>

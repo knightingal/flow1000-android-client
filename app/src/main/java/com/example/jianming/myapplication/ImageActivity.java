@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -22,15 +20,16 @@ public class ImageActivity extends Activity {
         setContentView(R.layout.activity_image);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), R.drawable.android, options);
+        BitmapFactory.decodeResource(getResources(), R.drawable.mybaby, options);
         int imageHeight = options.outHeight;
         int imageWidth = options.outWidth;
         String imageType = options.outMimeType;
         mImageView1 = (ImageView) findViewById(R.id.image_view1);
+
 //        Log.d("onCreate", "imageWidth = " + imageWidth + " imageHeight = " + imageHeight);
 //        mImageView1.setImageBitmap(decodeSampledBitmapFromResource(
 //                getResources(), R.drawable.android, imageWidth, imageHeight));
-        loadBitmap(R.drawable.android, mImageView1, imageWidth, imageHeight);
+        loadBitmap(R.drawable.mybaby, mImageView1, imageWidth, imageHeight);
 
     }
 
