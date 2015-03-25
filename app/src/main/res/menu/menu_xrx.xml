@@ -4,4 +4,6 @@
     tools:context="com.example.jianming.myapplication.XrxActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/show_pic_size" android:title="@string/show_pic_size"
+        android:orderInCategory="101" app:showAsAction="never" />
 </menu>

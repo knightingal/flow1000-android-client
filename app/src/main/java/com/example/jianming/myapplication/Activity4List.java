@@ -11,14 +11,13 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.example.jianming.Utils.DIOptionsExactly;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.example.jianming.Utils.DIOptions;
 
 
 public class Activity4List extends ListActivity {
@@ -43,7 +42,7 @@ public class Activity4List extends ListActivity {
             map = new HashMap<>();
             map.put("title", "G" + i);
             map.put("info", "google " + i);
-            map.put("img", "http://192.168.0.101:8081/picDirs/picRepository/2/" + i + ".jpg");
+            map.put("img", "http://192.168.0.104:8081/picDirs/picRepository/2/" + i + ".jpg");
             list.add(map);
         }
 
@@ -88,16 +87,17 @@ public class Activity4List extends ListActivity {
                 convertView = mInflater.inflate(R.layout.vlist, null);
                 holder.img = (ImageView) convertView.findViewById(R.id.img);
                 holder.title = (TextView) convertView.findViewById(R.id.title);
-                holder.info = (TextView) convertView.findViewById(R.id.info);
+                //holder.info = (TextView) convertView.findViewById(R.id.info);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
             //holder.img.setImageResource((Integer)mData.get(position).get("img"));
-            ImageLoader.getInstance().displayImage((String) mData.get(position).get("img"), holder.img, DIOptions.getInstance().getOptions());
+            ImageLoader.getInstance().displayImage((String) mData.get(position).get("img"), holder.img, DIOptionsExactly.getInstance().getOptions());
             holder.title.setText((String) mData.get(position).get("title"));
-            holder.info.setText((String) mData.get(position).get("info"));
+
+            //holder.info.setText((String) mData.get(position).get("info"));
             return convertView;
         }
     }

@@ -32,7 +32,8 @@ public class YImageView extends ImageView {
         start_right = right;
         start_bottom = bottom;
         setFrame(0, 0, bitmap_W, bitmap_H);
-        Log.i("onLayout", top + " " + left + " " + right + " " + bottom);
+        Log.i("onLayout", getTop() + " " + getLeft() + " " + getRight() + " " + getBottom());
+        //Log.i("onLayout", top + " " + left + " " + right + " " + bottom);
     }
 
     @Override
@@ -83,6 +84,11 @@ public class YImageView extends ImageView {
         super.setImageBitmap(bm);
         bitmap_W = bm.getWidth();
         bitmap_H = bm.getHeight();
+        Log.i ("setImageBitmap", bitmap_H + " " + bitmap_W);
     }
     int bitmap_W, bitmap_H;
+
+    public String picSize() {
+        return bitmap_W + " * " + bitmap_H;
+    }
 }
