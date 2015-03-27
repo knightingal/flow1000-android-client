@@ -25,11 +25,17 @@ public class XrxActivity extends Activity {
         setContentView(R.layout.activity_xrx);
 
         mImageView = (YImageView) findViewById(R.id.image);
-
-        //String sdcard = Environment.getExternalStorageDirectory().getPath();
-        String imagePath = "/storage/sdcard1/BaiduNetdisk/xrx/[PureJapan]Vivian_Hsu/135.JPG";
-        //String imageUrl = ImageDownloader.Scheme.FILE.wrap(imagePath);
-        String imageUrl = ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.mybaby + "");
+        String url = getIntent().getStringExtra("imgUrl");
+        String imageUrl;
+        if (url == null || url.equals("")) {
+            //String sdcard = Environment.getExternalStorageDirectory().getPath();
+            String imagePath = "/storage/sdcard1/BaiduNetdisk/xrx/[PureJapan]Vivian_Hsu/135.JPG";
+            //String imageUrl = ImageDownloader.Scheme.FILE.wrap(imagePath);
+            imageUrl = ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.mybaby + "");
+        }
+        else {
+            imageUrl = url;
+        }
         Log.d("onCreate", "imageUrl = " + imageUrl);
         DisplayImageOptions options = DIOptionsNoneScaled.getInstance().getOptions();
 

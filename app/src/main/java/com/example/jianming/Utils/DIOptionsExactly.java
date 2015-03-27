@@ -11,8 +11,8 @@ public class DIOptionsExactly {
     private DisplayImageOptions options = new DisplayImageOptions.Builder()
             .showImageOnLoading(R.drawable.rockit)
             .showImageOnFail(R.drawable.ic_launcher)
-            .cacheInMemory(true)
-            .cacheOnDisk(true)
+            .cacheInMemory(false)
+            .cacheOnDisk(false)
             .imageScaleType(ImageScaleType.EXACTLY)
             .bitmapConfig(Bitmap.Config.RGB_565)
             .build();

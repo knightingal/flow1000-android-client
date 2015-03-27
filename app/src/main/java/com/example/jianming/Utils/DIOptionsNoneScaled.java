@@ -11,8 +11,8 @@ public class DIOptionsNoneScaled {
     private DisplayImageOptions options = new DisplayImageOptions.Builder()
             .showImageOnLoading(R.drawable.rockit)
             .showImageOnFail(R.drawable.ic_launcher)
-            .cacheInMemory(true)
-            .cacheOnDisk(true)
+            .cacheInMemory(false)
+            .cacheOnDisk(false)
             .bitmapConfig(Bitmap.Config.RGB_565)
             .imageScaleType(ImageScaleType.NONE)
             .build();
