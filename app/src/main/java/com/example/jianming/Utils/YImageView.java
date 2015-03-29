@@ -1,9 +1,11 @@
 package com.example.jianming.Utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
@@ -24,9 +26,14 @@ public class YImageView extends ImageView {
     }
 
     int start_top, start_left, start_right, start_bottom;
+    int screamH, screamW;
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
+        screamH = display.getHeight();
+        screamW = display.getWidth();
+
         start_top = top;
         start_left = left;
         start_right = right;
@@ -59,25 +66,59 @@ public class YImageView extends ImageView {
         current_x = (int) event.getRawX();
         current_y = (int) event.getRawY();
 
-        start_x = (int) event.getX();
-        start_y = current_y - this.getTop();
+//        start_x = (int) event.getX();
+//        start_y = current_y - this.getTop();
     }
 
     int current_x, current_y, start_x, start_y;
 
     void onTouchMove(MotionEvent event) {
-        int left = 0, top = 0, right = 0, bottom = 0;
-        left = current_x - start_x;
-        right = current_x + this.getWidth() - start_x;
+//        int left = 0, top = 0, right = 0, bottom = 0;
+//        left = current_x - start_x;
+//        right = current_x + this.getWidth() - start_x;
+//
+//        top = current_y - start_y;
+//        bottom = current_y - start_y + this.getHeight();
+//        if (left > 0) {
+//            start_x = (int) event.getX();
+//        }
+//        else if (top > 0) {
+//            start_y = current_y - this.getTop();
+//        }
+//        else {
+//            this.setFrame(left, top, right, bottom);
+//        }
+        currLeft = this.getLeft();
+        currTop = this.getTop();
+        currBottom = this.getBottom();
+        currRight = this.getRight();
 
-        top = current_y - start_y;
-        bottom = current_y - start_y + this.getHeight();
+        newX = (int) event.getRawX();
+        newY = (int) event.getRawY();
 
-        this.setFrame(left, top, right, bottom);
+        int diffX = newX - current_x;
+        int diffY = newY - current_y;
+
+        int newLeft = currLeft + diffX * 2;
+        int newRight = currRight + diffX * 2;
+        int newTop = currTop + diffY * 2;
+        int newBottom = currBottom + diffY * 2;
+        if (newLeft > 0 || newRight < screamW) {
+            newLeft = currLeft;
+            newRight = currRight;
+        }
+        if (newTop > 0) {
+            newTop = currTop;
+            newBottom = currBottom;
+        }
+
+        this.setFrame(newLeft, newTop, newRight, newBottom);
 
         current_x = (int) event.getRawX();
         current_y = (int) event.getRawY();
     }
+
+    int currLeft, currTop, currBottom, currRight, newX, newY;
 
     @Override
     public void setImageBitmap(Bitmap bm) {
