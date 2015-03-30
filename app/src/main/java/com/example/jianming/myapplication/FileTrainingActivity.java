@@ -44,7 +44,7 @@ public class FileTrainingActivity extends Activity {
         FileOutputStream fileOutputStream;
 
         try {
-            fileOutputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+            fileOutputStream = openFileOutput(fileName, Context.MODE_APPEND);
             fileOutputStream.write(string.getBytes());
             fileOutputStream.close();
         } catch (FileNotFoundException e) {
@@ -60,8 +60,13 @@ public class FileTrainingActivity extends Activity {
         try {
             fileInputStream = openFileInput(fileName);
             byte[] buff = new byte[30];
-            int readLen = fileInputStream.read(buff);
-            Log.i("readFile", new String(buff));
+            String fileContent = "";
+            int readLen = 0;
+            do {
+                readLen = fileInputStream.read(buff);
+                fileContent += new String(buff).substring(0, readLen);
+            } while(readLen == 30);
+            Log.i("readFile", fileContent);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
