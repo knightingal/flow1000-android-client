@@ -21,5 +21,7 @@
     <string name="title_activity_image_traning">ImageTraningActivity</string>
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="show_pic_size">Show pic size</string>
+    <string name="title_file_training">FileTraining</string>
+    <string name="title_activity_file_training">FileTrainingActivity</string>
 
 </resources>

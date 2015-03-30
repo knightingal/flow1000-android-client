@@ -28,7 +28,7 @@
         <activity
             android:name=".ImageActivity"
             android:label="@string/title_activity_image"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
         <activity
             android:name=".CrossActivity"
@@ -41,7 +41,7 @@
         <activity
             android:name=".XrxActivity"
             android:label="@string/title_activity_xrx"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
         <activity
             android:name=".CardFlipActivity"
@@ -55,7 +55,10 @@
             android:name=".ImageTraningActivity"
             android:label="@string/title_activity_image_traning" >
         </activity>
-
+        <activity
+            android:name=".FileTrainingActivity"
+            android:label="@string/title_activity_file_training" >
+        </activity>
     </application>
 
 </manifest>
