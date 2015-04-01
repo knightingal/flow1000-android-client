@@ -13,6 +13,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -81,8 +85,20 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
 
         @Override
         protected void onPostExecute(String s) {
-            Log.i("network", s);
-            Log.i("network", "" + s.length());
+            //Log.i("network", s);
+
+            //Log.i("network", "" + s.length());
+
+            try {
+                JSONArray jsonArray = new JSONArray(s);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    Log.i("network", jsonObject.getString("name") + " " + jsonObject.getString("mtime"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
