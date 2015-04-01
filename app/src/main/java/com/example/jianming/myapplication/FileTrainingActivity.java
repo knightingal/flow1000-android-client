@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,7 +40,7 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
                 readFile();
                 break;
             case R.id.write_file:
-                writeFile();
+                writeExtFile();
                 break;
             case R.id.network:
                 network();
@@ -139,6 +141,54 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
         return content;
     }
 
+    private boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    /* Checks if external storage is available to at least read */
+    private boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    private void writeExtFile() {
+        if (!isExternalStorageWritable()) {
+            return;
+        }
+        File directory = getAlbumStorageDir(this, "file");
+        Boolean isDirectory = directory.isDirectory();
+        String fileName = directory.getAbsolutePath();
+        File file = new File(directory, "newFile.txt");
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file, true);
+            fileOutputStream.write("Hello World".getBytes());
+            fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return;
+
+    }
+
+
+    public File getAlbumStorageDir(Context context, String albumName) {
+        // Get the directory for the app's private pictures directory.
+        File file = new File(context.getExternalFilesDir(
+                Environment.DIRECTORY_DOWNLOADS), albumName);
+        if (!file.mkdirs()) {
+            Log.e("LOG_TAG", "Directory not created");
+        }
+        return file;
+    }
 
     private void writeFile() {
         String fileName = "myfile";
