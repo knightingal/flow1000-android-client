@@ -2,6 +2,7 @@ package com.example.jianming.myapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -33,6 +34,8 @@ import java.net.URL;
 
 public class FileTrainingActivity extends Activity implements View.OnClickListener{
 
+    Context self = this;
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -63,7 +66,7 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
     }
 
     private void network() {
-        String stringUrl = "http://192.168.0.100:8081/picDirs/picIndexAjax";
+        String stringUrl = "http://192.168.0.102:8081/picDirs/picIndexAjax";
         ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
@@ -91,16 +94,19 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
 
             //Log.i("network", "" + s.length());
 
-            try {
-                JSONArray jsonArray = new JSONArray(s);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    Log.i("network", jsonObject.getString("name") + " " + jsonObject.getString("mtime"));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                JSONArray jsonArray = new JSONArray(s);
+//                for (int i = 0; i < jsonArray.length(); i++) {
+//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                    Log.i("network", jsonObject.getString("name") + " " + jsonObject.getString("mtime"));
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
 
+            Intent intent = new Intent(self, PicListAcivity.class);
+            intent.putExtra("jsonArg", s);
+            self.startActivity(intent);
         }
     }
 

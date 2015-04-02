@@ -61,6 +61,10 @@
             android:name=".FileTrainingActivity"
             android:label="@string/title_activity_file_training" >
         </activity>
+        <activity
+            android:name=".PicListAcivity"
+            android:label="@string/title_activity_pic_list_acivity" >
+        </activity>
     </application>
 
 </manifest>
