@@ -66,7 +66,7 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
     }
 
     private void network() {
-        String stringUrl = "http://192.168.0.102:8081/picDirs/picIndexAjax";
+        String stringUrl = "http://192.168.0.105:8081/picDirs/picIndexAjax";
         ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {

@@ -10,10 +10,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.example.jianming.beans.PicIndexBean;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,19 +29,25 @@ import java.util.List;
 public class PicListAcivity extends Activity {
 
     Activity self = this;
-
+    private final static String TAG = "PicListAcivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pic_list_acivity);
-        List<String> dataArray = new ArrayList<>();
+        List<PicIndexBean> dataArray = new ArrayList<>();
         String jsonArg = this.getIntent().getStringExtra("jsonArg");
+        Log.i(TAG, jsonArg);
         try {
             JSONArray jsonArray = new JSONArray(jsonArg);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String name = jsonObject.getString("name");
-                dataArray.add(name);
+                PicIndexBean picIndexBean = new PicIndexBean();
+                picIndexBean.setIndex(Integer.parseInt(jsonObject.getString("index")));
+                picIndexBean.setName(jsonObject.getString("name"));
+                picIndexBean.setMtime(jsonObject.getString("mtime"));
+                dataArray.add(picIndexBean);
+//                String name = jsonObject.getString("name");
+//                dataArray.add(name);
                 //Log.i("network", jsonObject.getString("name") + " " + jsonObject.getString("mtime"));
             }
         } catch (JSONException e) {
@@ -51,7 +60,15 @@ public class PicListAcivity extends Activity {
         picAdapter.setDataArray(dataArray);
         listView.setAdapter(picAdapter);
 
-
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                PicAdapter.ViewHolder holder = (PicAdapter.ViewHolder) view.getTag();
+                String name = ((TextView) view.findViewById(R.id.pic_text_view)).getText().toString();
+                int index = holder.index;
+                Log.i(TAG, "you click " + index + "th item, name = " + name);
+            }
+        });
     }
 
 
@@ -80,14 +97,14 @@ public class PicListAcivity extends Activity {
     private class PicAdapter extends BaseAdapter {
 
         private final LayoutInflater mInflater;
-        private List<String> dataArray;
+        private List<PicIndexBean> dataArray;
 
         public PicAdapter(Context context) {
 
             this.mInflater = LayoutInflater.from(context);
         }
 
-        public void setDataArray(List<String>  dataArray) {
+        public void setDataArray(List<PicIndexBean> dataArray) {
             this.dataArray = dataArray;
         }
 
@@ -118,12 +135,15 @@ public class PicListAcivity extends Activity {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder.textView.setText(dataArray.get(position));
+            viewHolder.textView.setText(dataArray.get(position).getName());
+            viewHolder.index = dataArray.get(position).getIndex();
             return convertView;
         }
 
         class ViewHolder {
             TextView textView;
+
+            int index;
         }
     }
 }
