@@ -2,7 +2,9 @@ package com.example.jianming.myapplication;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.example.jianming.Utils.DIOptionsExactly;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -18,12 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.example.jianming.Utils.DIOptions;
-
 
 public class Activity4List extends ListActivity {
 
     //ListView mListView;
+    private Context self = this;
 
     private List<Map<String, Object>> mData;
 
@@ -43,7 +45,7 @@ public class Activity4List extends ListActivity {
             map = new HashMap<>();
             map.put("title", "G" + i);
             map.put("info", "google " + i);
-            map.put("img", "http://192.168.0.101:8081/picDirs/picRepository/2/" + i + ".jpg");
+            map.put("img", "http://192.168.0.100:8081/picDirs/picRepository/2/" + i + ".jpg");
             list.add(map);
         }
 
@@ -80,7 +82,7 @@ public class Activity4List extends ListActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             ViewHolder holder = null;
             if (convertView == null) {
                 holder = new ViewHolder();
@@ -88,16 +90,26 @@ public class Activity4List extends ListActivity {
                 convertView = mInflater.inflate(R.layout.vlist, null);
                 holder.img = (ImageView) convertView.findViewById(R.id.img);
                 holder.title = (TextView) convertView.findViewById(R.id.title);
-                holder.info = (TextView) convertView.findViewById(R.id.info);
+                //holder.info = (TextView) convertView.findViewById(R.id.info);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
             //holder.img.setImageResource((Integer)mData.get(position).get("img"));
-            ImageLoader.getInstance().displayImage((String) mData.get(position).get("img"), holder.img, DIOptions.getInstance().getOptions());
+            ImageLoader.getInstance().displayImage((String) mData.get(position).get("img"), holder.img, DIOptionsExactly.getInstance().getOptions());
             holder.title.setText((String) mData.get(position).get("title"));
-            holder.info.setText((String) mData.get(position).get("info"));
+            holder.img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("Activity4List", (String) mData.get(position).get("img"));
+                    Intent intent = new Intent(self, XrxActivity.class);
+                    intent.putExtra("imgUrl", (String) mData.get(position).get("img"));
+                    startActivity(intent);
+                }
+            });
+
+            //holder.info.setText((String) mData.get(position).get("info"));
             return convertView;
         }
     }

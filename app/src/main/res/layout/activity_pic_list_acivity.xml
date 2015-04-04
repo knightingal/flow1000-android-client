@@ -4,17 +4,12 @@
     android:paddingRight="0dp"
     android:paddingTop="0dp"
     android:paddingBottom="0dp"
-    tools:context="com.example.jianming.myapplication.ImageActivity">
+    tools:context="com.example.jianming.myapplication.PicListAcivity">
 
-
-
-    <com.example.jianming.Utils.YImageView
-        android:layout_width="wrap_content"
+    <ListView
         android:layout_height="wrap_content"
-        android:id="@+id/image_view1"
-
-        android:scaleType="center" />
-
-
+        android:layout_width="match_parent"
+        android:id="@+id/list_view1"
+        />
 
 </RelativeLayout>

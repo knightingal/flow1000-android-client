@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import Fragments.CardBackFragment;
+import com.example.jianming.Fragments.CardBackFragment;
 import com.example.jianming.Fragments.CardFrontFragment;
 
 /**

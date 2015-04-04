@@ -1,4 +1,4 @@
-package com.example.jianming.myapplication;
+package com.example.jianming.Fragments;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.jianming.myapplication.R;
 
 /**
  * Created by Jianming on 2015/3/9.

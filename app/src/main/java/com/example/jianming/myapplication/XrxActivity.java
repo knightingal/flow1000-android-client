@@ -5,29 +5,39 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.example.jianming.Utils.YImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
-import com.example.jianming.Utils.DIOptions;
+import com.example.jianming.Utils.DIOptionsNoneScaled;
 
 
 public class XrxActivity extends Activity {
+
+    private YImageView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xrx);
 
-        final ImageView mImageView = (ImageView) findViewById(R.id.image);
-
-        //String sdcard = Environment.getExternalStorageDirectory().getPath();
-        String imagePath = "/storage/sdcard1/BaiduNetdisk/xrx/[PureJapan]Vivian_Hsu/135.JPG";
-        String imageUrl = ImageDownloader.Scheme.FILE.wrap(imagePath);
+        mImageView = (YImageView) findViewById(R.id.image);
+        String url = getIntent().getStringExtra("imgUrl");
+        String imageUrl;
+        if (url == null || url.equals("")) {
+            //String sdcard = Environment.getExternalStorageDirectory().getPath();
+            String imagePath = "/storage/sdcard1/BaiduNetdisk/xrx/[PureJapan]Vivian_Hsu/135.JPG";
+            //String imageUrl = ImageDownloader.Scheme.FILE.wrap(imagePath);
+            imageUrl = ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.mybaby + "");
+        }
+        else {
+            imageUrl = url;
+        }
         Log.d("onCreate", "imageUrl = " + imageUrl);
-        DisplayImageOptions options = DIOptions.getInstance().getOptions();
+        DisplayImageOptions options = DIOptionsNoneScaled.getInstance().getOptions();
 
         ImageLoader.getInstance().displayImage(imageUrl, mImageView, options);
     }
@@ -50,6 +60,9 @@ public class XrxActivity extends Activity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        if (id == R.id.show_pic_size) {
+            Toast.makeText(this, mImageView.picSize(), Toast.LENGTH_LONG).show();
         }
 
         return super.onOptionsItemSelected(item);

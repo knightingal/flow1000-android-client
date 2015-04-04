@@ -19,5 +19,10 @@
     <string name="title_activity_zoom">ZoomActivity</string>
     <string name="title_activity_4_list">Activity4List</string>
     <string name="title_activity_image_traning">ImageTraningActivity</string>
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="show_pic_size">Show pic size</string>
+    <string name="title_file_training">FileTraining</string>
+    <string name="title_activity_file_training">FileTrainingActivity</string>
+    <string name="title_activity_pic_list_acivity">PicListAcivity</string>
 
 </resources>

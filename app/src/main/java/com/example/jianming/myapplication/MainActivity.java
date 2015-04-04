@@ -78,7 +78,13 @@ public class MainActivity extends Activity {
                 self.startActivity(new Intent(self, Activity4List.class));
             }
         });
-
+        final Button mButton8 = (Button) findViewById(R.id.button8);
+        mButton8.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                self.startActivity(new Intent(self, FileTrainingActivity.class));
+            }
+        });
     }
 
 

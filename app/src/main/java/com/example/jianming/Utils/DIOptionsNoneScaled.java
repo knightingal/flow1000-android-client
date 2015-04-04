@@ -4,30 +4,30 @@ import android.graphics.Bitmap;
 
 import com.example.jianming.myapplication.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-/**
- * Created by Jianming on 2015/3/15.
- */
-public class DIOptions {
+
+public class DIOptionsNoneScaled {
     private DisplayImageOptions options = new DisplayImageOptions.Builder()
             .showImageOnLoading(R.drawable.rockit)
             .showImageOnFail(R.drawable.ic_launcher)
-            .cacheInMemory(true)
-            .cacheOnDisk(true)
+            .cacheInMemory(false)
+            .cacheOnDisk(false)
             .bitmapConfig(Bitmap.Config.RGB_565)
+            .imageScaleType(ImageScaleType.NONE)
             .build();
 
-    private DIOptions() {
+    private DIOptionsNoneScaled() {
 
     }
 
     public DisplayImageOptions getOptions() {
         return this.options;
     }
-    private static DIOptions self = null;
-    public static DIOptions getInstance() {
+    private static DIOptionsNoneScaled self = null;
+    public static DIOptionsNoneScaled getInstance() {
         if (self == null) {
-            self = new DIOptions();
+            self = new DIOptionsNoneScaled();
         }
         return self;
     }
