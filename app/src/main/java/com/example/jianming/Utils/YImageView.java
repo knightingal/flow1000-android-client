@@ -73,21 +73,6 @@ public class YImageView extends ImageView {
     int current_x, current_y, start_x, start_y;
 
     void onTouchMove(MotionEvent event) {
-//        int left = 0, top = 0, right = 0, bottom = 0;
-//        left = current_x - start_x;
-//        right = current_x + this.getWidth() - start_x;
-//
-//        top = current_y - start_y;
-//        bottom = current_y - start_y + this.getHeight();
-//        if (left > 0) {
-//            start_x = (int) event.getX();
-//        }
-//        else if (top > 0) {
-//            start_y = current_y - this.getTop();
-//        }
-//        else {
-//            this.setFrame(left, top, right, bottom);
-//        }
         currLeft = this.getLeft();
         currTop = this.getTop();
         currBottom = this.getBottom();
