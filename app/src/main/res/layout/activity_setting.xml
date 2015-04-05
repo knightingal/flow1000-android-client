@@ -25,4 +25,14 @@
         android:hint="port"
         />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_done"
+        android:text="DONE"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        />
+
 </RelativeLayout>

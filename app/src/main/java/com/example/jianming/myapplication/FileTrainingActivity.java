@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.jianming.Utils.EnvArgs;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,7 +68,9 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
     }
 
     private void network() {
-        String stringUrl = "http://192.168.0.105:8081/picDirs/picIndexAjax";
+        String stringUrl = "http://%serverIP:%serverPort/picDirs/picIndexAjax"
+                .replace("%serverIP", EnvArgs.serverIP)
+                .replace("%serverPort", EnvArgs.serverPort);
         ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
