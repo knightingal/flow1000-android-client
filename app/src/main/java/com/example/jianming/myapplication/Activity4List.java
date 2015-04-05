@@ -13,8 +13,14 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.DIOptionsExactly;
+import com.example.jianming.Utils.EnvArgs;
 import com.nostra13.universalimageloader.core.ImageLoader;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,12 +33,44 @@ public class Activity4List extends ListActivity {
     //ListView mListView;
     private Context self = this;
 
+    private static final String TAG = "Activity4List";
+
     private List<Map<String, Object>> mData;
+
+    private List<String> picList = new ArrayList<>();
+
+    int index;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        index = this.getIntent().getIntExtra("index", 2);
+        new DownloadWebpageTask() {
+            @Override
+            protected void onPostExecute(String s) {
+                Log.i(TAG, s);
+                try {
+                    JSONObject jsonObject = new JSONObject(s);
+                    JSONArray pics = jsonObject.getJSONArray("pics");
+                    for (int i = 0; i < pics.length(); i++) {
+                        picList.add(pics.getString(i));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                doShowListView();
+            }
+
+        }.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
+                .replace("%serverIP", EnvArgs.serverIP)
+                .replace("%serverPort", EnvArgs.serverPort));
+//        mData = getData();
+//        ListAdapter adapter = new MyAdapter(this);
+//        setListAdapter(adapter);
+    }
+
+    private void doShowListView() {
         mData = getData();
         ListAdapter adapter = new MyAdapter(this);
         setListAdapter(adapter);
@@ -41,11 +79,15 @@ public class Activity4List extends ListActivity {
     private List<Map<String, Object>> getData() {
         List<Map<String, Object>> list = new ArrayList<>();
         Map<String, Object> map;
-        for (int i = 45; i != 0; i--) {
+        for (int i = 0; i != picList.size(); i++) {
             map = new HashMap<>();
             map.put("title", "G" + i);
             map.put("info", "google " + i);
-            map.put("img", "http://192.168.0.100:8081/picDirs/picRepository/2/" + i + ".jpg");
+            map.put("img", ("http://%serverIP:%serverPort/picDirs/picRepository/%index/" + picList.get(i))
+                    .replace("%serverIP", EnvArgs.serverIP)
+                    .replace("%serverPort", EnvArgs.serverPort)
+                    .replace("%index", index + "")
+            );
             list.add(map);
         }
 

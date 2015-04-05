@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ip_edit"
+        android:text="192.168.0."
         android:hint="ip"
         />
 
@@ -22,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/ip_edit"
         android:id="@+id/port_edit"
+        android:text="8081"
         android:hint="port"
         />
 
