@@ -2,6 +2,7 @@ package com.example.jianming.myapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -67,6 +68,10 @@ public class PicListAcivity extends Activity {
                 String name = ((TextView) view.findViewById(R.id.pic_text_view)).getText().toString();
                 int index = holder.index;
                 Log.i(TAG, "you click " + index + "th item, name = " + name);
+                Intent intent = new Intent(self, Activity4List.class);
+                intent.putExtra("index", index);
+                self.startActivity(intent);
+
             }
         });
     }

@@ -24,5 +24,6 @@
     <string name="title_file_training">FileTraining</string>
     <string name="title_activity_file_training">FileTrainingActivity</string>
     <string name="title_activity_pic_list_acivity">PicListAcivity</string>
+    <string name="title_activity_setting">SettingActivity</string>
 
 </resources>

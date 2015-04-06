@@ -101,6 +101,7 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            this.startActivity(new Intent(this, SettingActivity.class));
             return true;
         }
 

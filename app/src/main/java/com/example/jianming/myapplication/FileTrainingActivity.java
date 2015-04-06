@@ -15,6 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.jianming.Tasks.DownloadWebpageTask;
+import com.example.jianming.Utils.EnvArgs;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,85 +69,23 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
     }
 
     private void network() {
-        String stringUrl = "http://192.168.0.105:8081/picDirs/picIndexAjax";
+        String stringUrl = "http://%serverIP:%serverPort/picDirs/picIndexAjax"
+                .replace("%serverIP", EnvArgs.serverIP)
+                .replace("%serverPort", EnvArgs.serverPort);
         ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            new DownloadWebpageTask().execute(stringUrl);
+            new DownloadWebpageTask() {
+                @Override
+                protected void onPostExecute(String s) {
+                    Intent intent = new Intent(self, PicListAcivity.class);
+                    intent.putExtra("jsonArg", s);
+                    self.startActivity(intent);
+                }
+            }.execute(stringUrl);
         } else {
             Log.i("network", "No network connection available.");
         }
-    }
-
-    private class DownloadWebpageTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... urls) {
-            try {
-                return downloadUrl(urls[0]);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            //Log.i("network", s);
-
-            //Log.i("network", "" + s.length());
-
-//            try {
-//                JSONArray jsonArray = new JSONArray(s);
-//                for (int i = 0; i < jsonArray.length(); i++) {
-//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                    Log.i("network", jsonObject.getString("name") + " " + jsonObject.getString("mtime"));
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-
-            Intent intent = new Intent(self, PicListAcivity.class);
-            intent.putExtra("jsonArg", s);
-            self.startActivity(intent);
-        }
-    }
-
-    private String downloadUrl(String myurl) throws IOException {
-        InputStream is = null;
-        int len = 500;
-        try {
-            URL url = new URL(myurl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            conn.connect();
-
-            int response = conn.getResponseCode();
-            Log.d("network", "The response is: " + response);
-            is = conn.getInputStream();
-            return readIt(is, len);
-
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-        }
-    }
-
-    private String readIt(InputStream is, int len) throws IOException {
-        Reader reader = null;
-        reader = new InputStreamReader(is, "UTF-8");
-        char[] buffer = new char[len];
-        String content = "";
-        int readLen;
-        do {
-            readLen = reader.read(buffer);
-            content += new String(buffer).substring(0, readLen);
-        } while (readLen == len);
-        return content;
     }
 
     private boolean isExternalStorageWritable() {

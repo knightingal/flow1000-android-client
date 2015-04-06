@@ -65,6 +65,10 @@
             android:name=".PicListAcivity"
             android:label="@string/title_activity_pic_list_acivity" >
         </activity>
+        <activity
+            android:name=".SettingActivity"
+            android:label="@string/title_activity_setting" >
+        </activity>
     </application>
 
 </manifest>
