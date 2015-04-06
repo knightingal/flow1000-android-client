@@ -99,11 +99,9 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
     /* Checks if external storage is available to at least read */
     private boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
+
+        return Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
     private void writeExtFile() {
