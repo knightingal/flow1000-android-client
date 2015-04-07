@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.widget.ImageView;
 
 /**
@@ -45,7 +46,9 @@ public class YImageView extends ImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        addVelocityTracker(event);
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
+
             case MotionEvent.ACTION_DOWN:
                 onTouchDown(event);
 
@@ -53,12 +56,38 @@ public class YImageView extends ImageView {
             case MotionEvent.ACTION_MOVE:
                 onTouchMove(event);
                 break;
+
+            case MotionEvent.ACTION_UP:
+                int velocityX = getScrollVelocity();
+                recycleVelocityTracker();
+                onTouchMove(event);
+                break;
         }
 
         return true;
     }
 
-    int clicked = 0;
+    private VelocityTracker velocityTracker;
+    private int getScrollVelocity() {
+        velocityTracker.computeCurrentVelocity(1000);
+        int velocity = (int) velocityTracker.getXVelocity();
+        return velocity;
+    }
+
+    private void addVelocityTracker(MotionEvent event) {
+        if (velocityTracker == null) {
+            velocityTracker = VelocityTracker.obtain();
+        }
+
+        velocityTracker.addMovement(event);
+    }
+
+    private void recycleVelocityTracker() {
+        if (velocityTracker != null) {
+            velocityTracker.recycle();
+            velocityTracker = null;
+        }
+    }
 
     void onTouchDown(MotionEvent event) {
         //mode = MODE.DRAG;
