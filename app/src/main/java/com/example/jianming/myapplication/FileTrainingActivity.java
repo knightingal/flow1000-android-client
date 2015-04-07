@@ -119,9 +119,6 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return;
-
     }
 
 
@@ -158,7 +155,7 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
             fileInputStream = openFileInput(fileName);
             byte[] buff = new byte[30];
             String fileContent = "";
-            int readLen = 0;
+            int readLen;
             do {
                 readLen = fileInputStream.read(buff);
                 fileContent += new String(buff).substring(0, readLen);

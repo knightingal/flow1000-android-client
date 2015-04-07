@@ -92,7 +92,7 @@ public class YImageView extends ImageView {
             newLeft = currLeft;
             newRight = currRight;
         }
-        if (newTop > 0) {
+        if (newTop > 0 || newBottom <screamH) {
             newTop = currTop;
             newBottom = currBottom;
         }
@@ -112,6 +112,7 @@ public class YImageView extends ImageView {
         bitmap_H = bm.getHeight();
         Log.i ("setImageBitmap", bitmap_H + " " + bitmap_W);
     }
+
     int bitmap_W, bitmap_H;
 
     public String picSize() {
