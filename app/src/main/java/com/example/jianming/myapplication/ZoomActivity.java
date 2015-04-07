@@ -16,8 +16,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
 public class ZoomActivity extends Activity {
-    // Hold a reference to the current animator,
-    // so that it can be canceled mid-way.
     private Animator mCurrentAnimator;
 
     
