@@ -63,8 +63,10 @@ public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
         int readLen;
         do {
             readLen = reader.read(buffer);
-            content += new String(buffer).substring(0, readLen);
-        } while (readLen == len);
+            if (readLen > 0) {
+                content += new String(buffer).substring(0, readLen);
+            }
+        } while (readLen > 0);
         return content;
     }
 }
