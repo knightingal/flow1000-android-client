@@ -59,6 +59,7 @@ public class YImageView extends ImageView {
 
             case MotionEvent.ACTION_UP:
                 int velocityX = getScrollVelocity();
+                Log.d("onTouchEvent", "velocityX: " + velocityX);
                 recycleVelocityTracker();
                 onTouchMove(event);
                 break;
@@ -70,8 +71,8 @@ public class YImageView extends ImageView {
     private VelocityTracker velocityTracker;
     private int getScrollVelocity() {
         velocityTracker.computeCurrentVelocity(1000);
-        int velocity = (int) velocityTracker.getXVelocity();
-        return velocity;
+        return  (int) velocityTracker.getXVelocity();
+
     }
 
     private void addVelocityTracker(MotionEvent event) {
@@ -90,22 +91,13 @@ public class YImageView extends ImageView {
     }
 
     void onTouchDown(MotionEvent event) {
-        //mode = MODE.DRAG;
-
         current_x = (int) event.getRawX();
         current_y = (int) event.getRawY();
-
-//        start_x = (int) event.getX();
-//        start_y = current_y - this.getTop();
     }
 
-    int current_x, current_y, start_x, start_y;
+    int newX, newY, current_x, current_y;
 
     void onTouchMove(MotionEvent event) {
-        currLeft = this.getLeft();
-        currTop = this.getTop();
-        currBottom = this.getBottom();
-        currRight = this.getRight();
 
         float currImgX = this.getX();
         float currImgY = this.getY();
@@ -121,26 +113,9 @@ public class YImageView extends ImageView {
         this.setX(newImgX);
         this.setY(newImgY);
 
-//        int newLeft = currLeft + diffX * 2;
-//        int newRight = currRight + diffX * 2;
-//        int newTop = currTop + diffY * 2;
-//        int newBottom = currBottom + diffY * 2;
-//        if (newLeft > 0 || newRight < screamW) {
-//            newLeft = currLeft;
-//            newRight = currRight;
-//        }
-//        if (newTop > 0 || newBottom <screamH) {
-//            newTop = currTop;
-//            newBottom = currBottom;
-//        }
-//
-//        this.setFrame(newLeft, newTop, newRight, newBottom);
-
         current_x = (int) event.getRawX();
         current_y = (int) event.getRawY();
     }
-
-    int currLeft, currTop, currBottom, currRight, newX, newY;
 
     @Override
     public void setImageBitmap(Bitmap bm) {
