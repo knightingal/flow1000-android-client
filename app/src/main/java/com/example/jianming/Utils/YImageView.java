@@ -107,26 +107,34 @@ public class YImageView extends ImageView {
         currBottom = this.getBottom();
         currRight = this.getRight();
 
+        float currImgX = this.getX();
+        float currImgY = this.getY();
+
         newX = (int) event.getRawX();
         newY = (int) event.getRawY();
 
         int diffX = newX - current_x;
         int diffY = newY - current_y;
 
-        int newLeft = currLeft + diffX * 2;
-        int newRight = currRight + diffX * 2;
-        int newTop = currTop + diffY * 2;
-        int newBottom = currBottom + diffY * 2;
-        if (newLeft > 0 || newRight < screamW) {
-            newLeft = currLeft;
-            newRight = currRight;
-        }
-        if (newTop > 0 || newBottom <screamH) {
-            newTop = currTop;
-            newBottom = currBottom;
-        }
+        float newImgX = currImgX + diffX;
+        float newImgY = currImgY + diffY;
+        this.setX(newImgX);
+        this.setY(newImgY);
 
-        this.setFrame(newLeft, newTop, newRight, newBottom);
+//        int newLeft = currLeft + diffX * 2;
+//        int newRight = currRight + diffX * 2;
+//        int newTop = currTop + diffY * 2;
+//        int newBottom = currBottom + diffY * 2;
+//        if (newLeft > 0 || newRight < screamW) {
+//            newLeft = currLeft;
+//            newRight = currRight;
+//        }
+//        if (newTop > 0 || newBottom <screamH) {
+//            newTop = currTop;
+//            newBottom = currBottom;
+//        }
+//
+//        this.setFrame(newLeft, newTop, newRight, newBottom);
 
         current_x = (int) event.getRawX();
         current_y = (int) event.getRawY();
