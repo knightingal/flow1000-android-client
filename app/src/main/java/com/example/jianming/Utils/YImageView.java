@@ -1,5 +1,9 @@
 package com.example.jianming.Utils;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,6 +12,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
 /**
@@ -41,12 +47,10 @@ public class YImageView extends ImageView {
         start_bottom = bottom;
         setFrame(0, 0, bitmap_W, bitmap_H);
         Log.i("onLayout", getTop() + " " + getLeft() + " " + getRight() + " " + getBottom());
-        //Log.i("onLayout", top + " " + left + " " + right + " " + bottom);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        addVelocityTracker(event);
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN:
@@ -58,55 +62,78 @@ public class YImageView extends ImageView {
                 break;
 
             case MotionEvent.ACTION_UP:
-                int velocityX = getScrollVelocity();
-                Log.d("onTouchEvent", "velocityX: " + velocityX);
-                recycleVelocityTracker();
-                onTouchMove(event);
+                onTouchUp(event);
                 break;
         }
 
         return true;
     }
 
-    private VelocityTracker velocityTracker;
-    private int getScrollVelocity() {
-        velocityTracker.computeCurrentVelocity(1000);
-        return  (int) velocityTracker.getXVelocity();
+    private void onTouchUp(MotionEvent event) {
 
+        AnimatorSet set = new AnimatorSet();
+        set.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), this.getX() + velocityX / 4))
+            .with(ObjectAnimator.ofFloat(this, View.Y, this.getY(), this.getY() + velocityY / 4));
+
+        set.setDuration(500);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                velocityX = 0;
+                velocityY = 0;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                velocityX = 0;
+                velocityY = 0;
+            }
+        });
+        set.start();
     }
 
-    private void addVelocityTracker(MotionEvent event) {
-        if (velocityTracker == null) {
-            velocityTracker = VelocityTracker.obtain();
-        }
 
-        velocityTracker.addMovement(event);
-    }
-
-    private void recycleVelocityTracker() {
-        if (velocityTracker != null) {
-            velocityTracker.recycle();
-            velocityTracker = null;
-        }
-    }
-
+    int velocityX = 0, velocityY = 0;
     void onTouchDown(MotionEvent event) {
-        current_x = (int) event.getRawX();
-        current_y = (int) event.getRawY();
+
+        current_x = lastX = event.getRawX();
+        current_y = lastY = event.getRawY();
+        lastEventTime = event.getEventTime();
     }
 
-    int newX, newY, current_x, current_y;
+    float lastX, lastY;
+
+    long lastEventTime;
+
+    float newX, newY, current_x, current_y;
 
     void onTouchMove(MotionEvent event) {
+
+        newX = event.getRawX();
+        newY = event.getRawY();
+        long currEventTime = event.getEventTime();
+        if (currEventTime - lastEventTime > 30) {
+            float dX = newX - lastX;
+            float dY = newY - lastY;
+            long dTime = currEventTime - lastEventTime;
+            velocityX = (int) (dX * 1000 / dTime);
+            velocityY = (int) (dY * 1000 / dTime);
+            Log.d("AnimatorSet", "velocityX: " + velocityX);
+            Log.d("AnimatorSet", "velocityY: " + velocityY);
+            lastX = newX;
+            lastY = newY;
+            lastEventTime = currEventTime;
+        }
+
 
         float currImgX = this.getX();
         float currImgY = this.getY();
 
-        newX = (int) event.getRawX();
-        newY = (int) event.getRawY();
 
-        int diffX = newX - current_x;
-        int diffY = newY - current_y;
+
+        int diffX = (int) (newX - current_x);
+        int diffY = (int) (newY - current_y);
 
         float newImgX = currImgX + diffX;
         float newImgY = currImgY + diffY;
