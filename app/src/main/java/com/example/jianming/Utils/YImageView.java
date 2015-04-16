@@ -20,6 +20,8 @@ import android.widget.ImageView;
  * Created by Jianming on 2015/3/20.
  */
 public class YImageView extends ImageView {
+    private int minX = 0, minY = 0;
+    private static final int ANIM_DURATION = 500;
     public YImageView(Context context) {
         super(context);
     }
@@ -47,6 +49,8 @@ public class YImageView extends ImageView {
         start_bottom = bottom;
         setFrame(0, 0, bitmap_W, bitmap_H);
         Log.i("onLayout", getTop() + " " + getLeft() + " " + getRight() + " " + getBottom());
+        minX = screamW - bitmap_W;
+        minY = screamH - bitmap_H;
     }
 
     @Override
@@ -71,9 +75,24 @@ public class YImageView extends ImageView {
 
     private void onTouchUp(MotionEvent event) {
 
+        float destX = this.getX() + velocityX / 4;
+        float destY = this.getY() + velocityY / 4;
+
+        if (destX > 0) {
+            destX = 0;
+        } else if (destX < minX) {
+            destX = minX;
+        }
+
+        if (destY > 0) {
+            destY = 0;
+        } else if (destY < minY) {
+            destY = minY;
+        }
+
         AnimatorSet set = new AnimatorSet();
-        set.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), this.getX() + velocityX / 4))
-            .with(ObjectAnimator.ofFloat(this, View.Y, this.getY(), this.getY() + velocityY / 4));
+        set.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), destX))
+            .with(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY));
 
         set.setDuration(500);
         set.setInterpolator(new DecelerateInterpolator());

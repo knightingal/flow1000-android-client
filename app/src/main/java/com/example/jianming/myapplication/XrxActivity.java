@@ -31,7 +31,7 @@ public class XrxActivity extends Activity {
             //String sdcard = Environment.getExternalStorageDirectory().getPath();
             String imagePath = "/storage/sdcard1/BaiduNetdisk/xrx/[PureJapan]Vivian_Hsu/135.JPG";
             //String imageUrl = ImageDownloader.Scheme.FILE.wrap(imagePath);
-            imageUrl = ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27 + "");
+            imageUrl = ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27_3 + "");
         }
         else {
             imageUrl = url;
