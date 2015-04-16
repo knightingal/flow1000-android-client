@@ -21,7 +21,7 @@ import android.widget.ImageView;
  */
 public class YImageView extends ImageView {
     private int minX = 0, minY = 0;
-    private static final int ANIM_DURATION = 500;
+    private static final int ANIM_DURATION = 3000;
     public YImageView(Context context) {
         super(context);
     }
@@ -72,11 +72,12 @@ public class YImageView extends ImageView {
 
         return true;
     }
-
+    Boolean isAnimRunning = false;
+    AnimatorSet set;
     private void onTouchUp(MotionEvent event) {
 
-        float destX = this.getX() + velocityX / 4;
-        float destY = this.getY() + velocityY / 4;
+        float destX = this.getX() + velocityX * ANIM_DURATION / 2000;
+        float destY = this.getY() + velocityY * ANIM_DURATION / 2000;
 
         if (destX > 0) {
             destX = 0;
@@ -90,23 +91,30 @@ public class YImageView extends ImageView {
             destY = minY;
         }
 
-        AnimatorSet set = new AnimatorSet();
+        set = new AnimatorSet();
         set.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), destX))
             .with(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY));
 
-        set.setDuration(500);
+        set.setDuration(ANIM_DURATION);
         set.setInterpolator(new DecelerateInterpolator());
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 velocityX = 0;
                 velocityY = 0;
+                isAnimRunning = false;
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                isAnimRunning = true;
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
                 velocityX = 0;
                 velocityY = 0;
+                isAnimRunning = false;
             }
         });
         set.start();
@@ -115,7 +123,9 @@ public class YImageView extends ImageView {
 
     int velocityX = 0, velocityY = 0;
     void onTouchDown(MotionEvent event) {
-
+        if (isAnimRunning) {
+            set.cancel();
+        }
         current_x = lastX = event.getRawX();
         current_y = lastY = event.getRawY();
         lastEventTime = event.getEventTime();
