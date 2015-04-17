@@ -73,36 +73,136 @@ public class YImageView extends ImageView {
         return true;
     }
     Boolean isAnimRunning = false;
-    AnimatorSet set;
+    AnimatorSet setX, setY;
+
+    private void doXAnimationEnd() {
+        if (this.getX() <= 0 && this.getX() >= minX) {
+            return;
+        }
+
+        float destX;
+
+        if (this.getX() > 0) {
+            destX = 0;
+        } else {
+            destX = minX;
+        }
+        setX = new AnimatorSet();
+        setX.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), destX))
+        ;
+
+        setX.setDuration(ANIM_DURATION);
+        setX.setInterpolator(new DecelerateInterpolator());
+        setX.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //velocityX = 0;
+                //velocityY = 0;
+                isAnimRunning = false;
+                //doXAnimationEnd();
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                isAnimRunning = true;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                //velocityX = 0;
+                //velocityY = 0;
+                isAnimRunning = false;
+            }
+        });
+        setX.start();
+    }
+
+    private void doYAnimationEnd() {
+        if (this.getY() <= 0 && this.getY() >= minY) {
+            return;
+        }
+
+        float destY;
+
+        if (this.getY() > 0) {
+            destY = 0;
+        } else {
+            destY = minY;
+        }
+
+        setY = new AnimatorSet();
+        setY
+                .play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY));
+
+        setY.setDuration(ANIM_DURATION);
+        setY.setInterpolator(new DecelerateInterpolator());
+        setY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //velocityX = 0;
+                //velocityY = 0;
+                isAnimRunning = false;
+                //doYAnimationEnd();
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                isAnimRunning = true;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                //velocityX = 0;
+               // velocityY = 0;
+                isAnimRunning = false;
+            }
+        });
+        setY.start();
+    }
+
     private void onTouchUp(MotionEvent event) {
 
         float destX = this.getX() + velocityX * ANIM_DURATION / 2000;
         float destY = this.getY() + velocityY * ANIM_DURATION / 2000;
 
-        if (destX > 0) {
+        if (this.getX() > 0) {
             destX = 0;
-        } else if (destX < minX) {
+        } else if (this.getX() < minX) {
             destX = minX;
         }
 
-        if (destY > 0) {
+        if (this.getY() > 0) {
             destY = 0;
-        } else if (destY < minY) {
+        } else if (this.getY() < minY) {
             destY = minY;
         }
 
-        set = new AnimatorSet();
-        set.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), destX))
-            .with(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY));
 
-        set.setDuration(ANIM_DURATION);
-        set.setInterpolator(new DecelerateInterpolator());
-        set.addListener(new AnimatorListenerAdapter() {
+//        if (destX > 0) {
+//            destX = 0;
+//        } else if (destX < minX) {
+//            destX = minX;
+//        }
+//
+//        if (destY > 0) {
+//            destY = 0;
+//        } else if (destY < minY) {
+//            destY = minY;
+//        }
+
+        setX = new AnimatorSet();
+        setX.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), destX))
+           ;
+
+        setX.setDuration(ANIM_DURATION);
+        setX.setInterpolator(new DecelerateInterpolator());
+        setX.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 velocityX = 0;
-                velocityY = 0;
+                //velocityY = 0;
                 isAnimRunning = false;
+                doXAnimationEnd();
             }
 
             @Override
@@ -113,18 +213,48 @@ public class YImageView extends ImageView {
             @Override
             public void onAnimationCancel(Animator animation) {
                 velocityX = 0;
-                velocityY = 0;
+                //velocityY = 0;
                 isAnimRunning = false;
             }
         });
-        set.start();
+        setX.start();
+
+        setY = new AnimatorSet();
+        setY
+                .play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY));
+
+        setY.setDuration(ANIM_DURATION);
+        setY.setInterpolator(new DecelerateInterpolator());
+        setY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //velocityX = 0;
+                velocityY = 0;
+                //isAnimRunning = false;
+                doYAnimationEnd();
+            }
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                //isAnimRunning = true;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                //velocityX = 0;
+                velocityY = 0;
+                //isAnimRunning = false;
+            }
+        });
+        setY.start();
     }
 
 
     int velocityX = 0, velocityY = 0;
     void onTouchDown(MotionEvent event) {
         if (isAnimRunning) {
-            set.cancel();
+            setX.cancel();
+            setY.cancel();
         }
         current_x = lastX = event.getRawX();
         current_y = lastY = event.getRawY();
