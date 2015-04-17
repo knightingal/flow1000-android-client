@@ -21,7 +21,7 @@ import android.widget.ImageView;
  */
 public class YImageView extends ImageView {
     private int minX = 0, minY = 0;
-    private static final int ANIM_DURATION = 3000;
+    private static final int ANIM_DURATION = 500;
     public YImageView(Context context) {
         super(context);
     }
