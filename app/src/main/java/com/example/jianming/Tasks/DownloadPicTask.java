@@ -1,10 +1,8 @@
 package com.example.jianming.Tasks;
 
-import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.example.jianming.myapplication.PicListAcivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,24 +12,24 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Created by Jianming on 2015/4/5.
+ * Created by Jianming on 2015/4/9.
  */
-public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
+public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
 
     @Override
-    protected String doInBackground(String... urls) {
+    protected byte[] doInBackground(String... urls) {
         try {
             return downloadUrl(urls[0]);
         } catch (IOException e) {
             e.printStackTrace();
-            return "";
+            return null;
         }
-        
+
     }
 
 
 
-    private String downloadUrl(String myurl) throws IOException {
+    private byte[] downloadUrl(String myurl) throws IOException {
         InputStream is = null;
         int len = 500;
         try {
@@ -55,7 +53,7 @@ public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
         }
     }
 
-    private String readIt(InputStream is, int len) throws IOException {
+    private byte[] readIt(InputStream is, int len) throws IOException {
         Reader reader = null;
         reader = new InputStreamReader(is, "UTF-8");
         char[] buffer = new char[len];
@@ -63,11 +61,10 @@ public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
         int readLen;
         do {
             readLen = reader.read(buffer);
-            if (readLen > 0) {
-                content += new String(buffer).substring(0, readLen);
-            }
-        } while (readLen > 0);
-        return content;
+
+            content += new String(buffer).substring(0, readLen);
+        } while (readLen == len);
+        byte[] bs = content.getBytes();
+        return bs;
     }
 }
-
