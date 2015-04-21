@@ -260,16 +260,16 @@ public class YImageView extends ImageView {
 
     int velocityX = 0, velocityY = 0;
     void onTouchDown(MotionEvent event) {
-        if (setX.isRunning()) {
+        if (setX != null && setX.isRunning()) {
             setX.cancel();
         }
-        if (setY.isRunning()) {
+        if (setY != null && setY.isRunning()) {
             setY.cancel();
         }
-        if (setXE.isRunning()) {
+        if (setXE != null && setXE.isRunning()) {
             setXE.cancel();
         }
-        if (setYE.isRunning()) {
+        if (setYE != null && setYE.isRunning()) {
             setYE.cancel();
         }
 
