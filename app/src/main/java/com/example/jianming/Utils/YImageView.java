@@ -13,6 +13,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
@@ -66,14 +67,13 @@ public class YImageView extends ImageView {
                 break;
 
             case MotionEvent.ACTION_UP:
-                onTouchUp(event);
+                onTouchUp();
                 break;
         }
 
         return true;
     }
-    Boolean isAnimRunning = false;
-    AnimatorSet setX, setY;
+    AnimatorSet setX, setY, setYE, setXE;
 
 
 
@@ -83,40 +83,30 @@ public class YImageView extends ImageView {
         }
 
         float destX;
-
         if (this.getX() > 0) {
             destX = 0;
         } else {
             destX = minX;
         }
-        setX = new AnimatorSet();
-        setX.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), destX))
-        ;
+        setXE = new AnimatorSet();
+        setXE.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), destX));
 
-        setX.setDuration(ANIM_DURATION);
-        setX.setInterpolator(new DecelerateInterpolator());
-        setX.addListener(new AnimatorListenerAdapter() {
+        setXE.setDuration(duration);
+        setXE.setInterpolator(new AccelerateInterpolator());
+        setXE.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                //velocityX = 0;
-                //velocityY = 0;
-                isAnimRunning = false;
-                //doXAnimationEnd();
             }
 
             @Override
             public void onAnimationStart(Animator animation) {
-                isAnimRunning = true;
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-                //velocityX = 0;
-                //velocityY = 0;
-                isAnimRunning = false;
             }
         });
-        setX.start();
+        setXE.start();
     }
 
     private void doYAnimationEnd(long duration) {
@@ -132,34 +122,28 @@ public class YImageView extends ImageView {
             destY = minY;
         }
 
-        setY = new AnimatorSet();
-        setY
-                .play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY));
+        setYE = new AnimatorSet();
+        setYE.play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY));
 
-        setY.setDuration(ANIM_DURATION);
-        setY.setInterpolator(new DecelerateInterpolator());
-        setY.addListener(new AnimatorListenerAdapter() {
+        setYE.setDuration(duration);
+        setYE.setInterpolator(new AccelerateInterpolator());
+        setYE.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                //velocityX = 0;
-                //velocityY = 0;
-                isAnimRunning = false;
-                //doYAnimationEnd();
+
             }
 
             @Override
             public void onAnimationStart(Animator animation) {
-                isAnimRunning = true;
+
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-                //velocityX = 0;
-               // velocityY = 0;
-                isAnimRunning = false;
+
             }
         });
-        setY.start();
+        setYE.start();
     }
 
     private class AnimData {
@@ -204,7 +188,7 @@ public class YImageView extends ImageView {
     }
     AnimData animDataX, animDataY;
 
-    private void onTouchUp(MotionEvent event) {
+    private void onTouchUp() {
 
 
 
@@ -215,12 +199,19 @@ public class YImageView extends ImageView {
         setX.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest));
 
         setX.setDuration(animDataX.duration);
-        setX.setInterpolator(new DecelerateInterpolator());
+        if (animDataX.useAccelerateInterpolator) {
+            setX.setInterpolator(new AccelerateInterpolator());
+        } else {
+            setX.setInterpolator(new DecelerateInterpolator());
+        }
         setX.addListener(new AnimatorListenerAdapter() {
+            boolean isCanceled = false;
             @Override
             public void onAnimationEnd(Animator animation) {
                 velocityX = 0;
-                doXAnimationEnd(ANIM_DURATION - animDataX.duration);
+                if (!isCanceled) {
+                    doXAnimationEnd(ANIM_DURATION - animDataX.duration);
+                }
             }
 
             @Override
@@ -229,7 +220,7 @@ public class YImageView extends ImageView {
 
             @Override
             public void onAnimationCancel(Animator animation) {
-                velocityX = 0;
+                isCanceled = true;
             }
         });
         setX.start();
@@ -237,14 +228,21 @@ public class YImageView extends ImageView {
         animDataY = calAnimData(this.getY(), minY, velocityY);
         setY = new AnimatorSet();
         setY.play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), animDataY.dest));
-
         setY.setDuration(animDataY.duration);
-        setY.setInterpolator(new DecelerateInterpolator());
+        if (animDataY.useAccelerateInterpolator) {
+            setY.setInterpolator(new AccelerateInterpolator());
+        } else {
+            setY.setInterpolator(new DecelerateInterpolator());
+        }
         setY.addListener(new AnimatorListenerAdapter() {
+            boolean isCanceled = false;
+
             @Override
             public void onAnimationEnd(Animator animation) {
                 velocityY = 0;
-                doYAnimationEnd(ANIM_DURATION - animDataY.duration);
+                if (!isCanceled) {
+                    doYAnimationEnd(ANIM_DURATION - animDataY.duration);
+                }
             }
 
             @Override
@@ -253,7 +251,7 @@ public class YImageView extends ImageView {
 
             @Override
             public void onAnimationCancel(Animator animation) {
-                velocityY = 0;
+                isCanceled = true;
             }
         });
         setY.start();
@@ -268,6 +266,13 @@ public class YImageView extends ImageView {
         if (setY.isRunning()) {
             setY.cancel();
         }
+        if (setXE.isRunning()) {
+            setXE.cancel();
+        }
+        if (setYE.isRunning()) {
+            setYE.cancel();
+        }
+
         current_x = lastX = event.getRawX();
         current_y = lastY = event.getRawY();
         lastEventTime = event.getEventTime();
