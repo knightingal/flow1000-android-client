@@ -93,19 +93,7 @@ public class YImageView extends ImageView {
 
         setXE.setDuration(duration);
         setXE.setInterpolator(new AccelerateInterpolator());
-        setXE.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-            }
 
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-        });
         setXE.start();
     }
 
@@ -127,22 +115,7 @@ public class YImageView extends ImageView {
 
         setYE.setDuration(duration);
         setYE.setInterpolator(new AccelerateInterpolator());
-        setYE.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
 
-            }
-
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-        });
         setYE.start();
     }
 
