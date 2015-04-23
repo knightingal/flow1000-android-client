@@ -133,7 +133,7 @@ public class PicListAcivity extends Activity {
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder;
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.pic_list_content, null);
+                convertView = mInflater.inflate(R.layout.pic_list_content, parent, false);
                 viewHolder = new ViewHolder();
                 viewHolder.textView = (TextView) convertView.findViewById(R.id.pic_text_view);
                 convertView.setTag(viewHolder);
