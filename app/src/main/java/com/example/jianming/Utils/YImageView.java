@@ -93,19 +93,6 @@ public class YImageView extends ImageView {
 
         setXE.setDuration(duration);
         setXE.setInterpolator(new AccelerateInterpolator());
-        setXE.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-        });
         setXE.start();
     }
 
@@ -127,22 +114,6 @@ public class YImageView extends ImageView {
 
         setYE.setDuration(duration);
         setYE.setInterpolator(new AccelerateInterpolator());
-        setYE.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-        });
         setYE.start();
     }
 
@@ -189,15 +160,9 @@ public class YImageView extends ImageView {
     AnimData animDataX, animDataY;
 
     private void onTouchUp() {
-
-
-
         animDataX = calAnimData(this.getX(), minX, velocityX);
-
-
         setX = new AnimatorSet();
         setX.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest));
-
         setX.setDuration(animDataX.duration);
         if (animDataX.useAccelerateInterpolator) {
             setX.setInterpolator(new AccelerateInterpolator());
@@ -212,10 +177,6 @@ public class YImageView extends ImageView {
                 if (!isCanceled) {
                     doXAnimationEnd(ANIM_DURATION - animDataX.duration);
                 }
-            }
-
-            @Override
-            public void onAnimationStart(Animator animation) {
             }
 
             @Override
@@ -243,10 +204,6 @@ public class YImageView extends ImageView {
                 if (!isCanceled) {
                     doYAnimationEnd(ANIM_DURATION - animDataY.duration);
                 }
-            }
-
-            @Override
-            public void onAnimationStart(Animator animation) {
             }
 
             @Override
