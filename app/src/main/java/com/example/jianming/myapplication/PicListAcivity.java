@@ -3,6 +3,8 @@ package com.example.jianming.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,11 +69,17 @@ public class PicListAcivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 PicAdapter.ViewHolder holder = (PicAdapter.ViewHolder) view.getTag();
                 String name = ((TextView) view.findViewById(R.id.pic_text_view)).getText().toString();
-                int index = holder.index;
-                Log.i(TAG, "you click " + index + "th item, name = " + name);
-                Intent intent = new Intent(self, Activity4List.class);
-                intent.putExtra("index", index);
-                self.startActivity(intent);
+                if (holder.exist) {
+                    int index = holder.index;
+                    Log.i(TAG, "you click " + index + "th item, name = " + name);
+                    Intent intent = new Intent(self, Activity4List.class);
+                    intent.putExtra("index", index);
+                    self.startActivity(intent);
+                } else {
+                    File file = new File(PicListAcivity.this.getExternalFilesDir(
+                            Environment.DIRECTORY_DOWNLOADS), name);
+                    file.mkdir();
+                }
 
             }
         });
@@ -129,6 +138,12 @@ public class PicListAcivity extends Activity {
             return 0;
         }
 
+        private boolean checkDirExist(String dirName) {
+            File file = new File(PicListAcivity.this.getExternalFilesDir(
+                    Environment.DIRECTORY_DOWNLOADS), dirName);
+            return file.exists();
+        }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder;
@@ -141,6 +156,13 @@ public class PicListAcivity extends Activity {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             viewHolder.textView.setText(dataArray.get(position).getName());
+            if (checkDirExist(dataArray.get(position).getName())) {
+                viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
+                viewHolder.exist = true;
+            } else {
+                viewHolder.textView.setTextColor(Color.rgb(255, 0, 0));
+                viewHolder.exist = false;
+            }
             viewHolder.index = dataArray.get(position).getIndex();
             return convertView;
         }
@@ -149,6 +171,8 @@ public class PicListAcivity extends Activity {
             TextView textView;
 
             int index;
+
+            boolean exist = false;
         }
     }
 }
