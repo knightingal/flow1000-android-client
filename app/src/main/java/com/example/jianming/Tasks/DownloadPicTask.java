@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,17 +56,19 @@ public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
     }
 
     private byte[] readIt(InputStream is, int len) throws IOException {
-        Reader reader = null;
-        reader = new InputStreamReader(is, "UTF-8");
-        char[] buffer = new char[len];
-        String content = "";
+        //Reader reader = new InputStreamReader(is, "UTF-8");
+        byte[] buffer = new byte[len];
+        //String content = "";
+        ByteArrayOutputStream out = new ByteArrayOutputStream(len);
         int readLen;
         do {
-            readLen = reader.read(buffer);
+            readLen = is.read(buffer);
+            if (readLen > 0) {
+                out.write(buffer, 0, readLen);
+            }
+            //content += new String(buffer).substring(0, readLen);
+        } while (readLen != -1);
+        return out.toByteArray();
 
-            content += new String(buffer).substring(0, readLen);
-        } while (readLen == len);
-        byte[] bs = content.getBytes();
-        return bs;
     }
 }

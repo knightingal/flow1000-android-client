@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Environment;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,10 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.jianming.Tasks.DownloadPicTask;
+import com.example.jianming.Tasks.DownloadWebpageTask;
+import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.beans.PicIndexBean;
 
 import org.json.JSONArray;
@@ -26,6 +27,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,9 +53,6 @@ public class PicListAcivity extends Activity {
                 picIndexBean.setName(jsonObject.getString("name"));
                 picIndexBean.setMtime(jsonObject.getString("mtime"));
                 dataArray.add(picIndexBean);
-//                String name = jsonObject.getString("name");
-//                dataArray.add(name);
-                //Log.i("network", jsonObject.getString("name") + " " + jsonObject.getString("mtime"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -68,9 +68,10 @@ public class PicListAcivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 PicAdapter.ViewHolder holder = (PicAdapter.ViewHolder) view.getTag();
-                String name = ((TextView) view.findViewById(R.id.pic_text_view)).getText().toString();
+                final String name = ((TextView) view.findViewById(R.id.pic_text_view)).getText().toString();
+                final int index = holder.index;
                 if (holder.exist) {
-                    int index = holder.index;
+
                     Log.i(TAG, "you click " + index + "th item, name = " + name);
                     Intent intent = new Intent(self, Activity4List.class);
                     intent.putExtra("index", index);
@@ -78,13 +79,53 @@ public class PicListAcivity extends Activity {
                 } else {
                     File file = new File(PicListAcivity.this.getExternalFilesDir(
                             Environment.DIRECTORY_DOWNLOADS), name);
-                    file.mkdir();
+                    if (file.mkdirs()) {
+                        Log.i(TAG, file.getAbsolutePath() + " made");
+                    }
+                    new DownloadWebpageTask() {
+                        @Override
+                        protected void onPostExecute(String s) {
+                            Log.i(TAG, s);
+                            try {
+                                JSONObject jsonObject = new JSONObject(s);
+                                JSONArray pics = jsonObject.getJSONArray("pics");
+                                for (int i = 0; i < pics.length(); i++) {
+                                    //picList.add(pics.getString(i));
+                                    downloadImg(("http://%serverIP:%serverPort/picDirs/picRepository/%index/" + pics.getString(i))
+                                            .replace("%serverIP", EnvArgs.serverIP)
+                                            .replace("%serverPort", EnvArgs.serverPort)
+                                            .replace("%index", index + ""), name, pics.getString(i));
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
+                            .replace("%serverIP", EnvArgs.serverIP)
+                            .replace("%serverPort", EnvArgs.serverPort));
                 }
 
             }
         });
     }
+    private void downloadImg(String imgUrl, final String dirName, final String picName) {
+        new DownloadPicTask() {
+            @Override
+            protected void onPostExecute(byte[] bytes) {
+                File directory = new File(PicListAcivity.this.getExternalFilesDir(
+                        Environment.DIRECTORY_DOWNLOADS), dirName);
+                File file = new File(directory, picName);
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(file, true);
+                    fileOutputStream.write(bytes);
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
+        }.execute(imgUrl);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -146,13 +146,13 @@ public class Activity4List extends ListActivity {
                 @Override
                 public void onClick(View v) {
                     Log.d("Activity4List", (String) mData.get(position).get("img"));
-                    new DownloadPicTask() {
-                        @Override
-                        protected void onPostExecute(byte[] bytes) {
-                            //TODO save the bitmap here
-                        }
-
-                    }.execute((String) mData.get(position).get("img"));
+//                    new DownloadPicTask() {
+//                        @Override
+//                        protected void onPostExecute(byte[] bytes) {
+//                            //TODO save the bitmap here
+//                        }
+//
+//                    }.execute((String) mData.get(position).get("img"));
 
                     Intent intent = new Intent(self, XrxActivity.class);
                     intent.putExtra("imgUrl", (String) mData.get(position).get("img"));
