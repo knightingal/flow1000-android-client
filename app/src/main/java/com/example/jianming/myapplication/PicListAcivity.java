@@ -27,6 +27,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +37,16 @@ import java.util.List;
 
 public class PicListAcivity extends Activity {
 
+    public File getAlbumStorageDir(Context context, String albumName) {
+        // Get the directory for the app's private pictures directory.
+        File file = new File(context.getExternalFilesDir(
+                Environment.DIRECTORY_DOWNLOADS), albumName);
+        if (!file.mkdirs()) {
+            Log.e("LOG_TAG", "Directory not created");
+        }
+        return file;
+    }
+
     Activity self = this;
     private final static String TAG = "PicListAcivity";
     @Override
@@ -42,10 +54,32 @@ public class PicListAcivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pic_list_acivity);
         List<PicIndexBean> dataArray = new ArrayList<>();
-        String jsonArg = this.getIntent().getStringExtra("jsonArg");
-        Log.i(TAG, jsonArg);
+        File directory = getAlbumStorageDir(PicListAcivity.this, "file");
+        File file = new File(directory, "index.json");
+        //String fileName = "myfile";
+        String fileContent = "";
+        FileInputStream fileInputStream;
         try {
-            JSONArray jsonArray = new JSONArray(jsonArg);
+            fileInputStream = new FileInputStream(file);
+            byte[] buff = new byte[30];
+            fileContent = "";
+            int readLen;
+            do {
+                readLen = fileInputStream.read(buff);
+                if (readLen > 0) {
+                    fileContent += new String(buff).substring(0, readLen);
+                }
+            } while(readLen > 0);
+            Log.i("readFile", fileContent);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //String jsonArg = this.getIntent().getStringExtra("jsonArg");
+        Log.i(TAG, fileContent);
+        try {
+            JSONArray jsonArray = new JSONArray(fileContent);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 PicIndexBean picIndexBean = new PicIndexBean();
@@ -74,7 +108,7 @@ public class PicListAcivity extends Activity {
 
                     Log.i(TAG, "you click " + index + "th item, name = " + name);
                     Intent intent = new Intent(self, Activity4List.class);
-                    intent.putExtra("index", index);
+                    intent.putExtra("name", name);
                     self.startActivity(intent);
                 } else {
                     File file = new File(PicListAcivity.this.getExternalFilesDir(

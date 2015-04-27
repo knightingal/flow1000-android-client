@@ -4,6 +4,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +19,13 @@ import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.DIOptionsExactly;
 import com.example.jianming.Utils.EnvArgs;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,32 +43,39 @@ public class Activity4List extends ListActivity {
 
     private List<String> picList = new ArrayList<>();
 
-    int index;
+    String dirName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        index = this.getIntent().getIntExtra("index", 2);
-        new DownloadWebpageTask() {
-            @Override
-            protected void onPostExecute(String s) {
-                Log.i(TAG, s);
-                try {
-                    JSONObject jsonObject = new JSONObject(s);
-                    JSONArray pics = jsonObject.getJSONArray("pics");
-                    for (int i = 0; i < pics.length(); i++) {
-                        picList.add(pics.getString(i));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                doShowListView();
-            }
-
-        }.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
-                .replace("%serverIP", EnvArgs.serverIP)
-                .replace("%serverPort", EnvArgs.serverPort));
+        dirName = this.getIntent().getStringExtra("name");
+        File file = new File(this.getExternalFilesDir(
+                Environment.DIRECTORY_DOWNLOADS), dirName);
+        File[] pics = file.listFiles();
+        for (int i = 0; i < pics.length; i++) {
+            picList.add(pics[i].getAbsolutePath());
+        }
+        doShowListView();
+//        new DownloadWebpageTask() {
+//            @Override
+//            protected void onPostExecute(String s) {
+//                Log.i(TAG, s);
+//                try {
+//                    JSONObject jsonObject = new JSONObject(s);
+//                    JSONArray pics = jsonObject.getJSONArray("pics");
+//                    for (int i = 0; i < pics.length(); i++) {
+//                        picList.add(pics.getString(i));
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                doShowListView();
+//            }
+//
+//        }.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
+//                .replace("%serverIP", EnvArgs.serverIP)
+//                .replace("%serverPort", EnvArgs.serverPort));
 //        mData = getData();
 //        ListAdapter adapter = new MyAdapter(this);
 //        setListAdapter(adapter);
@@ -84,11 +94,8 @@ public class Activity4List extends ListActivity {
             map = new HashMap<>();
             map.put("title", "G" + i);
             map.put("info", "google " + i);
-            map.put("img", ("http://%serverIP:%serverPort/picDirs/picRepository/%index/" + picList.get(i))
-                    .replace("%serverIP", EnvArgs.serverIP)
-                    .replace("%serverPort", EnvArgs.serverPort)
-                    .replace("%index", index + "")
-            );
+            map.put("img", picList.get(i));
+
             list.add(map);
         }
 
@@ -140,7 +147,9 @@ public class Activity4List extends ListActivity {
             }
 
             //holder.img.setImageResource((Integer)mData.get(position).get("img"));
-            ImageLoader.getInstance().displayImage((String) mData.get(position).get("img"), holder.img, DIOptionsExactly.getInstance().getOptions());
+            String imgUrl = ImageDownloader.Scheme.FILE.wrap((String) mData.get(position).get("img"));
+
+            ImageLoader.getInstance().displayImage(imgUrl, holder.img, DIOptionsExactly.getInstance().getOptions());
             holder.title.setText((String) mData.get(position).get("title"));
             holder.img.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -155,7 +164,7 @@ public class Activity4List extends ListActivity {
 //                    }.execute((String) mData.get(position).get("img"));
 
                     Intent intent = new Intent(self, XrxActivity.class);
-                    intent.putExtra("imgUrl", (String) mData.get(position).get("img"));
+                    intent.putExtra("imgUrl", ImageDownloader.Scheme.FILE.wrap((String) mData.get(position).get("img")));
 
                     startActivity(intent);
                 }

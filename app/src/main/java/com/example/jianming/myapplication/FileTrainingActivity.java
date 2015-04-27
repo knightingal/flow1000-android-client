@@ -78,12 +78,24 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
             new DownloadWebpageTask() {
                 @Override
                 protected void onPostExecute(String s) {
+                    File directory = getAlbumStorageDir(FileTrainingActivity.this, "file");
+                    File file = new File(directory, "index.json");
+                    try {
+                        FileOutputStream fileOutputStream = new FileOutputStream(file, false);
+                        fileOutputStream.write(s.getBytes());
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Intent intent = new Intent(self, PicListAcivity.class);
-                    intent.putExtra("jsonArg", s);
+                    //intent.putExtra("jsonArg", s);
                     self.startActivity(intent);
                 }
             }.execute(stringUrl);
         } else {
+            Intent intent = new Intent(self, PicListAcivity.class);
+            //intent.putExtra("jsonArg", s);
+            self.startActivity(intent);
             Log.i("network", "No network connection available.");
         }
     }
@@ -113,7 +125,7 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
         String fileName = directory.getAbsolutePath();
         File file = new File(directory, "newFile.txt");
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(file, true);
+            FileOutputStream fileOutputStream = new FileOutputStream(file, false);
             fileOutputStream.write("Hello World".getBytes());
             fileOutputStream.close();
         } catch (IOException e) {
