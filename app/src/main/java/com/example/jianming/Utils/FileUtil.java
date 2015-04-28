@@ -10,10 +10,10 @@ import java.io.File;
  * Created by Jianming on 2015/4/28.
  */
 public class FileUtil {
-
+    private static final String TAG = "FileUtil";
 
     public static File getAlbumStorageDir(Context context, String albumName) {
-        String TAG = "FileUtil";
+
 
         File file = new File(context.getExternalFilesDir(
                 Environment.DIRECTORY_DOWNLOADS), albumName);
@@ -26,6 +26,7 @@ public class FileUtil {
     public static boolean checkDirExist(Context context, String albumName) {
         File file = new File(context.getExternalFilesDir(
                 Environment.DIRECTORY_DOWNLOADS), albumName);
+
         return file.exists();
     }
 }

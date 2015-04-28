@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.example.jianming.Tasks.DownloadPicTask;
 import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.EnvArgs;
+import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicIndexBean;
 
 import org.json.JSONArray;
@@ -28,24 +29,13 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class PicListAcivity extends Activity {
-
-    public File getAlbumStorageDir(Context context, String albumName) {
-        // Get the directory for the app's private pictures directory.
-        File file = new File(context.getExternalFilesDir(
-                Environment.DIRECTORY_DOWNLOADS), albumName);
-        if (!file.mkdirs()) {
-            Log.e("LOG_TAG", "Directory not created");
-        }
-        return file;
-    }
+public class PicListActivity extends Activity {
 
     Activity self = this;
     private final static String TAG = "PicListAcivity";
@@ -54,9 +44,8 @@ public class PicListAcivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pic_list_acivity);
         List<PicIndexBean> dataArray = new ArrayList<>();
-        File directory = getAlbumStorageDir(PicListAcivity.this, "file");
+        File directory = FileUtil.getAlbumStorageDir(PicListActivity.this, "file");
         File file = new File(directory, "index.json");
-        //String fileName = "myfile";
         String fileContent = "";
         FileInputStream fileInputStream;
         try {
@@ -71,12 +60,9 @@ public class PicListAcivity extends Activity {
                 }
             } while(readLen > 0);
             Log.i("readFile", fileContent);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //String jsonArg = this.getIntent().getStringExtra("jsonArg");
         Log.i(TAG, fileContent);
         try {
             JSONArray jsonArray = new JSONArray(fileContent);
@@ -111,8 +97,7 @@ public class PicListAcivity extends Activity {
                     intent.putExtra("name", name);
                     self.startActivity(intent);
                 } else {
-                    File file = new File(PicListAcivity.this.getExternalFilesDir(
-                            Environment.DIRECTORY_DOWNLOADS), name);
+                    File file = FileUtil.getAlbumStorageDir(PicListActivity.this, name);
                     if (file.mkdirs()) {
                         Log.i(TAG, file.getAbsolutePath() + " made");
                     }
@@ -146,8 +131,7 @@ public class PicListAcivity extends Activity {
         new DownloadPicTask() {
             @Override
             protected void onPostExecute(byte[] bytes) {
-                File directory = new File(PicListAcivity.this.getExternalFilesDir(
-                        Environment.DIRECTORY_DOWNLOADS), dirName);
+                File directory = FileUtil.getAlbumStorageDir(PicListActivity.this, dirName);
                 File file = new File(directory, picName);
                 try {
                     FileOutputStream fileOutputStream = new FileOutputStream(file, true);
@@ -161,27 +145,7 @@ public class PicListAcivity extends Activity {
         }.execute(imgUrl);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_pic_list_acivity, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     private class PicAdapter extends BaseAdapter {
 
@@ -213,12 +177,6 @@ public class PicListAcivity extends Activity {
             return 0;
         }
 
-        private boolean checkDirExist(String dirName) {
-            File file = new File(PicListAcivity.this.getExternalFilesDir(
-                    Environment.DIRECTORY_DOWNLOADS), dirName);
-            return file.exists();
-        }
-
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder;
@@ -231,7 +189,7 @@ public class PicListAcivity extends Activity {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             viewHolder.textView.setText(dataArray.get(position).getName());
-            if (checkDirExist(dataArray.get(position).getName())) {
+            if (FileUtil.checkDirExist(PicListActivity.this, dataArray.get(position).getName())) {
                 viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
                 viewHolder.exist = true;
             } else {

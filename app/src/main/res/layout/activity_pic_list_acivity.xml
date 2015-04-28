@@ -4,7 +4,7 @@
     android:paddingRight="0dp"
     android:paddingTop="0dp"
     android:paddingBottom="0dp"
-    tools:context="com.example.jianming.myapplication.PicListAcivity">
+    tools:context="com.example.jianming.myapplication.PicListActivity">
 
     <ListView
         android:layout_height="wrap_content"

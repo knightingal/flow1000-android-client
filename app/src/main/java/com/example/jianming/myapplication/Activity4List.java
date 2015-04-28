@@ -18,6 +18,7 @@ import com.example.jianming.Tasks.DownloadPicTask;
 import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.DIOptionsExactly;
 import com.example.jianming.Utils.EnvArgs;
+import com.example.jianming.Utils.FileUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
@@ -50,35 +51,12 @@ public class Activity4List extends ListActivity {
         super.onCreate(savedInstanceState);
 
         dirName = this.getIntent().getStringExtra("name");
-        File file = new File(this.getExternalFilesDir(
-                Environment.DIRECTORY_DOWNLOADS), dirName);
+        File file = FileUtil.getAlbumStorageDir(this, dirName);
         File[] pics = file.listFiles();
-        for (int i = 0; i < pics.length; i++) {
-            picList.add(pics[i].getAbsolutePath());
+        for (File pic : pics) {
+            picList.add(pic.getAbsolutePath());
         }
         doShowListView();
-//        new DownloadWebpageTask() {
-//            @Override
-//            protected void onPostExecute(String s) {
-//                Log.i(TAG, s);
-//                try {
-//                    JSONObject jsonObject = new JSONObject(s);
-//                    JSONArray pics = jsonObject.getJSONArray("pics");
-//                    for (int i = 0; i < pics.length(); i++) {
-//                        picList.add(pics.getString(i));
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                doShowListView();
-//            }
-//
-//        }.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
-//                .replace("%serverIP", EnvArgs.serverIP)
-//                .replace("%serverPort", EnvArgs.serverPort));
-//        mData = getData();
-//        ListAdapter adapter = new MyAdapter(this);
-//        setListAdapter(adapter);
     }
 
     private void doShowListView() {
@@ -133,11 +111,11 @@ public class Activity4List extends ListActivity {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
+            ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
 
-                convertView = mInflater.inflate(R.layout.vlist, null);
+                convertView = mInflater.inflate(R.layout.vlist, parent, false);
                 holder.img = (ImageView) convertView.findViewById(R.id.img);
                 holder.title = (TextView) convertView.findViewById(R.id.title);
                 //holder.info = (TextView) convertView.findViewById(R.id.info);
@@ -146,7 +124,6 @@ public class Activity4List extends ListActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            //holder.img.setImageResource((Integer)mData.get(position).get("img"));
             String imgUrl = ImageDownloader.Scheme.FILE.wrap((String) mData.get(position).get("img"));
 
             ImageLoader.getInstance().displayImage(imgUrl, holder.img, DIOptionsExactly.getInstance().getOptions());
@@ -155,13 +132,6 @@ public class Activity4List extends ListActivity {
                 @Override
                 public void onClick(View v) {
                     Log.d("Activity4List", (String) mData.get(position).get("img"));
-//                    new DownloadPicTask() {
-//                        @Override
-//                        protected void onPostExecute(byte[] bytes) {
-//                            //TODO save the bitmap here
-//                        }
-//
-//                    }.execute((String) mData.get(position).get("img"));
 
                     Intent intent = new Intent(self, XrxActivity.class);
                     intent.putExtra("imgUrl", ImageDownloader.Scheme.FILE.wrap((String) mData.get(position).get("img")));

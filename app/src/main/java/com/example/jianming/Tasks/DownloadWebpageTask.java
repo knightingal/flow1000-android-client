@@ -1,10 +1,7 @@
 package com.example.jianming.Tasks;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.example.jianming.myapplication.PicListAcivity;
 
 import java.io.IOException;
 import java.io.InputStream;
