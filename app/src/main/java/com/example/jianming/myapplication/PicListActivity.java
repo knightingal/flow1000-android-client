@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -50,13 +51,24 @@ public class PicListActivity extends Activity {
         FileInputStream fileInputStream;
         try {
             fileInputStream = new FileInputStream(file);
-            byte[] buff = new byte[fileInputStream.available()];
 
-            fileInputStream.read(buff);
-            fileContent = new String(buff);
-//            if (readLen > 0) {
-//                fileContent += new String(buff).substring(0, readLen);
-//            }
+            /*********** another way of reading file here  ****************
+            * byte[] buff = new byte[fileInputStream.available()];
+            *
+            * fileInputStream.read(buff);
+            * fileContent = new String(buff);
+            ***************************************************************/
+
+            byte[] buff = new byte[30];
+            ByteArrayOutputStream out = new ByteArrayOutputStream(30);
+            int readLen;
+            do {
+                readLen = fileInputStream.read(buff);
+                if (readLen > 0) {
+                    out.write(buff, 0, readLen);
+                }
+            } while(readLen != -1);
+            fileContent = new String(out.toByteArray());
             Log.i("readFile", fileContent);
         } catch (IOException e) {
             e.printStackTrace();
