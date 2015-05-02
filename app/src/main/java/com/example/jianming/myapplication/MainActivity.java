@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
         forListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                self.startActivity(new Intent(self, Activity4List.class));
+                self.startActivity(new Intent(self, PicListActivity.class));
             }
         });
         final Button fileTrainingBtn = (Button) findViewById(R.id.fileTrainingBtn);

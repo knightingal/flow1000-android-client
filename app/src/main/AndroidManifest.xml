@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activity4List"
+            android:name=".PicListActivity"
             android:label="@string/title_activity_list" >
         </activity>
         <activity
@@ -44,7 +44,7 @@
             android:label="@string/title_activity_file_training" >
         </activity>
         <activity
-            android:name=".PicListActivity"
+            android:name=".PicIndexListActivity"
             android:label="@string/title_activity_pic_list_acivity" >
         </activity>
         <activity

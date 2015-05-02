@@ -5,11 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Environment;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.example.jianming.Tasks.DownloadWebpageTask;
@@ -17,8 +14,6 @@ import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -68,12 +63,12 @@ public class FileTrainingActivity extends Activity implements View.OnClickListen
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Intent intent = new Intent(self, PicListActivity.class);
+                    Intent intent = new Intent(self, PicIndexListActivity.class);
                     self.startActivity(intent);
                 }
             }.execute(stringUrl);
         } else {
-            Intent intent = new Intent(self, PicListActivity.class);
+            Intent intent = new Intent(self, PicIndexListActivity.class);
             //intent.putExtra("jsonArg", s);
             self.startActivity(intent);
             Log.i("network", "No network connection available.");
