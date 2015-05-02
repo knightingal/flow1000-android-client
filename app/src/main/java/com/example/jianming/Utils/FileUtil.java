@@ -14,9 +14,12 @@ public class FileUtil {
 
     public static File getAlbumStorageDir(Context context, String albumName) {
 
-
+        //File fileRoot = new File("/storage/sdcard1/Android/data/com.example.jianming.myapplication/files/Download/");
+        //File file = new File(fileRoot, albumName);
         File file = new File(context.getExternalFilesDir(
                 Environment.DIRECTORY_DOWNLOADS), albumName);
+
+
         if (file.mkdirs()) {
             Log.i(TAG, "Directory of " + file.getAbsolutePath() + " created");
         }
@@ -24,6 +27,8 @@ public class FileUtil {
     }
 
     public static boolean checkDirExist(Context context, String albumName) {
+        //File fileRoot = new File("/storage/sdcard1/Android/data/com.example.jianming.myapplication/files/Download/");
+        //File file = new File(fileRoot, albumName);
         File file = new File(context.getExternalFilesDir(
                 Environment.DIRECTORY_DOWNLOADS), albumName);
 

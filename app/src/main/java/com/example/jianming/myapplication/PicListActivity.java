@@ -50,15 +50,13 @@ public class PicListActivity extends Activity {
         FileInputStream fileInputStream;
         try {
             fileInputStream = new FileInputStream(file);
-            byte[] buff = new byte[30];
-            fileContent = "";
-            int readLen;
-            do {
-                readLen = fileInputStream.read(buff);
-                if (readLen > 0) {
-                    fileContent += new String(buff).substring(0, readLen);
-                }
-            } while(readLen > 0);
+            byte[] buff = new byte[fileInputStream.available()];
+
+            fileInputStream.read(buff);
+            fileContent = new String(buff);
+//            if (readLen > 0) {
+//                fileContent += new String(buff).substring(0, readLen);
+//            }
             Log.i("readFile", fileContent);
         } catch (IOException e) {
             e.printStackTrace();
