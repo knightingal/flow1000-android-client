@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class MainActivity extends Activity {
 
+    private static final String TAG = "MainActivity";
+
     Context self = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +29,8 @@ public class MainActivity extends Activity {
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main);
 
-
-
+        String mtype = android.os.Build.MODEL;
+        Log.d(TAG, "mtype = " + mtype);
 
 
 
