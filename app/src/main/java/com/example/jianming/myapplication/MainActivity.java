@@ -10,16 +10,32 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements View.OnClickListener{
 
     private static final String TAG = "MainActivity";
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.xrxBtn:
+                this.startActivity(new Intent(this, XrxActivity.class));
+                break;
+            case R.id.forListBtn:
+                this.startActivity(new Intent(this, PicListActivity.class));
+                break;
+            case R.id.fileTrainingBtn:
+                this.startActivity(new Intent(this, FileTrainingActivity.class));
+                break;
+            default:
+                break;
+        }
+    }
 
     Context self = this;
     @Override
@@ -29,33 +45,13 @@ public class MainActivity extends Activity {
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main);
 
-        String mtype = android.os.Build.MODEL;
-        Log.d(TAG, "mtype = " + mtype);
+        String mType = android.os.Build.MODEL;
+        Log.d(TAG, "mType = " + mType);
 
+        findViewById(R.id.xrxBtn).setOnClickListener(this);
+        findViewById(R.id.forListBtn).setOnClickListener(this);
+        findViewById(R.id.fileTrainingBtn).setOnClickListener(this);
 
-
-        final Button xrxBtn = (Button) findViewById(R.id.xrxBtn);
-        xrxBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                self.startActivity(new Intent(self, XrxActivity.class));
-            }
-        });
-
-        final Button forListBtn = (Button) findViewById(R.id.forListBtn);
-        forListBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                self.startActivity(new Intent(self, PicListActivity.class));
-            }
-        });
-        final Button fileTrainingBtn = (Button) findViewById(R.id.fileTrainingBtn);
-        fileTrainingBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                self.startActivity(new Intent(self, FileTrainingActivity.class));
-            }
-        });
     }
 
 
@@ -78,4 +74,6 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
