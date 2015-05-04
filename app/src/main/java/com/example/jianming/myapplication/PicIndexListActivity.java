@@ -14,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Tasks.DownloadPicTask;
 import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.EnvArgs;
@@ -110,57 +111,8 @@ public class PicIndexListActivity extends Activity {
                     if (file.mkdirs()) {
                         Log.i(TAG, file.getAbsolutePath() + " made");
                     }
-                    new DownloadWebpageTask() {
-                        int picCountAll = 0;
-                        int currPicCount = 0;
-                        @Override
-                        protected void onPostExecute(String s) {
-                            Log.i(TAG, s);
-                            try {
-                                JSONObject jsonObject = new JSONObject(s);
-                                JSONArray pics = jsonObject.getJSONArray("pics");
-                                picCountAll = pics.length();
-                                for (int i = 0; i < pics.length(); i++) {
-                                    //picList.add(pics.getString(i));
-                                    downloadImg(
-                                            ("http://%serverIP:%serverPort/picDirs/picRepository/%index/" + pics.getString(i))
-                                                    .replace("%serverIP", EnvArgs.serverIP)
-                                                    .replace("%serverPort", EnvArgs.serverPort)
-                                                    .replace("%index", index + ""),
-                                            name,
-                                            pics.getString(i));
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        private void downloadImg(String imgUrl, final String dirName, final String picName) {
-                            new DownloadPicTask() {
-
-                                @Override
-                                protected void onPostExecute(byte[] bytes) {
-                                    File directory = FileUtil.getAlbumStorageDir(PicIndexListActivity.this, dirName);
-                                    File file = new File(directory, picName);
-                                    try {
-                                        FileOutputStream fileOutputStream = new FileOutputStream(file, true);
-                                        fileOutputStream.write(bytes);
-                                        fileOutputStream.close();
-                                        currPicCount++;
-                                        if (currPicCount == picCountAll) {
-                                            Intent intent = new Intent(self, PicListActivity.class);
-                                            intent.putExtra("name", dirName);
-                                            self.startActivity(intent);
-                                        }
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                            }.execute(imgUrl);
-                        }
-
-                    }.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
+                    DownloadPicListTask task = new DownloadPicListTask(self, index, name);
+                    task.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
                             .replace("%serverIP", EnvArgs.serverIP)
                             .replace("%serverPort", EnvArgs.serverPort));
                 }
