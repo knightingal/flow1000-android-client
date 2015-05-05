@@ -40,6 +40,10 @@ public class SettingActivity extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
         ipEditText = (EditText) findViewById(R.id.ip_edit);
+        ipEditText.setFocusable(true);
+        ipEditText.setFocusableInTouchMode(true);
+        ipEditText.requestFocus();
+        ipEditText.requestFocusFromTouch();
         portEditText = (EditText) findViewById(R.id.port_edit);
         findViewById(R.id.button_done).setOnClickListener(this);
     }
