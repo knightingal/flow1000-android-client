@@ -43,7 +43,6 @@ public class CustomerView1 extends View{
         int result;
         int specMode = MeasureSpec.getMode(heightMeasureSpec);
         int specSize = MeasureSpec.getSize(heightMeasureSpec);
-
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
@@ -57,7 +56,6 @@ public class CustomerView1 extends View{
         int result;
         int specMode = MeasureSpec.getMode(widthMeasureSpec);
         int specSize = MeasureSpec.getSize(widthMeasureSpec);
-
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize;
         } else {
