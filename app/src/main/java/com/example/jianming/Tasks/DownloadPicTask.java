@@ -17,7 +17,7 @@ import java.net.URL;
  * Created by Jianming on 2015/4/9.
  */
 public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
-
+    private static final String TAG = "DownloadPicTask";
     @Override
     protected byte[] doInBackground(String... urls) {
         try {
@@ -56,9 +56,7 @@ public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
     }
 
     private byte[] readIt(InputStream is, int len) throws IOException {
-        //Reader reader = new InputStreamReader(is, "UTF-8");
         byte[] buffer = new byte[len];
-        //String content = "";
         ByteArrayOutputStream out = new ByteArrayOutputStream(len);
         int readLen;
         do {
@@ -66,7 +64,6 @@ public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
             if (readLen > 0) {
                 out.write(buffer, 0, readLen);
             }
-            //content += new String(buffer).substring(0, readLen);
         } while (readLen != -1);
         return out.toByteArray();
 
