@@ -6,7 +6,7 @@
     android:paddingBottom="@dimen/new_activity_vertical_margin"
     tools:context="com.example.jianming.myapplication.XrxActivity">
 
-    <com.example.jianming.Utils.YImageView
+    <com.example.jianming.views.YImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

@@ -1,4 +1,4 @@
-package com.example.jianming.Utils;
+package com.example.jianming.views;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
