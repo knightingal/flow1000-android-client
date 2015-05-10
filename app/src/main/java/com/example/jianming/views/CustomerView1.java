@@ -26,7 +26,7 @@ public class CustomerView1 extends View{
 
     private Paint paint;
 
-    int length = 10;
+    int length = 0;
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -54,6 +54,7 @@ public class CustomerView1 extends View{
 
     private int width = 0;
     private int stepCount = 0;
+    private int stepLenght = 0;
     private int measureWidth(int widthMeasureSpec) {
         int result;
         int specMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -69,12 +70,13 @@ public class CustomerView1 extends View{
 
     public void setStepCount(int stepCount) {
         this.stepCount = stepCount;
+        this.stepLenght = this.width / this.stepCount;
     }
 
 
 
     public void longer() {
-        length += 10;
+        length += stepLenght;
         invalidate();
     }
 }

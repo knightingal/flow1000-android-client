@@ -20,6 +20,7 @@ import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicIndexBean;
+import com.example.jianming.views.CustomerView1;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -111,7 +112,7 @@ public class PicIndexListActivity extends Activity {
                     if (file.mkdirs()) {
                         Log.i(TAG, file.getAbsolutePath() + " made");
                     }
-                    DownloadPicListTask task = new DownloadPicListTask(self, index, name);
+                    DownloadPicListTask task = new DownloadPicListTask(self, index, name, holder.customerView1);
                     task.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
                             .replace("%serverIP", EnvArgs.serverIP)
                             .replace("%serverPort", EnvArgs.serverPort));
@@ -123,7 +124,7 @@ public class PicIndexListActivity extends Activity {
 
 
 
-    private class PicAdapter extends BaseAdapter {
+    public class PicAdapter extends BaseAdapter {
 
         private final LayoutInflater mInflater;
         private List<PicIndexBean> dataArray;
@@ -160,6 +161,7 @@ public class PicIndexListActivity extends Activity {
                 convertView = mInflater.inflate(R.layout.pic_list_content, parent, false);
                 viewHolder = new ViewHolder();
                 viewHolder.textView = (TextView) convertView.findViewById(R.id.pic_text_view);
+                viewHolder.customerView1 = (CustomerView1) convertView.findViewById(R.id.customer_view1);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -176,12 +178,14 @@ public class PicIndexListActivity extends Activity {
             return convertView;
         }
 
-        class ViewHolder {
+        public class ViewHolder {
             TextView textView;
 
             int index;
 
             boolean exist = false;
+
+            CustomerView1 customerView1;
         }
     }
 }
