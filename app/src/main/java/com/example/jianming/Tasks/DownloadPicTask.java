@@ -1,6 +1,5 @@
 package com.example.jianming.Tasks;
 
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -11,9 +10,7 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by Jianming on 2015/4/9.
- */
+
 public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
 
     @Override
@@ -24,7 +21,6 @@ public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
             e.printStackTrace();
             return null;
         }
-
     }
 
 
