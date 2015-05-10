@@ -67,6 +67,8 @@ public class DownloadPicListTask extends DownloadWebpageTask{
                     fileOutputStream.write(bytes);
                     fileOutputStream.close();
                     currPicCount++;
+
+                    //TODO: notify downloading process
                     if (currPicCount == picCountAll) {
                         Intent intent = new Intent(context, PicListActivity.class);
                         intent.putExtra("name", dirName);
