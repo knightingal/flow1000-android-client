@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.jianming.views.CustomerView1;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -32,9 +33,18 @@ public class MainActivity extends Activity implements View.OnClickListener{
             case R.id.fileTrainingBtn:
                 this.startActivity(new Intent(this, FileTrainingActivity.class));
                 break;
+            case R.id.longerBtn:
+                this.longer();
+                break;
+
             default:
                 break;
         }
+    }
+
+    private void longer() {
+        CustomerView1 customerView1 = (CustomerView1)findViewById(R.id.customer_view1);
+        customerView1.longer();
     }
 
     Context self = this;
@@ -51,7 +61,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         findViewById(R.id.xrxBtn).setOnClickListener(this);
         findViewById(R.id.forListBtn).setOnClickListener(this);
         findViewById(R.id.fileTrainingBtn).setOnClickListener(this);
-
+        findViewById(R.id.longerBtn).setOnClickListener(this);
     }
 
 
