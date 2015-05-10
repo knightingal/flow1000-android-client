@@ -52,6 +52,8 @@ public class CustomerView1 extends View{
         return result;
     }
 
+    private int width = 0;
+    private int stepCount = 0;
     private int measureWidth(int widthMeasureSpec) {
         int result;
         int specMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -61,9 +63,14 @@ public class CustomerView1 extends View{
         } else {
             result = 10;
         }
-
+        this.width = result;
         return result;
     }
+
+    public void setStepCount(int stepCount) {
+        this.stepCount = stepCount;
+    }
+
 
 
     public void longer() {
