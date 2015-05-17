@@ -6,9 +6,8 @@ import android.util.Log;
 
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
-import com.example.jianming.myapplication.PicIndexListActivity;
 import com.example.jianming.myapplication.PicListActivity;
-import com.example.jianming.views.CustomerView1;
+import com.example.jianming.views.DownloadProcessView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,16 +22,16 @@ import java.io.IOException;
  */
 public class DownloadPicListTask extends DownloadWebpageTask{
     private static final String TAG = "DownloadPicListTask";
-    private CustomerView1 customerView1;
+    private DownloadProcessView downloadProcessView;
     private String dirName;
     private int index;
     private Context context;
 
-    public DownloadPicListTask(Context context, int index, String dirName, CustomerView1 customerView1) {
+    public DownloadPicListTask(Context context, int index, String dirName, DownloadProcessView downloadProcessView) {
         this.context = context;
         this.index = index;
         this.dirName = dirName;
-        this.customerView1 = customerView1;
+        this.downloadProcessView = downloadProcessView;
     }
 
     int picCountAll = 0;
@@ -44,7 +43,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             JSONObject jsonObject = new JSONObject(s);
             JSONArray pics = jsonObject.getJSONArray("pics");
             picCountAll = pics.length();
-            customerView1.setStepCount(picCountAll);
+            downloadProcessView.setStepCount(picCountAll);
             for (int i = 0; i < pics.length(); i++) {
                 final String imgUrl = ("http://%serverIP:%serverPort/picDirs/picRepository/%index/" + pics.getString(i))
                         .replace("%serverIP", EnvArgs.serverIP)
@@ -72,7 +71,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
                     fileOutputStream.write(bytes);
                     fileOutputStream.close();
                     currPicCount++;
-                    customerView1.longer();
+                    downloadProcessView.longer();
                     //TODO: notify downloading process
                     if (currPicCount == picCountAll) {
                         Intent intent = new Intent(context, PicListActivity.class);

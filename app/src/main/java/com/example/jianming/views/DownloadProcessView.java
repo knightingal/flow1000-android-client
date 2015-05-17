@@ -8,18 +8,18 @@ import android.util.AttributeSet;
 import android.view.View;
 
 
-public class CustomerView1 extends View{
-    public CustomerView1(Context context) {
+public class DownloadProcessView extends View{
+    public DownloadProcessView(Context context) {
         super(context);
         paint = new Paint();
     }
 
-    public CustomerView1(Context context, AttributeSet attrs) {
+    public DownloadProcessView(Context context, AttributeSet attrs) {
         super(context, attrs);
         paint = new Paint();
     }
 
-    public CustomerView1(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DownloadProcessView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         paint = new Paint();
     }
