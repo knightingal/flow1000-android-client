@@ -18,6 +18,7 @@ import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicIndexBean;
+import com.example.jianming.listAdapters.PicIndexAdapter;
 import com.example.jianming.views.DownloadProcessView;
 
 import org.json.JSONArray;
@@ -88,15 +89,17 @@ public class PicIndexListActivity extends Activity {
 
         ListView listView = (ListView) findViewById(R.id.list_view1);
 
-        PicAdapter picAdapter = new PicAdapter(this);
-        picAdapter.setDataArray(dataArray);
-        listView.setAdapter(picAdapter);
+        PicIndexAdapter picIndexAdapter = new PicIndexAdapter(this);
+        picIndexAdapter.setDataArray(dataArray);
+        listView.setAdapter(picIndexAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                PicAdapter.ViewHolder holder = (PicAdapter.ViewHolder) view.getTag();
-                final String name = ((TextView) view.findViewById(R.id.pic_text_view)).getText().toString();
+                PicIndexAdapter.ViewHolder holder = (PicIndexAdapter.ViewHolder) view.getTag();
+                final String name = ((TextView) view.findViewById(R.id.pic_text_view))
+                        .getText()
+                        .toString();
                 final int index = holder.index;
                 if (holder.exist) {
 
@@ -109,7 +112,12 @@ public class PicIndexListActivity extends Activity {
                     if (file.mkdirs()) {
                         Log.i(TAG, file.getAbsolutePath() + " made");
                     }
-                    DownloadPicListTask task = new DownloadPicListTask(self, index, name, holder.downloadProcessView);
+                    DownloadPicListTask task = new DownloadPicListTask(
+                            self,
+                            index,
+                            name,
+                            holder.downloadProcessView
+                    );
                     task.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
                             .replace("%serverIP", EnvArgs.serverIP)
                             .replace("%serverPort", EnvArgs.serverPort));
@@ -117,72 +125,5 @@ public class PicIndexListActivity extends Activity {
 
             }
         });
-    }
-
-
-
-    public class PicAdapter extends BaseAdapter {
-
-        private final LayoutInflater mInflater;
-        private List<PicIndexBean> dataArray;
-
-        public PicAdapter(Context context) {
-
-            this.mInflater = LayoutInflater.from(context);
-        }
-
-        public void setDataArray(List<PicIndexBean> dataArray) {
-            this.dataArray = dataArray;
-        }
-
-
-        @Override
-        public int getCount() {
-            return this.dataArray.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder;
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.pic_list_content, parent, false);
-                viewHolder = new ViewHolder();
-                viewHolder.textView = (TextView) convertView.findViewById(R.id.pic_text_view);
-                viewHolder.downloadProcessView = (DownloadProcessView) convertView.findViewById(R.id.customer_view1);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-            viewHolder.textView.setText(dataArray.get(position).getName());
-            if (FileUtil.checkDirExist(PicIndexListActivity.this, dataArray.get(position).getName())) {
-                viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
-                viewHolder.exist = true;
-            } else {
-                viewHolder.textView.setTextColor(Color.rgb(255, 0, 0));
-                viewHolder.exist = false;
-            }
-            viewHolder.index = dataArray.get(position).getIndex();
-            return convertView;
-        }
-
-        public class ViewHolder {
-            TextView textView;
-
-            int index;
-
-            boolean exist = false;
-
-            DownloadProcessView downloadProcessView;
-        }
     }
 }
