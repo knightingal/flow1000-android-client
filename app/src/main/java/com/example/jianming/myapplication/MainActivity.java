@@ -9,21 +9,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.OnClick;
 
 
-public class MainActivity extends Activity implements View.OnClickListener{
+public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
 
-    @Override
-    public void onClick(View v) {
+    @OnClick({R.id.xrxBtn, R.id.forListBtn, R.id.fileTrainingBtn})
+    public void btnClicked(View v) {
         switch (v.getId()) {
             case R.id.xrxBtn:
                 this.startActivity(new Intent(this, XrxActivity.class));
@@ -40,16 +39,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         }
     }
 
-    @InjectView(R.id.xrxBtn)
-    Button xrxBtn;
-
-    @InjectView(R.id.forListBtn)
-    Button forListBtn;
-
-    @InjectView(R.id.fileTrainingBtn)
-    Button fileTrainingBtn;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +50,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
         String mType = android.os.Build.MODEL;
         Log.d(TAG, "mType = " + mType);
         ButterKnife.inject(this);
-        xrxBtn.setOnClickListener(this);
-        forListBtn.setOnClickListener(this);
-        fileTrainingBtn.setOnClickListener(this);
-//        findViewById(R.id.xrxBtn).setOnClickListener(this);
-//        findViewById(R.id.forListBtn).setOnClickListener(this);
-//        findViewById(R.id.fileTrainingBtn).setOnClickListener(this);
-
     }
 
 

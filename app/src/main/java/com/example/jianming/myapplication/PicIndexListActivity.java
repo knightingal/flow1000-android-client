@@ -1,16 +1,11 @@
 package com.example.jianming.myapplication;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,7 +14,6 @@ import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicIndexBean;
 import com.example.jianming.listAdapters.PicIndexAdapter;
-import com.example.jianming.views.DownloadProcessView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +32,7 @@ public class PicIndexListActivity extends Activity {
 
 
     Activity self = this;
-    private final static String TAG = "PicListAcivity";
+    private final static String TAG = "PicListActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
