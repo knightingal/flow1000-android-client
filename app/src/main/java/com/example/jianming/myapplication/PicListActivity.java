@@ -19,6 +19,7 @@ import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.DIOptionsExactly;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
+import com.example.jianming.listAdapters.PicListAdapter;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
@@ -40,8 +41,6 @@ public class PicListActivity extends ListActivity {
 
     private static final String TAG = "Activity4List";
 
-    private List<Map<String, Object>> mData;
-
     private List<String> picList = new ArrayList<>();
 
     String dirName;
@@ -60,8 +59,8 @@ public class PicListActivity extends ListActivity {
     }
 
     private void doShowListView() {
-        mData = getData();
-        ListAdapter adapter = new MyAdapter(this);
+        PicListAdapter adapter = new PicListAdapter(this);
+        adapter.setDataArray(getData());
         setListAdapter(adapter);
     }
 
@@ -78,71 +77,6 @@ public class PicListActivity extends ListActivity {
         }
 
         return list;
-    }
-
-    public final class ViewHolder {
-        public ImageView img;
-        public TextView title;
-        public TextView info;
-    }
-
-    public class MyAdapter extends BaseAdapter {
-
-        private LayoutInflater mInflater;
-
-        public MyAdapter(Context context) {
-            this.mInflater = LayoutInflater.from(context);
-        }
-
-        @Override
-        public int getCount() {
-            return mData.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                holder = new ViewHolder();
-
-                convertView = mInflater.inflate(R.layout.vlist, parent, false);
-                holder.img = (ImageView) convertView.findViewById(R.id.img);
-                holder.title = (TextView) convertView.findViewById(R.id.title);
-                //holder.info = (TextView) convertView.findViewById(R.id.info);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            String imgUrl = ImageDownloader.Scheme.FILE.wrap((String) mData.get(position).get("img"));
-
-            ImageLoader.getInstance().displayImage(imgUrl, holder.img, DIOptionsExactly.getInstance().getOptions());
-            holder.title.setText((String) mData.get(position).get("title"));
-            holder.img.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d("Activity4List", (String) mData.get(position).get("img"));
-
-                    Intent intent = new Intent(self, XrxActivity.class);
-                    intent.putExtra("imgUrl", ImageDownloader.Scheme.FILE.wrap((String) mData.get(position).get("img")));
-
-                    startActivity(intent);
-                }
-            });
-
-            //holder.info.setText((String) mData.get(position).get("info"));
-            return convertView;
-        }
     }
 
 }
