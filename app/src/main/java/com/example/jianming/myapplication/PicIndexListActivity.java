@@ -29,8 +29,6 @@ import java.util.List;
 
 public class PicIndexListActivity extends Activity {
 
-
-
     Activity self = this;
     private final static String TAG = "PicListActivity";
     @Override
@@ -90,34 +88,38 @@ public class PicIndexListActivity extends Activity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                PicIndexAdapter.ViewHolder holder = (PicIndexAdapter.ViewHolder) view.getTag();
-                final String name = ((TextView) view.findViewById(R.id.pic_text_view))
-                        .getText()
-                        .toString();
-                final int index = holder.index;
-                if (holder.exist) {
-
-                    Log.i(TAG, "you click " + index + "th item, name = " + name);
-                    Intent intent = new Intent(self, PicListActivity.class);
-                    intent.putExtra("name", name);
-                    self.startActivity(intent);
-                } else {
-                    File file = FileUtil.getAlbumStorageDir(PicIndexListActivity.this, name);
-                    if (file.mkdirs()) {
-                        Log.i(TAG, file.getAbsolutePath() + " made");
-                    }
-                    DownloadPicListTask task = new DownloadPicListTask(
-                            self,
-                            index,
-                            name,
-                            holder.downloadProcessView
-                    );
-                    task.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
-                            .replace("%serverIP", EnvArgs.serverIP)
-                            .replace("%serverPort", EnvArgs.serverPort));
-                }
-
+                doItemClick(view);
             }
         });
+    }
+
+    public void doItemClick(View view) {
+        PicIndexAdapter.ViewHolder holder = (PicIndexAdapter.ViewHolder) view.getTag();
+        final String name = ((TextView) view.findViewById(R.id.pic_text_view))
+                .getText()
+                .toString();
+        final int index = holder.index;
+        if (holder.exist) {
+
+            Log.i(TAG, "you click " + index + "th item, name = " + name);
+            Intent intent = new Intent(self, PicListActivity.class);
+            intent.putExtra("name", name);
+            self.startActivity(intent);
+        } else {
+            File file = FileUtil.getAlbumStorageDir(PicIndexListActivity.this, name);
+            if (file.mkdirs()) {
+                Log.i(TAG, file.getAbsolutePath() + " made");
+            }
+            DownloadPicListTask task = new DownloadPicListTask(
+                    self,
+                    index,
+                    name,
+                    holder.downloadProcessView
+            );
+            task.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
+                    .replace("%serverIP", EnvArgs.serverIP)
+                    .replace("%serverPort", EnvArgs.serverPort));
+        }
+
     }
 }
