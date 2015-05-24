@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
                 this.startActivity(new Intent(this, XrxActivity.class));
                 break;
             case R.id.forListBtn:
-                this.startActivity(new Intent(this, PicListActivity.class));
+                this.startActivity(new Intent(this, PicContentListActivity.class));
                 break;
             case R.id.fileTrainingBtn:
                 this.startActivity(new Intent(this, FileTrainingActivity.class));

@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class PicListActivity extends ListActivity {
+public class PicContentListActivity extends ListActivity {
 
     //ListView mListView;
     private Context self = this;
