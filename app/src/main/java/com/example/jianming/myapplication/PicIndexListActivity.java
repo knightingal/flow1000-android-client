@@ -30,6 +30,12 @@ import java.util.List;
 
 public class PicIndexListActivity extends Activity {
 
+    public void doPicListDownloadComplete(String dirName) {
+        Intent intent = new Intent(this, PicContentListActivity.class);
+        intent.putExtra("name", dirName);
+        startActivity(intent);
+    }
+
     Activity self = this;
     private final static String TAG = "PicListActivity";
     @Override
@@ -101,7 +107,6 @@ public class PicIndexListActivity extends Activity {
                 .toString();
         final int index = holder.index;
         if (holder.exist) {
-
             Log.i(TAG, "you click " + index + "th item, name = " + name);
             Intent intent = new Intent(self, PicContentListActivity.class);
             intent.putExtra("name", name);
