@@ -34,10 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class PicListActivity extends ListActivity {
-
-    //ListView mListView;
-    private Context self = this;
+public class PicContentListActivity extends ListActivity {
 
     private static final String TAG = "Activity4List";
 

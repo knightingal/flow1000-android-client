@@ -102,7 +102,7 @@ public class PicIndexListActivity extends Activity {
         if (holder.exist) {
 
             Log.i(TAG, "you click " + index + "th item, name = " + name);
-            Intent intent = new Intent(self, PicListActivity.class);
+            Intent intent = new Intent(self, PicContentListActivity.class);
             intent.putExtra("name", name);
             self.startActivity(intent);
         } else {

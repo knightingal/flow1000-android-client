@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
                 this.startActivity(new Intent(this, XrxActivity.class));
                 break;
             case R.id.forListBtn:
-                this.startActivity(new Intent(this, PicListActivity.class));
+                this.startActivity(new Intent(this, PicContentListActivity.class));
                 break;
             case R.id.fileTrainingBtn:
                 this.startActivity(new Intent(this, FileTrainingActivity.class));
@@ -55,7 +55,6 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
