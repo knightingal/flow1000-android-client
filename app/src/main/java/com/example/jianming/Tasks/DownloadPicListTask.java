@@ -73,6 +73,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
                     downloadProcessView.longer();
                     //TODO: notify downloading process
                     if (currPicCount == picCountAll) {
+                        downloadProcessView.clear();
                         ((PicIndexListActivity) context).doPicListDownloadComplete(dirName);
                     }
                 } catch (IOException e) {
