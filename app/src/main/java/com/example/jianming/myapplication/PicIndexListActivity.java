@@ -30,11 +30,14 @@ import java.util.List;
 
 public class PicIndexListActivity extends Activity {
 
-    public void doPicListDownloadComplete(String dirName) {
+    public void doPicListDownloadComplete(String dirName, int index) {
         Intent intent = new Intent(this, PicContentListActivity.class);
         intent.putExtra("name", dirName);
+        picIndexAdapter.notifyDataSetChanged();
         startActivity(intent);
     }
+
+    PicIndexAdapter picIndexAdapter;
 
     Activity self = this;
     private final static String TAG = "PicListActivity";
@@ -88,7 +91,7 @@ public class PicIndexListActivity extends Activity {
 
         ListView listView = (ListView) findViewById(R.id.list_view1);
 
-        PicIndexAdapter picIndexAdapter = new PicIndexAdapter(this);
+        picIndexAdapter = new PicIndexAdapter(this);
         picIndexAdapter.setDataArray(dataArray);
         listView.setAdapter(picIndexAdapter);
 
