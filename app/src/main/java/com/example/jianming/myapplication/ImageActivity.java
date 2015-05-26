@@ -26,9 +26,6 @@ public class ImageActivity extends Activity {
         String imageType = options.outMimeType;
         mImageView1 = (ImageView) findViewById(R.id.image_view1);
 
-//        Log.d("onCreate", "imageWidth = " + imageWidth + " imageHeight = " + imageHeight);
-//        mImageView1.setImageBitmap(decodeSampledBitmapFromResource(
-//                getResources(), R.drawable.android, imageWidth, imageHeight));
         loadBitmap(R.drawable.mybaby, mImageView1, imageWidth, imageHeight);
 
     }
