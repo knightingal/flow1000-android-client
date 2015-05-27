@@ -4,7 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -80,10 +85,44 @@ public class PicIndexListActivity extends Activity {
         }
 
         ListView listView = (ListView) findViewById(R.id.list_view1);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
 
         PicIndexAdapter picIndexAdapter = new PicIndexAdapter(this);
         picIndexAdapter.setDataArray(dataArray);
         listView.setAdapter(picIndexAdapter);
+
+        listView.setMultiChoiceModeListener(new ListView.MultiChoiceModeListener() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.menu_list, menu);
+                return true;
+            }
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                mode.setTitle("clicked");
+
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+
+            }
+        });
+
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

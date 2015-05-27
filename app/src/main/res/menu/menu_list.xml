@@ -3,5 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.jianming.myapplication.PicContentListActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+        android:orderInCategory="100" app:showAsAction="always"
+        android:icon="@drawable/abc_ic_ab_back_mtrl_am_alpha"
+        />
+    <item android:id="@+id/action_settings2" android:title="@string/action_settings"
+        android:orderInCategory="101" app:showAsAction="always"
+        android:icon="@drawable/abc_ic_commit_search_api_mtrl_alpha"
+        />
 </menu>
