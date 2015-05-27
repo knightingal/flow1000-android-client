@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
+    >
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/pic_text_view"
+        android:text="text"
         />
+
+    <com.example.jianming.views.DownloadProcessView
+        android:id="@+id/customer_view1"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/pic_text_view"
+        />
+
 </RelativeLayout>

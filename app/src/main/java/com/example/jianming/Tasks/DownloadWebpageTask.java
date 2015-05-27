@@ -1,10 +1,7 @@
 package com.example.jianming.Tasks;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.example.jianming.myapplication.PicListAcivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +10,6 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by Jianming on 2015/4/5.
- */
 public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
 
     @Override
@@ -56,8 +50,7 @@ public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
     }
 
     private String readIt(InputStream is, int len) throws IOException {
-        Reader reader = null;
-        reader = new InputStreamReader(is, "UTF-8");
+        Reader reader = new InputStreamReader(is, "UTF-8");
         char[] buffer = new char[len];
         String content = "";
         int readLen;

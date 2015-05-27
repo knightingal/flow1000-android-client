@@ -4,11 +4,12 @@
     android:paddingRight="0dp"
     android:paddingTop="0dp"
     android:paddingBottom="0dp"
-    tools:context="com.example.jianming.myapplication.PicListAcivity">
+    tools:context="com.example.jianming.myapplication.PicIndexListActivity">
 
     <ListView
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
+
         android:id="@+id/list_view1"
         />
 
