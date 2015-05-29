@@ -1,12 +1,12 @@
 package com.example.jianming.Tasks;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
-import com.example.jianming.myapplication.PicContentListActivity;
+
+import com.example.jianming.myapplication.PicIndexListActivity;
 import com.example.jianming.views.DownloadProcessView;
 
 import org.json.JSONArray;
@@ -74,9 +74,8 @@ public class DownloadPicListTask extends DownloadWebpageTask{
                     downloadProcessView.longer();
                     //TODO: notify downloading process
                     if (currPicCount == picCountAll) {
-                        Intent intent = new Intent(context, PicContentListActivity.class);
-                        intent.putExtra("name", dirName);
-                        context.startActivity(intent);
+                        downloadProcessView.clear();
+                        ((PicIndexListActivity) context).doPicListDownloadComplete(dirName, index);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

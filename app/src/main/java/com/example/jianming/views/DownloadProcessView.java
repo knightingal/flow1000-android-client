@@ -72,7 +72,10 @@ public class DownloadProcessView extends View{
         this.stepCount = stepCount;
     }
 
-
+    public void clear() {
+        length = 0;
+        invalidate();
+    }
 
     public void longer() {
         currCount++;
