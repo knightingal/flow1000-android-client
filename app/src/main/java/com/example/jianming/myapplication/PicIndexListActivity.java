@@ -2,6 +2,7 @@ package com.example.jianming.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ActionMode;
@@ -33,6 +34,15 @@ import java.util.List;
 
 
 public class PicIndexListActivity extends Activity {
+
+    public void doPicListDownloadComplete(String dirName, int index) {
+        Intent intent = new Intent(this, PicContentListActivity.class);
+        intent.putExtra("name", dirName);
+        picIndexAdapter.notifyDataSetChanged();
+        startActivity(intent);
+    }
+
+    PicIndexAdapter picIndexAdapter;
 
     Activity self = this;
     private final static String TAG = "PicListActivity";
@@ -88,7 +98,7 @@ public class PicIndexListActivity extends Activity {
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 
 
-        PicIndexAdapter picIndexAdapter = new PicIndexAdapter(this);
+        picIndexAdapter = new PicIndexAdapter(this);
         picIndexAdapter.setDataArray(dataArray);
         listView.setAdapter(picIndexAdapter);
 
@@ -139,7 +149,6 @@ public class PicIndexListActivity extends Activity {
                 .toString();
         final int index = holder.index;
         if (holder.exist) {
-
             Log.i(TAG, "you click " + index + "th item, name = " + name);
             Intent intent = new Intent(self, PicContentListActivity.class);
             intent.putExtra("name", name);

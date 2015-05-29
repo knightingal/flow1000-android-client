@@ -13,7 +13,6 @@ import java.util.Map;
 
 
 public class PicContentListActivity extends ListActivity {
-
     private static final String TAG = "Activity4List";
 
     private List<String> picList = new ArrayList<>();
