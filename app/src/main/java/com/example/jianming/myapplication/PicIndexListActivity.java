@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
+import com.example.jianming.Utils.JsonUtil;
 import com.example.jianming.beans.PicIndexBean;
 import com.example.jianming.listAdapters.PicIndexAdapter;
 
@@ -88,6 +89,7 @@ public class PicIndexListActivity extends Activity {
                 picIndexBean.setIndex(Integer.parseInt(jsonObject.getString("index")));
                 picIndexBean.setName(jsonObject.getString("name"));
                 picIndexBean.setMtime(jsonObject.getString("mtime"));
+                Log.d(TAG, JsonUtil.getJson(picIndexBean).toString());
                 dataArray.add(picIndexBean);
             }
         } catch (JSONException e) {
