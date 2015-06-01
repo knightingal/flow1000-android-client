@@ -1,6 +1,6 @@
 package com.example.jianming.Utils;
 
-import android.util.Log;
+import com.example.jianming.annotations.JsonName;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,11 +21,16 @@ public class JsonUtil {
         for(Field field: fields) {
             //Log.d(TAG, field.getName());
             String fieldName = field.getName();
+            String outputName = fieldName;
+            if (field.isAnnotationPresent(JsonName.class)) {
+                JsonName jsonName = field.getAnnotation(JsonName.class);
+                outputName = jsonName.value();
+            }
             String fieldGetterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
             try {
                 Method getter = objClass.getMethod(fieldGetterName);
                 Object ret = getter.invoke(object);
-                json.put(fieldName, ret);
+                json.put(outputName, ret);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
