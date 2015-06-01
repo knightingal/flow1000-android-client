@@ -60,7 +60,6 @@ public class PicListAdapter extends BaseAdapter {
 
             convertView = mInflater.inflate(R.layout.vlist, parent, false);
             holder.img = (ImageView) convertView.findViewById(R.id.img);
-            holder.title = (TextView) convertView.findViewById(R.id.title);
             //holder.info = (TextView) convertView.findViewById(R.id.info);
             convertView.setTag(holder);
         } else {
@@ -70,7 +69,6 @@ public class PicListAdapter extends BaseAdapter {
         String imgUrl = ImageDownloader.Scheme.FILE.wrap((String) dataArray.get(position).get("img"));
 
         ImageLoader.getInstance().displayImage(imgUrl, holder.img, DIOptionsExactly.getInstance().getOptions());
-        holder.title.setText((String) dataArray.get(position).get("title"));
         holder.img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,7 +87,5 @@ public class PicListAdapter extends BaseAdapter {
 
     public final class ViewHolder {
         public ImageView img;
-        public TextView title;
-        public TextView info;
     }
 }
