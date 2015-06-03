@@ -1,8 +1,7 @@
 package com.example.jianming.beans;
 import com.example.jianming.annotations.JsonName;
-/**
- * Created by Jianming on 2015/4/3.
- */
+
+
 public class PicIndexBean {
 
     @JsonName("jsonName")
