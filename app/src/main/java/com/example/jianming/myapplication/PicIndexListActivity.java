@@ -43,6 +43,12 @@ public class PicIndexListActivity extends Activity {
         startActivity(intent);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        findViewById(R.id.lock_screen).setVisibility(View.VISIBLE);
+    }
+
     PicIndexAdapter picIndexAdapter;
 
     Activity self = this;
