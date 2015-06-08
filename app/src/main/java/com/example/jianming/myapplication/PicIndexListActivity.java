@@ -12,8 +12,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Utils.EnvArgs;
@@ -50,7 +53,7 @@ public class PicIndexListActivity extends Activity {
     }
 
     PicIndexAdapter picIndexAdapter;
-
+    EditText pwdEt;
     Activity self = this;
     private final static String TAG = "PicListActivity";
     @Override
@@ -103,7 +106,19 @@ public class PicIndexListActivity extends Activity {
         }
 
         ListView listView = (ListView) findViewById(R.id.list_view1);
+        Button unlockBtn = (Button) findViewById(R.id.unlock_btn);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        pwdEt = (EditText) findViewById(R.id.pwd_et);
+        unlockBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pwdEt.getText().toString().equals("123456")) {
+                    findViewById(R.id.lock_screen).setVisibility(View.GONE);
+                } else {
+                    Toast.makeText(PicIndexListActivity.this, "wrong password", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
 
         picIndexAdapter = new PicIndexAdapter(this);
