@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+
 public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
     private static final String TAG = "DownloadPicTask";
     @Override
@@ -19,7 +20,6 @@ public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
             e.printStackTrace();
             return null;
         }
-
     }
 
 

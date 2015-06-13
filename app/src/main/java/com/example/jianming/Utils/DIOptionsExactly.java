@@ -18,7 +18,6 @@ public class DIOptionsExactly {
             .build();
 
     private DIOptionsExactly() {
-
     }
 
     public DisplayImageOptions getOptions() {

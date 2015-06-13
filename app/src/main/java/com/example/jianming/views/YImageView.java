@@ -51,6 +51,9 @@ public class YImageView extends ImageView {
         Log.i("onLayout", getTop() + " " + getLeft() + " " + getRight() + " " + getBottom());
         minX = screamW - bitmap_W;
         minY = screamH - bitmap_H;
+        if (minY > 0) {
+            minY = 0;
+        }
     }
 
     @Override
