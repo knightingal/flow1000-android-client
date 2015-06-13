@@ -2,7 +2,6 @@ package com.example.jianming.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ActionMode;
@@ -10,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -114,6 +112,7 @@ public class PicIndexListActivity extends Activity {
             public void onClick(View v) {
                 if (pwdEt.getText().toString().equals("123456")) {
                     findViewById(R.id.lock_screen).setVisibility(View.GONE);
+                    pwdEt.setText("");
                 } else {
                     Toast.makeText(PicIndexListActivity.this, "wrong password", Toast.LENGTH_LONG).show();
                 }
