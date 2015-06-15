@@ -1,6 +1,8 @@
 package com.example.jianming.listAdapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,7 +53,7 @@ public class PicIndexAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+        final ViewHolder viewHolder;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.pic_list_content, parent, false);
             viewHolder = new ViewHolder();
@@ -75,7 +77,24 @@ public class PicIndexAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "you clicked " + PicIndexAdapter.this.dataArray.get(position).getName() + " delete_btn");
-                FileUtil.removeDir(PicIndexAdapter.this.context, PicIndexAdapter.this.dataArray.get(position).getName());
+                AlertDialog.Builder builder = new AlertDialog.Builder(PicIndexAdapter.this.context);
+                builder.setMessage("delete this dir?");
+                builder.setTitle("");
+                builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FileUtil.removeDir(PicIndexAdapter.this.context, PicIndexAdapter.this.dataArray.get(position).getName());
+                        viewHolder.textView.setTextColor(Color.rgb(255, 0, 0));
+                        dialog.dismiss();
+                    }
+                });
+                builder.setNegativeButton("no", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.create().show();
             }
         });
         return convertView;
