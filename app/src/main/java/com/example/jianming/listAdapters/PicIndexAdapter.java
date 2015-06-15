@@ -53,7 +53,7 @@ public class PicIndexAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+        final ViewHolder viewHolder;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.pic_list_content, parent, false);
             viewHolder = new ViewHolder();
@@ -84,6 +84,7 @@ public class PicIndexAdapter extends BaseAdapter {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         FileUtil.removeDir(PicIndexAdapter.this.context, PicIndexAdapter.this.dataArray.get(position).getName());
+                        viewHolder.textView.setTextColor(Color.rgb(255, 0, 0));
                         dialog.dismiss();
                     }
                 });
