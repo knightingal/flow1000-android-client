@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.example.jianming.Utils.NetworkUtil;
 
 
 public class FileTrainingActivity extends Activity{
@@ -35,15 +36,11 @@ public class FileTrainingActivity extends Activity{
 
     @OnClick(R.id.network)
     public void network() {
-        ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
+        if (NetworkUtil.checkNetwork(this)) {
             startDownloadWebPage();
         } else {
             Intent intent = new Intent(self, PicIndexListActivity.class);
-            //intent.putExtra("jsonArg", s);
             self.startActivity(intent);
-            Log.i("network", "No network connection available.");
         }
     }
 
