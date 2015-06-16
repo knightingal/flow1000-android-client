@@ -16,9 +16,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
-/**
- * Created by Jianming on 2015/3/20.
- */
 public class YImageView extends ImageView {
     private int minX = 0, minY = 0;
     private static final int ANIM_DURATION = 500;

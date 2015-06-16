@@ -1,7 +1,10 @@
 package com.example.jianming.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,15 +13,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.Utils.JsonUtil;
+import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.PicIndexBean;
 import com.example.jianming.listAdapters.PicIndexAdapter;
 
@@ -145,7 +146,7 @@ public class PicIndexListActivity extends Activity {
     }
 
     public void doItemClick(View view) {
-        PicIndexAdapter.ViewHolder holder = (PicIndexAdapter.ViewHolder) view.getTag();
+        final PicIndexAdapter.ViewHolder holder = (PicIndexAdapter.ViewHolder) view.getTag();
         final String name = ((TextView) view.findViewById(R.id.pic_text_view))
                 .getText()
                 .toString();
@@ -156,19 +157,40 @@ public class PicIndexListActivity extends Activity {
             intent.putExtra("name", name);
             self.startActivity(intent);
         } else {
-            File file = FileUtil.getAlbumStorageDir(PicIndexListActivity.this, name);
-            if (file.mkdirs()) {
-                Log.i(TAG, file.getAbsolutePath() + " made");
+            if (NetworkUtil.checkNetwork(this)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("create this dir?");
+                builder.setTitle("");
+                builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        File file = FileUtil.getAlbumStorageDir(PicIndexListActivity.this, name);
+                        if (file.mkdirs()) {
+                            Log.i(TAG, file.getAbsolutePath() + " made");
+                        }
+                        DownloadPicListTask task = new DownloadPicListTask(
+                                self,
+                                index,
+                                name,
+                                holder.downloadProcessView
+                        );
+                        task.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
+                                .replace("%serverIP", EnvArgs.serverIP)
+                                .replace("%serverPort", EnvArgs.serverPort));
+                        dialog.dismiss();
+                    }
+                });
+                builder.setNegativeButton("no", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.create().show();
+            } else {
+                Toast.makeText(this, "network not available", Toast.LENGTH_SHORT).show();
             }
-            DownloadPicListTask task = new DownloadPicListTask(
-                    self,
-                    index,
-                    name,
-                    holder.downloadProcessView
-            );
-            task.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
-                    .replace("%serverIP", EnvArgs.serverIP)
-                    .replace("%serverPort", EnvArgs.serverPort));
+
         }
 
     }
