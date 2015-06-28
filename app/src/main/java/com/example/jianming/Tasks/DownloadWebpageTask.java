@@ -25,11 +25,10 @@ public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
 
 
 
-    private String downloadUrl(String myurl) throws IOException {
+    private String downloadUrl(String strUrl) throws IOException {
         InputStream is = null;
-        int len = 500;
         try {
-            URL url = new URL(myurl);
+            URL url = new URL(strUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
@@ -38,9 +37,12 @@ public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
             conn.connect();
 
             int response = conn.getResponseCode();
+            int contentLen = conn.getContentLength();
+
             Log.d("network", "The response is: " + response);
+            Log.d("network", "Content length is: " + contentLen);
             is = conn.getInputStream();
-            return readIt(is, len);
+            return readIt(is, contentLen);
 
         } finally {
             if (is != null) {
