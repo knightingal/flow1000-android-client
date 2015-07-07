@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -44,9 +45,13 @@ public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
             is = conn.getInputStream();
             return readIt(is, contentLen);
 
+        } catch (ConnectException e) {
+            e.printStackTrace();
+            return null;
         } finally {
             if (is != null) {
                 is.close();
+
             }
         }
     }
