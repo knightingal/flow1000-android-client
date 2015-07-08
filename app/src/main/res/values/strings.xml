@@ -10,6 +10,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_cross">CrossActivity</string>
     <string name="title_activity_xrx">XrxActivity</string>
+    <string name="su27">su27</string>
     <string name="title_activity_slide_page">ScreenSlidePagerActivity</string>
     <string name="description_image_1">android</string>
     <string name="card_back_title">card_back_title</string>
@@ -22,6 +23,7 @@
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="show_pic_size">Show pic size</string>
     <string name="title_file_training">FileTraining</string>
+    <string name="pic_index">picIndex</string>
     <string name="title_activity_file_training">FileTrainingActivity</string>
     <string name="title_activity_pic_list_acivity">PicListAcivity</string>
     <string name="title_activity_setting">SettingActivity</string>
