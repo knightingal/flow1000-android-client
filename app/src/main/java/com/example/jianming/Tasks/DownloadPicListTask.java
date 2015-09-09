@@ -1,6 +1,7 @@
 package com.example.jianming.Tasks;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.jianming.Utils.EnvArgs;
@@ -16,6 +17,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by Jianming on 2015/5/4.
@@ -58,15 +60,18 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             e.printStackTrace();
         }
     }
-
     private void downloadImg(String imgUrl, final String dirName, final String picName) {
+        Log.d("DownloadPicListTask", "creat task for " + imgUrl);
         new DownloadPicTask() {
 
             @Override
             protected void onPostExecute(byte[] bytes) {
+
+
                 File directory = FileUtil.getAlbumStorageDir(context, dirName);
                 File file = new File(directory, picName);
                 try {
+
                     FileOutputStream fileOutputStream = new FileOutputStream(file, true);
                     fileOutputStream.write(bytes);
                     fileOutputStream.close();
@@ -82,7 +87,8 @@ public class DownloadPicListTask extends DownloadWebpageTask{
                 }
             }
 
-        }.execute(imgUrl);
+//        }.execute(imgUrl);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imgUrl);
     }
 
 
