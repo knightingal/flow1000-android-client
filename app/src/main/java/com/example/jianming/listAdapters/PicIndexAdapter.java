@@ -1,11 +1,15 @@
 package com.example.jianming.listAdapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.jianming.Utils.FileUtil;
@@ -16,7 +20,7 @@ import com.example.jianming.views.DownloadProcessView;
 import java.util.List;
 
 public class PicIndexAdapter extends BaseAdapter {
-
+    private final static String TAG = "PicIndexAdapter";
     private final LayoutInflater mInflater;
     private List<PicIndexBean> dataArray;
 
@@ -48,12 +52,13 @@ public class PicIndexAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        final ViewHolder viewHolder;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.pic_list_content, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.textView = (TextView) convertView.findViewById(R.id.pic_text_view);
+            viewHolder.deleteBtn = (ImageView) convertView.findViewById(R.id.delete_btn);
             viewHolder.downloadProcessView = (DownloadProcessView) convertView.findViewById(R.id.customer_view1);
             convertView.setTag(viewHolder);
         } else {
@@ -68,11 +73,37 @@ public class PicIndexAdapter extends BaseAdapter {
             viewHolder.exist = false;
         }
         viewHolder.index = dataArray.get(position).getIndex();
+        viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "you clicked " + PicIndexAdapter.this.dataArray.get(position).getName() + " delete_btn");
+                AlertDialog.Builder builder = new AlertDialog.Builder(PicIndexAdapter.this.context);
+                builder.setMessage("delete this dir?");
+                builder.setTitle("");
+                builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FileUtil.removeDir(PicIndexAdapter.this.context, PicIndexAdapter.this.dataArray.get(position).getName());
+                        viewHolder.textView.setTextColor(Color.rgb(255, 0, 0));
+                        dialog.dismiss();
+                    }
+                });
+                builder.setNegativeButton("no", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.create().show();
+            }
+        });
         return convertView;
     }
 
     public class ViewHolder {
         public TextView textView;
+
+        public ImageView deleteBtn;
 
         public int index;
 

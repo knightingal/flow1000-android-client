@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.Semaphore;
 
 
 public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
     private static final String TAG = "DownloadPicTask";
+    private static final Semaphore semp = new Semaphore(5);
     @Override
     protected byte[] doInBackground(String... urls) {
         try {
@@ -28,6 +30,8 @@ public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
         InputStream is = null;
         int len = 500;
         try {
+            semp.acquire();
+            Log.d("DownloadPicTask", "start download " + myurl);
             URL url = new URL(myurl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);
@@ -37,10 +41,14 @@ public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
             conn.connect();
 
             int response = conn.getResponseCode();
-            Log.d("network", "The response is: " + response);
+            semp.release();
+            Log.d("DownloadPicTask", "end download " + myurl);
+            //Log.d("network", "The response is: " + response);
             is = conn.getInputStream();
             return readIt(is, len);
-
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
         } finally {
             if (is != null) {
                 is.close();

@@ -21,17 +21,15 @@ public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
 
-    @OnClick({R.id.xrxBtn, R.id.forListBtn, R.id.fileTrainingBtn})
+    @OnClick({R.id.su27, R.id.picIndexBtn})
     public void btnClicked(View v) {
         switch (v.getId()) {
-            case R.id.xrxBtn:
+            case R.id.su27:
                 this.startActivity(new Intent(this, XrxActivity.class));
                 break;
-            case R.id.forListBtn:
-                this.startActivity(new Intent(this, PicContentListActivity.class));
-                break;
-            case R.id.fileTrainingBtn:
-                this.startActivity(new Intent(this, FileTrainingActivity.class));
+
+            case R.id.picIndexBtn:
+                this.startActivity(new Intent(this, PicIndexListActivity.class));
                 break;
 
             default:

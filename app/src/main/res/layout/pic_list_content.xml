@@ -13,6 +13,14 @@
         android:text="text"
         />
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/abc_ic_clear_mtrl_alpha"
+        android:id="@+id/delete_btn"
+        android:layout_alignParentRight="true"
+        />
+
     <com.example.jianming.views.DownloadProcessView
         android:id="@+id/customer_view1"
         android:layout_width="match_parent"

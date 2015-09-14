@@ -26,6 +26,17 @@ public class FileUtil {
         return file;
     }
 
+    public static void removeDir(Context context, String albumName) {
+        File file = new File(context.getExternalFilesDir(
+                Environment.DIRECTORY_DOWNLOADS), albumName
+        );
+        File[] files = file.listFiles();
+        for (File imgFile : files) {
+            imgFile.delete();
+        }
+        file.delete();
+    }
+
     public static boolean checkDirExist(Context context, String albumName) {
         //File fileRoot = new File("/storage/sdcard1/Android/data/com.example.jianming.myapplication/files/Download/");
         //File file = new File(fileRoot, albumName);

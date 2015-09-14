@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -25,11 +26,10 @@ public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
 
 
 
-    private String downloadUrl(String myurl) throws IOException {
+    private String downloadUrl(String strUrl) throws IOException {
         InputStream is = null;
-        int len = 500;
         try {
-            URL url = new URL(myurl);
+            URL url = new URL(strUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
@@ -38,13 +38,20 @@ public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
             conn.connect();
 
             int response = conn.getResponseCode();
-            Log.d("network", "The response is: " + response);
-            is = conn.getInputStream();
-            return readIt(is, len);
+            int contentLen = conn.getContentLength();
 
+            Log.d("network", "The response is: " + response);
+            Log.d("network", "Content length is: " + contentLen);
+            is = conn.getInputStream();
+            return readIt(is, contentLen);
+
+        } catch (ConnectException e) {
+            e.printStackTrace();
+            return null;
         } finally {
             if (is != null) {
                 is.close();
+
             }
         }
     }

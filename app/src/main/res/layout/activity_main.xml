@@ -9,29 +9,18 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/xrxBtn"
-        android:text="@string/title_activity_xrx"
+        android:id="@+id/su27"
+        android:text="@string/su27"
          />
 
 
-
-    <Button
-        android:id="@+id/forListBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_activity_4_list"
-        android:layout_below="@+id/xrxBtn"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_file_training"
-        android:id="@+id/fileTrainingBtn"
+        android:text="@string/pic_index"
+        android:id="@+id/picIndexBtn"
 
-        android:layout_below="@+id/forListBtn"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true" android:layout_below="@+id/su27"/>
 
 </RelativeLayout>
