@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
                 break;
 
             case R.id.picIndexBtn:
-                this.startActivity(new Intent(this, PicIndexListActivity.class));
+                this.startActivity(new Intent(this, FileTrainingActivity.class));
                 break;
 
             default:
