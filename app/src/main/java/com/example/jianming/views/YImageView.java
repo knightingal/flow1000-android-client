@@ -34,8 +34,14 @@ public class YImageView extends ImageView {
         super(context, attrs, defStyleAttr);
     }
 
-    int start_top, start_left, start_right, start_bottom;
+//    int start_top, start_left, start_right, start_bottom;
     int screamH, screamW;
+
+    @Override
+    protected boolean setFrame(int l, int t, int r, int b) {
+        return super.setFrame(0, 0, bitmap_W, bitmap_H);
+    }
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
@@ -43,11 +49,11 @@ public class YImageView extends ImageView {
         screamH = display.getHeight();
         screamW = display.getWidth();
 
-        start_top = top;
-        start_left = left;
-        start_right = right;
-        start_bottom = bottom;
-        setFrame(0, 0, bitmap_W, bitmap_H);
+//        start_top = top;
+//        start_left = left;
+//        start_right = right;
+//        start_bottom = bottom;
+//        setFrame(0, 0, bitmap_W, bitmap_H);
         Log.i("onLayout", getTop() + " " + getLeft() + " " + getRight() + " " + getBottom());
         minX = screamW - bitmap_W;
         minY = screamH - bitmap_H;

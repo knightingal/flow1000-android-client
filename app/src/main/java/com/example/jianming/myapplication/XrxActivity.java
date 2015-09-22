@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.jianming.views.YImageSlider;
 import com.example.jianming.views.YImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -17,14 +18,17 @@ import com.example.jianming.Utils.DIOptionsNoneScaled;
 
 public class XrxActivity extends Activity {
 
-    private YImageView mImageView;
-
+    private YImageSlider mImageSlider;
+    private YImageView mImageContentView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xrx);
 
-        mImageView = (YImageView) findViewById(R.id.image);
+        mImageSlider = (YImageSlider) findViewById(R.id.image);
+
+        mImageContentView = mImageSlider.getContentView();
+
         String url = getIntent().getStringExtra("imgUrl");
         String imageUrl;
         if (url == null || url.equals("")) {
@@ -39,7 +43,7 @@ public class XrxActivity extends Activity {
         Log.d("onCreate", "imageUrl = " + imageUrl);
         DisplayImageOptions options = DIOptionsNoneScaled.getInstance().getOptions();
 
-        ImageLoader.getInstance().displayImage(imageUrl, mImageView, options);
+        ImageLoader.getInstance().displayImage(imageUrl, mImageContentView, options);
     }
 
 
@@ -62,7 +66,7 @@ public class XrxActivity extends Activity {
             return true;
         }
         if (id == R.id.show_pic_size) {
-            Toast.makeText(this, mImageView.picSize(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, mImageContentView.picSize(), Toast.LENGTH_LONG).show();
         }
 
         return super.onOptionsItemSelected(item);
