@@ -39,15 +39,22 @@ public class YImageView extends ImageView {
 
     @Override
     protected boolean setFrame(int l, int t, int r, int b) {
+        screamH = b - t;
+        screamW = r - l;
+        minX = screamW - bitmap_W;
+        minY = screamH - bitmap_H;
+        if (minY > 0) {
+            minY = 0;
+        }
         return super.setFrame(0, 0, bitmap_W, bitmap_H);
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
-        screamH = display.getHeight();
-        screamW = display.getWidth();
+//        Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
+//        screamH = display.getHeight();
+//        screamW = display.getWidth();
 
 //        start_top = top;
 //        start_left = left;
@@ -55,11 +62,7 @@ public class YImageView extends ImageView {
 //        start_bottom = bottom;
 //        setFrame(0, 0, bitmap_W, bitmap_H);
         Log.i("onLayout", getTop() + " " + getLeft() + " " + getRight() + " " + getBottom());
-        minX = screamW - bitmap_W;
-        minY = screamH - bitmap_H;
-        if (minY > 0) {
-            minY = 0;
-        }
+
     }
 
     @Override
@@ -175,6 +178,7 @@ public class YImageView extends ImageView {
         if (animDataX.useAccelerateInterpolator) {
             setX.setInterpolator(new AccelerateInterpolator());
         } else {
+            postXEdgeEvent();
             setX.setInterpolator(new DecelerateInterpolator());
         }
         setX.addListener(new AnimatorListenerAdapter() {
@@ -183,7 +187,10 @@ public class YImageView extends ImageView {
             public void onAnimationEnd(Animator animation) {
                 velocityX = 0;
                 if (!isCanceled) {
-                    doXAnimationEnd(ANIM_DURATION - animDataX.duration);
+                    if (animDataX.duration < ANIM_DURATION) {
+                        postXEdgeEvent();
+                        doXAnimationEnd(ANIM_DURATION - animDataX.duration);
+                    }
                 }
             }
 
@@ -201,6 +208,7 @@ public class YImageView extends ImageView {
         if (animDataY.useAccelerateInterpolator) {
             setY.setInterpolator(new AccelerateInterpolator());
         } else {
+            postYEdgeEvent();
             setY.setInterpolator(new DecelerateInterpolator());
         }
         setY.addListener(new AnimatorListenerAdapter() {
@@ -210,7 +218,10 @@ public class YImageView extends ImageView {
             public void onAnimationEnd(Animator animation) {
                 velocityY = 0;
                 if (!isCanceled) {
-                    doYAnimationEnd(ANIM_DURATION - animDataY.duration);
+                    if (animDataY.duration < ANIM_DURATION) {
+                        postYEdgeEvent();
+                        doYAnimationEnd(ANIM_DURATION - animDataY.duration);
+                    }
                 }
             }
 
@@ -220,6 +231,25 @@ public class YImageView extends ImageView {
             }
         });
         setY.start();
+    }
+
+    interface EdgeListener {
+        void onXEdge(YImageView yImageView);
+        void onYEdge(YImageView yImageView);
+    }
+
+    private EdgeListener edgeListener = null;
+
+    public void setEdgeListener(EdgeListener edgeListener) {
+        this.edgeListener = edgeListener;
+    }
+
+    private void postXEdgeEvent() {
+        edgeListener.onXEdge(this);
+    }
+
+    private void postYEdgeEvent() {
+        edgeListener.onYEdge(this);
     }
 
 

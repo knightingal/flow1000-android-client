@@ -3,6 +3,8 @@ package com.example.jianming.views;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 /**
  * Created by Jianming on 2015/9/22.
@@ -25,10 +27,16 @@ public class YImageSlider extends ViewGroup {
 
     private void init(Context context) {
         contentView = new YImageView(context);
+        backButton = new ImageView(context);
+        nextButton = new ImageView(context);
         addView(contentView);
     }
 
     private YImageView contentView;
+
+    private ImageView backButton;
+
+    private ImageView nextButton;
 
     public YImageView getContentView() {
         return contentView;
