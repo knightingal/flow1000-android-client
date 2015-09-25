@@ -45,6 +45,8 @@ public class YImageSlider extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 //        super.onLayout(changed, l, t, r, b);
-        contentView.layout(l, t, r, b);
+        int width = r - l;
+        int height = b - t;
+        contentView.layout(0, 0, width, height);
     }
 }
