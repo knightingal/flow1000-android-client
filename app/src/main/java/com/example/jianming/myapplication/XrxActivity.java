@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.jianming.views.YImageSlider;
@@ -20,6 +21,7 @@ public class XrxActivity extends Activity {
 
     private YImageSlider mImageSlider;
     private YImageView mImageContentView;
+    private ImageView hideLeft, hideRight;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +30,8 @@ public class XrxActivity extends Activity {
         mImageSlider = (YImageSlider) findViewById(R.id.image);
 
         mImageContentView = mImageSlider.getContentView();
+        hideLeft = mImageSlider.getHideLeft();
+        hideRight = mImageSlider.getHideRight();
 
         String url = getIntent().getStringExtra("imgUrl");
         String imageUrl;
@@ -44,6 +48,8 @@ public class XrxActivity extends Activity {
         DisplayImageOptions options = DIOptionsNoneScaled.getInstance().getOptions();
 
         ImageLoader.getInstance().displayImage(imageUrl, mImageContentView, options);
+        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27 + ""), hideLeft, options);
+        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27_3 + ""), hideRight, options);
     }
 
 

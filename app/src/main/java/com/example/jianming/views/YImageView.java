@@ -14,9 +14,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
-/**
- * Created by Jianming on 2015/3/20.
- */
 public class YImageView extends ImageView {
     private int minX = 0, minY = 0;
     private static final int ANIM_DURATION = 500;
@@ -50,15 +47,6 @@ public class YImageView extends ImageView {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-//        Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
-//        screamH = display.getHeight();
-//        screamW = display.getWidth();
-
-//        start_top = top;
-//        start_left = left;
-//        start_right = right;
-//        start_bottom = bottom;
-//        setFrame(0, 0, bitmap_W, bitmap_H);
         Log.i("onLayout", getTop() + " " + getLeft() + " " + getRight() + " " + getBottom());
 
     }
@@ -243,11 +231,15 @@ public class YImageView extends ImageView {
     }
 
     private void postXEdgeEvent() {
-        edgeListener.onXEdge(this);
+        if (edgeListener != null) {
+            edgeListener.onXEdge(this);
+        }
     }
 
     private void postYEdgeEvent() {
-        edgeListener.onYEdge(this);
+        if (edgeListener != null) {
+            edgeListener.onYEdge(this);
+        }
     }
 
 
@@ -295,11 +287,8 @@ public class YImageView extends ImageView {
             lastEventTime = currEventTime;
         }
 
-
         float currImgX = this.getX();
         float currImgY = this.getY();
-
-
 
         int diffX = (int) (newX - current_x);
         int diffY = (int) (newY - current_y);
@@ -318,7 +307,6 @@ public class YImageView extends ImageView {
         super.setImageBitmap(bm);
         bitmap_W = bm.getWidth();
         bitmap_H = bm.getHeight();
-        Log.i ("setImageBitmap", bitmap_H + " " + bitmap_W);
     }
 
     int bitmap_W, bitmap_H;

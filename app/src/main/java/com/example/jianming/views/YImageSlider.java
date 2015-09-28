@@ -1,10 +1,12 @@
 package com.example.jianming.views;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import com.example.jianming.myapplication.R;
 
 /**
  * Created by Jianming on 2015/9/22.
@@ -27,12 +29,40 @@ public class YImageSlider extends ViewGroup {
 
     private void init(Context context) {
         contentView = new YImageView(context);
+        hideLeft = new YImageViewHideLeft(context);
+        hideRight = new YImageViewHideRight(context);
+
+
         backButton = new ImageView(context);
         nextButton = new ImageView(context);
+
+
+        backButton.setImageResource(R.drawable.ic_keyboard_arrow_left_black_48dp);
+        nextButton.setImageResource(R.drawable.ic_keyboard_arrow_right_black_48dp);
+        backButton.setBackgroundColor(Color.parseColor("#80000000"));
+        nextButton.setBackgroundColor(Color.parseColor("#80000000"));
+
         addView(contentView);
+        addView(hideLeft);
+        addView(hideRight);
+
+        addView(backButton);
+        addView(nextButton);
     }
 
     private YImageView contentView;
+
+    public YImageViewHideLeft getHideLeft() {
+        return hideLeft;
+    }
+
+    public YImageViewHideRight getHideRight() {
+        return hideRight;
+    }
+
+    private YImageViewHideLeft hideLeft;
+
+    private YImageViewHideRight hideRight;
 
     private ImageView backButton;
 
@@ -48,5 +78,10 @@ public class YImageSlider extends ViewGroup {
         int width = r - l;
         int height = b - t;
         contentView.layout(0, 0, width, height);
+        hideLeft.layout(0, 0, width, height);
+        hideRight.layout(0, 0, width, height);
+
+        backButton.layout(0, 0, 48, 48);
+        nextButton.layout(width - 48, 0, width, 48);
     }
 }
