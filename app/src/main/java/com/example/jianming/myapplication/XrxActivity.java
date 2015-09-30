@@ -48,7 +48,7 @@ public class XrxActivity extends Activity {
         DisplayImageOptions options = DIOptionsNoneScaled.getInstance().getOptions();
 
         ImageLoader.getInstance().displayImage(imageUrl, mImageContentView, options);
-        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27 + ""), hideLeft, options);
+        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27_1 + ""), hideLeft, options);
         ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27_3 + ""), hideRight, options);
     }
 
