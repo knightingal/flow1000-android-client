@@ -36,7 +36,11 @@ public class YImageViewHideLeft extends ImageView {
     }
 
 
-    int bitmap_W, bitmap_H;
+    public int getBitmap_W() {
+        return bitmap_W;
+    }
+
+    private int bitmap_W, bitmap_H;
     @Override
     public void setImageBitmap(Bitmap bm) {
         super.setImageBitmap(bm);
@@ -46,5 +50,9 @@ public class YImageViewHideLeft extends ImageView {
         } else {
             bitmap_W = bitmap_H = 0;
         }
+    }
+
+    public void addDiff(float diffX) {
+        setX(getX() + diffX);
     }
 }

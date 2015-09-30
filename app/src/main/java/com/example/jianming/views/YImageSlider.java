@@ -32,6 +32,9 @@ public class YImageSlider extends ViewGroup {
         hideLeft = new YImageViewHideLeft(context);
         hideRight = new YImageViewHideRight(context);
 
+        contentView.setHideLeft(hideLeft);
+        contentView.setHideRight(hideRight);
+
 
         backButton = new ImageView(context);
         nextButton = new ImageView(context);

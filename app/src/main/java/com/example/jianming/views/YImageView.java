@@ -32,6 +32,18 @@ public class YImageView extends ImageView {
 //    int start_top, start_left, start_right, start_bottom;
     int screamH, screamW;
 
+    public void setHideLeft(YImageViewHideLeft hideLeft) {
+        this.hideLeft = hideLeft;
+    }
+
+    public void setHideRight(YImageViewHideRight hideRight) {
+        this.hideRight = hideRight;
+    }
+
+    YImageViewHideLeft hideLeft;
+
+    YImageViewHideRight hideRight;
+
     @Override
     protected boolean setFrame(int l, int t, int r, int b) {
         screamH = b - t;
@@ -86,8 +98,11 @@ public class YImageView extends ImageView {
             destX = minX;
         }
         setXE = new AnimatorSet();
-        setXE.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), destX));
-
+        setX.playTogether(
+                ObjectAnimator.ofFloat(this, View.X, this.getX(), destX),
+                ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), destX - hideLeft.getBitmap_W() + 48),
+                ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), destX + screamW - 48)
+        );
         setXE.setDuration(duration);
         setXE.setInterpolator(new AccelerateInterpolator());
         setXE.start();
@@ -159,14 +174,20 @@ public class YImageView extends ImageView {
     private void onTouchUp() {
         animDataX = calAnimData(this.getX(), minX, velocityX);
         setX = new AnimatorSet();
-        setX.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest));
+        setX.playTogether(
+                ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest),
+                ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), animDataX.dest - hideLeft.getBitmap_W() + 48),
+                ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), animDataX.dest + screamW - 48)
+                );
         setX.setDuration(animDataX.duration);
+
         if (animDataX.useAccelerateInterpolator) {
             setX.setInterpolator(new AccelerateInterpolator());
         } else {
             postXEdgeEvent();
             setX.setInterpolator(new DecelerateInterpolator());
         }
+
         setX.addListener(new AnimatorListenerAdapter() {
             boolean isCanceled = false;
             @Override
@@ -290,13 +311,17 @@ public class YImageView extends ImageView {
         float currImgX = this.getX();
         float currImgY = this.getY();
 
-        int diffX = (int) (newX - current_x);
-        int diffY = (int) (newY - current_y);
+        float diffX = (newX - current_x);
+        float diffY = (newY - current_y);
 
         float newImgX = currImgX + diffX;
         float newImgY = currImgY + diffY;
         this.setX(newImgX);
         this.setY(newImgY);
+
+        hideLeft.addDiff(diffX);
+        hideRight.addDiff(diffX);
+
 
         current_x = (int) event.getRawX();
         current_y = (int) event.getRawY();

@@ -49,7 +49,7 @@ public class XrxActivity extends Activity {
 
         ImageLoader.getInstance().displayImage(imageUrl, mImageContentView, options);
         ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27_1 + ""), hideLeft, options);
-        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27_3 + ""), hideRight, options);
+        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27_2 + ""), hideRight, options);
     }
 
 

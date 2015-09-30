@@ -46,4 +46,8 @@ public class YImageViewHideRight extends ImageView {
             bitmap_W = bitmap_H = 0;
         }
     }
+
+    public void addDiff(float diffX) {
+        setX(getX() + diffX);
+    }
 }
