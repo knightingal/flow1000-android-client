@@ -17,6 +17,8 @@ public class YImageSlider extends ViewGroup {
         init(context);
     }
 
+    public final static int SPLITE_W = 48;
+
     public YImageSlider(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);

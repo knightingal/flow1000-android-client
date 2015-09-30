@@ -98,9 +98,9 @@ public class YImageView extends ImageView {
             destX = minX;
         }
         setXE = new AnimatorSet();
-        setX.playTogether(
+        setXE.playTogether(
                 ObjectAnimator.ofFloat(this, View.X, this.getX(), destX),
-                ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), destX - hideLeft.getBitmap_W() + 48),
+                ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), destX - hideLeft.getBitmap_W() - YImageSlider.SPLITE_W),
                 ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), destX + screamW - 48)
         );
         setXE.setDuration(duration);
@@ -176,7 +176,7 @@ public class YImageView extends ImageView {
         setX = new AnimatorSet();
         setX.playTogether(
                 ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest),
-                ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), animDataX.dest - hideLeft.getBitmap_W() + 48),
+                ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), animDataX.dest - hideLeft.getBitmap_W() - YImageSlider.SPLITE_W),
                 ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), animDataX.dest + screamW - 48)
                 );
         setX.setDuration(animDataX.duration);

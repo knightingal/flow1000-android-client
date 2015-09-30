@@ -32,7 +32,7 @@ public class YImageViewHideLeft extends ImageView {
 //        if (minY > 0) {
 //            minY = 0;
 //        }
-        return super.setFrame(-bitmap_W + 48, 0, 48, bitmap_H);
+        return super.setFrame(-bitmap_W - YImageSlider.SPLITE_W, 0, -YImageSlider.SPLITE_W, bitmap_H);
     }
 
 
