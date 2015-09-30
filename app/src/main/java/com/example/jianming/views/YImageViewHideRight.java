@@ -9,8 +9,9 @@ import android.widget.ImageView;
  * Created by Jianming on 2015/9/28.
  */
 public class YImageViewHideRight extends ImageView {
-    public YImageViewHideRight(Context context) {
+    public YImageViewHideRight(Context context, YImageView contentView) {
         super(context);
+        this.contentView = contentView;
     }
 
     public YImageViewHideRight(Context context, AttributeSet attrs) {
@@ -20,6 +21,8 @@ public class YImageViewHideRight extends ImageView {
     public YImageViewHideRight(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
+
+    YImageView contentView;
 
     int screamH, screamW;
 
@@ -33,7 +36,7 @@ public class YImageViewHideRight extends ImageView {
 //        if (minY > 0) {
 //            minY = 0;
 //        }
-        return super.setFrame(screamW - 48, 0, screamW - 48 + bitmap_W, bitmap_H);
+        return super.setFrame(contentView.getBitmap_W() + YImageSlider.SPLITE_W, 0, contentView.getBitmap_W() + YImageSlider.SPLITE_W + bitmap_W, bitmap_H);
     }
 
     @Override

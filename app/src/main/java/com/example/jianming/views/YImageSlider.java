@@ -32,7 +32,7 @@ public class YImageSlider extends ViewGroup {
     private void init(Context context) {
         contentView = new YImageView(context);
         hideLeft = new YImageViewHideLeft(context);
-        hideRight = new YImageViewHideRight(context);
+        hideRight = new YImageViewHideRight(context, contentView);
 
         contentView.setHideLeft(hideLeft);
         contentView.setHideRight(hideRight);

@@ -101,7 +101,7 @@ public class YImageView extends ImageView {
         setXE.playTogether(
                 ObjectAnimator.ofFloat(this, View.X, this.getX(), destX),
                 ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), destX - hideLeft.getBitmap_W() - YImageSlider.SPLITE_W),
-                ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), destX + screamW - 48)
+                ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), destX + getBitmap_W() + YImageSlider.SPLITE_W)
         );
         setXE.setDuration(duration);
         setXE.setInterpolator(new AccelerateInterpolator());
@@ -177,7 +177,7 @@ public class YImageView extends ImageView {
         setX.playTogether(
                 ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest),
                 ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), animDataX.dest - hideLeft.getBitmap_W() - YImageSlider.SPLITE_W),
-                ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), animDataX.dest + screamW - 48)
+                ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), animDataX.dest + getBitmap_W() + YImageSlider.SPLITE_W)
                 );
         setX.setDuration(animDataX.duration);
 
@@ -334,7 +334,11 @@ public class YImageView extends ImageView {
         bitmap_H = bm.getHeight();
     }
 
-    int bitmap_W, bitmap_H;
+    public int getBitmap_W() {
+        return bitmap_W;
+    }
+
+    private int bitmap_W, bitmap_H;
 
     public String picSize() {
         return bitmap_W + " * " + bitmap_H;
