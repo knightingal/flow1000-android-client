@@ -32,6 +32,8 @@ public class YImageViewHideLeft extends ImageView {
 //        if (minY > 0) {
 //            minY = 0;
 //        }
+        setX(-bitmap_W - YImageSlider.SPLITE_W);
+        setY(0);
         return super.setFrame(-bitmap_W - YImageSlider.SPLITE_W, 0, -YImageSlider.SPLITE_W, bitmap_H);
     }
 
@@ -50,6 +52,7 @@ public class YImageViewHideLeft extends ImageView {
         } else {
             bitmap_W = bitmap_H = 0;
         }
+
     }
 
     public void addDiff(float diffX) {

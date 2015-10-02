@@ -172,6 +172,28 @@ public class YImageView extends ImageView {
     AnimData animDataX, animDataY;
 
     private void onTouchUp() {
+        float upX = this.getX();
+        if (upX > screamW / 3) {
+            setX = new AnimatorSet();
+            setX.playTogether(
+                    ObjectAnimator.ofFloat(this, View.X, this.getX(), hideLeft.getBitmap_W() + YImageSlider.SPLITE_W),
+                    ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), 0),
+                    ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), hideLeft.getBitmap_W() + YImageSlider.SPLITE_W + getBitmap_W() + YImageSlider.SPLITE_W)
+            );
+            setX.setDuration(ANIM_DURATION);
+            setX.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    postGetBackImg();
+                }
+            });
+            setX.start();
+            return;
+
+        }
+
+
         animDataX = calAnimData(this.getX(), minX, velocityX);
         setX = new AnimatorSet();
         setX.playTogether(
@@ -240,9 +262,17 @@ public class YImageView extends ImageView {
         setY.start();
     }
 
+    private void postGetBackImg() {
+        if (edgeListener != null) {
+            edgeListener.onGetBackImg(this);
+        }
+    }
+
     interface EdgeListener {
         void onXEdge(YImageView yImageView);
         void onYEdge(YImageView yImageView);
+
+        void onGetBackImg(YImageView yImageView);
     }
 
     private EdgeListener edgeListener = null;
@@ -332,6 +362,8 @@ public class YImageView extends ImageView {
         super.setImageBitmap(bm);
         bitmap_W = bm.getWidth();
         bitmap_H = bm.getHeight();
+        setX(0);
+        setY(0);
     }
 
     public int getBitmap_W() {
