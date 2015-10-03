@@ -4,26 +4,35 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
-/**
- * Created by Jianming on 2015/3/20.
- */
 public class YImageView extends ImageView {
+    private YImageSlider yImageSlider;
+
+    public void setViewId(int viewId) {
+        this.viewId = viewId;
+    }
+
+    private int viewId;
+    public void setLocationIndex(int locationIndex) {
+        this.locationIndex = locationIndex;
+    }
+
+    private int locationIndex;
     private int minX = 0, minY = 0;
     private static final int ANIM_DURATION = 500;
-    public YImageView(Context context) {
+    public YImageView(Context context, YImageSlider yImageSlider, int locationIndex) {
         super(context);
+        this.yImageSlider = yImageSlider;
+        this.locationIndex = locationIndex;
     }
 
     public YImageView(Context context, AttributeSet attrs) {
@@ -34,26 +43,41 @@ public class YImageView extends ImageView {
         super(context, attrs, defStyleAttr);
     }
 
-    int start_top, start_left, start_right, start_bottom;
     int screamH, screamW;
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        Display display = ((Activity) getContext()).getWindowManager().getDefaultDisplay();
-        screamH = display.getHeight();
-        screamW = display.getWidth();
 
-        start_top = top;
-        start_left = left;
-        start_right = right;
-        start_bottom = bottom;
-        setFrame(0, 0, bitmap_W, bitmap_H);
-        Log.i("onLayout", getTop() + " " + getLeft() + " " + getRight() + " " + getBottom());
+
+    @Override
+    protected boolean setFrame(int l, int t, int r, int b) {
+        screamH = b - t;
+        screamW = r - l;
         minX = screamW - bitmap_W;
         minY = screamH - bitmap_H;
         if (minY > 0) {
             minY = 0;
         }
+        boolean isChanged;
+        setY(0);
+        if (locationIndex == 1) {
+
+            isChanged = super.setFrame(yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W, 0, yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W + bitmap_W, bitmap_H);
+            setX(yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W);
+        } else if (locationIndex == -1) {
+
+            isChanged = super.setFrame(-bitmap_W - YImageSlider.SPLITE_W, 0, -YImageSlider.SPLITE_W, bitmap_H);
+            setX(-bitmap_W - YImageSlider.SPLITE_W);
+        } else {
+
+            isChanged = super.setFrame(0, 0, bitmap_W, bitmap_H);
+            setX(0);
+        }
+        return  isChanged;
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        Log.i("onLayout", getTop() + " " + getLeft() + " " + getRight() + " " + getBottom());
+
     }
 
     @Override
@@ -91,8 +115,11 @@ public class YImageView extends ImageView {
             destX = minX;
         }
         setXE = new AnimatorSet();
-        setXE.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), destX));
-
+        setXE.playTogether(
+                ObjectAnimator.ofFloat(this, View.X, this.getX(), destX),
+                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), destX - yImageSlider.getHideLeft().getBitmap_W() - YImageSlider.SPLITE_W),
+                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), destX + getBitmap_W() + YImageSlider.SPLITE_W)
+        );
         setXE.setDuration(duration);
         setXE.setInterpolator(new AccelerateInterpolator());
         setXE.start();
@@ -162,22 +189,55 @@ public class YImageView extends ImageView {
     AnimData animDataX, animDataY;
 
     private void onTouchUp() {
+        float upX = this.getX();
+        if (upX > screamW / 3) {
+            setX = new AnimatorSet();
+            setX.playTogether(
+                    ObjectAnimator.ofFloat(this, View.X, this.getX(), yImageSlider.getHideLeft().getBitmap_W() + YImageSlider.SPLITE_W),
+                    ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), 0)
+//                    ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), yImageSlider.getHideRight().getBitmap_W() + YImageSlider.SPLITE_W + getBitmap_W() + YImageSlider.SPLITE_W)
+            );
+            setX.setDuration(ANIM_DURATION);
+            setX.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    postGetBackImg();
+                }
+            });
+            setX.start();
+            return;
+
+        }
+
+
         animDataX = calAnimData(this.getX(), minX, velocityX);
         setX = new AnimatorSet();
-        setX.play(ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest));
+        setX.playTogether(
+                ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest),
+                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), animDataX.dest - yImageSlider.getHideLeft().getBitmap_W() - YImageSlider.SPLITE_W),
+                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), animDataX.dest + getBitmap_W() + YImageSlider.SPLITE_W)
+                );
         setX.setDuration(animDataX.duration);
+
         if (animDataX.useAccelerateInterpolator) {
             setX.setInterpolator(new AccelerateInterpolator());
         } else {
+            postXEdgeEvent();
             setX.setInterpolator(new DecelerateInterpolator());
         }
+
         setX.addListener(new AnimatorListenerAdapter() {
             boolean isCanceled = false;
             @Override
             public void onAnimationEnd(Animator animation) {
                 velocityX = 0;
+                Log.d("", "hideleft.getX()" + yImageSlider.getHideLeft().getX());
                 if (!isCanceled) {
-                    doXAnimationEnd(ANIM_DURATION - animDataX.duration);
+                    if (animDataX.duration < ANIM_DURATION) {
+                        postXEdgeEvent();
+                        doXAnimationEnd(ANIM_DURATION - animDataX.duration);
+                    }
                 }
             }
 
@@ -195,6 +255,7 @@ public class YImageView extends ImageView {
         if (animDataY.useAccelerateInterpolator) {
             setY.setInterpolator(new AccelerateInterpolator());
         } else {
+            postYEdgeEvent();
             setY.setInterpolator(new DecelerateInterpolator());
         }
         setY.addListener(new AnimatorListenerAdapter() {
@@ -204,7 +265,10 @@ public class YImageView extends ImageView {
             public void onAnimationEnd(Animator animation) {
                 velocityY = 0;
                 if (!isCanceled) {
-                    doYAnimationEnd(ANIM_DURATION - animDataY.duration);
+                    if (animDataY.duration < ANIM_DURATION) {
+                        postYEdgeEvent();
+                        doYAnimationEnd(ANIM_DURATION - animDataY.duration);
+                    }
                 }
             }
 
@@ -214,6 +278,37 @@ public class YImageView extends ImageView {
             }
         });
         setY.start();
+    }
+
+    private void postGetBackImg() {
+        if (edgeListener != null) {
+            edgeListener.onGetBackImg(this);
+        }
+    }
+
+    interface EdgeListener {
+        void onXEdge(YImageView yImageView);
+        void onYEdge(YImageView yImageView);
+
+        void onGetBackImg(YImageView yImageView);
+    }
+
+    private EdgeListener edgeListener = null;
+
+    public void setEdgeListener(EdgeListener edgeListener) {
+        this.edgeListener = edgeListener;
+    }
+
+    private void postXEdgeEvent() {
+        if (edgeListener != null) {
+            edgeListener.onXEdge(this);
+        }
+    }
+
+    private void postYEdgeEvent() {
+        if (edgeListener != null) {
+            edgeListener.onYEdge(this);
+        }
     }
 
 
@@ -261,22 +356,27 @@ public class YImageView extends ImageView {
             lastEventTime = currEventTime;
         }
 
-
         float currImgX = this.getX();
         float currImgY = this.getY();
 
-
-
-        int diffX = (int) (newX - current_x);
-        int diffY = (int) (newY - current_y);
+        float diffX = (newX - current_x);
+        float diffY = (newY - current_y);
 
         float newImgX = currImgX + diffX;
         float newImgY = currImgY + diffY;
         this.setX(newImgX);
         this.setY(newImgY);
 
+        yImageSlider.getHideLeft().addDiff(diffX);
+        yImageSlider.getHideRight().addDiff(diffX);
+
+
         current_x = (int) event.getRawX();
         current_y = (int) event.getRawY();
+    }
+
+    public void addDiff(float diffX) {
+        setX(getX() + diffX);
     }
 
     @Override
@@ -284,10 +384,13 @@ public class YImageView extends ImageView {
         super.setImageBitmap(bm);
         bitmap_W = bm.getWidth();
         bitmap_H = bm.getHeight();
-        Log.i ("setImageBitmap", bitmap_H + " " + bitmap_W);
     }
 
-    int bitmap_W, bitmap_H;
+    public int getBitmap_W() {
+        return bitmap_W;
+    }
+
+    private int bitmap_W, bitmap_H;
 
     public String picSize() {
         return bitmap_W + " * " + bitmap_H;
