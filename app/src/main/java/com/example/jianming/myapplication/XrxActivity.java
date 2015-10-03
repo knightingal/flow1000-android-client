@@ -11,7 +11,6 @@ import android.widget.Toast;
 import com.example.jianming.views.YImageSlider;
 import com.example.jianming.views.YImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 import com.example.jianming.Utils.DIOptionsNoneScaled;
@@ -39,7 +38,7 @@ public class XrxActivity extends Activity {
             //String sdcard = Environment.getExternalStorageDirectory().getPath();
             String imagePath = "/storage/sdcard1/BaiduNetdisk/xrx/[PureJapan]Vivian_Hsu/135.JPG";
             //String imageUrl = ImageDownloader.Scheme.FILE.wrap(imagePath);
-            imageUrl = ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27_3 + "");
+            imageUrl = ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27long + "");
         }
         else {
             imageUrl = url;

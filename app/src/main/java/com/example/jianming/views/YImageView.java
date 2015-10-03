@@ -15,10 +15,24 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
 public class YImageView extends ImageView {
+    private YImageSlider yImageSlider;
+
+    public void setViewId(int viewId) {
+        this.viewId = viewId;
+    }
+
+    private int viewId;
+    public void setLocationIndex(int locationIndex) {
+        this.locationIndex = locationIndex;
+    }
+
+    private int locationIndex;
     private int minX = 0, minY = 0;
     private static final int ANIM_DURATION = 500;
-    public YImageView(Context context) {
+    public YImageView(Context context, YImageSlider yImageSlider, int locationIndex) {
         super(context);
+        this.yImageSlider = yImageSlider;
+        this.locationIndex = locationIndex;
     }
 
     public YImageView(Context context, AttributeSet attrs) {
@@ -29,20 +43,8 @@ public class YImageView extends ImageView {
         super(context, attrs, defStyleAttr);
     }
 
-//    int start_top, start_left, start_right, start_bottom;
     int screamH, screamW;
 
-    public void setHideLeft(YImageViewHideLeft hideLeft) {
-        this.hideLeft = hideLeft;
-    }
-
-    public void setHideRight(YImageViewHideRight hideRight) {
-        this.hideRight = hideRight;
-    }
-
-    YImageViewHideLeft hideLeft;
-
-    YImageViewHideRight hideRight;
 
     @Override
     protected boolean setFrame(int l, int t, int r, int b) {
@@ -53,7 +55,22 @@ public class YImageView extends ImageView {
         if (minY > 0) {
             minY = 0;
         }
-        return super.setFrame(0, 0, bitmap_W, bitmap_H);
+        boolean isChanged;
+        setY(0);
+        if (locationIndex == 1) {
+
+            isChanged = super.setFrame(yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W, 0, yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W + bitmap_W, bitmap_H);
+            setX(yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W);
+        } else if (locationIndex == -1) {
+
+            isChanged = super.setFrame(-bitmap_W - YImageSlider.SPLITE_W, 0, -YImageSlider.SPLITE_W, bitmap_H);
+            setX(-bitmap_W - YImageSlider.SPLITE_W);
+        } else {
+
+            isChanged = super.setFrame(0, 0, bitmap_W, bitmap_H);
+            setX(0);
+        }
+        return  isChanged;
     }
 
     @Override
@@ -100,8 +117,8 @@ public class YImageView extends ImageView {
         setXE = new AnimatorSet();
         setXE.playTogether(
                 ObjectAnimator.ofFloat(this, View.X, this.getX(), destX),
-                ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), destX - hideLeft.getBitmap_W() - YImageSlider.SPLITE_W),
-                ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), destX + getBitmap_W() + YImageSlider.SPLITE_W)
+                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), destX - yImageSlider.getHideLeft().getBitmap_W() - YImageSlider.SPLITE_W),
+                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), destX + getBitmap_W() + YImageSlider.SPLITE_W)
         );
         setXE.setDuration(duration);
         setXE.setInterpolator(new AccelerateInterpolator());
@@ -176,9 +193,9 @@ public class YImageView extends ImageView {
         if (upX > screamW / 3) {
             setX = new AnimatorSet();
             setX.playTogether(
-                    ObjectAnimator.ofFloat(this, View.X, this.getX(), hideLeft.getBitmap_W() + YImageSlider.SPLITE_W),
-                    ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), 0),
-                    ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), hideLeft.getBitmap_W() + YImageSlider.SPLITE_W + getBitmap_W() + YImageSlider.SPLITE_W)
+                    ObjectAnimator.ofFloat(this, View.X, this.getX(), yImageSlider.getHideLeft().getBitmap_W() + YImageSlider.SPLITE_W),
+                    ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), 0)
+//                    ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), yImageSlider.getHideRight().getBitmap_W() + YImageSlider.SPLITE_W + getBitmap_W() + YImageSlider.SPLITE_W)
             );
             setX.setDuration(ANIM_DURATION);
             setX.addListener(new AnimatorListenerAdapter() {
@@ -198,8 +215,8 @@ public class YImageView extends ImageView {
         setX = new AnimatorSet();
         setX.playTogether(
                 ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest),
-                ObjectAnimator.ofFloat(hideLeft, View.X, hideLeft.getX(), animDataX.dest - hideLeft.getBitmap_W() - YImageSlider.SPLITE_W),
-                ObjectAnimator.ofFloat(hideRight, View.X, hideRight.getX(), animDataX.dest + getBitmap_W() + YImageSlider.SPLITE_W)
+                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), animDataX.dest - yImageSlider.getHideLeft().getBitmap_W() - YImageSlider.SPLITE_W),
+                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), animDataX.dest + getBitmap_W() + YImageSlider.SPLITE_W)
                 );
         setX.setDuration(animDataX.duration);
 
@@ -215,6 +232,7 @@ public class YImageView extends ImageView {
             @Override
             public void onAnimationEnd(Animator animation) {
                 velocityX = 0;
+                Log.d("", "hideleft.getX()" + yImageSlider.getHideLeft().getX());
                 if (!isCanceled) {
                     if (animDataX.duration < ANIM_DURATION) {
                         postXEdgeEvent();
@@ -349,12 +367,16 @@ public class YImageView extends ImageView {
         this.setX(newImgX);
         this.setY(newImgY);
 
-        hideLeft.addDiff(diffX);
-        hideRight.addDiff(diffX);
+        yImageSlider.getHideLeft().addDiff(diffX);
+        yImageSlider.getHideRight().addDiff(diffX);
 
 
         current_x = (int) event.getRawX();
         current_y = (int) event.getRawY();
+    }
+
+    public void addDiff(float diffX) {
+        setX(getX() + diffX);
     }
 
     @Override
@@ -362,8 +384,6 @@ public class YImageView extends ImageView {
         super.setImageBitmap(bm);
         bitmap_W = bm.getWidth();
         bitmap_H = bm.getHeight();
-        setX(0);
-        setY(0);
     }
 
     public int getBitmap_W() {

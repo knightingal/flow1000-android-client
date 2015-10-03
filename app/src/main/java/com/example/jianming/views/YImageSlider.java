@@ -1,12 +1,10 @@
 package com.example.jianming.views;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import com.example.jianming.Utils.DIOptionsNoneScaled;
 import com.example.jianming.myapplication.R;
@@ -34,15 +32,19 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         init(context);
     }
 
+
     private void init(Context context) {
-        contentView = new YImageView(context);
+        contentView = new YImageView(context, this, 0);
         contentView.setEdgeListener(this);
-        hideLeft = new YImageViewHideLeft(context);
-        hideRight = new YImageViewHideRight(context, contentView);
+        hideLeft = new YImageView(context, this, -1);
+        hideRight = new YImageView(context, this, 1);
 
-        contentView.setHideLeft(hideLeft);
-        contentView.setHideRight(hideRight);
+        contentView.setViewId(0);
+        hideLeft.setViewId(1);
+        hideRight.setViewId(2);
 
+        hideLeft.setEdgeListener(this);
+        hideRight.setEdgeListener(this);
 
         backButton = new ImageView(context);
         nextButton = new ImageView(context);
@@ -73,19 +75,15 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), hideRight, DIOptionsNoneScaled.getInstance().getOptions());
     }
 
-    private YImageView contentView;
+    private YImageView contentView, hideLeft, hideRight;
 
-    public YImageViewHideLeft getHideLeft() {
+    public YImageView getHideLeft() {
         return hideLeft;
     }
 
-    public YImageViewHideRight getHideRight() {
+    public YImageView getHideRight() {
         return hideRight;
     }
-
-    private YImageViewHideLeft hideLeft;
-
-    private YImageViewHideRight hideRight;
 
     private ImageView backButton;
 
@@ -98,11 +96,11 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
     }
 
     int index = 0;
-    int pics[] = {R.drawable.su27_1, R.drawable.su27_2, R.drawable.su27_3, R.drawable.su27_1, R.drawable.su27_2, R.drawable.su27_3};
+    int pics[] = {R.drawable.su27_1, R.drawable.su27_2, R.drawable.su27_3, R.drawable.su27_4,
+            R.drawable.su27_1, R.drawable.su27_2, R.drawable.su27_3, R.drawable.su27_4};
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-//        super.onLayout(changed, l, t, r, b);
         int width = r - l;
         int height = b - t;
         contentView.layout(0, 0, width, height);
@@ -128,15 +126,19 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
 
     @Override
     public void onGetBackImg(YImageView yImageView) {
+        YImageView tmp = contentView;
+        contentView = hideLeft;
+        hideLeft = hideRight;
+        hideRight = tmp;
+
+        contentView.setLocationIndex(0);
+        hideLeft.setLocationIndex(-1);
+        hideRight.setLocationIndex(1);
         index--;
         if (index < 0) {
-            index = 2;
+            index = 3;
         }
+
         ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), hideLeft, DIOptionsNoneScaled.getInstance().getOptions());
-        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 1] + ""), contentView, DIOptionsNoneScaled.getInstance().getOptions());
-        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), hideRight, DIOptionsNoneScaled.getInstance().getOptions());
-//        hideLeft.setImageBitmap(BitmapFactory.decodeResource(getResources(), pics[index]));
-//        contentView.setImageBitmap(BitmapFactory.decodeResource(getResources(), pics[index + 1]));
-//        hideRight.setImageBitmap(BitmapFactory.decodeResource(getResources(), pics[index + 2]));
     }
 }
