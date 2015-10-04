@@ -39,10 +39,6 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         hideLeft = new YImageView(context, this, -1);
         hideRight = new YImageView(context, this, 1);
 
-        contentView.setViewId(0);
-        hideLeft.setViewId(1);
-        hideRight.setViewId(2);
-
         hideLeft.setEdgeListener(this);
         hideRight.setEdgeListener(this);
 
@@ -140,5 +136,24 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         }
 
         ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), hideLeft, DIOptionsNoneScaled.getInstance().getOptions());
+    }
+
+    @Override
+    public void onGetNextImg(YImageView yImageView) {
+        YImageView tmp = contentView;
+        contentView = hideRight;
+        hideRight = hideLeft;
+        hideLeft = tmp;
+
+        contentView.setLocationIndex(0);
+        hideLeft.setLocationIndex(-1);
+        hideRight.setLocationIndex(1);
+
+        index++;
+        if (index > 2) {
+            index = 0;
+        }
+
+        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), hideRight, DIOptionsNoneScaled.getInstance().getOptions());
     }
 }

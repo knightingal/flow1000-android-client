@@ -17,11 +17,6 @@ import android.widget.ImageView;
 public class YImageView extends ImageView {
     private YImageSlider yImageSlider;
 
-    public void setViewId(int viewId) {
-        this.viewId = viewId;
-    }
-
-    private int viewId;
     public void setLocationIndex(int locationIndex) {
         this.locationIndex = locationIndex;
     }
@@ -71,13 +66,6 @@ public class YImageView extends ImageView {
             setX(0);
         }
         return  isChanged;
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        Log.i("onLayout", getTop() + " " + getLeft() + " " + getRight() + " " + getBottom());
-
     }
 
     @Override
@@ -208,6 +196,23 @@ public class YImageView extends ImageView {
             setX.start();
             return;
 
+        } else if (upX + this.getBitmap_W() < screamW * 2 / 3){
+            setX = new AnimatorSet();
+            setX.playTogether(
+                    ObjectAnimator.ofFloat(this, View.X, this.getX(), -this.getBitmap_W() - YImageSlider.SPLITE_W),
+//                    ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), 0)
+                    ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), 0)
+            );
+            setX.setDuration(ANIM_DURATION);
+            setX.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    postGetNextImg();
+                }
+            });
+            setX.start();
+            return;
         }
 
 
@@ -285,12 +290,20 @@ public class YImageView extends ImageView {
             edgeListener.onGetBackImg(this);
         }
     }
+    
+    private void postGetNextImg() {
+        if (edgeListener != null) {
+            edgeListener.onGetNextImg(this);
+        }
+    }
 
     interface EdgeListener {
         void onXEdge(YImageView yImageView);
         void onYEdge(YImageView yImageView);
 
         void onGetBackImg(YImageView yImageView);
+
+        void onGetNextImg(YImageView yImageView);
     }
 
     private EdgeListener edgeListener = null;
