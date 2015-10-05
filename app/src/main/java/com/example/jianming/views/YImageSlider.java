@@ -51,6 +51,20 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         backButton.setBackgroundColor(Color.parseColor("#80000000"));
         nextButton.setBackgroundColor(Color.parseColor("#80000000"));
 
+        nextButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                contentView.doNextImgAnim();
+            }
+        });
+
+        backButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                contentView.doBackImgAnim();
+            }
+        });
+
         addView(contentView);
         addView(hideLeft);
         addView(hideRight);
@@ -142,7 +156,7 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         contentView.setLocationIndex(0);
         hideLeft.setLocationIndex(-1);
         hideRight.setLocationIndex(1);
-
+        alingLeftOrRight = 0;
         String imgUrl;
 
         if (imgChangeListener != null) {
@@ -167,7 +181,7 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         contentView.setLocationIndex(0);
         hideLeft.setLocationIndex(-1);
         hideRight.setLocationIndex(1);
-
+        alingLeftOrRight = 1;
         String imgUrl;
         if (imgChangeListener != null) {
             imgUrl = imgChangeListener.onGetNextImg(this);
@@ -180,4 +194,12 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         }
         ImageLoader.getInstance().displayImage(imgUrl, hideRight, DIOptionsNoneScaled.getInstance().getOptions());
     }
+
+    public int getAlingLeftOrRight() {
+        return alingLeftOrRight;
+    }
+
+    private int alingLeftOrRight = 0;
+
+
 }
