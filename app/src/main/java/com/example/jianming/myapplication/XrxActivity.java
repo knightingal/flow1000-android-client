@@ -5,50 +5,56 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.example.jianming.views.YImageSlider;
-import com.example.jianming.views.YImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 import com.example.jianming.Utils.DIOptionsNoneScaled;
 
 
-public class XrxActivity extends Activity {
+public class XrxActivity extends Activity implements YImageSlider.ImgChangeListener {
 
     private YImageSlider mImageSlider;
-    private YImageView mImageContentView;
-    private ImageView hideLeft, hideRight;
+
+    private String[] imgs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xrx);
 
         mImageSlider = (YImageSlider) findViewById(R.id.image);
+        mImageSlider.setImgChangeListener(this);
 
-        mImageContentView = mImageSlider.getContentView();
-        hideLeft = mImageSlider.getHideLeft();
-        hideRight = mImageSlider.getHideRight();
-
-        String url = getIntent().getStringExtra("imgUrl");
-        String imageUrl;
-        if (url == null || url.equals("")) {
-            //String sdcard = Environment.getExternalStorageDirectory().getPath();
-            String imagePath = "/storage/sdcard1/BaiduNetdisk/xrx/[PureJapan]Vivian_Hsu/135.JPG";
-            //String imageUrl = ImageDownloader.Scheme.FILE.wrap(imagePath);
-            imageUrl = ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27long + "");
-        }
-        else {
-            imageUrl = url;
-        }
-        Log.d("onCreate", "imageUrl = " + imageUrl);
+//        String url = getIntent().getStringExtra("imgUrl");
+//        String imageUrl;
+//        if (url == null || url.equals("")) {
+//            //String sdcard = Environment.getExternalStorageDirectory().getPath();
+//            String imagePath = "/storage/sdcard1/BaiduNetdisk/xrx/[PureJapan]Vivian_Hsu/135.JPG";
+//            //String imageUrl = ImageDownloader.Scheme.FILE.wrap(imagePath);
+//            imageUrl = ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27long + "");
+//        }
+//        else {
+//            imageUrl = url;
+//        }
+//        Log.d("onCreate", "imageUrl = " + imageUrl);
+        imgs = getIntent().getStringArrayExtra("imgs");
         DisplayImageOptions options = DIOptionsNoneScaled.getInstance().getOptions();
-
-
+        if (imgs != null && imgs.length != 0) {
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index]), mImageSlider.getHideLeft(), DIOptionsNoneScaled.getInstance().getOptions());
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index + 1]), mImageSlider.getContentView(), DIOptionsNoneScaled.getInstance().getOptions());
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index + 2]), mImageSlider.getHideRight(), DIOptionsNoneScaled.getInstance().getOptions());
+        } else {
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), mImageSlider.getHideLeft(), DIOptionsNoneScaled.getInstance().getOptions());
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 1] + ""), mImageSlider.getContentView(), DIOptionsNoneScaled.getInstance().getOptions());
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), mImageSlider.getHideRight(), DIOptionsNoneScaled.getInstance().getOptions());
+        }
     }
 
+    int index = 0;
+    int pics[] = {R.drawable.f14_1, R.drawable.f14_2, R.drawable.f14_3, R.drawable.f14_4,
+            R.drawable.f14_1, R.drawable.f14_2, R.drawable.f14_3, R.drawable.f14_4};
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,9 +75,41 @@ public class XrxActivity extends Activity {
             return true;
         }
         if (id == R.id.show_pic_size) {
-            Toast.makeText(this, mImageContentView.picSize(), Toast.LENGTH_LONG).show();
+//            Toast.makeText(this, mImageContentView.picSize(), Toast.LENGTH_LONG).show();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public String onGetBackImg(YImageSlider yImageSlider) {
+        index--;
+
+        if (imgs != null && imgs.length != 0) {
+            if (index < 0) {
+                index = imgs.length - 1;
+            }
+            return ImageDownloader.Scheme.FILE.wrap(imgs[index] + "");
+        } else {
+            if (index < 0) {
+                index = 3;
+            }
+            return ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + "");
+        }
+    }
+
+    public String onGetNextImg(YImageSlider yImageSlider) {
+        index++;
+
+        if (imgs != null && imgs.length != 0) {
+            if (index == imgs.length) {
+                index = 0;
+            }
+            return ImageDownloader.Scheme.FILE.wrap(imgs[index + 2] + "");
+        } else {
+            if (index > 3) {
+                index = 0;
+            }
+            return ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + "");
+        }
     }
 }
