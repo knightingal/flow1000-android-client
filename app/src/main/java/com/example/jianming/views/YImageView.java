@@ -434,7 +434,4 @@ public class YImageView extends ImageView {
 
     private int bitmap_W, bitmap_H;
 
-    public String picSize() {
-        return bitmap_W + " * " + bitmap_H;
-    }
 }

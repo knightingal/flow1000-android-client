@@ -78,8 +78,8 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         line31.setBackgroundColor(Color.parseColor("green"));
         line32.setBackgroundColor(Color.parseColor("blue"));
 
-        addView(line31);
-        addView(line32);
+//        addView(line31);
+//        addView(line32);
 //        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), hideLeft, DIOptionsNoneScaled.getInstance().getOptions());
 //        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 1] + ""), contentView, DIOptionsNoneScaled.getInstance().getOptions());
 //        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), hideRight, DIOptionsNoneScaled.getInstance().getOptions());
@@ -120,8 +120,8 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         backButton.layout(0, 0, 48, 48);
         nextButton.layout(width - 48, 0, width, 48);
 
-        line31.layout(width / 3, 0, width / 3 + 1, height);
-        line32.layout(width * 2 / 3, 0, width * 2 / 3 + 1, height);
+//        line31.layout(width / 3, 0, width / 3 + 1, height);
+//        line32.layout(width * 2 / 3, 0, width * 2 / 3 + 1, height);
     }
 
     @Override
