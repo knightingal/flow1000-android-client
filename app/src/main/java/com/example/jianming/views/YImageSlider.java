@@ -39,10 +39,6 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         hideLeft = new YImageView(context, this, -1);
         hideRight = new YImageView(context, this, 1);
 
-        contentView.setViewId(0);
-        hideLeft.setViewId(1);
-        hideRight.setViewId(2);
-
         hideLeft.setEdgeListener(this);
         hideRight.setEdgeListener(this);
 
@@ -54,6 +50,20 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         nextButton.setImageResource(R.drawable.ic_keyboard_arrow_right_black_48dp);
         backButton.setBackgroundColor(Color.parseColor("#80000000"));
         nextButton.setBackgroundColor(Color.parseColor("#80000000"));
+
+        nextButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                contentView.doNextImgAnim();
+            }
+        });
+
+        backButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                contentView.doBackImgAnim();
+            }
+        });
 
         addView(contentView);
         addView(hideLeft);
@@ -70,9 +80,9 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
 
         addView(line31);
         addView(line32);
-        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), hideLeft, DIOptionsNoneScaled.getInstance().getOptions());
-        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 1] + ""), contentView, DIOptionsNoneScaled.getInstance().getOptions());
-        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), hideRight, DIOptionsNoneScaled.getInstance().getOptions());
+//        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), hideLeft, DIOptionsNoneScaled.getInstance().getOptions());
+//        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 1] + ""), contentView, DIOptionsNoneScaled.getInstance().getOptions());
+//        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), hideRight, DIOptionsNoneScaled.getInstance().getOptions());
     }
 
     private YImageView contentView, hideLeft, hideRight;
@@ -124,6 +134,18 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
 
     }
 
+    public interface ImgChangeListener {
+        String onGetBackImg(YImageSlider yImageSlider);
+
+        String onGetNextImg(YImageSlider yImageSlider);
+    }
+
+    public void setImgChangeListener(ImgChangeListener imgChangeListener) {
+        this.imgChangeListener = imgChangeListener;
+    }
+
+    ImgChangeListener imgChangeListener = null;
+
     @Override
     public void onGetBackImg(YImageView yImageView) {
         YImageView tmp = contentView;
@@ -134,11 +156,50 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         contentView.setLocationIndex(0);
         hideLeft.setLocationIndex(-1);
         hideRight.setLocationIndex(1);
-        index--;
-        if (index < 0) {
-            index = 3;
-        }
+        alingLeftOrRight = 0;
+        String imgUrl;
 
-        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), hideLeft, DIOptionsNoneScaled.getInstance().getOptions());
+        if (imgChangeListener != null) {
+            imgUrl = imgChangeListener.onGetBackImg(this);
+        } else {
+            index--;
+            if (index < 0) {
+                index = 3;
+            }
+            imgUrl = ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + "");
+        }
+        ImageLoader.getInstance().displayImage(imgUrl, hideLeft, DIOptionsNoneScaled.getInstance().getOptions());
     }
+
+    @Override
+    public void onGetNextImg(YImageView yImageView) {
+        YImageView tmp = contentView;
+        contentView = hideRight;
+        hideRight = hideLeft;
+        hideLeft = tmp;
+
+        contentView.setLocationIndex(0);
+        hideLeft.setLocationIndex(-1);
+        hideRight.setLocationIndex(1);
+        alingLeftOrRight = 1;
+        String imgUrl;
+        if (imgChangeListener != null) {
+            imgUrl = imgChangeListener.onGetNextImg(this);
+        } else {
+            index++;
+            if (index > 2) {
+                index = 0;
+            }
+            imgUrl = ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + "");
+        }
+        ImageLoader.getInstance().displayImage(imgUrl, hideRight, DIOptionsNoneScaled.getInstance().getOptions());
+    }
+
+    public int getAlingLeftOrRight() {
+        return alingLeftOrRight;
+    }
+
+    private int alingLeftOrRight = 0;
+
+
 }

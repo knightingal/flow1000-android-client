@@ -73,10 +73,14 @@ public class PicListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Log.d("Activity4List", (String) dataArray.get(position).get("img"));
-
+                String imgs[] = new String[dataArray.size()];
+                for (int i = 0; i < dataArray.size(); i++) {
+                    imgs[i] = (String) dataArray.get(i).get("img");
+                }
                 Intent intent = new Intent(context, XrxActivity.class);
-                intent.putExtra("imgUrl", ImageDownloader.Scheme.FILE.wrap((String) dataArray.get(position).get("img")));
-
+//                intent.putExtra("imgUrls", ImageDownloader.Scheme.FILE.wrap((String) dataArray.get(position).get("img")));
+                intent.putExtra("imgs", imgs);
+                intent.putExtra("position", position);
                 context.startActivity(intent);
             }
         });
