@@ -6,7 +6,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,16 +29,7 @@ public class YImageView extends ImageView {
         this.locationIndex = locationIndex;
     }
 
-    public YImageView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public YImageView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
     int screamH, screamW;
-
 
     @Override
     protected boolean setFrame(int l, int t, int r, int b) {
@@ -50,47 +40,50 @@ public class YImageView extends ImageView {
         if (minY > 0) {
             minY = 0;
         }
-        boolean isChanged = false;
-        setY(0);
+
+        int left, top, right, bottom;
+
         if (locationIndex == 1) {
             if (yImageSlider.getAlingLeftOrRight() == 0) {
-                isChanged = super.setFrame(yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W, 0, yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W + bitmap_W, bitmap_H);
-                setX(yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W);
+                left = yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W;
+                top = 0;
+                right = yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W + bitmap_W;
+                bottom = bitmap_H;
             } else {
-                isChanged = super.setFrame(
-                        yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW),
-                        0,
-                        yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W + bitmap_W - (yImageSlider.getHideRight().getBitmap_W() - screamW),
-                        bitmap_H
-                );
-                setX(yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW));
+                left = yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW);
+                top = 0;
+                right = yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W + bitmap_W - (yImageSlider.getHideRight().getBitmap_W() - screamW);
+                bottom = bitmap_H;
             }
         } else if (locationIndex == -1) {
             if (yImageSlider.getAlingLeftOrRight() == 0) {
-                isChanged = super.setFrame(-bitmap_W - YImageSlider.SPLITE_W, 0, -YImageSlider.SPLITE_W, bitmap_H);
-                setX(-bitmap_W - YImageSlider.SPLITE_W);
+                left = -bitmap_W - YImageSlider.SPLITE_W;
+                top = 0;
+                right = -YImageSlider.SPLITE_W;
+                bottom = bitmap_H;
             } else {
-                isChanged = super.setFrame(
-                        -bitmap_W - YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW),
-                        0,
-                        -YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW),
-                        bitmap_H);
-                setX(-bitmap_W - YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW));
+                left = -bitmap_W - YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW);
+                top = 0;
+                right = -YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW);
+                bottom = bitmap_H;
             }
         } else {
             if (yImageSlider.getAlingLeftOrRight() == 0) {
-                isChanged = super.setFrame(0, 0, bitmap_W, bitmap_H);
-                setX(0);
+                left = 0;
+                top = 0;
+                right = bitmap_W;
+                bottom = bitmap_H;
             } else {
-                isChanged = super.setFrame(
-                        - (yImageSlider.getHideRight().getBitmap_W() - screamW),
-                        0,
-                        bitmap_W - (yImageSlider.getHideRight().getBitmap_W() - screamW),
-                        bitmap_H);
-                setX( - (yImageSlider.getHideRight().getBitmap_W() - screamW));
+                left = -(yImageSlider.getHideRight().getBitmap_W() - screamW);
+                top = 0;
+                right = bitmap_W - (yImageSlider.getHideRight().getBitmap_W() - screamW);
+                bottom = bitmap_H;
             }
         }
-        return  isChanged;
+        boolean isChanged = super.setFrame(left, top, right, bottom);
+        setX(left);
+        setY(0);
+        return isChanged;
     }
 
     @Override
