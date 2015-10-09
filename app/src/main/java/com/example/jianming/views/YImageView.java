@@ -42,17 +42,17 @@ public class YImageView extends ImageView {
         }
 
         int left, top, right, bottom;
-
+        int contentImageWidth = yImageSlider.getContentView().getBitmap_W();
         if (locationIndex == 1) {
             if (yImageSlider.getAlingLeftOrRight() == 0) {
-                left = yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W;
+                left = contentImageWidth + YImageSlider.SPLITE_W;
                 top = 0;
-                right = yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W + bitmap_W;
+                right = contentImageWidth + YImageSlider.SPLITE_W + bitmap_W;
                 bottom = bitmap_H;
             } else {
-                left = yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW);
+                left = screamW + YImageSlider.SPLITE_W;
                 top = 0;
-                right = yImageSlider.getContentView().getBitmap_W() + YImageSlider.SPLITE_W + bitmap_W - (yImageSlider.getHideRight().getBitmap_W() - screamW);
+                right = screamW + YImageSlider.SPLITE_W + bitmap_W;
                 bottom = bitmap_H;
             }
         } else if (locationIndex == -1) {
@@ -62,9 +62,9 @@ public class YImageView extends ImageView {
                 right = -YImageSlider.SPLITE_W;
                 bottom = bitmap_H;
             } else {
-                left = -bitmap_W - YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW);
+                left = -(bitmap_W + YImageSlider.SPLITE_W + contentImageWidth - screamW);
                 top = 0;
-                right = -YImageSlider.SPLITE_W - (yImageSlider.getHideRight().getBitmap_W() - screamW);
+                right = -(YImageSlider.SPLITE_W + contentImageWidth - screamW);
                 bottom = bitmap_H;
             }
         } else {
@@ -74,9 +74,9 @@ public class YImageView extends ImageView {
                 right = bitmap_W;
                 bottom = bitmap_H;
             } else {
-                left = -(yImageSlider.getHideRight().getBitmap_W() - screamW);
+                left = -(contentImageWidth - screamW);
                 top = 0;
-                right = bitmap_W - (yImageSlider.getHideRight().getBitmap_W() - screamW);
+                right = screamW;
                 bottom = bitmap_H;
             }
         }
