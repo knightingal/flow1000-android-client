@@ -5,6 +5,8 @@ import android.content.Intent;
 
 import android.os.Bundle;
 
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -44,9 +46,12 @@ public class MainActivity extends Activity {
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tl_custom);
+//        toolbar.setTitle("Toolbar");
+        setSupportActionBar(toolbar);
 
-        String mType = android.os.Build.MODEL;
-        Log.d(TAG, "mType = " + mType);
+        getSupportActionBar().setHomeButtonEnabled(true); //设置返回键可用
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.inject(this);
     }
 
