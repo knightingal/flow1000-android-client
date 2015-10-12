@@ -19,6 +19,8 @@ public class XrxActivity extends Activity implements YImageSlider.ImgChangeListe
     private YImageSlider mImageSlider;
 
     private String[] imgs;
+
+    private int position;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,15 +42,17 @@ public class XrxActivity extends Activity implements YImageSlider.ImgChangeListe
 //        }
 //        Log.d("onCreate", "imageUrl = " + imageUrl);
         imgs = getIntent().getStringArrayExtra("imgs");
+        position = getIntent().getIntExtra("position", 0);
         DisplayImageOptions options = DIOptionsNoneScaled.getInstance().getOptions();
         if (imgs != null && imgs.length != 0) {
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index]), mImageSlider.getHideLeft(), DIOptionsNoneScaled.getInstance().getOptions());
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index + 1]), mImageSlider.getContentView(), DIOptionsNoneScaled.getInstance().getOptions());
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index + 2]), mImageSlider.getHideRight(), DIOptionsNoneScaled.getInstance().getOptions());
+            index = position - 1;
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index]), mImageSlider.getHideLeft(), options);
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index + 1]), mImageSlider.getContentView(), options);
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index + 2]), mImageSlider.getHideRight(), options);
         } else {
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), mImageSlider.getHideLeft(), DIOptionsNoneScaled.getInstance().getOptions());
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 1] + ""), mImageSlider.getContentView(), DIOptionsNoneScaled.getInstance().getOptions());
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), mImageSlider.getHideRight(), DIOptionsNoneScaled.getInstance().getOptions());
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), mImageSlider.getHideLeft(), options);
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 1] + ""), mImageSlider.getContentView(), options);
+            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), mImageSlider.getHideRight(), options);
         }
     }
 

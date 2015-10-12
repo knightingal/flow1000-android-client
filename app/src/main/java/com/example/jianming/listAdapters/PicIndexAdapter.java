@@ -69,7 +69,7 @@ public class PicIndexAdapter extends BaseAdapter {
             viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
             viewHolder.exist = true;
         } else {
-            viewHolder.textView.setTextColor(Color.rgb(255, 0, 0));
+            viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
             viewHolder.exist = false;
         }
         viewHolder.index = dataArray.get(position).getIndex();
@@ -84,7 +84,7 @@ public class PicIndexAdapter extends BaseAdapter {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         FileUtil.removeDir(PicIndexAdapter.this.context, PicIndexAdapter.this.dataArray.get(position).getName());
-                        viewHolder.textView.setTextColor(Color.rgb(255, 0, 0));
+                        viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
                         dialog.dismiss();
                     }
                 });
