@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+
+
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, lvs);
         lvLeftMenu.setAdapter(arrayAdapter);
 
@@ -120,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.action_settings) {
             this.startActivity(new Intent(this, SettingActivity.class));
+            return true;
+        } else if (id == R.id.action_about) {
+            this.startActivity(new Intent(this, AboutActivity.class));
             return true;
         }
 

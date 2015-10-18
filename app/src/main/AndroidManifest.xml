@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.jianming.myapplication" >
 
-    <!--<uses-permission android:name="android.permission.INTERNET" />-->
+    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!-- Include next permission if you want to allow UIL to cache images on SD card -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -32,13 +32,11 @@
             android:label="@string/title_activity_image"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
-
         <activity
             android:name=".XrxActivity"
             android:label="@string/title_activity_xrx"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
-
         <activity
             android:name=".FileTrainingActivity"
             android:label="@string/title_activity_file_training" >
@@ -50,6 +48,8 @@
         <activity
             android:name=".SettingActivity"
             android:label="@string/title_activity_setting" >
+        </activity>
+        <activity android:name=".AboutActivity" >
         </activity>
     </application>
 

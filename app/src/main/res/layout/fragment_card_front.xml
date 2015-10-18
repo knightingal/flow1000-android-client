@@ -2,6 +2,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/image_anya"
-    android:src="@drawable/mybaby"
+    android:src="@null"
     android:scaleType="centerCrop"
     android:contentDescription="@string/description_image_1" />

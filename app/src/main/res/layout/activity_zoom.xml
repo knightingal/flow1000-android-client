@@ -14,7 +14,7 @@
             android:layout_width="100dp"
             android:layout_height="75dp"
             android:layout_marginRight="1dp"
-            android:src="@drawable/mybaby"
+            android:src="@null"
             android:scaleType="centerCrop"
             android:contentDescription="@string/description_image_1" />
 
