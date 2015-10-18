@@ -1,13 +1,11 @@
 package com.example.jianming.myapplication;
 
-import android.app.Activity;
 import android.content.Intent;
 
 import android.os.Bundle;
 
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-//import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,7 +16,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import butterknife.InjectView;
+
+import butterknife.Bind;
 import butterknife.OnItemClick;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -55,13 +54,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @InjectView(R.id.tl_custom)
+    @Bind(R.id.tl_custom)
     Toolbar toolbar;
 
-    @InjectView(R.id.dl_left)
+    @Bind(R.id.dl_left)
     DrawerLayout mDrawerLayout;
 
-    @InjectView(R.id.lv_left_menu)
+    @Bind(R.id.lv_left_menu)
     ListView lvLeftMenu;
 
     private String[] lvs = {"Settings"};
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setHomeButtonEnabled(true);

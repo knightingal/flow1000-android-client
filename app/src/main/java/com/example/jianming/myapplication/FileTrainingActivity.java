@@ -19,8 +19,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+
 import butterknife.OnClick;
 import com.example.jianming.Utils.NetworkUtil;
 
@@ -29,14 +30,14 @@ public class FileTrainingActivity extends AppCompatActivity {
 
     Context self = this;
 
-    @InjectView(R.id.file_training_toolbar)
+    @Bind(R.id.file_training_toolbar)
     public Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_training);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
 
