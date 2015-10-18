@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
@@ -18,19 +20,28 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 import butterknife.OnClick;
 import com.example.jianming.Utils.NetworkUtil;
 
 
-public class FileTrainingActivity extends Activity{
+public class FileTrainingActivity extends AppCompatActivity {
 
     Context self = this;
+
+    @InjectView(R.id.file_training_toolbar)
+    public Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_training);
         ButterKnife.inject(this);
+
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
 
@@ -47,7 +58,7 @@ public class FileTrainingActivity extends Activity{
     }
 
     private void startDownloadWebPage() {
-        String stringUrl = "http://%serverIP:%serverPort/picDirs/picIndexAjax"
+        String stringUrl = "http://%serverIP:%serverPort/local1000/picIndexAjax"
                 .replace("%serverIP", EnvArgs.serverIP)
                 .replace("%serverPort", EnvArgs.serverPort);
         new DownloadWebpageTask() {

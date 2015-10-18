@@ -43,14 +43,15 @@ public class DownloadPicListTask extends DownloadWebpageTask{
         Log.i(TAG, s);
         try {
             JSONObject jsonObject = new JSONObject(s);
+            String dirName = jsonObject.getString("dirName");
             JSONArray pics = jsonObject.getJSONArray("pics");
             picCountAll = pics.length();
             downloadProcessView.setStepCount(picCountAll);
             for (int i = 0; i < pics.length(); i++) {
-                final String imgUrl = ("http://%serverIP:%serverPort/picDirs/picRepository/%index/" + pics.getString(i))
+                final String imgUrl = ("http://%serverIP:%serverPort/static/%dirName/" + pics.getString(i))
                         .replace("%serverIP", EnvArgs.serverIP)
                         .replace("%serverPort", EnvArgs.serverPort)
-                        .replace("%index", index + "");
+                        .replace("%dirName", dirName);
                 downloadImg(
                         imgUrl,
                         dirName,

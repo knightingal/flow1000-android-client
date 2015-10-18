@@ -10,8 +10,8 @@ public class PicIndexBean {
     @JsonName("jsonIndex")
     private int index;
 
-    @JsonName("jsonMtime")
-    private String mtime;
+//    @JsonName("jsonMtime")
+//    private String mtime;
 
     public String getName() {
         return name;
@@ -25,13 +25,13 @@ public class PicIndexBean {
         this.index = index;
     }
 
-    public String getMtime() {
-        return mtime;
-    }
-
-    public void setMtime(String mtime) {
-        this.mtime = mtime;
-    }
+//    public String getMtime() {
+//        return mtime;
+//    }
+//
+//    public void setMtime(String mtime) {
+//        this.mtime = mtime;
+//    }
 
     public void setName(String name) {
         this.name = name;

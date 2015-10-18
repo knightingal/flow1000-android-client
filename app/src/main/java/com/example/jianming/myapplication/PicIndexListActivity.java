@@ -88,7 +88,7 @@ public class PicIndexListActivity extends Activity {
                 PicIndexBean picIndexBean = new PicIndexBean();
                 picIndexBean.setIndex(Integer.parseInt(jsonObject.getString("index")));
                 picIndexBean.setName(jsonObject.getString("name"));
-                picIndexBean.setMtime(jsonObject.getString("mtime"));
+//                picIndexBean.setMtime(jsonObject.getString("mtime"));
                 Log.d(TAG, JsonUtil.getJson(picIndexBean).toString());
                 dataArray.add(picIndexBean);
             }
@@ -103,38 +103,6 @@ public class PicIndexListActivity extends Activity {
         picIndexAdapter = new PicIndexAdapter(this);
         picIndexAdapter.setDataArray(dataArray);
         listView.setAdapter(picIndexAdapter);
-
-        listView.setMultiChoiceModeListener(new ListView.MultiChoiceModeListener() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.menu_list, menu);
-                return true;
-            }
-
-            @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-                mode.setTitle("clicked");
-
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-
-            }
-        });
-
-
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -166,7 +134,7 @@ public class PicIndexListActivity extends Activity {
                     name,
                     holder.downloadProcessView
             );
-            task.execute(("http://%serverIP:%serverPort/picDirs/picContentAjax?picpage=" + index)
+            task.execute(("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + index)
                     .replace("%serverIP", EnvArgs.serverIP)
                     .replace("%serverPort", EnvArgs.serverPort));
         }
