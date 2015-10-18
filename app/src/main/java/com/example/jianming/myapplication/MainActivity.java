@@ -5,11 +5,21 @@ import android.content.Intent;
 
 import android.os.Bundle;
 
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
+//import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import butterknife.InjectView;
+import butterknife.OnItemClick;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -17,7 +27,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
+
 
     private static final String TAG = "MainActivity";
 
@@ -37,17 +48,63 @@ public class MainActivity extends Activity {
         }
     }
 
+    @OnItemClick(R.id.lv_left_menu)
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (position == 0) {
+            startActivity(new Intent(this, SettingActivity.class));
+        }
+    }
 
+    @InjectView(R.id.tl_custom)
+    Toolbar toolbar;
+
+    @InjectView(R.id.dl_left)
+    DrawerLayout mDrawerLayout;
+
+    @InjectView(R.id.lv_left_menu)
+    ListView lvLeftMenu;
+
+    private String[] lvs = {"Settings"};
+
+    private ArrayAdapter arrayAdapter;
+
+    private ActionBarDrawerToggle mDrawerToggle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main);
-
-        String mType = android.os.Build.MODEL;
-        Log.d(TAG, "mType = " + mType);
         ButterKnife.inject(this);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open, R.string.close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        mDrawerToggle.syncState();
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, lvs);
+        lvLeftMenu.setAdapter(arrayAdapter);
+
+//        lvLeftMenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                if (position == 0) {
+//                    startActivity(new Intent(MainActivity.this, SettingActivity.class));
+//                }
+//            }
+//        });
     }
 
 
