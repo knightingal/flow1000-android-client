@@ -4,11 +4,13 @@ import android.content.Intent;
 
 import android.os.Bundle;
 
+import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         if (position == 0) {
             startActivity(new Intent(this, SettingActivity.class));
         }
+        //mDrawerLayout.closeDrawer(GravityCompat.START);
     }
 
     @Bind(R.id.tl_custom)
@@ -98,14 +101,6 @@ public class MainActivity extends AppCompatActivity {
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, lvs);
         lvLeftMenu.setAdapter(arrayAdapter);
 
-//        lvLeftMenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                if (position == 0) {
-//                    startActivity(new Intent(MainActivity.this, SettingActivity.class));
-//                }
-//            }
-//        });
     }
 
 
