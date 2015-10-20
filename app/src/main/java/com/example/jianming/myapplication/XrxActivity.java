@@ -21,6 +21,7 @@ public class XrxActivity extends Activity implements YImageSlider.ImgChangeListe
     private String[] imgs;
 
     private int position;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,14 +46,22 @@ public class XrxActivity extends Activity implements YImageSlider.ImgChangeListe
         position = getIntent().getIntExtra("position", 0);
         DisplayImageOptions options = DIOptionsNoneScaled.getInstance().getOptions();
         if (imgs != null && imgs.length != 0) {
-            index = position - 1;
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index]), mImageSlider.getHideLeft(), options);
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index + 1]), mImageSlider.getContentView(), options);
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.FILE.wrap(imgs[index + 2]), mImageSlider.getHideRight(), options);
+            index = position;
+            mImageSlider.setHideLeftSrc(index);
+            mImageSlider.setContentSrc(index);
+            mImageSlider.setHideRightSrc(index);
         } else {
             ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), mImageSlider.getHideLeft(), options);
             ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 1] + ""), mImageSlider.getContentView(), options);
             ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), mImageSlider.getHideRight(), options);
+        }
+    }
+
+    private String getImgByIndex(int index) {
+        if (index >= 0 && index < imgs.length) {
+            return imgs[index];
+        } else {
+            return null;
         }
     }
 
@@ -89,15 +98,17 @@ public class XrxActivity extends Activity implements YImageSlider.ImgChangeListe
         index--;
 
         if (imgs != null && imgs.length != 0) {
-            if (index < 0) {
-                index = imgs.length - 1;
+            String src = getImgByIndex(index - 1);
+            if (src != null) {
+                return ImageDownloader.Scheme.FILE.wrap(src + "");
+            } else {
+                return null;
             }
-            return ImageDownloader.Scheme.FILE.wrap(imgs[index] + "");
         } else {
             if (index < 0) {
                 index = 3;
             }
-            return ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + "");
+            return ImageDownloader.Scheme.DRAWABLE.wrap(getImgByIndex(index) + "");
         }
     }
 
@@ -105,15 +116,29 @@ public class XrxActivity extends Activity implements YImageSlider.ImgChangeListe
         index++;
 
         if (imgs != null && imgs.length != 0) {
-            if (index == imgs.length) {
-                index = 0;
+
+            String src = getImgByIndex(index + 1);
+            if (src != null) {
+                return ImageDownloader.Scheme.FILE.wrap(src + "");
+            } else {
+                return null;
             }
-            return ImageDownloader.Scheme.FILE.wrap(imgs[index + 2] + "");
         } else {
             if (index > 3) {
                 index = 0;
             }
-            return ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + "");
+            return ImageDownloader.Scheme.DRAWABLE.wrap(getImgByIndex(index + 2) + "");
+        }
+    }
+
+    @Override
+    public String getImgSrcByIndex(int index, YImageSlider yImageSlider) {
+        String img = getImgByIndex(index);
+        if (img != null) {
+            return ImageDownloader.Scheme.FILE.wrap(img);
+        }
+        else {
+            return null;
         }
     }
 }

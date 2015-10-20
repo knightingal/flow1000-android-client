@@ -13,6 +13,9 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class YImageView extends ImageView {
     private YImageSlider yImageSlider;
 
@@ -20,9 +23,20 @@ public class YImageView extends ImageView {
         this.locationIndex = locationIndex;
     }
 
+    private boolean isDisplay = true;
+
+    public void setDisplay() {
+        isDisplay = true;
+    }
+
+    public void setNoDisplay() {
+        isDisplay = false;
+    }
+
     private int locationIndex;
     private int minX = 0, minY = 0;
     private static final int ANIM_DURATION = 500;
+
     public YImageView(Context context, YImageSlider yImageSlider, int locationIndex) {
         super(context);
         this.yImageSlider = yImageSlider;
@@ -105,8 +119,8 @@ public class YImageView extends ImageView {
 
         return true;
     }
-    AnimatorSet setX, setY, setYE, setXE;
 
+    AnimatorSet setX, setY, setYE, setXE;
 
 
     private void doXAnimationEnd(long duration) {
@@ -121,11 +135,16 @@ public class YImageView extends ImageView {
             destX = minX;
         }
         setXE = new AnimatorSet();
-        setXE.playTogether(
-                ObjectAnimator.ofFloat(this, View.X, this.getX(), destX),
-                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), destX - yImageSlider.getHideLeft().getBitmap_W() - YImageSlider.SPLITE_W),
-                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), destX + getBitmap_W() + YImageSlider.SPLITE_W)
-        );
+        Collection<Animator> animators = new ArrayList<Animator>();
+
+        animators.add(ObjectAnimator.ofFloat(this, View.X, this.getX(), destX));
+        if (yImageSlider.getHideLeft().isDisplay) {
+            animators.add(ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), destX - yImageSlider.getHideLeft().getBitmap_W() - YImageSlider.SPLITE_W));
+        }
+        if (yImageSlider.getHideRight().isDisplay) {
+            animators.add(ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), destX + getBitmap_W() + YImageSlider.SPLITE_W));
+        }
+        setXE.playTogether(animators);
         setXE.setDuration(duration);
         setXE.setInterpolator(new AccelerateInterpolator());
         setXE.start();
@@ -175,9 +194,9 @@ public class YImageView extends ImageView {
         long duration = ANIM_DURATION;
         if (dest > 0 || dest < minPos) {
             if (dest > 0) {
-                aTime = -(int)currPos * 2 * 1000 / velocity;
+                aTime = -(int) currPos * 2 * 1000 / velocity;
             } else {
-                aTime = (minPos - (int)currPos) * 2 * 1000 / velocity;
+                aTime = (minPos - (int) currPos) * 2 * 1000 / velocity;
             }
             if (aTime < 0 || aTime > ANIM_DURATION) {
                 Log.e("AnimatorSet", "aTime error: " + aTime);
@@ -192,14 +211,18 @@ public class YImageView extends ImageView {
         animData.duration = duration;
         return animData;
     }
+
     AnimData animDataX, animDataY;
 
     public void doBackImgAnim() {
         setX = new AnimatorSet();
-        setX.playTogether(
-                ObjectAnimator.ofFloat(this, View.X, this.getX(), yImageSlider.getHideLeft().getBitmap_W() + YImageSlider.SPLITE_W),
-                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), 0)
-        );
+        Collection<Animator> animators = new ArrayList<Animator>();
+
+        animators.add(ObjectAnimator.ofFloat(this, View.X, this.getX(), yImageSlider.getHideLeft().getBitmap_W() + YImageSlider.SPLITE_W));
+        if (yImageSlider.getHideLeft().isDisplay) {
+            animators.add(ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), 0));
+        }
+        setX.playTogether(animators);
         setX.setDuration(ANIM_DURATION);
         setX.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -213,10 +236,13 @@ public class YImageView extends ImageView {
 
     public void doNextImgAnim() {
         setX = new AnimatorSet();
-        setX.playTogether(
-                ObjectAnimator.ofFloat(this, View.X, this.getX(), -(this.getBitmap_W() + YImageSlider.SPLITE_W + yImageSlider.getHideRight().getBitmap_W() - screamW)),
-                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), -(yImageSlider.getHideRight().getBitmap_W() - screamW))
-        );
+        Collection<Animator> animators = new ArrayList<Animator>();
+
+        animators.add(ObjectAnimator.ofFloat(this, View.X, this.getX(), -(this.getBitmap_W() + YImageSlider.SPLITE_W + yImageSlider.getHideRight().getBitmap_W() - screamW)));
+        if (yImageSlider.getHideRight().isDisplay) {
+            animators.add(ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), -(yImageSlider.getHideRight().getBitmap_W() - screamW)));
+        }
+        setX.playTogether(animators);
         setX.setDuration(ANIM_DURATION);
         setX.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -230,11 +256,11 @@ public class YImageView extends ImageView {
 
     private void onTouchUp() {
         float upX = this.getX();
-        if (upX > screamW / 3 || (upX > 0 && isOnLeftEdge)) {
+        if ((upX > screamW / 3 || (upX > 0 && isOnLeftEdge)) && yImageSlider.getHideLeft().isDisplay) {
             doBackImgAnim();
             return;
 
-        } else if (upX + this.getBitmap_W() < screamW * 2 / 3 || (upX < screamW - this.getBitmap_W() && isOnRightEdge)){
+        } else if ((upX + this.getBitmap_W() < screamW * 2 / 3 || (upX < screamW - this.getBitmap_W() && isOnRightEdge)) && yImageSlider.getHideRight().isDisplay) {
             doNextImgAnim();
             return;
         }
@@ -242,11 +268,15 @@ public class YImageView extends ImageView {
 
         animDataX = calAnimData(this.getX(), minX, velocityX);
         setX = new AnimatorSet();
-        setX.playTogether(
-                ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest),
-                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), animDataX.dest - yImageSlider.getHideLeft().getBitmap_W() - YImageSlider.SPLITE_W),
-                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), animDataX.dest + getBitmap_W() + YImageSlider.SPLITE_W)
-                );
+        Collection<Animator> animators = new ArrayList<Animator>();
+        animators.add(ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest));
+        if (yImageSlider.getHideLeft().isDisplay) {
+            animators.add(ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), animDataX.dest - yImageSlider.getHideLeft().getBitmap_W() - YImageSlider.SPLITE_W));
+        }
+        if (yImageSlider.getHideRight().isDisplay) {
+            animators.add(ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), animDataX.dest + getBitmap_W() + YImageSlider.SPLITE_W));
+        }
+        setX.playTogether(animators);
         setX.setDuration(animDataX.duration);
 
         if (animDataX.useAccelerateInterpolator) {
@@ -258,6 +288,7 @@ public class YImageView extends ImageView {
 
         setX.addListener(new AnimatorListenerAdapter() {
             boolean isCanceled = false;
+
             @Override
             public void onAnimationEnd(Animator animation) {
                 velocityX = 0;
@@ -314,7 +345,7 @@ public class YImageView extends ImageView {
             edgeListener.onGetBackImg(this);
         }
     }
-    
+
     private void postGetNextImg() {
         if (edgeListener != null) {
             edgeListener.onGetNextImg(this);
@@ -323,6 +354,7 @@ public class YImageView extends ImageView {
 
     interface EdgeListener {
         void onXEdge(YImageView yImageView);
+
         void onYEdge(YImageView yImageView);
 
         void onGetBackImg(YImageView yImageView);
@@ -347,10 +379,12 @@ public class YImageView extends ImageView {
             edgeListener.onYEdge(this);
         }
     }
+
     boolean isOnLeftEdge = false;
     boolean isOnRightEdge = false;
 
     int velocityX = 0, velocityY = 0;
+
     void onTouchDown(MotionEvent event) {
         if (setX != null && setX.isRunning()) {
             setX.cancel();
