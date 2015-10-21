@@ -425,8 +425,6 @@ public class YImageView extends ImageView {
             long dTime = currEventTime - lastEventTime;
             velocityX = (int) (dX * 1000 / dTime);
             velocityY = (int) (dY * 1000 / dTime);
-            Log.d("AnimatorSet", "velocityX: " + velocityX);
-            Log.d("AnimatorSet", "velocityY: " + velocityY);
             lastX = newX;
             lastY = newY;
             lastEventTime = currEventTime;

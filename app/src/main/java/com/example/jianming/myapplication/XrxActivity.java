@@ -47,97 +47,53 @@ public class XrxActivity extends Activity implements YImageSlider.ImgChangeListe
         DisplayImageOptions options = DIOptionsNoneScaled.getInstance().getOptions();
         if (imgs != null && imgs.length != 0) {
             index = position;
-            mImageSlider.setHideLeftSrc(index);
-            mImageSlider.setContentSrc(index);
-            mImageSlider.setHideRightSrc(index);
-        } else {
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), mImageSlider.getHideLeft(), options);
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 1] + ""), mImageSlider.getContentView(), options);
-            ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), mImageSlider.getHideRight(), options);
         }
+        mImageSlider.setHideLeftSrc(index);
+        mImageSlider.setContentSrc(index);
+        mImageSlider.setHideRightSrc(index);
     }
 
     private String getImgByIndex(int index) {
-        if (index >= 0 && index < imgs.length) {
-            return imgs[index];
+        if (imgs != null) {
+            if (index >= 0 && index < imgs.length) {
+                return imgs[index];
+            } else {
+                return null;
+            }
         } else {
-            return null;
+            if (index >= 0 && index < pics.length) {
+                return pics[index] + "";
+            } else {
+                return null;
+            }
         }
     }
 
     int index = 0;
     int pics[] = {R.drawable.f14_1, R.drawable.f14_2, R.drawable.f14_3, R.drawable.f14_4,
-            R.drawable.f14_1, R.drawable.f14_2, R.drawable.f14_3, R.drawable.f14_4};
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_xrx, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        if (id == R.id.show_pic_size) {
-//            Toast.makeText(this, mImageContentView.picSize(), Toast.LENGTH_LONG).show();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//            R.drawable.f14_1, R.drawable.f14_2, R.drawable.f14_3, R.drawable.f14_4
+    };
 
     public String onGetBackImg(YImageSlider yImageSlider) {
         index--;
-
-        if (imgs != null && imgs.length != 0) {
-            String src = getImgByIndex(index - 1);
-            if (src != null) {
-                return ImageDownloader.Scheme.FILE.wrap(src + "");
-            } else {
-                return null;
-            }
-        } else {
-            if (index < 0) {
-                index = 3;
-            }
-            return ImageDownloader.Scheme.DRAWABLE.wrap(getImgByIndex(index) + "");
-        }
+        return getImgSrcByIndex(index - 1, yImageSlider);
     }
 
     public String onGetNextImg(YImageSlider yImageSlider) {
         index++;
-
-        if (imgs != null && imgs.length != 0) {
-
-            String src = getImgByIndex(index + 1);
-            if (src != null) {
-                return ImageDownloader.Scheme.FILE.wrap(src + "");
-            } else {
-                return null;
-            }
-        } else {
-            if (index > 3) {
-                index = 0;
-            }
-            return ImageDownloader.Scheme.DRAWABLE.wrap(getImgByIndex(index + 2) + "");
-        }
+        return getImgSrcByIndex(index + 1, yImageSlider);
     }
 
     @Override
     public String getImgSrcByIndex(int index, YImageSlider yImageSlider) {
         String img = getImgByIndex(index);
         if (img != null) {
-            return ImageDownloader.Scheme.FILE.wrap(img);
-        }
-        else {
+            if (imgs != null) {
+                return ImageDownloader.Scheme.FILE.wrap(img);
+            } else {
+                return ImageDownloader.Scheme.DRAWABLE.wrap(img);
+            }
+        } else {
             return null;
         }
     }

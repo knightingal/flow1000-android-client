@@ -3,7 +3,7 @@ package com.example.jianming.myapplication;
 import android.app.ListActivity;
 import android.os.Bundle;
 import com.example.jianming.Utils.FileUtil;
-import com.example.jianming.listAdapters.PicListAdapter;
+import com.example.jianming.listAdapters.PicAlbumAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class PicContentListActivity extends ListActivity {
+public class PicAlbumActivity extends ListActivity {
     private static final String TAG = "Activity4List";
 
     private List<String> picList = new ArrayList<>();
@@ -33,7 +33,7 @@ public class PicContentListActivity extends ListActivity {
     }
 
     private void doShowListView() {
-        PicListAdapter adapter = new PicListAdapter(this);
+        PicAlbumAdapter adapter = new PicAlbumAdapter(this);
         adapter.setDataArray(getData());
         setListAdapter(adapter);
     }

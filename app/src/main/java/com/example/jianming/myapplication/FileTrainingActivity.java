@@ -1,15 +1,11 @@
 package com.example.jianming.myapplication;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 
 import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.EnvArgs;
@@ -51,7 +47,7 @@ public class FileTrainingActivity extends AppCompatActivity {
         if (NetworkUtil.isNetworkAvailable(this)) {
             startDownloadWebPage();
         } else {
-            Intent intent = new Intent(self, PicIndexListActivity.class);
+            Intent intent = new Intent(self, PicAlbumListActivity.class);
             //intent.putExtra("jsonArg", s);
             self.startActivity(intent);
             Log.i("network", "No network connection available.");
@@ -74,7 +70,7 @@ public class FileTrainingActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Intent intent = new Intent(self, PicIndexListActivity.class);
+                Intent intent = new Intent(self, PicAlbumListActivity.class);
                 self.startActivity(intent);
             }
         }.execute(stringUrl);
