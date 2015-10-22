@@ -20,13 +20,13 @@ public class ImageActivity extends Activity {
         setContentView(R.layout.activity_image);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), R.drawable.mybaby, options);
+//        BitmapFactory.decodeResource(getResources(), R.drawable.mybaby, options);
         int imageHeight = options.outHeight;
         int imageWidth = options.outWidth;
         String imageType = options.outMimeType;
         mImageView1 = (ImageView) findViewById(R.id.image_view1);
 
-        loadBitmap(R.drawable.mybaby, mImageView1, imageWidth, imageHeight);
+//        loadBitmap(R.drawable.mybaby, mImageView1, imageWidth, imageHeight);
 
     }
 

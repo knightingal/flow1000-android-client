@@ -134,10 +134,52 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
 
     }
 
+    public void setHideLeftSrc(int index) {
+        if (imgChangeListener != null) {
+            String src = imgChangeListener.getImgSrcByIndex(index - 1, this);
+            YImageView yImageView = getHideLeft();
+            if (src != null) {
+                ImageLoader.getInstance().displayImage(src, yImageView, DIOptionsNoneScaled.getInstance().getOptions());
+                yImageView.setDisplay();
+            } else {
+                yImageView.setNoDisplay();
+            }
+        }
+    }
+
+    public void setContentSrc(int index) {
+
+        if (imgChangeListener != null) {
+            String src = imgChangeListener.getImgSrcByIndex(index, this);
+            YImageView yImageView = getContentView();
+            if (src != null) {
+                ImageLoader.getInstance().displayImage(src, yImageView, DIOptionsNoneScaled.getInstance().getOptions());
+                yImageView.setDisplay();
+            } else {
+                yImageView.setNoDisplay();
+            }
+        }
+    }
+
+    public void setHideRightSrc(int index) {
+        if (imgChangeListener != null) {
+            String src = imgChangeListener.getImgSrcByIndex(index + 1, this);
+            YImageView yImageView = getHideRight();
+            if (src != null) {
+                ImageLoader.getInstance().displayImage(src, yImageView, DIOptionsNoneScaled.getInstance().getOptions());
+                yImageView.setDisplay();
+            } else {
+                yImageView.setNoDisplay();
+            }
+        }
+    }
+
     public interface ImgChangeListener {
         String onGetBackImg(YImageSlider yImageSlider);
 
         String onGetNextImg(YImageSlider yImageSlider);
+
+        String getImgSrcByIndex(int index, YImageSlider yImageSlider);
     }
 
     public void setImgChangeListener(ImgChangeListener imgChangeListener) {
@@ -168,7 +210,13 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
             }
             imgUrl = ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + "");
         }
-        ImageLoader.getInstance().displayImage(imgUrl, hideLeft, DIOptionsNoneScaled.getInstance().getOptions());
+        if (imgUrl != null) {
+            ImageLoader.getInstance().displayImage(imgUrl, getHideLeft(), DIOptionsNoneScaled.getInstance().getOptions());
+            getHideLeft().setDisplay();
+        } else {
+            getHideLeft().setNoDisplay();
+        }
+
     }
 
     @Override
@@ -192,7 +240,12 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
             }
             imgUrl = ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + "");
         }
-        ImageLoader.getInstance().displayImage(imgUrl, hideRight, DIOptionsNoneScaled.getInstance().getOptions());
+        if (imgUrl != null) {
+            ImageLoader.getInstance().displayImage(imgUrl, hideRight, DIOptionsNoneScaled.getInstance().getOptions());
+            hideRight.setDisplay();
+        } else {
+            hideRight.setNoDisplay();
+        }
     }
 
     public int getAlingLeftOrRight() {

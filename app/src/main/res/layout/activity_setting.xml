@@ -1,42 +1,76 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.example.jianming.myapplication.SettingActivity">
 
-    <EditText
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/tl_custom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/ab_transparent_green_holo"
 
-        android:id="@+id/ip_edit"
-        android:text="192.168.0."
-        android:hint="ip"
-        />
+        app:theme="@style/ThemeOverlay.AppCompat.ActionBar"></android.support.v7.widget.Toolbar>
 
-    <EditText
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ip_edit"
+        android:layout_below="@+id/tl_custom"
+        android:orientation="vertical">
 
-        android:id="@+id/port_edit"
-        android:text="8081"
-        android:hint="port"
-        />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:text="IP"
+                android:layout_marginLeft="16dp"
+                android:gravity="center"
+                />
+            <EditText
+                android:id="@+id/ip_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:hint="ip"
+                android:text="192.168.0." />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:text="PORT"
+                android:layout_marginLeft="16dp"
+                android:gravity="center"
+                />
+            <EditText
+                android:id="@+id/port_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ip_edit"
+                android:layout_marginLeft="16dp"
+
+                android:layout_marginRight="16dp"
+                android:hint="port"
+                android:text="8081" />
+        </LinearLayout>
+
+    </LinearLayout>
 
     <Button
+        android:id="@+id/button_done"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button_done"
-        android:text="DONE"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        />
+        android:text="DONE" />
 
 </RelativeLayout>

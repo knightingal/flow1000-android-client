@@ -20,14 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 
-public class PicListAdapter extends BaseAdapter {
+public class PicAlbumAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
 
     private List<Map<String, Object>> dataArray;
 
     Context context;
 
-    public PicListAdapter(Context context) {
+    public PicAlbumAdapter(Context context) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
     }
@@ -57,10 +57,8 @@ public class PicListAdapter extends BaseAdapter {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-
             convertView = mInflater.inflate(R.layout.vlist, parent, false);
             holder.img = (ImageView) convertView.findViewById(R.id.img);
-            //holder.info = (TextView) convertView.findViewById(R.id.info);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -78,7 +76,6 @@ public class PicListAdapter extends BaseAdapter {
                     imgs[i] = (String) dataArray.get(i).get("img");
                 }
                 Intent intent = new Intent(context, XrxActivity.class);
-//                intent.putExtra("imgUrls", ImageDownloader.Scheme.FILE.wrap((String) dataArray.get(position).get("img")));
                 intent.putExtra("imgs", imgs);
                 intent.putExtra("position", position);
                 context.startActivity(intent);

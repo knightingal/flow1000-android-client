@@ -19,14 +19,14 @@ import com.example.jianming.views.DownloadProcessView;
 
 import java.util.List;
 
-public class PicIndexAdapter extends BaseAdapter {
-    private final static String TAG = "PicIndexAdapter";
+public class PicAlbumListAdapter extends BaseAdapter {
+    private final static String TAG = "PicAlbumListAdapter";
     private final LayoutInflater mInflater;
     private List<PicIndexBean> dataArray;
 
     private Context context;
 
-    public PicIndexAdapter(Context context) {
+    public PicAlbumListAdapter(Context context) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
     }
@@ -76,14 +76,14 @@ public class PicIndexAdapter extends BaseAdapter {
         viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "you clicked " + PicIndexAdapter.this.dataArray.get(position).getName() + " delete_btn");
-                AlertDialog.Builder builder = new AlertDialog.Builder(PicIndexAdapter.this.context);
+                Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(position).getName() + " delete_btn");
+                AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
                 builder.setMessage("delete this dir?");
                 builder.setTitle("");
                 builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        FileUtil.removeDir(PicIndexAdapter.this.context, PicIndexAdapter.this.dataArray.get(position).getName());
+                        FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(position).getName());
                         viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
                         dialog.dismiss();
                     }
