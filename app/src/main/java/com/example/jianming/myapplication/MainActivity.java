@@ -22,6 +22,8 @@ import android.widget.ListView;
 
 import butterknife.Bind;
 import butterknife.OnItemClick;
+
+import com.example.jianming.db.DbContract;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, lvs);
         lvLeftMenu.setAdapter(arrayAdapter);
-
+        DbContract.access(getApplicationContext());
     }
 
 

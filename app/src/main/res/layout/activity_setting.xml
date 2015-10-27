@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:text="IP"
                 android:layout_marginLeft="16dp"
-                android:gravity="center"
+                android:gravity="right"
                 />
             <EditText
                 android:id="@+id/ip_edit"
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:text="PORT"
                 android:layout_marginLeft="16dp"
-                android:gravity="center"
+                android:gravity="right"
                 />
             <EditText
                 android:id="@+id/port_edit"

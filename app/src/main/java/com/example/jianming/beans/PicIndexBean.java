@@ -3,6 +3,12 @@ import com.example.jianming.annotations.JsonName;
 
 
 public class PicIndexBean {
+    public PicIndexBean() {}
+
+    public PicIndexBean(int index, String name) {
+        this.index = index;
+        this.name = name;
+    }
 
     @JsonName("jsonName")
     private String name;

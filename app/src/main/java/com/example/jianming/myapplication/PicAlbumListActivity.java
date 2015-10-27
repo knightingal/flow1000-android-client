@@ -3,7 +3,12 @@ package com.example.jianming.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -12,7 +17,6 @@ import android.widget.TextView;
 import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
-import com.example.jianming.Utils.JsonUtil;
 import com.example.jianming.beans.PicIndexBean;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 
@@ -32,7 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 
 
-public class PicAlbumListActivity extends Activity {
+public class PicAlbumListActivity extends AppCompatActivity {
 
     public void doPicListDownloadComplete(String dirName, int index) {
         Intent intent = new Intent(this, PicAlbumActivity.class);
@@ -49,14 +53,31 @@ public class PicAlbumListActivity extends Activity {
     @Bind(R.id.list_view1)
     public ListView listView;
 
+    @Bind(R.id.tl_custom)
+    public Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pic_list_acivity);
+        setContentView(R.layout.acivity_pic_album_list);
         ButterKnife.bind(this);
 
-        List<PicIndexBean> dataArray = getDataSourceFromJsonFile();
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
+
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        List<PicIndexBean> dataArray = getDataSourceFromJsonFile();
         picAlbumListAdapter = new PicAlbumListAdapter(this);
         picAlbumListAdapter.setDataArray(dataArray);
         listView.setAdapter(picAlbumListAdapter);
@@ -136,11 +157,42 @@ public class PicAlbumListActivity extends Activity {
                 picIndexBean.setIndex(Integer.parseInt(jsonObject.getString("index")));
                 picIndexBean.setName(jsonObject.getString("name"));
 //                picIndexBean.setMtime(jsonObject.getString("mtime"));
-                dataArray.add(picIndexBean);
+                if (FileUtil.checkDirExist(this, picIndexBean.getName()) || isNotExistItemShown){
+                    dataArray.add(picIndexBean);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return dataArray;
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_album_list, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.hide_not_exist) {
+            if (isNotExistItemShown) {
+                item.setTitle(R.string.show_not_exist_item);
+                isNotExistItemShown = false;
+            } else {
+                item.setTitle(R.string.hide_not_exist_item);
+                isNotExistItemShown = true;
+            }
+            List<PicIndexBean> dataArray = getDataSourceFromJsonFile();
+            picAlbumListAdapter.setDataArray(dataArray);
+            picAlbumListAdapter.notifyDataSetChanged();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isNotExistItemShown = true;
 }
