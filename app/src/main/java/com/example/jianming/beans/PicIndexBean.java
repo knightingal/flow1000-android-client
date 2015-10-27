@@ -1,8 +1,11 @@
 package com.example.jianming.beans;
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
 import com.example.jianming.annotations.JsonName;
 
-
-public class PicIndexBean {
+@Table(name = "T_ALBUM_INFO")
+public class PicIndexBean extends Model{
     public PicIndexBean() {}
 
     public PicIndexBean(int index, String name) {
@@ -11,9 +14,11 @@ public class PicIndexBean {
     }
 
     @JsonName("jsonName")
+    @Column(name="Name")
     private String name;
 
     @JsonName("jsonIndex")
+    @Column(name="server_index", index=true)
     private int index;
 
 //    @JsonName("jsonMtime")

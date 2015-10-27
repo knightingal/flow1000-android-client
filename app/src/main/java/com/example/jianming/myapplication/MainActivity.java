@@ -23,7 +23,6 @@ import android.widget.ListView;
 import butterknife.Bind;
 import butterknife.OnItemClick;
 
-import com.example.jianming.db.DbContract;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -106,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
 
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, lvs);
         lvLeftMenu.setAdapter(arrayAdapter);
-        DbContract.access(getApplicationContext());
     }
 
 

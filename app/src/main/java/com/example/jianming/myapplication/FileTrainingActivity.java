@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.activeandroid.ActiveAndroid;
 import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
@@ -22,7 +23,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.PicIndexBean;
-import com.example.jianming.db.DbContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,18 +77,22 @@ public class FileTrainingActivity extends AppCompatActivity {
             protected void onPostExecute(String s) {
                 try {
                     JSONArray jsonArray = new JSONArray(s);
+                    ActiveAndroid.beginTransaction();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         PicIndexBean picIndexBean = new PicIndexBean();
                         picIndexBean.setIndex(Integer.parseInt(jsonObject.getString("index")));
                         picIndexBean.setName(jsonObject.getString("name"));
-                        DbContract.writeAblum(picIndexBean.getIndex(), picIndexBean.getName(), 0);
+                        picIndexBean.save();
                     }
+                    ActiveAndroid.setTransactionSuccessful();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                finally {
+                    ActiveAndroid.endTransaction();
+                }
 
-                DbContract.query();
                 File directory = FileUtil.getAlbumStorageDir(FileTrainingActivity.this, "file");
                 File file = new File(directory, "index.json");
                 try {
