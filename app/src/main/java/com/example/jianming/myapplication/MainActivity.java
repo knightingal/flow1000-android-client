@@ -23,6 +23,8 @@ import android.widget.ListView;
 import butterknife.Bind;
 import butterknife.OnItemClick;
 
+import com.activeandroid.query.Select;
+import com.example.jianming.beans.UpdateStamp;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -101,10 +103,20 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-
+        initDB();
 
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, lvs);
         lvLeftMenu.setAdapter(arrayAdapter);
+    }
+
+    private void initDB() {
+        UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("T_ALBUM_INFO");
+        if (albumStamp == null) {
+            albumStamp = new UpdateStamp();
+            albumStamp.setTableName("T_ALBUM_INFO");
+            albumStamp.setUpdateStamp("20151002000000");
+            albumStamp.save();
+        }
     }
 
 

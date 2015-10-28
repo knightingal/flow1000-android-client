@@ -139,7 +139,7 @@ public class PicAlbumListActivity extends AppCompatActivity {
                 }
             } while(readLen != -1);
             fileContent = new String(out.toByteArray());
-            Log.i("readFile", fileContent);
+//            Log.i("readFile", fileContent);
         } catch (IOException e) {
             e.printStackTrace();
         }

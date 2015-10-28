@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.PicIndexBean;
+import com.example.jianming.beans.UpdateStamp;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,9 +70,13 @@ public class FileTrainingActivity extends AppCompatActivity {
     }
 
     private void startDownloadWebPage() {
-        String stringUrl = "http://%serverIP:%serverPort/local1000/picIndexAjax"
+        UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("T_ALBUM_INFO");
+
+        String stringUrl = "http://%serverIP:%serverPort/local1000/picIndexAjax?time_stamp=%timeStamp"
                 .replace("%serverIP", EnvArgs.serverIP)
-                .replace("%serverPort", EnvArgs.serverPort);
+                .replace("%serverPort", EnvArgs.serverPort)
+                .replace("%timeStamp", albumStamp.getUpdateStamp())
+                ;
         new DownloadWebpageTask() {
             @Override
             protected void onPostExecute(String s) {
