@@ -147,24 +147,25 @@ public class PicAlbumListActivity extends AppCompatActivity {
     }
 
     private List<PicIndexBean> getDataSourceFromJsonFile() {
-        List<PicIndexBean> dataArray = new ArrayList<>();
-        String fileContent = readIndexFile();
-        try {
-            JSONArray jsonArray = new JSONArray(fileContent);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                PicIndexBean picIndexBean = new PicIndexBean();
-                picIndexBean.setIndex(Integer.parseInt(jsonObject.getString("index")));
-                picIndexBean.setName(jsonObject.getString("name"));
-//                picIndexBean.setMtime(jsonObject.getString("mtime"));
-                if (FileUtil.checkDirExist(this, picIndexBean.getName()) || isNotExistItemShown){
-                    dataArray.add(picIndexBean);
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return dataArray;
+//        List<PicIndexBean> dataArray = new ArrayList<>();
+        return PicIndexBean.getAll();
+//        String fileContent = readIndexFile();
+//        try {
+//            JSONArray jsonArray = new JSONArray(fileContent);
+//            for (int i = 0; i < jsonArray.length(); i++) {
+//                JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                PicIndexBean picIndexBean = new PicIndexBean();
+//                picIndexBean.setIndex(Integer.parseInt(jsonObject.getString("index")));
+//                picIndexBean.setName(jsonObject.getString("name"));
+////                picIndexBean.setMtime(jsonObject.getString("mtime"));
+//                if (FileUtil.checkDirExist(this, picIndexBean.getName()) || isNotExistItemShown){
+//                    dataArray.add(picIndexBean);
+//                }
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return dataArray;
     }
 
     @Override

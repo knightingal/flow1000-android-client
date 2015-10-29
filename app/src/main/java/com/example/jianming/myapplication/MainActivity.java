@@ -1,5 +1,6 @@
 package com.example.jianming.myapplication;
 
+import android.app.Dialog;
 import android.content.Intent;
 
 import android.os.Bundle;
@@ -19,14 +20,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.OnItemClick;
 
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
+import com.example.jianming.beans.PicIndexBean;
 import com.example.jianming.beans.UpdateStamp;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -53,10 +64,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void clearDB() {
+//        UpdateStamp.delete(UpdateStamp.class, 1);
+        new Delete().from(UpdateStamp.class).execute();
+        new Delete().from(PicIndexBean.class).execute();
+        initDB();
+    }
+
     @OnItemClick(R.id.lv_left_menu)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (position == 0) {
             startActivity(new Intent(this, SettingActivity.class));
+        } else if (position == 1) {
+            clearDB();
+            Toast.makeText(this, "DB cleared", Toast.LENGTH_SHORT).show();
         }
         //mDrawerLayout.closeDrawer(GravityCompat.START);
     }
@@ -70,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.lv_left_menu)
     ListView lvLeftMenu;
 
-    private String[] lvs = {"Settings"};
+    private String[] lvs = {"Settings", "Clear Database"};
 
     private ArrayAdapter arrayAdapter;
 
@@ -104,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         initDB();
-
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, lvs);
         lvLeftMenu.setAdapter(arrayAdapter);
     }
@@ -114,10 +134,11 @@ public class MainActivity extends AppCompatActivity {
         if (albumStamp == null) {
             albumStamp = new UpdateStamp();
             albumStamp.setTableName("T_ALBUM_INFO");
-            albumStamp.setUpdateStamp("20151002000000");
+            albumStamp.setUpdateStamp("20000101000000");
             albumStamp.save();
         }
     }
+
 
 
     @Override

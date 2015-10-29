@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
 
 import butterknife.OnClick;
 import com.example.jianming.Utils.NetworkUtil;
+import com.example.jianming.Utils.TimeUtil;
 import com.example.jianming.beans.PicIndexBean;
 import com.example.jianming.beans.UpdateStamp;
 
@@ -77,12 +78,17 @@ public class FileTrainingActivity extends AppCompatActivity {
                 .replace("%serverPort", EnvArgs.serverPort)
                 .replace("%timeStamp", albumStamp.getUpdateStamp())
                 ;
+        Log.d("startDownloadWebPage", stringUrl);
+        albumStamp.setUpdateStamp(TimeUtil.getCurrentInFormatyyyyMMddHHmmss());
+        albumStamp.save();
         new DownloadWebpageTask() {
             @Override
             protected void onPostExecute(String s) {
                 try {
-                    JSONArray jsonArray = new JSONArray(s);
                     ActiveAndroid.beginTransaction();
+                    JSONArray jsonArray = new JSONArray(s);
+//                    Log.d("", s);
+
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         PicIndexBean picIndexBean = new PicIndexBean();
@@ -98,15 +104,15 @@ public class FileTrainingActivity extends AppCompatActivity {
                     ActiveAndroid.endTransaction();
                 }
 
-                File directory = FileUtil.getAlbumStorageDir(FileTrainingActivity.this, "file");
-                File file = new File(directory, "index.json");
-                try {
-                    FileOutputStream fileOutputStream = new FileOutputStream(file, false);
-                    fileOutputStream.write(s.getBytes());
-                    fileOutputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                File directory = FileUtil.getAlbumStorageDir(FileTrainingActivity.this, "file");
+//                File file = new File(directory, "index.json");
+//                try {
+//                    FileOutputStream fileOutputStream = new FileOutputStream(file, false);
+//                    fileOutputStream.write(s.getBytes());
+//                    fileOutputStream.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
                 Intent intent = new Intent(self, PicAlbumListActivity.class);
                 self.startActivity(intent);
             }

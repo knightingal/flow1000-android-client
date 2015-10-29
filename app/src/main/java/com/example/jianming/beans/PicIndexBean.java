@@ -1,12 +1,24 @@
 package com.example.jianming.beans;
+import com.activeandroid.Cache;
 import com.activeandroid.Model;
+import com.activeandroid.TableInfo;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 import com.example.jianming.annotations.JsonName;
+
+import java.util.List;
 
 @Table(name = "T_ALBUM_INFO")
 public class PicIndexBean extends Model{
     public PicIndexBean() {}
+
+    public static List<PicIndexBean> getAll() {
+        return new Select().
+                from(PicIndexBean.class).
+                orderBy(Cache.getTableInfo(PicIndexBean.class).getIdName()).
+                execute();
+    }
 
     public PicIndexBean(int index, String name) {
         this.index = index;
