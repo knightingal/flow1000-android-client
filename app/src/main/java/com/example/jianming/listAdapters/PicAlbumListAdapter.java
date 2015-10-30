@@ -85,6 +85,7 @@ public class PicAlbumListAdapter extends BaseAdapter {
                     public void onClick(DialogInterface dialog, int which) {
                         FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(position).getName());
                         viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
+                        PicIndexBean.setExistByIndex(viewHolder.index, 0);
                         dialog.dismiss();
                     }
                 });

@@ -20,9 +20,29 @@ public class PicIndexBean extends Model{
                 execute();
     }
 
+    public static List<PicIndexBean> getAllExist() {
+        return new Select().
+                from(PicIndexBean.class).
+                where("exist = ?", 1).
+                orderBy(Cache.getTableInfo(PicIndexBean.class).getIdName()).
+                execute();
+    }
+
+    public static PicIndexBean getByIndex(int index) {
+        return new Select().
+                from(PicIndexBean.class).
+                where("server_index = ?", index).
+                executeSingle();
+    }
+
+    public static void setExistByIndex(int index, int exist) {
+        getByIndex(index).setExist(exist).save();
+    }
+
     public PicIndexBean(int index, String name) {
         this.index = index;
         this.name = name;
+        this.exist = 0;
     }
 
     @JsonName("jsonName")
@@ -32,6 +52,9 @@ public class PicIndexBean extends Model{
     @JsonName("jsonIndex")
     @Column(name="server_index", index=true)
     private int index;
+
+    @Column(name="exist")
+    private int exist;
 
 //    @JsonName("jsonMtime")
 //    private String mtime;
@@ -55,6 +78,16 @@ public class PicIndexBean extends Model{
 //    public void setMtime(String mtime) {
 //        this.mtime = mtime;
 //    }
+
+
+    public int getExist() {
+        return exist;
+    }
+
+    public PicIndexBean setExist(int exist) {
+        this.exist = exist;
+        return this;
+    }
 
     public void setName(String name) {
         this.name = name;
