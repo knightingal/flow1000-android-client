@@ -22,7 +22,7 @@ import butterknife.Bind;
 import butterknife.OnItemClick;
 
 import com.activeandroid.query.Delete;
-import com.example.jianming.beans.PicIndexBean;
+import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.UpdateStamp;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private void clearDB() {
 //        UpdateStamp.delete(UpdateStamp.class, 1);
         new Delete().from(UpdateStamp.class).execute();
-        new Delete().from(PicIndexBean.class).execute();
+        new Delete().from(PicAlbumBean.class).execute();
         initDB();
     }
 

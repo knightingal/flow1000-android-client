@@ -17,18 +17,13 @@ import android.widget.TextView;
 import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
-import com.example.jianming.beans.PicIndexBean;
+import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -39,9 +34,10 @@ import butterknife.OnItemClick;
 public class PicAlbumListActivity extends AppCompatActivity {
 
     public void doPicListDownloadComplete(String dirName, int index) {
-        PicIndexBean.setExistByIndex(index, 1);
+        PicAlbumBean.setExistByIndex(index, 1);
         Intent intent = new Intent(this, PicAlbumActivity.class);
         intent.putExtra("name", dirName);
+        intent.putExtra("index", index);
         picAlbumListAdapter.notifyDataSetChanged();
         startActivity(intent);
     }
@@ -78,7 +74,7 @@ public class PicAlbumListActivity extends AppCompatActivity {
                 finish();
             }
         });
-        List<PicIndexBean> dataArray = getDataSourceFromJsonFile();
+        List<PicAlbumBean> dataArray = getDataSourceFromJsonFile();
         picAlbumListAdapter = new PicAlbumListAdapter(this);
         picAlbumListAdapter.setDataArray(dataArray);
         listView.setAdapter(picAlbumListAdapter);
@@ -96,6 +92,7 @@ public class PicAlbumListActivity extends AppCompatActivity {
             Log.i(TAG, "you click " + index + "th item, name = " + name);
             Intent intent = new Intent(self, PicAlbumActivity.class);
             intent.putExtra("name", name);
+            intent.putExtra("index", index);
             self.startActivity(intent);
         } else {
             File file = FileUtil.getAlbumStorageDir(PicAlbumListActivity.this, name);
@@ -147,12 +144,12 @@ public class PicAlbumListActivity extends AppCompatActivity {
         return fileContent;
     }
 
-    private List<PicIndexBean> getDataSourceFromJsonFile() {
+    private List<PicAlbumBean> getDataSourceFromJsonFile() {
         if (isNotExistItemShown) {
-            return PicIndexBean.getAll();
+            return PicAlbumBean.getAll();
         }
         else {
-            return PicIndexBean.getAllExist();
+            return PicAlbumBean.getAllExist();
         }
     }
 
@@ -175,7 +172,7 @@ public class PicAlbumListActivity extends AppCompatActivity {
                 item.setTitle(R.string.hide_not_exist_item);
                 isNotExistItemShown = true;
             }
-            List<PicIndexBean> dataArray = getDataSourceFromJsonFile();
+            List<PicAlbumBean> dataArray = getDataSourceFromJsonFile();
             picAlbumListAdapter.setDataArray(dataArray);
             picAlbumListAdapter.notifyDataSetChanged();
         }

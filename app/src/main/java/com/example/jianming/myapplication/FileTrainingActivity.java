@@ -11,11 +11,6 @@ import android.view.View;
 import com.activeandroid.ActiveAndroid;
 import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.EnvArgs;
-import com.example.jianming.Utils.FileUtil;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -23,7 +18,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.Utils.TimeUtil;
-import com.example.jianming.beans.PicIndexBean;
+import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.UpdateStamp;
 
 import org.json.JSONArray;
@@ -91,7 +86,7 @@ public class FileTrainingActivity extends AppCompatActivity {
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        PicIndexBean picIndexBean = new PicIndexBean();
+                        PicAlbumBean picIndexBean = new PicAlbumBean();
                         picIndexBean.setIndex(Integer.parseInt(jsonObject.getString("index")));
                         picIndexBean.setName(jsonObject.getString("name"));
                         picIndexBean.save();

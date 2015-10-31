@@ -1,7 +1,6 @@
 package com.example.jianming.beans;
 import com.activeandroid.Cache;
 import com.activeandroid.Model;
-import com.activeandroid.TableInfo;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
@@ -10,27 +9,27 @@ import com.example.jianming.annotations.JsonName;
 import java.util.List;
 
 @Table(name = "T_ALBUM_INFO")
-public class PicIndexBean extends Model{
-    public PicIndexBean() {}
+public class PicAlbumBean extends Model{
+    public PicAlbumBean() {}
 
-    public static List<PicIndexBean> getAll() {
+    public static List<PicAlbumBean> getAll() {
         return new Select().
-                from(PicIndexBean.class).
-                orderBy(Cache.getTableInfo(PicIndexBean.class).getIdName()).
+                from(PicAlbumBean.class).
+                orderBy(Cache.getTableInfo(PicAlbumBean.class).getIdName()).
                 execute();
     }
 
-    public static List<PicIndexBean> getAllExist() {
+    public static List<PicAlbumBean> getAllExist() {
         return new Select().
-                from(PicIndexBean.class).
+                from(PicAlbumBean.class).
                 where("exist = ?", 1).
-                orderBy(Cache.getTableInfo(PicIndexBean.class).getIdName()).
+                orderBy(Cache.getTableInfo(PicAlbumBean.class).getIdName()).
                 execute();
     }
 
-    public static PicIndexBean getByIndex(int index) {
+    public static PicAlbumBean getByIndex(int index) {
         return new Select().
-                from(PicIndexBean.class).
+                from(PicAlbumBean.class).
                 where("server_index = ?", index).
                 executeSingle();
     }
@@ -39,7 +38,7 @@ public class PicIndexBean extends Model{
         getByIndex(index).setExist(exist).save();
     }
 
-    public PicIndexBean(int index, String name) {
+    public PicAlbumBean(int index, String name) {
         this.index = index;
         this.name = name;
         this.exist = 0;
@@ -84,7 +83,7 @@ public class PicIndexBean extends Model{
         return exist;
     }
 
-    public PicIndexBean setExist(int exist) {
+    public PicAlbumBean setExist(int exist) {
         this.exist = exist;
         return this;
     }
