@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         } else if (position == 1) {
             clearDB();
             Toast.makeText(this, "DB cleared", Toast.LENGTH_SHORT).show();
+        } else if (position == 2) {
+            startActivity(new Intent(this, TimestampActivity.class));
         }
         //mDrawerLayout.closeDrawer(GravityCompat.START);
     }
@@ -79,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.lv_left_menu)
     ListView lvLeftMenu;
 
-    private String[] lvs = {"Settings", "Clear Database"};
+    private String[] lvs = {"Settings", "Clear Database", "Set Timestamp"};
 
     private ArrayAdapter arrayAdapter;
 

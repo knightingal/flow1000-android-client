@@ -10,14 +10,17 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name="com.activeandroid.app.Application"
         android:allowBackup="true"
         android:icon="@drawable/greenicon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme1"
-        android:name="com.activeandroid.app.Application"
-        >
-        <meta-data android:name="AA_DB_NAME" android:value="Local1000.db" />
-        <meta-data android:name="AA_DB_VERSION" android:value="5" />
+        android:theme="@style/AppTheme1" >
+        <meta-data
+            android:name="AA_DB_NAME"
+            android:value="Local1000.db" />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="5" />
 
         <activity
             android:name=".MainActivity"
@@ -55,6 +58,11 @@
             android:label="@string/title_activity_setting" >
         </activity>
         <activity android:name=".AboutActivity" >
+        </activity>
+        <activity
+            android:name=".TimestampActivity"
+            android:label="@string/title_activity_timestamp"
+            android:theme="@style/AppTheme1" >
         </activity>
     </application>
 

@@ -74,7 +74,7 @@ public class FileTrainingActivity extends AppCompatActivity {
                 .replace("%timeStamp", albumStamp.getUpdateStamp())
                 ;
         Log.d("startDownloadWebPage", stringUrl);
-        albumStamp.setUpdateStamp(TimeUtil.getCurrentInFormatyyyyMMddHHmmss());
+        albumStamp.setUpdateStamp(TimeUtil.getGmtInFormatyyyyMMddHHmmss());
         albumStamp.save();
         new DownloadWebpageTask() {
             @Override
