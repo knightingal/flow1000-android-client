@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
+import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 
@@ -145,7 +146,7 @@ public class PicAlbumListActivity extends AppCompatActivity {
     }
 
     private List<PicAlbumBean> getDataSourceFromJsonFile() {
-        if (isNotExistItemShown) {
+        if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this)) {
             return PicAlbumBean.getAll();
         }
         else {
@@ -161,20 +162,21 @@ public class PicAlbumListActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (NetworkUtil.isNetworkAvailable(this)) {
+            int id = item.getItemId();
 
-        int id = item.getItemId();
-
-        if (id == R.id.hide_not_exist) {
-            if (isNotExistItemShown) {
-                item.setTitle(R.string.show_not_exist_item);
-                isNotExistItemShown = false;
-            } else {
-                item.setTitle(R.string.hide_not_exist_item);
-                isNotExistItemShown = true;
+            if (id == R.id.hide_not_exist) {
+                if (isNotExistItemShown) {
+                    item.setTitle(R.string.show_not_exist_item);
+                    isNotExistItemShown = false;
+                } else {
+                    item.setTitle(R.string.hide_not_exist_item);
+                    isNotExistItemShown = true;
+                }
+                List<PicAlbumBean> dataArray = getDataSourceFromJsonFile();
+                picAlbumListAdapter.setDataArray(dataArray);
+                picAlbumListAdapter.notifyDataSetChanged();
             }
-            List<PicAlbumBean> dataArray = getDataSourceFromJsonFile();
-            picAlbumListAdapter.setDataArray(dataArray);
-            picAlbumListAdapter.notifyDataSetChanged();
         }
 
         return super.onOptionsItemSelected(item);
