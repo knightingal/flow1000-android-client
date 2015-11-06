@@ -28,6 +28,31 @@ public class PicInfoBean extends Model {
     @Column(name="album_info")
     private PicAlbumBean albumInfo;
 
+    @Column(name="absolute_path")
+    private String absolutePath;
+
+    @Column(name="pic_height")
+    private int height;
+
+    @Column(name="pic_width")
+    private int width;
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
     public String getAbsolutePath() {
         return absolutePath;
     }
@@ -35,9 +60,6 @@ public class PicInfoBean extends Model {
     public void setAbsolutePath(String absolutePath) {
         this.absolutePath = absolutePath;
     }
-
-    @Column(name="absolute_path")
-    private String absolutePath;
 
     public String getName() {
         return name;

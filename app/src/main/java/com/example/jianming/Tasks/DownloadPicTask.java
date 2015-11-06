@@ -1,10 +1,10 @@
 package com.example.jianming.Tasks;
 
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
-import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.Utils.NetworkUtil;
-import com.example.jianming.myapplication.PicAlbumListActivity;
+import com.example.jianming.beans.PicInfoBean;
 import com.squareup.okhttp.Request;
 
 import java.io.File;
@@ -12,50 +12,55 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 
-public class DownloadPicTask extends AsyncTask<String, Void, byte[]> {
+public class DownloadPicTask extends AsyncTask<String, Void, Integer> {
     private static final String TAG = "DownloadPicTask";
 
     File file;
 
     DownloadPicListTask parentTask;
 
+    public PicInfoBean getPicInfoBean() {
+        return picInfoBean;
+    }
+
+    PicInfoBean picInfoBean = new PicInfoBean();
+
+
+
     public DownloadPicTask(File file, DownloadPicListTask parentTask) {
-//        this.dirName = dirName;
-//        this.picName = picName;
         this.file = file;
         this.parentTask = parentTask;
     }
 
     @Override
-    protected byte[] doInBackground(String... urls) {
+    protected Integer doInBackground(String... urls) {
         try {
-            return downloadUrl(urls[0]);
+            downloadUrl(urls[0]);
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
         }
+        return 0;
     }
 
-    private byte[] downloadUrl(String strUrl) throws IOException {
+    private void downloadUrl(String strUrl) throws IOException {
         Request request = new Request.Builder().url(strUrl).build();
-        return NetworkUtil.getOkHttpClient().newCall(request).execute().body().bytes();
+        byte[] bytes = NetworkUtil.getOkHttpClient().newCall(request).execute().body().bytes();
+        FileOutputStream fileOutputStream = new FileOutputStream(file, true);
+        fileOutputStream.write(bytes);
+        fileOutputStream.close();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+        int width = options.outWidth;
+        int height = options.outHeight;
+        picInfoBean.setWidth(width);
+        picInfoBean.setHeight(height);
+        picInfoBean.setAbsolutePath(file.getAbsolutePath());
     }
 
     @Override
-    protected void onPostExecute(byte[] bytes) {
-
-
-//        File directory = FileUtil.getAlbumStorageDir(context, dirName);
-//        File file = new File(directory, picName);
-        try {
-
-            FileOutputStream fileOutputStream = new FileOutputStream(file, true);
-            fileOutputStream.write(bytes);
-            fileOutputStream.close();
-            parentTask.notifyDownloadingProcess();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    protected void onPostExecute(Integer param) {
+        parentTask.notifyDownloadingProcess();
     }
 
 }
