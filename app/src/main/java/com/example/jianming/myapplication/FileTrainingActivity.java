@@ -8,21 +8,18 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.activeandroid.ActiveAndroid;
 import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.EnvArgs;
-import com.example.jianming.Utils.FileUtil;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 import butterknife.OnClick;
 import com.example.jianming.Utils.NetworkUtil;
-import com.example.jianming.beans.PicIndexBean;
-import com.example.jianming.db.DbContract;
+import com.example.jianming.Utils.TimeUtil;
+import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.beans.UpdateStamp;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,35 +66,48 @@ public class FileTrainingActivity extends AppCompatActivity {
     }
 
     private void startDownloadWebPage() {
-        String stringUrl = "http://%serverIP:%serverPort/local1000/picIndexAjax"
+        UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("T_ALBUM_INFO");
+
+        String stringUrl = "http://%serverIP:%serverPort/local1000/picIndexAjax?time_stamp=%timeStamp"
                 .replace("%serverIP", EnvArgs.serverIP)
-                .replace("%serverPort", EnvArgs.serverPort);
+                .replace("%serverPort", EnvArgs.serverPort)
+                .replace("%timeStamp", albumStamp.getUpdateStamp())
+                ;
+        Log.d("startDownloadWebPage", stringUrl);
+        albumStamp.setUpdateStamp(TimeUtil.getGmtInFormatyyyyMMddHHmmss());
+        albumStamp.save();
         new DownloadWebpageTask() {
             @Override
             protected void onPostExecute(String s) {
                 try {
+                    ActiveAndroid.beginTransaction();
                     JSONArray jsonArray = new JSONArray(s);
+//                    Log.d("", s);
+
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        PicIndexBean picIndexBean = new PicIndexBean();
+                        PicAlbumBean picIndexBean = new PicAlbumBean();
                         picIndexBean.setIndex(Integer.parseInt(jsonObject.getString("index")));
                         picIndexBean.setName(jsonObject.getString("name"));
-                        DbContract.writeAblum(picIndexBean.getIndex(), picIndexBean.getName(), 0);
+                        picIndexBean.save();
                     }
+                    ActiveAndroid.setTransactionSuccessful();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                DbContract.query();
-                File directory = FileUtil.getAlbumStorageDir(FileTrainingActivity.this, "file");
-                File file = new File(directory, "index.json");
-                try {
-                    FileOutputStream fileOutputStream = new FileOutputStream(file, false);
-                    fileOutputStream.write(s.getBytes());
-                    fileOutputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                finally {
+                    ActiveAndroid.endTransaction();
                 }
+
+//                File directory = FileUtil.getAlbumStorageDir(FileTrainingActivity.this, "file");
+//                File file = new File(directory, "index.json");
+//                try {
+//                    FileOutputStream fileOutputStream = new FileOutputStream(file, false);
+//                    fileOutputStream.write(s.getBytes());
+//                    fileOutputStream.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
                 Intent intent = new Intent(self, PicAlbumListActivity.class);
                 self.startActivity(intent);
             }

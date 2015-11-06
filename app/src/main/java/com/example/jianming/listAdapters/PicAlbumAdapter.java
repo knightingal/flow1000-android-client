@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.jianming.Utils.DIOptionsExactly;
+import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.myapplication.R;
 import com.example.jianming.myapplication.XrxActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class PicAlbumAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
 
-    private List<Map<String, Object>> dataArray;
+    private List<PicInfoBean> dataArray;
 
     Context context;
 
@@ -32,7 +33,7 @@ public class PicAlbumAdapter extends BaseAdapter {
         this.mInflater = LayoutInflater.from(context);
     }
 
-    public void setDataArray(List<Map<String, Object>> dataArray) {
+    public void setDataArray(List<PicInfoBean> dataArray) {
         this.dataArray = dataArray;
     }
 
@@ -64,16 +65,16 @@ public class PicAlbumAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        String imgUrl = ImageDownloader.Scheme.FILE.wrap((String) dataArray.get(position).get("img"));
+        String imgUrl = ImageDownloader.Scheme.FILE.wrap((String) dataArray.get(position).getAbsolutePath());
 
         ImageLoader.getInstance().displayImage(imgUrl, holder.img, DIOptionsExactly.getInstance().getOptions());
         holder.img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Activity4List", (String) dataArray.get(position).get("img"));
+                Log.d("Activity4List", (String) dataArray.get(position).getAbsolutePath());
                 String imgs[] = new String[dataArray.size()];
                 for (int i = 0; i < dataArray.size(); i++) {
-                    imgs[i] = (String) dataArray.get(i).get("img");
+                    imgs[i] = (String) dataArray.get(i).getAbsolutePath();
                 }
                 Intent intent = new Intent(context, XrxActivity.class);
                 intent.putExtra("imgs", imgs);

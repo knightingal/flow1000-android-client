@@ -4,14 +4,11 @@ import android.content.Intent;
 
 import android.os.Bundle;
 
-import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,11 +16,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.OnItemClick;
 
-import com.example.jianming.db.DbContract;
+import com.activeandroid.query.Delete;
+import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.beans.UpdateStamp;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -52,10 +52,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void clearDB() {
+//        UpdateStamp.delete(UpdateStamp.class, 1);
+        new Delete().from(UpdateStamp.class).execute();
+        new Delete().from(PicAlbumBean.class).execute();
+        initDB();
+    }
+
     @OnItemClick(R.id.lv_left_menu)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (position == 0) {
             startActivity(new Intent(this, SettingActivity.class));
+        } else if (position == 1) {
+            clearDB();
+            Toast.makeText(this, "DB cleared", Toast.LENGTH_SHORT).show();
+        } else if (position == 2) {
+            startActivity(new Intent(this, TimestampActivity.class));
         }
         //mDrawerLayout.closeDrawer(GravityCompat.START);
     }
@@ -69,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.lv_left_menu)
     ListView lvLeftMenu;
 
-    private String[] lvs = {"Settings"};
+    private String[] lvs = {"Settings", "Clear Database", "Set Timestamp"};
 
     private ArrayAdapter arrayAdapter;
 
@@ -102,12 +114,21 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-
-
+        initDB();
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, lvs);
         lvLeftMenu.setAdapter(arrayAdapter);
-        DbContract.access(getApplicationContext());
     }
+
+    private void initDB() {
+        UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("T_ALBUM_INFO");
+        if (albumStamp == null) {
+            albumStamp = new UpdateStamp();
+            albumStamp.setTableName("T_ALBUM_INFO");
+            albumStamp.setUpdateStamp("20000101000000");
+            albumStamp.save();
+        }
+    }
+
 
 
     @Override

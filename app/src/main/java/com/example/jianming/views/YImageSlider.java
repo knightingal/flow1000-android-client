@@ -71,18 +71,6 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
 
         addView(backButton);
         addView(nextButton);
-
-        line31 = new View(context);
-        line32 = new View(context);
-
-        line31.setBackgroundColor(Color.parseColor("green"));
-        line32.setBackgroundColor(Color.parseColor("blue"));
-
-//        addView(line31);
-//        addView(line32);
-//        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index] + ""), hideLeft, DIOptionsNoneScaled.getInstance().getOptions());
-//        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 1] + ""), contentView, DIOptionsNoneScaled.getInstance().getOptions());
-//        ImageLoader.getInstance().displayImage(ImageDownloader.Scheme.DRAWABLE.wrap(pics[index + 2] + ""), hideRight, DIOptionsNoneScaled.getInstance().getOptions());
     }
 
     private YImageView contentView, hideLeft, hideRight;
@@ -98,8 +86,6 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
     private ImageView backButton;
 
     private ImageView nextButton;
-
-    private View line31, line32;
 
     public YImageView getContentView() {
         return contentView;
@@ -117,8 +103,8 @@ public class YImageSlider extends ViewGroup implements YImageView.EdgeListener {
         hideLeft.layout(0, 0, width, height);
         hideRight.layout(0, 0, width, height);
 
-        backButton.layout(0, 0, 48, 48);
-        nextButton.layout(width - 48, 0, width, 48);
+        backButton.layout(0, height / 2 - 24, 48, height / 2 + 24);
+        nextButton.layout(width - 48, height / 2 - 24, width, height / 2 + 24);
 
 //        line31.layout(width / 3, 0, width / 3 + 1, height);
 //        line32.layout(width * 2 / 3, 0, width * 2 / 3 + 1, height);

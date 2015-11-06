@@ -38,5 +38,7 @@
     </style>
 
     <style name="ButtonBarButton" />
+    <style name="AppTheme1.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme1.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

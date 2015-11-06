@@ -164,8 +164,11 @@ public class YImageView extends ImageView {
         }
 
         setYE = new AnimatorSet();
-        setYE.play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY));
-
+//        setYE.play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY));
+        setY.playTogether(ObjectAnimator.ofFloat(this, View.Y, this.getY(), animDataY.dest),
+                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.Y, yImageSlider.getHideRight().getY(), animDataY.dest),
+                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.Y, yImageSlider.getHideLeft().getY(), animDataY.dest)
+        );
         setYE.setDuration(duration);
         setYE.setInterpolator(new AccelerateInterpolator());
         setYE.start();
@@ -258,59 +261,58 @@ public class YImageView extends ImageView {
         float upX = this.getX();
         if ((upX > screamW / 3 || (upX > 0 && isOnLeftEdge)) && yImageSlider.getHideLeft().isDisplay) {
             doBackImgAnim();
-            return;
-
         } else if ((upX + this.getBitmap_W() < screamW * 2 / 3 || (upX < screamW - this.getBitmap_W() && isOnRightEdge)) && yImageSlider.getHideRight().isDisplay) {
             doNextImgAnim();
-            return;
-        }
-
-
-        animDataX = calAnimData(this.getX(), minX, velocityX);
-        setX = new AnimatorSet();
-        Collection<Animator> animators = new ArrayList<Animator>();
-        animators.add(ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest));
-        if (yImageSlider.getHideLeft().isDisplay) {
-            animators.add(ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), animDataX.dest - yImageSlider.getHideLeft().getBitmap_W() - YImageSlider.SPLITE_W));
-        }
-        if (yImageSlider.getHideRight().isDisplay) {
-            animators.add(ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), animDataX.dest + getBitmap_W() + YImageSlider.SPLITE_W));
-        }
-        setX.playTogether(animators);
-        setX.setDuration(animDataX.duration);
-
-        if (animDataX.useAccelerateInterpolator) {
-            setX.setInterpolator(new AccelerateInterpolator());
         } else {
-            postXEdgeEvent();
-            setX.setInterpolator(new DecelerateInterpolator());
-        }
+            animDataX = calAnimData(this.getX(), minX, velocityX);
+            setX = new AnimatorSet();
+            Collection<Animator> animators = new ArrayList<Animator>();
+            animators.add(ObjectAnimator.ofFloat(this, View.X, this.getX(), animDataX.dest));
+            if (yImageSlider.getHideLeft().isDisplay) {
+                animators.add(ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.X, yImageSlider.getHideLeft().getX(), animDataX.dest - yImageSlider.getHideLeft().getBitmap_W() - YImageSlider.SPLITE_W));
+            }
+            if (yImageSlider.getHideRight().isDisplay) {
+                animators.add(ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.X, yImageSlider.getHideRight().getX(), animDataX.dest + getBitmap_W() + YImageSlider.SPLITE_W));
+            }
+            setX.playTogether(animators);
+            setX.setDuration(animDataX.duration);
 
-        setX.addListener(new AnimatorListenerAdapter() {
-            boolean isCanceled = false;
+            if (animDataX.useAccelerateInterpolator) {
+                setX.setInterpolator(new AccelerateInterpolator());
+            } else {
+                postXEdgeEvent();
+                setX.setInterpolator(new DecelerateInterpolator());
+            }
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                velocityX = 0;
-                Log.d("", "hideleft.getX()" + yImageSlider.getHideLeft().getX());
-                if (!isCanceled) {
-                    if (animDataX.duration < ANIM_DURATION) {
-                        postXEdgeEvent();
-                        doXAnimationEnd(ANIM_DURATION - animDataX.duration);
+            setX.addListener(new AnimatorListenerAdapter() {
+                boolean isCanceled = false;
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    velocityX = 0;
+                    Log.d("", "hideleft.getX()" + yImageSlider.getHideLeft().getX());
+                    if (!isCanceled) {
+                        if (animDataX.duration < ANIM_DURATION) {
+                            postXEdgeEvent();
+                            doXAnimationEnd(ANIM_DURATION - animDataX.duration);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                isCanceled = true;
-            }
-        });
-        setX.start();
-
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    isCanceled = true;
+                }
+            });
+            setX.start();
+        }
         animDataY = calAnimData(this.getY(), minY, velocityY);
         setY = new AnimatorSet();
-        setY.play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), animDataY.dest));
+//        setY.play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), animDataY.dest));
+        setY.playTogether(ObjectAnimator.ofFloat(this, View.Y, this.getY(), animDataY.dest),
+                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.Y, yImageSlider.getHideRight().getY(), animDataY.dest),
+                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.Y, yImageSlider.getHideLeft().getY(), animDataY.dest)
+                );
         setY.setDuration(animDataY.duration);
         if (animDataY.useAccelerateInterpolator) {
             setY.setInterpolator(new AccelerateInterpolator());
@@ -441,16 +443,17 @@ public class YImageView extends ImageView {
         this.setX(newImgX);
         this.setY(newImgY);
 
-        yImageSlider.getHideLeft().addDiff(diffX);
-        yImageSlider.getHideRight().addDiff(diffX);
+        yImageSlider.getHideLeft().addDiff(diffX, diffY);
+        yImageSlider.getHideRight().addDiff(diffX, diffY);
 
 
         current_x = (int) event.getRawX();
         current_y = (int) event.getRawY();
     }
 
-    public void addDiff(float diffX) {
+    public void addDiff(float diffX, float diffY) {
         setX(getX() + diffX);
+        setY(getY() + diffY);
     }
 
     @Override

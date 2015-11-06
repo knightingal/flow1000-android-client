@@ -4,9 +4,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.activeandroid.ActiveAndroid;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 
+import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.myapplication.PicAlbumListActivity;
 import com.example.jianming.views.DownloadProcessView;
 
@@ -40,18 +43,31 @@ public class DownloadPicListTask extends DownloadWebpageTask{
     @Override
     protected void onPostExecute(String s) {
         Log.i(TAG, s);
+
         try {
+            ActiveAndroid.beginTransaction();
             JSONObject jsonObject = new JSONObject(s);
             String dirName = jsonObject.getString("dirName");
             JSONArray pics = jsonObject.getJSONArray("pics");
             picCountAll = pics.length();
             downloadProcessView.setStepCount(picCountAll);
+
             for (int i = 0; i < pics.length(); i++) {
                 String imgUrl = generateImgUrl(dirName, pics.getString(i));
-                downloadImg(imgUrl, dirName, pics.getString(i));
+                File file = downloadImg(imgUrl, dirName, pics.getString(i));
+                PicAlbumBean picAlbumBean = PicAlbumBean.getByIndex(index);
+                PicInfoBean picInfoBean = new PicInfoBean();
+                picInfoBean.setIndex(i);
+                picInfoBean.setName(pics.getString(i));
+                picInfoBean.setAlbumInfo(picAlbumBean);
+                picInfoBean.setAbsolutePath(file.getAbsolutePath());
+                picInfoBean.save();
             }
+            ActiveAndroid.setTransactionSuccessful();
         } catch (JSONException e) {
             e.printStackTrace();
+        } finally {
+            ActiveAndroid.endTransaction();
         }
     }
 
@@ -62,11 +78,12 @@ public class DownloadPicListTask extends DownloadWebpageTask{
                 .replace("%dirName", dirName);
     }
 
-    private void downloadImg(String imgUrl, final String dirName, final String picName) {
+    private File downloadImg(String imgUrl, final String dirName, final String picName) {
         Log.d("DownloadPicListTask", "create task for " + imgUrl);
         File directory = FileUtil.getAlbumStorageDir(context, dirName);
         File file = new File(directory, picName);
         new DownloadPicTask(file, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imgUrl);
+        return file;
     }
 
     public void notifyDownloadingProcess() {

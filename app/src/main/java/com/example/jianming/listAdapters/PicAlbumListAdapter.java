@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.jianming.Utils.FileUtil;
-import com.example.jianming.beans.PicIndexBean;
+import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.myapplication.R;
 import com.example.jianming.views.DownloadProcessView;
 
@@ -22,7 +22,7 @@ import java.util.List;
 public class PicAlbumListAdapter extends BaseAdapter {
     private final static String TAG = "PicAlbumListAdapter";
     private final LayoutInflater mInflater;
-    private List<PicIndexBean> dataArray;
+    private List<PicAlbumBean> dataArray;
 
     private Context context;
 
@@ -31,7 +31,7 @@ public class PicAlbumListAdapter extends BaseAdapter {
         this.mInflater = LayoutInflater.from(context);
     }
 
-    public void setDataArray(List<PicIndexBean> dataArray) {
+    public void setDataArray(List<PicAlbumBean> dataArray) {
         this.dataArray = dataArray;
     }
 
@@ -85,6 +85,7 @@ public class PicAlbumListAdapter extends BaseAdapter {
                     public void onClick(DialogInterface dialog, int which) {
                         FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(position).getName());
                         viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
+                        PicAlbumBean.setExistByIndex(viewHolder.index, 0);
                         dialog.dismiss();
                     }
                 });
