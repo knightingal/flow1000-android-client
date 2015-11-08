@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,9 +29,13 @@ public class PicAlbumAdapter extends BaseAdapter {
 
     Context context;
 
+    int sreamWidth;
+
     public PicAlbumAdapter(Context context) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
+        this.sreamWidth = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay().getWidth();
     }
 
     public void setDataArray(List<PicInfoBean> dataArray) {
@@ -66,7 +71,18 @@ public class PicAlbumAdapter extends BaseAdapter {
         }
 
         String imgUrl = ImageDownloader.Scheme.FILE.wrap((String) dataArray.get(position).getAbsolutePath());
+        int width = dataArray.get(position).getWidth();
+        int height = dataArray.get(position).getHeight();
 
+        float div = (float)height / (float)width;
+
+        ViewGroup.LayoutParams lp = holder.img.getLayoutParams();
+        // sreamHeight  = height / width * sreamWidth
+
+        lp.height = (int)(div * (float)sreamWidth);
+        lp.width = sreamWidth;
+
+        holder.img.setLayoutParams(lp);
         ImageLoader.getInstance().displayImage(imgUrl, holder.img, DIOptionsExactly.getInstance().getOptions());
         holder.img.setOnClickListener(new View.OnClickListener() {
             @Override

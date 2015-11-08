@@ -47,19 +47,4 @@ public class PicAlbumActivity extends ListActivity {
         setListAdapter(adapter);
     }
 
-    private List<Map<String, Object>> getData() {
-        List<Map<String, Object>> list = new ArrayList<>();
-        Map<String, Object> map;
-        for (int i = 0; i != picList.size(); i++) {
-            map = new HashMap<>();
-            map.put("title", "G" + i);
-            map.put("info", "google " + i);
-            map.put("img", picList.get(i));
-
-            list.add(map);
-        }
-
-        return list;
-    }
-
 }
