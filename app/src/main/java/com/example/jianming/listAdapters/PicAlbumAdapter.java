@@ -9,17 +9,15 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.jianming.Utils.DIOptionsExactly;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.myapplication.R;
-import com.example.jianming.myapplication.XrxActivity;
+import com.example.jianming.myapplication.PicContentActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 import java.util.List;
-import java.util.Map;
 
 
 public class PicAlbumAdapter extends BaseAdapter {
@@ -92,7 +90,7 @@ public class PicAlbumAdapter extends BaseAdapter {
                 for (int i = 0; i < dataArray.size(); i++) {
                     imgs[i] = (String) dataArray.get(i).getAbsolutePath();
                 }
-                Intent intent = new Intent(context, XrxActivity.class);
+                Intent intent = new Intent(context, PicContentActivity.class);
                 intent.putExtra("imgs", imgs);
                 intent.putExtra("position", position);
                 context.startActivity(intent);

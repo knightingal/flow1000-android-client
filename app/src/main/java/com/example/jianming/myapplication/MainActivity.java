@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     public void btnClicked(View v) {
         switch (v.getId()) {
             case R.id.su27:
-                this.startActivity(new Intent(this, XrxActivity.class));
+                this.startActivity(new Intent(this, PicContentActivity.class));
                 break;
 
             case R.id.picIndexBtn:

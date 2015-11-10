@@ -41,7 +41,7 @@
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".XrxActivity"
+            android:name=".PicContentActivity"
             android:label="@string/title_activity_xrx"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
