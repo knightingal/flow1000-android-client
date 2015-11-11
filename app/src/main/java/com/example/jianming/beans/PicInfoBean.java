@@ -3,6 +3,7 @@ package com.example.jianming.beans;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
 import java.util.List;
@@ -17,6 +18,10 @@ public class PicInfoBean extends Model {
     public static List<PicInfoBean> queryByAlbum(PicAlbumBean picAlbumBean) {
         return new Select().from(PicInfoBean.class).where("album_info = ?", picAlbumBean.getId()).
                 orderBy("pic_index").execute();
+    }
+
+    public static void deleteByAlbum(PicAlbumBean picAlbumBean) {
+        new Delete().from(PicInfoBean.class).where("album_info = ?", picAlbumBean.getId()).execute();
     }
 
     @Column(name="pic_name")

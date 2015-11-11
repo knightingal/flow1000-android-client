@@ -27,11 +27,19 @@ public class PicAlbumBean extends Model{
                 execute();
     }
 
+
+
     public static PicAlbumBean getByIndex(int index) {
         return new Select().
                 from(PicAlbumBean.class).
                 where("server_index = ?", index).
                 executeSingle();
+    }
+
+    public static void deletePicAlbumFromDb(int index) {
+        PicAlbumBean picAlbum = getByIndex(index);
+        picAlbum.setExist(0).save();
+        PicInfoBean.deleteByAlbum(picAlbum);
     }
 
     public static void setExistByIndex(int index, int exist) {

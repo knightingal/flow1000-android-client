@@ -30,19 +30,6 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
         ButterKnife.bind(this);
 
         mImageSlider.setImgChangeListener(this);
-
-//        String url = getIntent().getStringExtra("imgUrl");
-//        String imageUrl;
-//        if (url == null || url.equals("")) {
-//            //String sdcard = Environment.getExternalStorageDirectory().getPath();
-//            String imagePath = "/storage/sdcard1/BaiduNetdisk/xrx/[PureJapan]Vivian_Hsu/135.JPG";
-//            //String imageUrl = ImageDownloader.Scheme.FILE.wrap(imagePath);
-//            imageUrl = ImageDownloader.Scheme.DRAWABLE.wrap(R.drawable.su27long + "");
-//        }
-//        else {
-//            imageUrl = url;
-//        }
-//        Log.d("onCreate", "imageUrl = " + imageUrl);
         imgArray = getIntent().getStringArrayExtra("imgArray");
         position = getIntent().getIntExtra("position", 0);
         if (imgArray != null && imgArray.length != 0) {
