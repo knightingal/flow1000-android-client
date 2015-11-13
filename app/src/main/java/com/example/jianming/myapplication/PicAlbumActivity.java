@@ -1,6 +1,7 @@
 package com.example.jianming.myapplication;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicAlbumBean;
@@ -15,7 +16,9 @@ import java.util.Map;
 
 
 public class PicAlbumActivity extends ListActivity {
-    private static final String TAG = "Activity4List";
+    private static final int PicContentRequestCode = 1;
+
+    private static final String TAG = "PicAlbumActivity";
 
     private List<String> picList = new ArrayList<>();
 
@@ -47,4 +50,26 @@ public class PicAlbumActivity extends ListActivity {
         setListAdapter(adapter);
     }
 
+    public void startPicContentActivity(String[] imgs, int position) {
+        Intent intent = new Intent(this, PicContentActivity.class);
+        intent.putExtra("imgArray", imgs);
+        intent.putExtra("position", position);
+        startActivityForResult(intent, PicContentRequestCode);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case PicContentRequestCode:
+                    int position = data.getIntExtra("position", -1);
+                    getListView().setSelection(position);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    }
 }

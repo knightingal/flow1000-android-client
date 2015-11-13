@@ -1,5 +1,6 @@
 package com.example.jianming.listAdapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 
 import com.example.jianming.Utils.DIOptionsExactly;
 import com.example.jianming.beans.PicInfoBean;
+import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.R;
 import com.example.jianming.myapplication.PicContentActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -25,11 +27,11 @@ public class PicAlbumAdapter extends BaseAdapter {
 
     private List<PicInfoBean> dataArray;
 
-    Context context;
+    PicAlbumActivity context;
 
     int sreamWidth;
 
-    public PicAlbumAdapter(Context context) {
+    public PicAlbumAdapter(PicAlbumActivity context) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.sreamWidth = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE))
@@ -90,10 +92,8 @@ public class PicAlbumAdapter extends BaseAdapter {
                 for (int i = 0; i < dataArray.size(); i++) {
                     imgs[i] = (String) dataArray.get(i).getAbsolutePath();
                 }
-                Intent intent = new Intent(context, PicContentActivity.class);
-                intent.putExtra("imgs", imgs);
-                intent.putExtra("position", position);
-                context.startActivity(intent);
+
+                context.startPicContentActivity(imgs, position);
             }
         });
 

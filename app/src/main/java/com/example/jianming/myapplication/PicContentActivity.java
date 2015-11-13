@@ -1,6 +1,7 @@
 package com.example.jianming.myapplication;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.jianming.views.YImageSlider;
@@ -81,5 +82,14 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("position", index);
+        setResult(RESULT_OK, intent);
+
+        super.onBackPressed();
     }
 }
