@@ -53,8 +53,8 @@ public class FileTrainingActivity extends AppCompatActivity {
 
     }
 
-    @OnClick(R.id.network)
-    public void network() {
+    @OnClick(R.id.local1000)
+    public void goToLocal1000() {
         if (NetworkUtil.isNetworkAvailable(this)) {
             startDownloadWebPage();
         } else {
@@ -99,15 +99,6 @@ public class FileTrainingActivity extends AppCompatActivity {
                     ActiveAndroid.endTransaction();
                 }
 
-//                File directory = FileUtil.getAlbumStorageDir(FileTrainingActivity.this, "file");
-//                File file = new File(directory, "index.json");
-//                try {
-//                    FileOutputStream fileOutputStream = new FileOutputStream(file, false);
-//                    fileOutputStream.write(s.getBytes());
-//                    fileOutputStream.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
                 Intent intent = new Intent(self, PicAlbumListActivity.class);
                 self.startActivity(intent);
             }

@@ -89,7 +89,6 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
         Intent intent = new Intent();
         intent.putExtra("position", index);
         setResult(RESULT_OK, intent);
-
         super.onBackPressed();
     }
 }
