@@ -21,6 +21,7 @@ import com.example.jianming.beans.UpdateStamp;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -43,6 +44,18 @@ public class Main2Activity extends AppCompatActivity
         }
     }
 
+    @Bind(R.id.toolbar)
+    public Toolbar toolbar;
+
+    @Bind(R.id.fab)
+    public FloatingActionButton fab;
+
+    @Bind(R.id.drawer_layout)
+    public DrawerLayout drawer;
+
+    @Bind(R.id.nav_view)
+    public NavigationView navigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +63,8 @@ public class Main2Activity extends AppCompatActivity
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main2);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,13 +73,11 @@ public class Main2Activity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         initDB();
