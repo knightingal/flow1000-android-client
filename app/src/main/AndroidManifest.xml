@@ -36,11 +36,6 @@
             android:label="@string/title_activity_list" >
         </activity>
         <activity
-            android:name=".ImageActivity"
-            android:label="@string/title_activity_image"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
-        </activity>
-        <activity
             android:name=".PicContentActivity"
             android:label="@string/title_activity_xrx"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
