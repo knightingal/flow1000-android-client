@@ -65,7 +65,8 @@ public class PicAlbumListAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.textView.setText(dataArray.get(position).getName());
-        if (FileUtil.checkDirExist(context, dataArray.get(position).getName())) {
+//        if (FileUtil.checkDirExist(context, dataArray.get(position).getName())) {
+        if (PicAlbumBean.getExistByIndex(dataArray.get(position).getIndex()) == 1) {
             viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
             viewHolder.exist = true;
         } else {

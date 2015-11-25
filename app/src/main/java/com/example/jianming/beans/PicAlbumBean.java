@@ -46,6 +46,10 @@ public class PicAlbumBean extends Model{
         getByIndex(index).setExist(exist).save();
     }
 
+    public static int getExistByIndex(int index) {
+        return getByIndex(index).getExist();
+    }
+
     public PicAlbumBean(int index, String name) {
         this.index = index;
         this.name = name;

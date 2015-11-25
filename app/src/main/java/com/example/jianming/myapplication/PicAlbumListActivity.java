@@ -40,7 +40,7 @@ public class PicAlbumListActivity extends AppCompatActivity {
         intent.putExtra("name", dirName);
         intent.putExtra("index", index);
         picAlbumListAdapter.notifyDataSetChanged();
-        startActivity(intent);
+//        startActivity(intent);
     }
 
     PicAlbumListAdapter picAlbumListAdapter;
@@ -100,15 +100,16 @@ public class PicAlbumListActivity extends AppCompatActivity {
             if (file.mkdirs()) {
                 Log.i(TAG, file.getAbsolutePath() + " made");
             }
-            DownloadPicListTask task = new DownloadPicListTask(
+            String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + index)
+                    .replace("%serverIP", EnvArgs.serverIP)
+                    .replace("%serverPort", EnvArgs.serverPort);
+            DownloadPicListTask.executeDownloadAlbumInfo(
                     self,
                     index,
                     name,
-                    holder.downloadProcessView
+                    holder.downloadProcessView,
+                    url
             );
-            task.execute(("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + index)
-                    .replace("%serverIP", EnvArgs.serverIP)
-                    .replace("%serverPort", EnvArgs.serverPort));
         }
     }
 

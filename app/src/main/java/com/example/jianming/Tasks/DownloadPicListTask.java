@@ -31,6 +31,12 @@ public class DownloadPicListTask extends DownloadWebpageTask{
     private int index;
     private Context context;
 
+    public static void executeDownloadAlbumInfo(Context context, int index, String dirName, DownloadProcessBar downloadProcessView, String url) {
+        DownloadPicListTask task = new DownloadPicListTask(context, index, dirName, downloadProcessView);
+        task.execute(url);
+
+    }
+
     public DownloadPicListTask(Context context, int index, String dirName, DownloadProcessBar downloadProcessView) {
         this.context = context;
         this.index = index;
