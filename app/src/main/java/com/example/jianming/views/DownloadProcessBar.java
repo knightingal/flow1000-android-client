@@ -8,18 +8,18 @@ import android.util.AttributeSet;
 import android.view.View;
 
 
-public class DownloadProcessView extends View{
-    public DownloadProcessView(Context context) {
+public class DownloadProcessBar extends View{
+    public DownloadProcessBar(Context context) {
         super(context);
         paint = new Paint();
     }
 
-    public DownloadProcessView(Context context, AttributeSet attrs) {
+    public DownloadProcessBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         paint = new Paint();
     }
 
-    public DownloadProcessView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DownloadProcessBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         paint = new Paint();
     }
@@ -73,6 +73,7 @@ public class DownloadProcessView extends View{
     }
 
     public void clear() {
+        currCount = 0;
         length = 0;
         invalidate();
     }

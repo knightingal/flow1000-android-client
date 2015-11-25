@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.myapplication.R;
-import com.example.jianming.views.DownloadProcessView;
+import com.example.jianming.views.DownloadProcessBar;
 
 import java.util.List;
 
@@ -59,7 +59,7 @@ public class PicAlbumListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.textView = (TextView) convertView.findViewById(R.id.pic_text_view);
             viewHolder.deleteBtn = (ImageView) convertView.findViewById(R.id.delete_btn);
-            viewHolder.downloadProcessView = (DownloadProcessView) convertView.findViewById(R.id.customer_view1);
+            viewHolder.downloadProcessView = (DownloadProcessBar) convertView.findViewById(R.id.customer_view1);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -112,6 +112,6 @@ public class PicAlbumListAdapter extends BaseAdapter {
 
         public boolean exist = false;
 
-        public DownloadProcessView downloadProcessView;
+        public DownloadProcessBar downloadProcessView;
     }
 }

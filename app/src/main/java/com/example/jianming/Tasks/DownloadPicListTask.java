@@ -11,15 +11,13 @@ import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.myapplication.PicAlbumListActivity;
-import com.example.jianming.views.DownloadProcessView;
+import com.example.jianming.views.DownloadProcessBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,12 +26,12 @@ import java.util.List;
  */
 public class DownloadPicListTask extends DownloadWebpageTask{
     private static final String TAG = "DownloadPicListTask";
-    private DownloadProcessView downloadProcessView;
+    private DownloadProcessBar downloadProcessView;
     private String dirName;
     private int index;
     private Context context;
 
-    public DownloadPicListTask(Context context, int index, String dirName, DownloadProcessView downloadProcessView) {
+    public DownloadPicListTask(Context context, int index, String dirName, DownloadProcessBar downloadProcessView) {
         this.context = context;
         this.index = index;
         this.dirName = dirName;
