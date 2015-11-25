@@ -3,6 +3,7 @@ package com.example.jianming.Tasks;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 
 import com.activeandroid.ActiveAndroid;
 import com.example.jianming.Utils.EnvArgs;
@@ -33,6 +34,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
 
     public static void executeDownloadAlbumInfo(Context context, int index, String dirName, DownloadProcessBar downloadProcessView, String url) {
         DownloadPicListTask task = new DownloadPicListTask(context, index, dirName, downloadProcessView);
+        task.downloadProcessView.setVisibility(View.VISIBLE);
         task.execute(url);
 
     }
@@ -104,6 +106,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
                 ActiveAndroid.endTransaction();
             }
             downloadProcessView.clear();
+            downloadProcessView.setVisibility(View.GONE);
             ((PicAlbumListActivity) context).doPicListDownloadComplete(dirName, index);
         }
     }

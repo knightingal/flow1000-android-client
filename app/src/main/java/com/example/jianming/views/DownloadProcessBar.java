@@ -30,8 +30,14 @@ public class DownloadProcessBar extends View{
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        paint.setColor(Color.RED);
+
+        paint.setColor(Color.GRAY);
+        canvas.drawRect(0, 0, this.width, 2, paint);
+
+        paint.setColor(Color.GREEN);
         canvas.drawRect(0, 0, length, 2, paint);
+
+
     }
 
     @Override
