@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.jianming.myapplication"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -21,14 +21,11 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-//    compile files('libs/universal-image-loader-1.9.3.jar')
-
-
+    //    compile files('libs/universal-image-loader-1.9.3.jar')
     repositories {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
-
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
@@ -36,6 +33,7 @@ dependencies {
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
     compile 'com.android.support:design:23.1.0'
     compile 'com.android.support:design:23.1.0'
+    compile project(':zxingLib-release')
 }
 
 

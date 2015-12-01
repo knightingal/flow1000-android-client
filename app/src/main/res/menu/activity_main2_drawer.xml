@@ -8,8 +8,8 @@
             android:title="Clear Database" />
         <item android:id="@+id/set_timestamp" android:icon="@android:drawable/ic_menu_slideshow"
             android:title="Set Timestamp" />
-        <!--<item android:id="@+id/nav_manage" android:icon="@android:drawable/ic_menu_manage"-->
-            <!--android:title="Tools" />-->
+        <item android:id="@+id/QR_code" android:icon="@android:drawable/ic_menu_manage"
+            android:title="QR Code" />
     </group>
 
     <!--<item android:title="Communicate">-->

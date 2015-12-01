@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.activeandroid.query.Delete;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.UpdateStamp;
+import com.example.jianming.xzingdemo.CapActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -139,17 +140,34 @@ public class Main2Activity extends AppCompatActivity
             Toast.makeText(this, "DB cleared", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.set_timestamp) {
             startActivity(new Intent(this, TimestampActivity.class));
+        } else if (id == R.id.QR_code) {
+            //QrcodeActivity
+//            startActivity(new Intent(this, CapActivity.class));
+            startActivityForResult(new Intent(this, CapActivity.class), I_CAP_ACTIVITY);
         }
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    private static final int I_CAP_ACTIVITY = 1;
+
     private void clearDB() {
 //        UpdateStamp.delete(UpdateStamp.class, 1);
         new Delete().from(UpdateStamp.class).execute();
         new Delete().from(PicAlbumBean.class).execute();
         initDB();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == I_CAP_ACTIVITY) {
+            String url = data.getStringExtra("data");
+            Toast.makeText(this, url, Toast.LENGTH_LONG).show();
+        }
+
     }
 }
