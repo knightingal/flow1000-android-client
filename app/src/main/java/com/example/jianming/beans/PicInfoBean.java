@@ -3,6 +3,7 @@ package com.example.jianming.beans;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
 import java.util.List;
@@ -19,6 +20,10 @@ public class PicInfoBean extends Model {
                 orderBy("pic_index").execute();
     }
 
+    public static void deleteByAlbum(PicAlbumBean picAlbumBean) {
+        new Delete().from(PicInfoBean.class).where("album_info = ?", picAlbumBean.getId()).execute();
+    }
+
     @Column(name="pic_name")
     private String name;
 
@@ -28,6 +33,31 @@ public class PicInfoBean extends Model {
     @Column(name="album_info")
     private PicAlbumBean albumInfo;
 
+    @Column(name="absolute_path")
+    private String absolutePath;
+
+    @Column(name="pic_height")
+    private int height;
+
+    @Column(name="pic_width")
+    private int width;
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
     public String getAbsolutePath() {
         return absolutePath;
     }
@@ -35,9 +65,6 @@ public class PicInfoBean extends Model {
     public void setAbsolutePath(String absolutePath) {
         this.absolutePath = absolutePath;
     }
-
-    @Column(name="absolute_path")
-    private String absolutePath;
 
     public String getName() {
         return name;

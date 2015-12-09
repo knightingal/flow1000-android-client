@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.myapplication.R;
-import com.example.jianming.views.DownloadProcessView;
+import com.example.jianming.views.DownloadProcessBar;
 
 import java.util.List;
 
@@ -59,13 +59,14 @@ public class PicAlbumListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.textView = (TextView) convertView.findViewById(R.id.pic_text_view);
             viewHolder.deleteBtn = (ImageView) convertView.findViewById(R.id.delete_btn);
-            viewHolder.downloadProcessView = (DownloadProcessView) convertView.findViewById(R.id.customer_view1);
+            viewHolder.downloadProcessView = (DownloadProcessBar) convertView.findViewById(R.id.customer_view1);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.textView.setText(dataArray.get(position).getName());
-        if (FileUtil.checkDirExist(context, dataArray.get(position).getName())) {
+//        if (FileUtil.checkDirExist(context, dataArray.get(position).getName())) {
+        if (PicAlbumBean.getExistByIndex(dataArray.get(position).getIndex()) == 1) {
             viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
             viewHolder.exist = true;
         } else {
@@ -85,7 +86,9 @@ public class PicAlbumListAdapter extends BaseAdapter {
                     public void onClick(DialogInterface dialog, int which) {
                         FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(position).getName());
                         viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
-                        PicAlbumBean.setExistByIndex(viewHolder.index, 0);
+//                        PicAlbumBean.setExistByIndex(viewHolder.index, 0);
+//                        PicAlbumBean picAlbum = PicAlbumBean.getByIndex(viewHolder.index);
+                        PicAlbumBean.deletePicAlbumFromDb(viewHolder.index);
                         dialog.dismiss();
                     }
                 });
@@ -110,6 +113,6 @@ public class PicAlbumListAdapter extends BaseAdapter {
 
         public boolean exist = false;
 
-        public DownloadProcessView downloadProcessView;
+        public DownloadProcessBar downloadProcessView;
     }
 }

@@ -4,7 +4,7 @@
     android:paddingRight="@dimen/new_activity_horizontal_margin"
     android:paddingTop="@dimen/new_activity_vertical_margin"
     android:paddingBottom="@dimen/new_activity_vertical_margin"
-    tools:context="com.example.jianming.myapplication.XrxActivity">
+    tools:context="com.example.jianming.myapplication.PicContentActivity">
 
     <com.example.jianming.views.YImageSlider
         android:layout_width="match_parent"

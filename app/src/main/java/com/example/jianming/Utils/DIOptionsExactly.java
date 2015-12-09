@@ -9,7 +9,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class DIOptionsExactly {
     private DisplayImageOptions options = new DisplayImageOptions.Builder()
-            .showImageOnLoading(R.drawable.rockit)
+            .showImageOnLoading(R.drawable.greenicon)
             .showImageOnFail(R.drawable.ic_launcher)
             .cacheInMemory(false)
             .cacheOnDisk(false)

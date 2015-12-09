@@ -21,11 +21,12 @@
         android:layout_alignParentRight="true"
         />
 
-    <com.example.jianming.views.DownloadProcessView
+    <com.example.jianming.views.DownloadProcessBar
         android:id="@+id/customer_view1"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_below="@+id/pic_text_view"
+        android:visibility="gone"
         />
 
 </RelativeLayout>

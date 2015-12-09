@@ -27,6 +27,8 @@ public class PicAlbumBean extends Model{
                 execute();
     }
 
+
+
     public static PicAlbumBean getByIndex(int index) {
         return new Select().
                 from(PicAlbumBean.class).
@@ -34,8 +36,18 @@ public class PicAlbumBean extends Model{
                 executeSingle();
     }
 
+    public static void deletePicAlbumFromDb(int index) {
+        PicAlbumBean picAlbum = getByIndex(index);
+        picAlbum.setExist(0).save();
+        PicInfoBean.deleteByAlbum(picAlbum);
+    }
+
     public static void setExistByIndex(int index, int exist) {
         getByIndex(index).setExist(exist).save();
+    }
+
+    public static int getExistByIndex(int index) {
+        return getByIndex(index).getExist();
     }
 
     public PicAlbumBean(int index, String name) {

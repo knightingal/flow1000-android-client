@@ -8,18 +8,18 @@ import android.util.AttributeSet;
 import android.view.View;
 
 
-public class DownloadProcessView extends View{
-    public DownloadProcessView(Context context) {
+public class DownloadProcessBar extends View{
+    public DownloadProcessBar(Context context) {
         super(context);
         paint = new Paint();
     }
 
-    public DownloadProcessView(Context context, AttributeSet attrs) {
+    public DownloadProcessBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         paint = new Paint();
     }
 
-    public DownloadProcessView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DownloadProcessBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         paint = new Paint();
     }
@@ -30,8 +30,14 @@ public class DownloadProcessView extends View{
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        paint.setColor(Color.RED);
+
+        paint.setColor(Color.GRAY);
+        canvas.drawRect(0, 0, this.width, 2, paint);
+
+        paint.setColor(Color.GREEN);
         canvas.drawRect(0, 0, length, 2, paint);
+
+
     }
 
     @Override
@@ -73,6 +79,7 @@ public class DownloadProcessView extends View{
     }
 
     public void clear() {
+        currCount = 0;
         length = 0;
         invalidate();
     }
