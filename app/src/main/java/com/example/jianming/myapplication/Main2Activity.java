@@ -1,7 +1,11 @@
 package com.example.jianming.myapplication;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -18,6 +22,7 @@ import android.widget.Toast;
 import com.activeandroid.query.Delete;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.UpdateStamp;
+import com.example.jianming.services.DownloadService;
 import com.example.jianming.xzingdemo.CapActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -82,6 +87,8 @@ public class Main2Activity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         initDB();
+
+        startService(new Intent(this, DownloadService.class));
     }
 
     private void initDB() {
@@ -95,7 +102,67 @@ public class Main2Activity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mBound) {
+            unbindService(mConnection);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent = new Intent(this, DownloadService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
+
+    DownloadService mService;
+
+    private boolean mBound = false;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            DownloadService.LocalBinder binder = (DownloadService.LocalBinder) service;
+            mService = binder.getService();
+            mService.callFromActivity();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mService = null;
+            mBound = false;
+        }
+    };
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this, DownloadService.class));
+    }
+
+    @Override
     public void onBackPressed() {
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
