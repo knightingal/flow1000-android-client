@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -111,16 +112,16 @@ public class Main2Activity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (mBound) {
-            unbindService(mConnection);
-        }
+//        if (mBound) {
+//            unbindService(mConnection);
+//        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(this, DownloadService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+//        Intent intent = new Intent(this, DownloadService.class);
+//        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -135,10 +136,13 @@ public class Main2Activity extends AppCompatActivity
 
     private ServiceConnection mConnection = new ServiceConnection() {
 
+        private static final String TAG = "ServiceConnection";
+
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
+            Log.d(TAG, "onServiceConnected");
             DownloadService.LocalBinder binder = (DownloadService.LocalBinder) service;
             mService = binder.getService();
             mService.callFromActivity();
@@ -147,6 +151,7 @@ public class Main2Activity extends AppCompatActivity
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
+            Log.d(TAG, "onServiceConnected");
             mService = null;
             mBound = false;
         }

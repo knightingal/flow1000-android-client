@@ -1,8 +1,11 @@
 package com.example.jianming.myapplication;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +23,7 @@ import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
+import com.example.jianming.services.DownloadService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -33,6 +37,27 @@ import butterknife.OnItemClick;
 
 
 public class PicAlbumListActivity extends AppCompatActivity {
+
+
+    DownloadService downLoadService = null;
+
+    Boolean isBound = false;
+
+    private ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected");
+            isBound = true;
+            downLoadService = ((DownloadService.LocalBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceDisconnected");
+            downLoadService = null;
+            isBound = false;
+        }
+    };
 
     public void doPicListDownloadComplete(String dirName, int index) {
         PicAlbumBean.setExistByIndex(index, 1);
@@ -80,6 +105,16 @@ public class PicAlbumListActivity extends AppCompatActivity {
         picAlbumListAdapter.setDataArray(dataArray);
         listView.setAdapter(picAlbumListAdapter);
 
+        bindService(new Intent(this, DownloadService.class), conn, BIND_AUTO_CREATE);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+        unbindService(conn);
+        isBound = false;
     }
 
     @OnItemClick(R.id.list_view1)
@@ -177,6 +212,10 @@ public class PicAlbumListActivity extends AppCompatActivity {
                 List<PicAlbumBean> dataArray = getDataSourceFromJsonFile();
                 picAlbumListAdapter.setDataArray(dataArray);
                 picAlbumListAdapter.notifyDataSetChanged();
+            } else if (id == R.id.call_download) {
+                if (isBound && downLoadService != null) {
+                    downLoadService.startDownload();
+                }
             }
         }
 

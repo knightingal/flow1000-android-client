@@ -38,7 +38,7 @@ public class DownloadService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate");
-        startCounter();
+//        startCounter();
 
     }
 
@@ -48,6 +48,10 @@ public class DownloadService extends Service {
         th = new Thread(r);
         running = true;
         th.start();
+    }
+
+    public void startDownload() {
+        Log.d(TAG, "startDownload");
     }
 
     Runnable r = new Runnable() {
@@ -71,11 +75,11 @@ public class DownloadService extends Service {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
         running = false;
-        try {
-            th.join(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            th.join(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
