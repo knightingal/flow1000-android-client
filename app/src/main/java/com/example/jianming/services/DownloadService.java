@@ -8,12 +8,25 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.example.jianming.Tasks.DownloadPicListTask;
+import com.example.jianming.views.DownloadProcessBar;
+
 public class DownloadService extends Service {
     private static final String TAG = "DownloadService";
 
 
     IBinder mBinder = new LocalBinder();
     public DownloadService() {
+    }
+
+    public void startDownload(int index, String name, DownloadProcessBar downloadProcessView, String url) {
+        DownloadPicListTask.executeDownloadAlbumInfo(
+                this,
+                index,
+                name,
+                downloadProcessView,
+                url
+        );
     }
 
     public class LocalBinder extends Binder {

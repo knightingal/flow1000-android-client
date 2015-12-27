@@ -107,7 +107,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             }
             downloadProcessView.clear();
             downloadProcessView.setVisibility(View.GONE);
-            ((PicAlbumListActivity) context).doPicListDownloadComplete(dirName, index);
+//            ((PicAlbumListActivity) context).doPicListDownloadComplete(dirName, index);
         }
     }
 

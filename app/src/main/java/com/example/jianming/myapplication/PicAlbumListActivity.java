@@ -17,7 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.jianming.Tasks.DownloadPicListTask;
+//import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.Utils.NetworkUtil;
@@ -138,13 +138,15 @@ public class PicAlbumListActivity extends AppCompatActivity {
             String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + index)
                     .replace("%serverIP", EnvArgs.serverIP)
                     .replace("%serverPort", EnvArgs.serverPort);
-            DownloadPicListTask.executeDownloadAlbumInfo(
-                    self,
-                    index,
-                    name,
-                    holder.downloadProcessView,
-                    url
-            );
+//            DownloadPicListTask.executeDownloadAlbumInfo(
+//                    self,
+//                    index,
+//                    name,
+//                    holder.downloadProcessView,
+//                    url
+//
+//            );
+            downLoadService.startDownload(index, name, holder.downloadProcessView, url);
         }
     }
 
