@@ -12,6 +12,7 @@ import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.myapplication.PicAlbumListActivity;
+import com.example.jianming.services.DownloadService;
 import com.example.jianming.views.DownloadProcessBar;
 
 import org.json.JSONArray;
@@ -107,7 +108,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             }
             downloadProcessView.clear();
             downloadProcessView.setVisibility(View.GONE);
-//            ((PicAlbumListActivity) context).doPicListDownloadComplete(dirName, index);
+            ((DownloadService) context).doPicListDownloadComplete(dirName, index);
         }
     }
 

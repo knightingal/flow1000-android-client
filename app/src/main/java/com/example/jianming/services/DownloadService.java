@@ -9,6 +9,8 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.example.jianming.Tasks.DownloadPicListTask;
+import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.myapplication.PicCompletedListener;
 import com.example.jianming.views.DownloadProcessBar;
 
 public class DownloadService extends Service {
@@ -27,6 +29,19 @@ public class DownloadService extends Service {
                 downloadProcessView,
                 url
         );
+    }
+
+    public void setPicCompletedListener(PicCompletedListener picCompletedListener) {
+        this.picCompletedListener = picCompletedListener;
+    }
+
+    private PicCompletedListener picCompletedListener = null;
+
+    public void doPicListDownloadComplete(String dirName, int index) {
+        PicAlbumBean.setExistByIndex(index, 1);
+        if (picCompletedListener != null) {
+            picCompletedListener.doPicListDownloadComplete(dirName, index);
+        }
     }
 
     public class LocalBinder extends Binder {

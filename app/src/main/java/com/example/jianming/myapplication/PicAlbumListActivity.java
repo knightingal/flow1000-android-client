@@ -36,7 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 
 
-public class PicAlbumListActivity extends AppCompatActivity {
+public class PicAlbumListActivity extends AppCompatActivity implements PicCompletedListener{
 
 
     DownloadService downLoadService = null;
@@ -49,6 +49,7 @@ public class PicAlbumListActivity extends AppCompatActivity {
             Log.d(TAG, "onServiceConnected");
             isBound = true;
             downLoadService = ((DownloadService.LocalBinder) service).getService();
+            downLoadService.setPicCompletedListener(PicAlbumListActivity.this);
         }
 
         @Override
@@ -60,12 +61,7 @@ public class PicAlbumListActivity extends AppCompatActivity {
     };
 
     public void doPicListDownloadComplete(String dirName, int index) {
-        PicAlbumBean.setExistByIndex(index, 1);
-        Intent intent = new Intent(this, PicAlbumActivity.class);
-        intent.putExtra("name", dirName);
-        intent.putExtra("index", index);
         picAlbumListAdapter.notifyDataSetChanged();
-//        startActivity(intent);
     }
 
     PicAlbumListAdapter picAlbumListAdapter;
@@ -113,6 +109,8 @@ public class PicAlbumListActivity extends AppCompatActivity {
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");
         super.onDestroy();
+        downLoadService.setPicCompletedListener(null);
+        downLoadService = null;
         unbindService(conn);
         isBound = false;
     }
@@ -138,14 +136,6 @@ public class PicAlbumListActivity extends AppCompatActivity {
             String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + index)
                     .replace("%serverIP", EnvArgs.serverIP)
                     .replace("%serverPort", EnvArgs.serverPort);
-//            DownloadPicListTask.executeDownloadAlbumInfo(
-//                    self,
-//                    index,
-//                    name,
-//                    holder.downloadProcessView,
-//                    url
-//
-//            );
             downLoadService.startDownload(index, name, holder.downloadProcessView, url);
         }
     }
