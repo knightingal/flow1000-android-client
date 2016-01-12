@@ -13,7 +13,7 @@ import java.io.IOException;
 
 
 public class DownloadPicTask extends AsyncTask<String, Void, Integer> {
-    private static final String TAG = "DownloadPicTask";
+    private static final String TAG = DownloadPicTask.class.getName();
 
     File file;
 
