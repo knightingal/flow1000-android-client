@@ -37,6 +37,13 @@ public class DownloadService extends Service {
 
     private PicCompletedListener picCompletedListener = null;
 
+    public DownloadProcessBar getDownloadProcessBarByIndex(int index) {
+        if (this.picCompletedListener == null) {
+            return null;
+        }
+        return this.picCompletedListener.getDownloadProcessBarByIndex(index);
+    }
+
     public void doPicListDownloadComplete(String dirName, int index) {
         PicAlbumBean.setExistByIndex(index, 1);
         if (picCompletedListener != null) {

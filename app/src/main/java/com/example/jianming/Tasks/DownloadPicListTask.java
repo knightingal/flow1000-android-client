@@ -28,14 +28,17 @@ import java.util.List;
  */
 public class DownloadPicListTask extends DownloadWebpageTask{
     private static final String TAG = "DownloadPicListTask";
-    private DownloadProcessBar downloadProcessView;
     private String dirName;
     private int index;
     private Context context;
 
     public static void executeDownloadAlbumInfo(Context context, int index, String dirName, DownloadProcessBar downloadProcessView, String url) {
         DownloadPicListTask task = new DownloadPicListTask(context, index, dirName, downloadProcessView);
-        task.downloadProcessView.setVisibility(View.VISIBLE);
+        DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index);
+        if (downloadProcessBar != null) {
+            downloadProcessBar.setVisibility(View.VISIBLE);
+        }
+
         task.execute(url);
 
     }
@@ -44,7 +47,6 @@ public class DownloadPicListTask extends DownloadWebpageTask{
         this.context = context;
         this.index = index;
         this.dirName = dirName;
-        this.downloadProcessView = downloadProcessView;
     }
 
     List<PicInfoBean> picInfoBeanList = new ArrayList<>();
@@ -60,7 +62,10 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             String dirName = jsonObject.getString("dirName");
             JSONArray pics = jsonObject.getJSONArray("pics");
             picCountAll = pics.length();
-            downloadProcessView.setStepCount(picCountAll);
+            DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index);
+            if (downloadProcessBar != null) {
+                downloadProcessBar.setStepCount(picCountAll);
+            }
             PicAlbumBean picAlbumBean = PicAlbumBean.getByIndex(index);
             for (int i = 0; i < pics.length(); i++) {
                 String imgUrl = generateImgUrl(dirName, pics.getString(i));
@@ -95,7 +100,11 @@ public class DownloadPicListTask extends DownloadWebpageTask{
 
     public void notifyDownloadingProcess() {
         currPicCount++;
-        downloadProcessView.longer();
+        DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index);
+        if (downloadProcessBar != null) {
+            downloadProcessBar.longer();
+        }
+
         if (currPicCount == picCountAll) {
             ActiveAndroid.beginTransaction();
             try {
@@ -106,8 +115,11 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             } finally {
                 ActiveAndroid.endTransaction();
             }
-            downloadProcessView.clear();
-            downloadProcessView.setVisibility(View.GONE);
+            if (downloadProcessBar != null) {
+                downloadProcessBar.clear();
+                downloadProcessBar.setVisibility(View.GONE);
+            }
+
             ((DownloadService) context).doPicListDownloadComplete(dirName, index);
         }
     }

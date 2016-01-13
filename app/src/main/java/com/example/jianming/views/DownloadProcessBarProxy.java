@@ -14,6 +14,7 @@ public class DownloadProcessBarProxy {
         currCount++;
         length = this.width * currCount / this.stepCount;
     }
+
     private int stepCount = 0;
 
     private int currCount = 0;
@@ -21,4 +22,5 @@ public class DownloadProcessBarProxy {
     private int width = 0;
 
     private int length = 0;
+
 }

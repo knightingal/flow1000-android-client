@@ -24,6 +24,7 @@ import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 import com.example.jianming.services.DownloadService;
+import com.example.jianming.views.DownloadProcessBar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,7 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 
 
-public class PicAlbumListActivity extends AppCompatActivity implements PicCompletedListener{
+public class PicAlbumListActivity extends AppCompatActivity implements PicCompletedListener {
 
 
     DownloadService downLoadService = null;
@@ -205,13 +206,31 @@ public class PicAlbumListActivity extends AppCompatActivity implements PicComple
                 picAlbumListAdapter.setDataArray(dataArray);
                 picAlbumListAdapter.notifyDataSetChanged();
             } else if (id == R.id.call_download) {
-                if (isBound && downLoadService != null) {
-                    downLoadService.startDownload();
-                }
+                View fisrtView = listView.getChildAt(0);
+                View lastView = listView.getChildAt(listView.getChildCount() - 1);
+                int firstIndex = ((PicAlbumListAdapter.ViewHolder)fisrtView.getTag()).index;
+                int lastIndex = ((PicAlbumListAdapter.ViewHolder)lastView.getTag()).index;
+                Log.d(TAG, firstIndex + " " + PicAlbumBean.getByIndex(firstIndex).getName());
+                Log.d(TAG, lastIndex + " " + PicAlbumBean.getByIndex(lastIndex).getName());
             }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public DownloadProcessBar getDownloadProcessBarByIndex(int index) {
+        View firstView = listView.getChildAt(0);
+        View lastView = listView.getChildAt(listView.getChildCount() - 1);
+        int minIndex = ((PicAlbumListAdapter.ViewHolder)firstView.getTag()).index;
+        int maxIndex = ((PicAlbumListAdapter.ViewHolder)lastView.getTag()).index;
+
+        if (index < minIndex || index > maxIndex) {
+            return null;
+        }
+
+        View currView = listView.getChildAt(index - minIndex);
+        return ((PicAlbumListAdapter.ViewHolder)currView.getTag()).downloadProcessView;
     }
 
     private boolean isNotExistItemShown = true;
