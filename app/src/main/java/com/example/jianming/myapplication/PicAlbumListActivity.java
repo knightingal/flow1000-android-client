@@ -61,7 +61,7 @@ public class PicAlbumListActivity extends AppCompatActivity implements PicComple
         }
     };
 
-    public void doPicListDownloadComplete(String dirName, int index) {
+    public void doPicListDownloadComplete(String dirName, int index, int localPosition) {
         picAlbumListAdapter.notifyDataSetChanged();
     }
 
@@ -122,7 +122,7 @@ public class PicAlbumListActivity extends AppCompatActivity implements PicComple
         final String name = ((TextView) view.findViewById(R.id.pic_text_view))
                 .getText()
                 .toString();
-        final int serverIndex = holder.serverIndex;
+        int serverIndex = holder.serverIndex;
         if (holder.exist) {
             Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);
             Intent intent = new Intent(self, PicAlbumActivity.class);
@@ -137,7 +137,7 @@ public class PicAlbumListActivity extends AppCompatActivity implements PicComple
             String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + serverIndex)
                     .replace("%serverIP", EnvArgs.serverIP)
                     .replace("%serverPort", EnvArgs.serverPort);
-            downLoadService.startDownload(serverIndex, name, holder.downloadProcessView, url);
+            downLoadService.startDownload(serverIndex, position, name, holder.downloadProcessView, url);
         }
     }
 
@@ -219,7 +219,7 @@ public class PicAlbumListActivity extends AppCompatActivity implements PicComple
     }
 
     @Override
-    public DownloadProcessBar getDownloadProcessBarByIndex(int index) {
+    public DownloadProcessBar getDownloadProcessBarByIndex(int index, int localPosition) {
         View firstView = listView.getChildAt(0);
         View lastView = listView.getChildAt(listView.getChildCount() - 1);
         int minIndex = ((PicAlbumListAdapter.ViewHolder)firstView.getTag()).serverIndex;

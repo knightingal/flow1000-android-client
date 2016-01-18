@@ -27,13 +27,14 @@ import java.util.List;
  */
 public class DownloadPicListTask extends DownloadWebpageTask{
     private static final String TAG = "DownloadPicListTask";
+    private final int localPosition;
     private String dirName;
     private int index;
     private Context context;
 
-    public static void executeDownloadAlbumInfo(Context context, int index, String dirName, DownloadProcessBar downloadProcessView, String url) {
-        DownloadPicListTask task = new DownloadPicListTask(context, index, dirName, downloadProcessView);
-        DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index);
+    public static void executeDownloadAlbumInfo(Context context, int serverIndex, int localPosition, String dirName, DownloadProcessBar downloadProcessView, String url) {
+        DownloadPicListTask task = new DownloadPicListTask(context, serverIndex, localPosition, dirName, downloadProcessView);
+        DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(serverIndex, localPosition);
         if (downloadProcessBar != null) {
             downloadProcessBar.setVisibility(View.VISIBLE);
         }
@@ -42,10 +43,20 @@ public class DownloadPicListTask extends DownloadWebpageTask{
 
     }
 
-    public DownloadPicListTask(Context context, int index, String dirName, DownloadProcessBar downloadProcessView) {
+    /**
+     * Constructor of DownloadPicListTask
+     *
+     * @param context the context
+     * @param index index from server
+     * @param localPosition position of the local listView item
+     * @param dirName the dirName
+     * @param downloadProcessView the downloadProcessView
+     */
+    public DownloadPicListTask(Context context, int index, int localPosition, String dirName, DownloadProcessBar downloadProcessView) {
         this.context = context;
         this.index = index;
         this.dirName = dirName;
+        this.localPosition = localPosition;
     }
 
     List<PicInfoBean> picInfoBeanList = new ArrayList<>();
@@ -61,7 +72,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             String dirName = jsonObject.getString("dirName");
             JSONArray pics = jsonObject.getJSONArray("pics");
             picCountAll = pics.length();
-            DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index);
+            DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index, localPosition);
             if (downloadProcessBar != null) {
                 downloadProcessBar.setStepCount(picCountAll);
             }
@@ -99,7 +110,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
 
     public void notifyDownloadingProcess() {
         currPicCount++;
-        DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index);
+        DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index, localPosition);
         if (downloadProcessBar != null) {
             downloadProcessBar.longer();
         }
@@ -119,7 +130,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
                 downloadProcessBar.setVisibility(View.GONE);
             }
 
-            ((DownloadService) context).doPicListDownloadComplete(dirName, index);
+            ((DownloadService) context).doPicListDownloadComplete(dirName, index, localPosition);
         }
     }
 

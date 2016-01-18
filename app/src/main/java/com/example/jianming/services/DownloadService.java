@@ -19,10 +19,11 @@ public class DownloadService extends Service {
     public DownloadService() {
     }
 
-    public void startDownload(int index, String name, DownloadProcessBar downloadProcessView, String url) {
+    public void startDownload(int serverIndex, int localPosition, String name, DownloadProcessBar downloadProcessView, String url) {
         DownloadPicListTask.executeDownloadAlbumInfo(
                 this,
-                index,
+                serverIndex,
+                localPosition,
                 name,
                 downloadProcessView,
                 url
@@ -35,17 +36,17 @@ public class DownloadService extends Service {
 
     private PicCompletedListener picCompletedListener = null;
 
-    public DownloadProcessBar getDownloadProcessBarByIndex(int index) {
+    public DownloadProcessBar getDownloadProcessBarByIndex(int index, int localPosition) {
         if (this.picCompletedListener == null) {
             return null;
         }
-        return this.picCompletedListener.getDownloadProcessBarByIndex(index);
+        return this.picCompletedListener.getDownloadProcessBarByIndex(index, localPosition);
     }
 
-    public void doPicListDownloadComplete(String dirName, int index) {
+    public void doPicListDownloadComplete(String dirName, int index, int localPosition) {
         PicAlbumBean.setExistByServerIndex(index, 1);
         if (picCompletedListener != null) {
-            picCompletedListener.doPicListDownloadComplete(dirName, index);
+            picCompletedListener.doPicListDownloadComplete(dirName, index, localPosition);
         }
     }
 
