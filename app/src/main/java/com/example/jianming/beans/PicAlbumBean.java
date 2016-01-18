@@ -29,29 +29,29 @@ public class PicAlbumBean extends Model{
 
 
 
-    public static PicAlbumBean getByIndex(int index) {
+    public static PicAlbumBean getByServerIndex(int serverIndex) {
         return new Select().
                 from(PicAlbumBean.class).
-                where("server_index = ?", index).
+                where("server_index = ?", serverIndex).
                 executeSingle();
     }
 
-    public static void deletePicAlbumFromDb(int index) {
-        PicAlbumBean picAlbum = getByIndex(index);
+    public static void deletePicAlbumFromDb(int serverIndex) {
+        PicAlbumBean picAlbum = getByServerIndex(serverIndex);
         picAlbum.setExist(0).save();
         PicInfoBean.deleteByAlbum(picAlbum);
     }
 
-    public static void setExistByIndex(int index, int exist) {
-        getByIndex(index).setExist(exist).save();
+    public static void setExistByServerIndex(int serverIndex, int exist) {
+        getByServerIndex(serverIndex).setExist(exist).save();
     }
 
-    public static int getExistByIndex(int index) {
-        return getByIndex(index).getExist();
+    public static int getExistByServerIndex(int serverIndex) {
+        return getByServerIndex(serverIndex).getExist();
     }
 
-    public PicAlbumBean(int index, String name) {
-        this.index = index;
+    public PicAlbumBean(int serverIndex, String name) {
+        this.serverIndex = serverIndex;
         this.name = name;
         this.exist = 0;
     }
@@ -62,7 +62,7 @@ public class PicAlbumBean extends Model{
 
     @JsonName("jsonIndex")
     @Column(name="server_index", index=true)
-    private int index;
+    private int serverIndex;
 
     @Column(name="exist")
     private int exist;
@@ -74,12 +74,12 @@ public class PicAlbumBean extends Model{
         return name;
     }
 
-    public int getIndex() {
-        return index;
+    public int getServerIndex() {
+        return serverIndex;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setServerIndex(int serverIndex) {
+        this.serverIndex = serverIndex;
     }
 
 //    public String getMtime() {

@@ -2,9 +2,7 @@ package com.example.jianming.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -45,7 +43,7 @@ public class DownloadService extends Service {
     }
 
     public void doPicListDownloadComplete(String dirName, int index) {
-        PicAlbumBean.setExistByIndex(index, 1);
+        PicAlbumBean.setExistByServerIndex(index, 1);
         if (picCompletedListener != null) {
             picCompletedListener.doPicListDownloadComplete(dirName, index);
         }

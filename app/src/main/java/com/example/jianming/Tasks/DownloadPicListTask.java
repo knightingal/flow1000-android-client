@@ -11,7 +11,6 @@ import com.example.jianming.Utils.FileUtil;
 
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicInfoBean;
-import com.example.jianming.myapplication.PicAlbumListActivity;
 import com.example.jianming.services.DownloadService;
 import com.example.jianming.views.DownloadProcessBar;
 
@@ -66,7 +65,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             if (downloadProcessBar != null) {
                 downloadProcessBar.setStepCount(picCountAll);
             }
-            PicAlbumBean picAlbumBean = PicAlbumBean.getByIndex(index);
+            PicAlbumBean picAlbumBean = PicAlbumBean.getByServerIndex(index);
             for (int i = 0; i < pics.length(); i++) {
                 String imgUrl = generateImgUrl(dirName, pics.getString(i));
                 PicInfoBean picInfoBean = downloadImg(imgUrl, dirName, pics.getString(i));
