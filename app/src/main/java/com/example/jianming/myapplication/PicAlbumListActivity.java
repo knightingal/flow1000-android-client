@@ -222,14 +222,14 @@ public class PicAlbumListActivity extends AppCompatActivity implements PicComple
     public DownloadProcessBar getDownloadProcessBarByIndex(int index, int localPosition) {
         View firstView = listView.getChildAt(0);
         View lastView = listView.getChildAt(listView.getChildCount() - 1);
-        int minIndex = ((PicAlbumListAdapter.ViewHolder)firstView.getTag()).serverIndex;
-        int maxIndex = ((PicAlbumListAdapter.ViewHolder)lastView.getTag()).serverIndex;
+        int minIndex = ((PicAlbumListAdapter.ViewHolder)firstView.getTag()).localPosition;
+        int maxIndex = ((PicAlbumListAdapter.ViewHolder)lastView.getTag()).localPosition;
 
-        if (index < minIndex || index > maxIndex) {
+        if (localPosition < minIndex || localPosition > maxIndex) {
             return null;
         }
 
-        View currView = listView.getChildAt(index - minIndex);
+        View currView = listView.getChildAt(localPosition - minIndex);
         return ((PicAlbumListAdapter.ViewHolder)currView.getTag()).downloadProcessView;
     }
 

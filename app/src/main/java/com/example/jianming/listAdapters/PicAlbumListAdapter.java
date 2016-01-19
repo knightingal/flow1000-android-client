@@ -74,6 +74,7 @@ public class PicAlbumListAdapter extends BaseAdapter {
             viewHolder.exist = false;
         }
         viewHolder.serverIndex = dataArray.get(position).getServerIndex();
+        viewHolder.localPosition = position;
         viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,6 +111,8 @@ public class PicAlbumListAdapter extends BaseAdapter {
         public ImageView deleteBtn;
 
         public int serverIndex;
+
+        public int localPosition;
 
         public boolean exist = false;
 
