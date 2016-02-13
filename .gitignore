@@ -6,6 +6,8 @@
 /.idea/misc.xml
 /.idea/copyright/profiles_settings.xml
 /.idea/vcs.xml
+/.idea/.name
+/.idea/modules.xml
 .DS_Store
 /build
 *.iml
