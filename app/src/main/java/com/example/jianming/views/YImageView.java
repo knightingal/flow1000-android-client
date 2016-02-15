@@ -94,9 +94,11 @@ public class YImageView extends ImageView {
                 bottom = bitmap_H;
             }
         }
+
+        top = (screamH - bitmap_H) / 2;
         boolean isChanged = super.setFrame(0, 0, bitmap_W, bitmap_H);
         setX(left);
-        setY(0);
+        setY(top);
         return isChanged;
     }
 
