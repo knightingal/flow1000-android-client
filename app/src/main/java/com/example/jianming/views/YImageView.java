@@ -94,7 +94,7 @@ public class YImageView extends ImageView {
                 bottom = bitmap_H;
             }
         }
-        boolean isChanged = super.setFrame(left, top, right, bottom);
+        boolean isChanged = super.setFrame(0, 0, bitmap_W, bitmap_H);
         setX(left);
         setY(0);
         return isChanged;
