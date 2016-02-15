@@ -87,7 +87,7 @@ public class FileTrainingActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         PicAlbumBean picIndexBean = new PicAlbumBean();
-                        picIndexBean.setServerIndex(Integer.parseInt(jsonObject.getString("serverIndex")));
+                        picIndexBean.setServerIndex(Integer.parseInt(jsonObject.getString("index")));
                         picIndexBean.setName(jsonObject.getString("name"));
                         picIndexBean.save();
                     }
