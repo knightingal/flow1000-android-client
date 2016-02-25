@@ -18,7 +18,7 @@ public class UpdateStamp extends Model {
                 new Select().from(UpdateStamp.class).
                         where("table_name = ?", tableName).
                         executeSingle();
-        Log.i("UpdataStamp", "updateStamp: " + updateStamp);
+        Log.i("UpdateStamp", "updateStamp: " + updateStamp);
         return updateStamp;
     }
 
