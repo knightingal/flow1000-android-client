@@ -220,6 +220,10 @@ public class YImageView extends ImageView {
         return animData;
     }
 
+    private AnimData calAnimDataY() {
+        return calAnimDataY(this.getY(), this.minY, this.velocityY);
+    }
+
     private AnimData calAnimDataY(float currPos, int minPos, int velocity) {
         float dest = currPos + velocity * ANIM_DURATION / 2000;
         boolean useAccelerateInterpolator = false;
@@ -352,11 +356,15 @@ public class YImageView extends ImageView {
             setX.start();
         }
         animDataY = calAnimDataY(this.getY(), minY, velocityY);
+        AnimData animDataYLeft = yImageSlider.getHideLeft().calAnimDataY();
+        AnimData animDataYRight = yImageSlider.getHideRight().calAnimDataY();
+
+
         setY = new AnimatorSet();
 //        setY.play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), animDataY.dest));
         setY.playTogether(ObjectAnimator.ofFloat(this, View.Y, this.getY(), animDataY.dest),
-                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.Y, yImageSlider.getHideRight().getY(), animDataY.dest),
-                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.Y, yImageSlider.getHideLeft().getY(), animDataY.dest)
+                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.Y, yImageSlider.getHideRight().getY(), animDataYRight.dest),
+                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.Y, yImageSlider.getHideLeft().getY(), animDataYLeft.dest)
                 );
         setY.setDuration(animDataY.duration);
         if (animDataY.useAccelerateInterpolator) {
