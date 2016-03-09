@@ -63,6 +63,9 @@ public class DownloadPicListTask extends DownloadWebpageTask{
 
     int picCountAll = 0;
     int currPicCount = 0;
+
+    JSONArray pics;
+    int currentIndex = 0;
     @Override
     protected void onPostExecute(String s) {
         Log.i(TAG, s);
@@ -70,24 +73,32 @@ public class DownloadPicListTask extends DownloadWebpageTask{
         try {
             JSONObject jsonObject = new JSONObject(s);
             String dirName = jsonObject.getString("dirName");
-            JSONArray pics = jsonObject.getJSONArray("pics");
+            pics = jsonObject.getJSONArray("pics");
             picCountAll = pics.length();
             DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index, localPosition);
             if (downloadProcessBar != null) {
                 downloadProcessBar.setStepCount(picCountAll);
             }
-            PicAlbumBean picAlbumBean = PicAlbumBean.getByServerIndex(index);
-            for (int i = 0; i < pics.length(); i++) {
-                String imgUrl = generateImgUrl(dirName, pics.getString(i));
-                PicInfoBean picInfoBean = downloadImg(imgUrl, dirName, pics.getString(i));
 
-                picInfoBean.setIndex(i);
-                picInfoBean.setName(pics.getString(i));
-                picInfoBean.setAlbumInfo(picAlbumBean);
-                picInfoBeanList.add(picInfoBean);
-            }
+            int count = pics.length() < 128 ? pics.length(): 128;
+            currentIndex = count;
+            startMost128Task(0, count);
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void startMost128Task(int start, int end) throws JSONException{
+        PicAlbumBean picAlbumBean = PicAlbumBean.getByServerIndex(index);
+        for (int i = start; i < end; i++) {
+//            int ii = start + i;
+            String imgUrl = generateImgUrl(dirName, pics.getString(i));
+            PicInfoBean picInfoBean = downloadImg(imgUrl, dirName, pics.getString(i));
+
+            picInfoBean.setIndex(i);
+            picInfoBean.setName(pics.getString(i));
+            picInfoBean.setAlbumInfo(picAlbumBean);
+            picInfoBeanList.add(picInfoBean);
         }
     }
 
@@ -131,6 +142,14 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             }
 
             ((DownloadService) context).doPicListDownloadComplete(dirName, index, localPosition);
+        } else if (currPicCount == currentIndex) {
+            int next128Count = currentIndex + 128;
+            currentIndex = pics.length() < next128Count ? pics.length(): next128Count;
+            try {
+                startMost128Task(currPicCount, currentIndex);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
