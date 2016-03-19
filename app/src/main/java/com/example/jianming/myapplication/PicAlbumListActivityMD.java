@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -39,8 +40,8 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
     Activity self = this;
 
     PicAlbumListAdapter picAlbumListAdapter;
-    @Bind(R.id.list_view1)
-    public ListView listView;
+//    @Bind(R.id.list_view11)
+    public RecyclerView listView;
 
     DownloadService downLoadService = null;
 
@@ -68,7 +69,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pic_album_list_activity_md);
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -89,6 +90,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
         });
 
         List<PicAlbumBean> dataArray = getDataSourceFromJsonFile();
+        listView = (RecyclerView)findViewById(R.id.list_view11);
         picAlbumListAdapter = new PicAlbumListAdapter(this);
         picAlbumListAdapter.setDataArray(dataArray);
         listView.setAdapter(picAlbumListAdapter);
@@ -106,7 +108,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
         isBound = false;
     }
 
-    @OnItemClick(R.id.list_view1)
+//    @OnItemClick(R.id.list_view11)
     public void doItemClick(AdapterView<?> parent, View view, int position, long id) {
         PicAlbumListAdapter.ViewHolder holder = (PicAlbumListAdapter.ViewHolder) view.getTag();
         final String name = ((TextView) view.findViewById(R.id.pic_text_view))

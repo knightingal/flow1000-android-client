@@ -58,7 +58,7 @@ public class FileTrainingActivity extends AppCompatActivity {
         if (NetworkUtil.isNetworkAvailable(this)) {
             startDownloadWebPage();
         } else {
-            Intent intent = new Intent(self, PicAlbumListActivity.class);
+            Intent intent = new Intent(self, PicAlbumListActivityMD.class);
             //intent.putExtra("jsonArg", s);
             self.startActivity(intent);
             Log.i("network", "No network connection available.");
