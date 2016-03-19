@@ -99,7 +99,7 @@ public class FileTrainingActivity extends AppCompatActivity {
                     ActiveAndroid.endTransaction();
                 }
 
-                Intent intent = new Intent(self, PicAlbumListActivity.class);
+                Intent intent = new Intent(self, PicAlbumListActivityMD.class);
                 self.startActivity(intent);
             }
         }.execute(stringUrl);
