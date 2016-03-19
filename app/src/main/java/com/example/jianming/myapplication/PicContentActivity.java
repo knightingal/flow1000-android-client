@@ -1,9 +1,14 @@
 package com.example.jianming.myapplication;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 
+import com.example.jianming.services.DownloadService;
 import com.example.jianming.views.YImageSlider;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
@@ -22,6 +27,45 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
     private String[] imgArray;
 
     private int position;
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mBound) {
+            unbindService(mConnection);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent = new Intent(this, DownloadService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    DownloadService mService;
+
+    private boolean mBound = false;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            DownloadService.LocalBinder binder = (DownloadService.LocalBinder) service;
+            mService = binder.getService();
+            mService.callFromActivity();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mService = null;
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

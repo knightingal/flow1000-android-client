@@ -66,14 +66,15 @@ public class PicAlbumListAdapter extends BaseAdapter {
         }
         viewHolder.textView.setText(dataArray.get(position).getName());
 //        if (FileUtil.checkDirExist(context, dataArray.get(position).getName())) {
-        if (PicAlbumBean.getExistByIndex(dataArray.get(position).getIndex()) == 1) {
+        if (PicAlbumBean.getExistByServerIndex(dataArray.get(position).getServerIndex()) == 1) {
             viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
             viewHolder.exist = true;
         } else {
             viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
             viewHolder.exist = false;
         }
-        viewHolder.index = dataArray.get(position).getIndex();
+        viewHolder.serverIndex = dataArray.get(position).getServerIndex();
+        viewHolder.localPosition = position;
         viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,9 +87,9 @@ public class PicAlbumListAdapter extends BaseAdapter {
                     public void onClick(DialogInterface dialog, int which) {
                         FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(position).getName());
                         viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
-//                        PicAlbumBean.setExistByIndex(viewHolder.index, 0);
-//                        PicAlbumBean picAlbum = PicAlbumBean.getByIndex(viewHolder.index);
-                        PicAlbumBean.deletePicAlbumFromDb(viewHolder.index);
+//                        PicAlbumBean.setExistByServerIndex(viewHolder.serverIndex, 0);
+//                        PicAlbumBean picAlbum = PicAlbumBean.getByServerIndex(viewHolder.serverIndex);
+                        PicAlbumBean.deletePicAlbumFromDb(viewHolder.serverIndex);
                         dialog.dismiss();
                     }
                 });
@@ -109,7 +110,9 @@ public class PicAlbumListAdapter extends BaseAdapter {
 
         public ImageView deleteBtn;
 
-        public int index;
+        public int serverIndex;
+
+        public int localPosition;
 
         public boolean exist = false;
 

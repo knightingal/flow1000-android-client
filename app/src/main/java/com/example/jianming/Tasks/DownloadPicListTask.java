@@ -11,7 +11,7 @@ import com.example.jianming.Utils.FileUtil;
 
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicInfoBean;
-import com.example.jianming.myapplication.PicAlbumListActivity;
+import com.example.jianming.services.DownloadService;
 import com.example.jianming.views.DownloadProcessBar;
 
 import org.json.JSONArray;
@@ -27,29 +27,45 @@ import java.util.List;
  */
 public class DownloadPicListTask extends DownloadWebpageTask{
     private static final String TAG = "DownloadPicListTask";
-    private DownloadProcessBar downloadProcessView;
+    private final int localPosition;
     private String dirName;
     private int index;
     private Context context;
 
-    public static void executeDownloadAlbumInfo(Context context, int index, String dirName, DownloadProcessBar downloadProcessView, String url) {
-        DownloadPicListTask task = new DownloadPicListTask(context, index, dirName, downloadProcessView);
-        task.downloadProcessView.setVisibility(View.VISIBLE);
+    public static void executeDownloadAlbumInfo(Context context, int serverIndex, int localPosition, String dirName, DownloadProcessBar downloadProcessView, String url) {
+        DownloadPicListTask task = new DownloadPicListTask(context, serverIndex, localPosition, dirName, downloadProcessView);
+        DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(serverIndex, localPosition);
+        if (downloadProcessBar != null) {
+            downloadProcessBar.setVisibility(View.VISIBLE);
+        }
+
         task.execute(url);
 
     }
 
-    public DownloadPicListTask(Context context, int index, String dirName, DownloadProcessBar downloadProcessView) {
+    /**
+     * Constructor of DownloadPicListTask
+     *
+     * @param context the context
+     * @param index index from server
+     * @param localPosition position of the local listView item
+     * @param dirName the dirName
+     * @param downloadProcessView the downloadProcessView
+     */
+    public DownloadPicListTask(Context context, int index, int localPosition, String dirName, DownloadProcessBar downloadProcessView) {
         this.context = context;
         this.index = index;
         this.dirName = dirName;
-        this.downloadProcessView = downloadProcessView;
+        this.localPosition = localPosition;
     }
 
     List<PicInfoBean> picInfoBeanList = new ArrayList<>();
 
     int picCountAll = 0;
     int currPicCount = 0;
+
+    JSONArray pics;
+    int currentIndex = 0;
     @Override
     protected void onPostExecute(String s) {
         Log.i(TAG, s);
@@ -57,21 +73,32 @@ public class DownloadPicListTask extends DownloadWebpageTask{
         try {
             JSONObject jsonObject = new JSONObject(s);
             String dirName = jsonObject.getString("dirName");
-            JSONArray pics = jsonObject.getJSONArray("pics");
+            pics = jsonObject.getJSONArray("pics");
             picCountAll = pics.length();
-            downloadProcessView.setStepCount(picCountAll);
-            PicAlbumBean picAlbumBean = PicAlbumBean.getByIndex(index);
-            for (int i = 0; i < pics.length(); i++) {
-                String imgUrl = generateImgUrl(dirName, pics.getString(i));
-                PicInfoBean picInfoBean = downloadImg(imgUrl, dirName, pics.getString(i));
-
-                picInfoBean.setIndex(i);
-                picInfoBean.setName(pics.getString(i));
-                picInfoBean.setAlbumInfo(picAlbumBean);
-                picInfoBeanList.add(picInfoBean);
+            DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index, localPosition);
+            if (downloadProcessBar != null) {
+                downloadProcessBar.setStepCount(picCountAll);
             }
+
+            int count = pics.length() < 128 ? pics.length(): 128;
+            currentIndex = count;
+            startMost128Task(0, count);
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void startMost128Task(int start, int end) throws JSONException{
+        PicAlbumBean picAlbumBean = PicAlbumBean.getByServerIndex(index);
+        for (int i = start; i < end; i++) {
+//            int ii = start + i;
+            String imgUrl = generateImgUrl(dirName, pics.getString(i));
+            PicInfoBean picInfoBean = downloadImg(imgUrl, dirName, pics.getString(i));
+
+            picInfoBean.setIndex(i);
+            picInfoBean.setName(pics.getString(i));
+            picInfoBean.setAlbumInfo(picAlbumBean);
+            picInfoBeanList.add(picInfoBean);
         }
     }
 
@@ -94,7 +121,11 @@ public class DownloadPicListTask extends DownloadWebpageTask{
 
     public void notifyDownloadingProcess() {
         currPicCount++;
-        downloadProcessView.longer();
+        DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index, localPosition);
+        if (downloadProcessBar != null) {
+            downloadProcessBar.longer();
+        }
+
         if (currPicCount == picCountAll) {
             ActiveAndroid.beginTransaction();
             try {
@@ -105,9 +136,20 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             } finally {
                 ActiveAndroid.endTransaction();
             }
-            downloadProcessView.clear();
-            downloadProcessView.setVisibility(View.GONE);
-            ((PicAlbumListActivity) context).doPicListDownloadComplete(dirName, index);
+            if (downloadProcessBar != null) {
+                downloadProcessBar.clear();
+                downloadProcessBar.setVisibility(View.GONE);
+            }
+
+            ((DownloadService) context).doPicListDownloadComplete(dirName, index, localPosition);
+        } else if (currPicCount == currentIndex) {
+            int next128Count = currentIndex + 128;
+            currentIndex = pics.length() < next128Count ? pics.length(): next128Count;
+            try {
+                startMost128Task(currPicCount, currentIndex);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

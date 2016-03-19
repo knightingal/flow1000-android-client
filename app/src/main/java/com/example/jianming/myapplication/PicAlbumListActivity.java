@@ -1,8 +1,11 @@
 package com.example.jianming.myapplication;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,12 +17,14 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.jianming.Tasks.DownloadPicListTask;
+//import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
+import com.example.jianming.services.DownloadService;
+import com.example.jianming.views.DownloadProcessBar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -32,15 +37,32 @@ import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 
 
-public class PicAlbumListActivity extends AppCompatActivity {
+public class PicAlbumListActivity extends AppCompatActivity implements PicCompletedListener {
 
-    public void doPicListDownloadComplete(String dirName, int index) {
-        PicAlbumBean.setExistByIndex(index, 1);
-        Intent intent = new Intent(this, PicAlbumActivity.class);
-        intent.putExtra("name", dirName);
-        intent.putExtra("index", index);
+
+    DownloadService downLoadService = null;
+
+    Boolean isBound = false;
+
+    private ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected");
+            isBound = true;
+            downLoadService = ((DownloadService.LocalBinder) service).getService();
+            downLoadService.setPicCompletedListener(PicAlbumListActivity.this);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "onServiceDisconnected");
+            downLoadService = null;
+            isBound = false;
+        }
+    };
+
+    public void doPicListDownloadComplete(String dirName, int index, int localPosition) {
         picAlbumListAdapter.notifyDataSetChanged();
-//        startActivity(intent);
     }
 
     PicAlbumListAdapter picAlbumListAdapter;
@@ -80,6 +102,18 @@ public class PicAlbumListActivity extends AppCompatActivity {
         picAlbumListAdapter.setDataArray(dataArray);
         listView.setAdapter(picAlbumListAdapter);
 
+        bindService(new Intent(this, DownloadService.class), conn, BIND_AUTO_CREATE);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+        downLoadService.setPicCompletedListener(null);
+        downLoadService = null;
+        unbindService(conn);
+        isBound = false;
     }
 
     @OnItemClick(R.id.list_view1)
@@ -88,28 +122,22 @@ public class PicAlbumListActivity extends AppCompatActivity {
         final String name = ((TextView) view.findViewById(R.id.pic_text_view))
                 .getText()
                 .toString();
-        final int index = holder.index;
+        int serverIndex = holder.serverIndex;
         if (holder.exist) {
-            Log.i(TAG, "you click " + index + "th item, name = " + name);
+            Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);
             Intent intent = new Intent(self, PicAlbumActivity.class);
             intent.putExtra("name", name);
-            intent.putExtra("index", index);
+            intent.putExtra("serverIndex", serverIndex);
             self.startActivity(intent);
         } else {
             File file = FileUtil.getAlbumStorageDir(PicAlbumListActivity.this, name);
             if (file.mkdirs()) {
                 Log.i(TAG, file.getAbsolutePath() + " made");
             }
-            String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + index)
+            String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + serverIndex)
                     .replace("%serverIP", EnvArgs.serverIP)
                     .replace("%serverPort", EnvArgs.serverPort);
-            DownloadPicListTask.executeDownloadAlbumInfo(
-                    self,
-                    index,
-                    name,
-                    holder.downloadProcessView,
-                    url
-            );
+            downLoadService.startDownload(serverIndex, position, name, holder.downloadProcessView, url);
         }
     }
 
@@ -177,10 +205,32 @@ public class PicAlbumListActivity extends AppCompatActivity {
                 List<PicAlbumBean> dataArray = getDataSourceFromJsonFile();
                 picAlbumListAdapter.setDataArray(dataArray);
                 picAlbumListAdapter.notifyDataSetChanged();
+            } else if (id == R.id.call_download) {
+                View firstView = listView.getChildAt(0);
+                View lastView = listView.getChildAt(listView.getChildCount() - 1);
+                int firstIndex = ((PicAlbumListAdapter.ViewHolder)firstView.getTag()).serverIndex;
+                int lastIndex = ((PicAlbumListAdapter.ViewHolder)lastView.getTag()).serverIndex;
+                Log.d(TAG, firstIndex + " " + PicAlbumBean.getByServerIndex(firstIndex).getName());
+                Log.d(TAG, lastIndex + " " + PicAlbumBean.getByServerIndex(lastIndex).getName());
             }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public DownloadProcessBar getDownloadProcessBarByIndex(int index, int localPosition) {
+        View firstView = listView.getChildAt(0);
+        View lastView = listView.getChildAt(listView.getChildCount() - 1);
+        int minIndex = ((PicAlbumListAdapter.ViewHolder)firstView.getTag()).localPosition;
+        int maxIndex = ((PicAlbumListAdapter.ViewHolder)lastView.getTag()).localPosition;
+
+        if (localPosition < minIndex || localPosition > maxIndex) {
+            return null;
+        }
+
+        View currView = listView.getChildAt(localPosition - minIndex);
+        return ((PicAlbumListAdapter.ViewHolder)currView.getTag()).downloadProcessView;
     }
 
     private boolean isNotExistItemShown = true;

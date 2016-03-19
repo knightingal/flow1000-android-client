@@ -1,5 +1,7 @@
 package com.example.jianming.beans;
 
+import android.util.Log;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
@@ -16,6 +18,7 @@ public class UpdateStamp extends Model {
                 new Select().from(UpdateStamp.class).
                         where("table_name = ?", tableName).
                         executeSingle();
+        Log.i("UpdateStamp", "updateStamp: " + updateStamp);
         return updateStamp;
     }
 
