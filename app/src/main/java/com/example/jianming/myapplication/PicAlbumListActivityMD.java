@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -40,6 +41,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
     Activity self = this;
 
     PicAlbumListAdapter picAlbumListAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 //    @Bind(R.id.list_view11)
     public RecyclerView listView;
 
@@ -91,6 +93,11 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
 
         List<PicAlbumBean> dataArray = getDataSourceFromJsonFile();
         listView = (RecyclerView)findViewById(R.id.list_view11);
+
+        listView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        listView.setLayoutManager(mLayoutManager);
+
         picAlbumListAdapter = new PicAlbumListAdapter(this);
         picAlbumListAdapter.setDataArray(dataArray);
         listView.setAdapter(picAlbumListAdapter);
