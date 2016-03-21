@@ -38,14 +38,13 @@ import butterknife.OnItemClick;
 public class PicAlbumListActivityMD extends AppCompatActivity implements PicCompletedListener {
 
     private final static String TAG = "PicAlbumListActivityMD";
-    Activity self = this;
 
     PicAlbumListAdapter picAlbumListAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-//    @Bind(R.id.list_view11)
+    @Bind(R.id.list_view11)
     public RecyclerView listView;
 
-    DownloadService downLoadService = null;
+    public DownloadService downLoadService = null;
 
     Boolean isBound = false;
 
@@ -71,7 +70,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pic_album_list_activity_md);
-//        ButterKnife.bind(this);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -92,7 +91,6 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
         });
 
         List<PicAlbumBean> dataArray = getDataSourceFromJsonFile();
-        listView = (RecyclerView)findViewById(R.id.list_view11);
 
         listView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -101,6 +99,8 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
         picAlbumListAdapter = new PicAlbumListAdapter(this);
         picAlbumListAdapter.setDataArray(dataArray);
         listView.setAdapter(picAlbumListAdapter);
+
+
 
         bindService(new Intent(this, DownloadService.class), conn, BIND_AUTO_CREATE);
     }
@@ -113,31 +113,6 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
         downLoadService = null;
         unbindService(conn);
         isBound = false;
-    }
-
-//    @OnItemClick(R.id.list_view11)
-    public void doItemClick(AdapterView<?> parent, View view, int position, long id) {
-        PicAlbumListAdapter.ViewHolder holder = (PicAlbumListAdapter.ViewHolder) view.getTag();
-        final String name = ((TextView) view.findViewById(R.id.pic_text_view))
-                .getText()
-                .toString();
-        int serverIndex = holder.serverIndex;
-        if (holder.exist) {
-            Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);
-            Intent intent = new Intent(self, PicAlbumActivity.class);
-            intent.putExtra("name", name);
-            intent.putExtra("serverIndex", serverIndex);
-            self.startActivity(intent);
-        } else {
-            File file = FileUtil.getAlbumStorageDir(PicAlbumListActivityMD.this, name);
-            if (file.mkdirs()) {
-                Log.i(TAG, file.getAbsolutePath() + " made");
-            }
-            String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + serverIndex)
-                    .replace("%serverIP", EnvArgs.serverIP)
-                    .replace("%serverPort", EnvArgs.serverPort);
-            downLoadService.startDownload(serverIndex, position, name, holder.downloadProcessView, url);
-        }
     }
 
     @Override
