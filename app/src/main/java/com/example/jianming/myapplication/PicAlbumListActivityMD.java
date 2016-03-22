@@ -16,24 +16,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import com.example.jianming.Utils.EnvArgs;
-import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 import com.example.jianming.services.DownloadService;
 import com.example.jianming.views.DownloadProcessBar;
 
-import java.io.File;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnItemClick;
 
 public class PicAlbumListActivityMD extends AppCompatActivity implements PicCompletedListener {
 
