@@ -3,7 +3,10 @@ package com.example.jianming.myapplication;
 import com.example.jianming.views.DownloadProcessBar;
 
 /**
- * Created by Knightingal on 2015/12/28.
+ *
+ *
+ * @author Knightingal
+ * @since v1.0
  */
 public interface PicCompletedListener {
 

@@ -29,6 +29,9 @@
         <meta-data
             android:name="AA_DB_VERSION"
             android:value="5" />
+        <meta-data
+            android:name="AA_MODELS"
+            android:value="com.example.jianming.beans.PicAlbumBean, com.example.jianming.beans.PicInfoBean, com.example.jianming.beans.UpdateStamp" />
 
         <activity
             android:name=".MainActivity"
