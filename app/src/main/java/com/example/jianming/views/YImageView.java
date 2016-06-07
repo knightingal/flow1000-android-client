@@ -170,9 +170,9 @@ public class YImageView extends ImageView {
 
         setYE = new AnimatorSet();
 //        setYE.play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY));
-        setY.playTogether(ObjectAnimator.ofFloat(this, View.Y, this.getY(), animDataY.dest),
-                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.Y, yImageSlider.getHideRight().getY(), animDataY.dest),
-                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.Y, yImageSlider.getHideLeft().getY(), animDataY.dest)
+        setYE.playTogether(ObjectAnimator.ofFloat(this, View.Y, this.getY(), destY),
+                ObjectAnimator.ofFloat(yImageSlider.getHideRight(), View.Y, yImageSlider.getHideRight().getY(), destY),
+                ObjectAnimator.ofFloat(yImageSlider.getHideLeft(), View.Y, yImageSlider.getHideLeft().getY(), destY)
         );
         setYE.setDuration(duration);
         setYE.setInterpolator(new AccelerateInterpolator());
@@ -358,7 +358,6 @@ public class YImageView extends ImageView {
         animDataY = calAnimDataY(this.getY(), minY, velocityY);
         AnimData animDataYLeft = yImageSlider.getHideLeft().calAnimDataY();
         AnimData animDataYRight = yImageSlider.getHideRight().calAnimDataY();
-
 
         setY = new AnimatorSet();
 //        setY.play(ObjectAnimator.ofFloat(this, View.Y, this.getY(), animDataY.dest));
