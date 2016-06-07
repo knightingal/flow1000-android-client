@@ -23,7 +23,7 @@ import com.activeandroid.query.Delete;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.UpdateStamp;
 import com.example.jianming.services.DownloadService;
-import com.example.jianming.xzingdemo.CapActivity;
+//import com.example.jianming.xzingdemo.CapActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -214,7 +214,7 @@ public class Main2Activity extends AppCompatActivity
         } else if (id == R.id.QR_code) {
             //QrcodeActivity
 //            startActivity(new Intent(this, CapActivity.class));
-            startActivityForResult(new Intent(this, CapActivity.class), I_CAP_ACTIVITY);
+//            startActivityForResult(new Intent(this, CapActivity.class), I_CAP_ACTIVITY);
         }
 
 
