@@ -67,8 +67,6 @@ public class PicAlbumBean extends Model{
     @Column(name="exist")
     private int exist;
 
-//    @JsonName("jsonMtime")
-//    private String mtime;
 
     public String getName() {
         return name;
@@ -81,15 +79,6 @@ public class PicAlbumBean extends Model{
     public void setServerIndex(int serverIndex) {
         this.serverIndex = serverIndex;
     }
-
-//    public String getMtime() {
-//        return mtime;
-//    }
-//
-//    public void setMtime(String mtime) {
-//        this.mtime = mtime;
-//    }
-
 
     public int getExist() {
         return exist;
