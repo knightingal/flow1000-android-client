@@ -17,11 +17,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.activeandroid.ActiveAndroid;
+import com.example.jianming.Tasks.DownloadWebpageTask;
+import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.NetworkUtil;
+import com.example.jianming.Utils.TimeUtil;
 import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.beans.UpdateStamp;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 import com.example.jianming.services.DownloadService;
 import com.example.jianming.views.DownloadProcessBar;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -67,21 +76,6 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         List<PicAlbumBean> dataArray = getDataSourceFromJsonFile();
 
@@ -92,8 +86,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
         picAlbumListAdapter = new PicAlbumListAdapter(this);
         picAlbumListAdapter.setDataArray(dataArray);
         listView.setAdapter(picAlbumListAdapter);
-
-
+        startDownloadWebPage();
 
         bindService(new Intent(this, DownloadService.class), conn, BIND_AUTO_CREATE);
     }
@@ -173,5 +166,46 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements PicComp
 
         View currView = listView.getChildAt(localPosition - minIndex);
         return ((PicAlbumListAdapter.ViewHolder)currView.getTag()).downloadProcessView;
+    }
+
+    private void startDownloadWebPage() {
+        final UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("T_ALBUM_INFO");
+
+        String stringUrl = String.format(
+                "http://%s:%s/local1000/picIndexAjax?time_stamp=%s",
+                EnvArgs.serverIP,
+                EnvArgs.serverPort,
+                albumStamp.getUpdateStamp()
+        );
+        Log.d("startDownloadWebPage", stringUrl);
+        new DownloadWebpageTask() {
+            @Override
+            protected void onPostExecute(String s) {
+                try {
+                    ActiveAndroid.beginTransaction();
+                    JSONArray jsonArray = new JSONArray(s);
+                    Log.d("resp body", s);
+
+                    albumStamp.setUpdateStamp(TimeUtil.getGmtInFormatyyyyMMddHHmmss());
+                    albumStamp.save();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        PicAlbumBean picIndexBean = new PicAlbumBean();
+                        picIndexBean.setServerIndex(Integer.parseInt(jsonObject.getString("index")));
+                        picIndexBean.setName(jsonObject.getString("name"));
+                        picIndexBean.save();
+                    }
+                    ActiveAndroid.setTransactionSuccessful();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    ActiveAndroid.endTransaction();
+                }
+                picAlbumListAdapter.setDataArray(getDataSourceFromJsonFile());
+                picAlbumListAdapter.notifyDataSetChanged();
+            }
+        }.execute(stringUrl);
     }
 }

@@ -42,7 +42,7 @@ public class Main2Activity extends AppCompatActivity
                 break;
 
             case R.id.picIndexBtn:
-                this.startActivity(new Intent(this, FileTrainingActivity.class));
+                this.startActivity(new Intent(this, Local1KActivity.class));
                 break;
 
             default:
