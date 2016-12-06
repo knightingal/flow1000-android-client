@@ -22,10 +22,12 @@ import android.widget.Toast;
 import com.activeandroid.query.Delete;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.UpdateStamp;
-import com.example.jianming.services.DownloadService;
+//import com.example.jianming.services.DownloadService;
 //import com.example.jianming.xzingdemo.CapActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
+import org.nanjing.knightingal.processerlib.Services.DownloadService;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -144,7 +146,7 @@ public class Main2Activity extends AppCompatActivity
             Log.d(TAG, "onServiceConnected");
             DownloadService.LocalBinder binder = (DownloadService.LocalBinder) service;
             mService = binder.getService();
-            mService.callFromActivity();
+//            mService.callFromActivity();
             mBound = true;
         }
 

@@ -5,6 +5,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.example.jianming.annotations.JsonName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -58,15 +59,26 @@ public class PicAlbumBean extends Model{
 
     @JsonName("jsonName")
     @Column(name="Name")
+    @JsonProperty("name")
     private String name;
 
     @JsonName("jsonIndex")
     @Column(name="server_index", index=true)
+    @JsonProperty("index")
     private int serverIndex;
 
     @Column(name="exist")
     private int exist;
 
+    private String mtime;
+
+    public String getMtime() {
+        return mtime;
+    }
+
+    public void setMtime(String mtime) {
+        this.mtime = mtime;
+    }
 
     public String getName() {
         return name;
