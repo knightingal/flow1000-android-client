@@ -19,13 +19,11 @@ public class DownloadService extends Service {
     public DownloadService() {
     }
 
-    public void startDownload(int serverIndex, int localPosition, String name, DownloadProcessBar downloadProcessView, String url) {
+    public void startDownload(int serverIndex, String name, DownloadProcessBar downloadProcessView, String url) {
         DownloadPicListTask.executeDownloadAlbumInfo(
                 this,
                 serverIndex,
-                localPosition,
                 name,
-                downloadProcessView,
                 url
         );
     }

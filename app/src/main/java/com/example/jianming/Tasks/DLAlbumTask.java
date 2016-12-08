@@ -24,12 +24,16 @@ import android.util.Log;
 
 import com.example.jianming.beans.AlbumInfoBean;
 import com.example.jianming.beans.DLFilePathBean;
+import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.beans.PicInfoBean;
 
 import org.nanjing.knightingal.processerlib.TaskNotifier;
 import org.nanjing.knightingal.processerlib.tasks.AbsTask;
 import org.nanjing.knightingal.processerlib.tools.StGson;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -68,7 +72,20 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         this.context = context;
     }
     public void asyncStartDownload(int index) {
-        AlbumInfoBean albumInfoBean = StGson.gson.fromJson(ALBUM_INFOS[index], AlbumInfoBean.class);
+//        AlbumInfoBean albumInfoBean = StGson.gson.fromJson(ALBUM_INFOS[index], AlbumInfoBean.class);
+
+        PicAlbumBean picAlbumBean = PicAlbumBean.getByInnerIndex(index);
+        List<PicInfoBean> picInfoBeanList = PicInfoBean.queryByAlbum(picAlbumBean);
+
+        AlbumInfoBean albumInfoBean = new AlbumInfoBean();
+        albumInfoBean.dirName = picAlbumBean.getName();
+        albumInfoBean.picpage = "" + (picAlbumBean.getServerIndex());
+        albumInfoBean.pics = new ArrayList<String>();
+        for (PicInfoBean picInfoBean : picInfoBeanList) {
+            albumInfoBean.pics.add(picInfoBean.getName());
+        }
+
+
         for (String picName : albumInfoBean.pics) {
             String url = "http://192.168.0.102/static/" + albumInfoBean.dirName + "/" + picName;
             File directory = getAlbumStorageDir(this.context, albumInfoBean.dirName);
@@ -99,7 +116,9 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
 
     @Override
     public int getTaskSize(int index) {
-        return StGson.gson.fromJson(ALBUM_INFOS[index], AlbumInfoBean.class).pics.size();
+        PicAlbumBean picAlbumBean = PicAlbumBean.getByInnerIndex(index);
+        List<PicInfoBean> picInfoBeanList = PicInfoBean.queryByAlbum(picAlbumBean);
+        return picInfoBeanList.size();
     }
 
 }

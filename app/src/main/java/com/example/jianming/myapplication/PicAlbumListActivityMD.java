@@ -21,12 +21,15 @@ import android.view.View;
 
 import com.activeandroid.ActiveAndroid;
 import com.example.jianming.Tasks.DLAlbumTask;
+import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.Utils.TimeUtil;
+import com.example.jianming.beans.AlbumInfoBean;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumData;
+import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.beans.UpdateStamp;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 import com.example.jianming.views.DownloadProcessBar;
@@ -41,6 +44,7 @@ import org.nanjing.knightingal.processerlib.Services.DownloadService;
 import org.nanjing.knightingal.processerlib.beans.CounterBean;
 import org.nanjing.knightingal.processerlib.tools.StGson;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,25 +83,54 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         if (viewHolder == null) {
             return;
         }
-
-//        picAlbumListAdapter.counterBeanList.set(counterBean.getIndex(), counterBean);
-
-//        viewHolder.procTv.setText(String.valueOf(counterBean.getCurr()) + "/" + String.valueOf(counterBean.getMax()));
         viewHolder.downloadProcessBar.setPercent(counterBean.getCurr() * 100 / counterBean.getMax());
         viewHolder.downloadProcessBar.invalidate();
-
-
-
     }
 
 
-    public void asyncStartDownload(int index) {
+    public void asyncStartDownload(final int index) {
+
+        final PicAlbumBean picAlbumBean = PicAlbumBean.getByInnerIndex(index);
+        int serverIndex = picAlbumBean.getServerIndex();
+        String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + serverIndex)
+                .replace("%serverIP", EnvArgs.serverIP)
+                .replace("%serverPort", EnvArgs.serverPort);
 
 
-        DLAlbumTask dlAlbumTask = new DLAlbumTask(this);
-        dlAlbumTask.setTaskNotifier(downLoadService);
-//        SleepTask sleepTask = new SleepTask(downloadService);
-        downLoadService.asyncStartDownload(dlAlbumTask, index);
+        new DownloadWebpageTask() {
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+
+                Log.i(TAG, s);
+
+
+                final ObjectMapper mapper = new ObjectMapper();
+                try {
+                    AlbumInfoBean albumInfoBean = mapper.readValue(s, AlbumInfoBean.class);
+                    ActiveAndroid.beginTransaction();
+                    int i = 0;
+                    for (String pic : albumInfoBean.pics) {
+                        PicInfoBean picInfoBean = new PicInfoBean();
+
+                        picInfoBean.setAlbumInfo(picAlbumBean);
+                        picInfoBean.setName(pic);
+                        picInfoBean.setIndex(i++);
+                        picInfoBean.save();
+                    }
+                    ActiveAndroid.setTransactionSuccessful();
+
+                    DLAlbumTask dlAlbumTask = new DLAlbumTask(PicAlbumListActivityMD.this);
+                    dlAlbumTask.setTaskNotifier(downLoadService);
+                    downLoadService.asyncStartDownload(dlAlbumTask, index);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    ActiveAndroid.endTransaction();
+                }
+            }
+        }.execute(url);
+
     }
 
     PicAlbumListAdapter picAlbumListAdapter;
@@ -264,9 +297,12 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
             protected void onPostExecute(String s) {
                 try {
                     ActiveAndroid.beginTransaction();
-
+                    albumStamp.setUpdateStamp(TimeUtil.getGmtInFormatyyyyMMddHHmmss());
+                    albumStamp.save();
                     PicAlbumBean[] picAlbumBeanList = mapper.readValue(s, PicAlbumBean[].class);
+                    int i = 0;
                     for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
+                        picAlbumBean.setInnerIndex(i++);
                         picAlbumBean.save();
                     }
                     ActiveAndroid.setTransactionSuccessful();
@@ -285,7 +321,6 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                     picAlbumDataList.add(picAlbumData);
                 }
                 picAlbumListAdapter.setDataArray(picAlbumDataList);
-//                picAlbumListAdapter.setDataArray(getDataSourceFromJsonFile());
                 picAlbumListAdapter.notifyDataSetChanged();
 
             }

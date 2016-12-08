@@ -37,6 +37,13 @@ public class PicAlbumBean extends Model{
                 executeSingle();
     }
 
+    public static PicAlbumBean getByInnerIndex(int index) {
+        return new Select().
+                from(PicAlbumBean.class).
+                where("innerindex = ?", index).
+                executeSingle();
+    }
+
     public static void deletePicAlbumFromDb(int serverIndex) {
         PicAlbumBean picAlbum = getByServerIndex(serverIndex);
         picAlbum.setExist(0).save();
@@ -63,13 +70,24 @@ public class PicAlbumBean extends Model{
     private String name;
 
     @JsonName("jsonIndex")
-    @Column(name="server_index", index=true)
+    @Column(name="server_index")
     @JsonProperty("index")
     private int serverIndex;
 
     @Column(name="exist")
     private int exist;
 
+
+    @Column(name="innerindex", index=true)
+    private int innerIndex;
+
+    public int getInnerIndex() {
+        return innerIndex;
+    }
+
+    public void setInnerIndex(int innerIndex) {
+        this.innerIndex = innerIndex;
+    }
     private String mtime;
 
     public String getMtime() {

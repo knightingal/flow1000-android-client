@@ -9,16 +9,21 @@ import com.activeandroid.ActiveAndroid;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 
+import com.example.jianming.beans.AlbumInfoBean;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.services.DownloadService;
 import com.example.jianming.views.DownloadProcessBar;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,20 +32,14 @@ import java.util.List;
  */
 public class DownloadPicListTask extends DownloadWebpageTask{
     private static final String TAG = "DownloadPicListTask";
-    private final int localPosition;
     private String dirName;
     private int index;
     private Context context;
 
-    public static void executeDownloadAlbumInfo(Context context, int serverIndex, int localPosition, String dirName, DownloadProcessBar downloadProcessView, String url) {
-        DownloadPicListTask task = new DownloadPicListTask(context, serverIndex, localPosition, dirName, downloadProcessView);
-        DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(serverIndex, localPosition);
-        if (downloadProcessBar != null) {
-            downloadProcessBar.setVisibility(View.VISIBLE);
-        }
+    public static void executeDownloadAlbumInfo(Context context, int serverIndex,  String dirName, String url) {
+        DownloadPicListTask task = new DownloadPicListTask(context, serverIndex,  dirName);
 
         task.execute(url);
-
     }
 
     /**
@@ -48,15 +47,12 @@ public class DownloadPicListTask extends DownloadWebpageTask{
      *
      * @param context the context
      * @param index index from server
-     * @param localPosition position of the local listView item
      * @param dirName the dirName
-     * @param downloadProcessView the downloadProcessView
      */
-    public DownloadPicListTask(Context context, int index, int localPosition, String dirName, DownloadProcessBar downloadProcessView) {
+    public DownloadPicListTask(Context context, int index, String dirName) {
         this.context = context;
         this.index = index;
         this.dirName = dirName;
-        this.localPosition = localPosition;
     }
 
     List<PicInfoBean> picInfoBeanList = new ArrayList<>();
@@ -64,26 +60,27 @@ public class DownloadPicListTask extends DownloadWebpageTask{
     int picCountAll = 0;
     int currPicCount = 0;
 
-    JSONArray pics;
+    List<String> pics;
     int currentIndex = 0;
     @Override
     protected void onPostExecute(String s) {
         Log.i(TAG, s);
 
-        try {
-            JSONObject jsonObject = new JSONObject(s);
-            String dirName = jsonObject.getString("dirName");
-            pics = jsonObject.getJSONArray("pics");
-            picCountAll = pics.length();
-            DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index, localPosition);
-            if (downloadProcessBar != null) {
-                downloadProcessBar.setStepCount(picCountAll);
-            }
 
-            int count = pics.length() < 128 ? pics.length(): 128;
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+            AlbumInfoBean albumInfoBean = mapper.readValue(s, AlbumInfoBean.class);
+//            JSONObject jsonObject = new JSONObject(s);
+            String dirName = albumInfoBean.dirName;
+            pics = albumInfoBean.pics;
+            picCountAll = pics.size();
+
+            int count = pics.size() < 128 ? pics.size(): 128;
             currentIndex = count;
             startMost128Task(0, count);
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -92,11 +89,11 @@ public class DownloadPicListTask extends DownloadWebpageTask{
         PicAlbumBean picAlbumBean = PicAlbumBean.getByServerIndex(index);
         for (int i = start; i < end; i++) {
 //            int ii = start + i;
-            String imgUrl = generateImgUrl(dirName, pics.getString(i));
-            PicInfoBean picInfoBean = downloadImg(imgUrl, dirName, pics.getString(i));
+            String imgUrl = generateImgUrl(dirName, pics.get(i));
+            PicInfoBean picInfoBean = downloadImg(imgUrl, dirName, pics.get(i));
 
             picInfoBean.setIndex(i);
-            picInfoBean.setName(pics.getString(i));
+            picInfoBean.setName(pics.get(i));
             picInfoBean.setAlbumInfo(picAlbumBean);
             picInfoBeanList.add(picInfoBean);
         }
@@ -121,10 +118,6 @@ public class DownloadPicListTask extends DownloadWebpageTask{
 
     public void notifyDownloadingProcess() {
         currPicCount++;
-        DownloadProcessBar downloadProcessBar = ((DownloadService) context).getDownloadProcessBarByIndex(index, localPosition);
-        if (downloadProcessBar != null) {
-            downloadProcessBar.longer();
-        }
 
         if (currPicCount == picCountAll) {
             ActiveAndroid.beginTransaction();
@@ -136,15 +129,10 @@ public class DownloadPicListTask extends DownloadWebpageTask{
             } finally {
                 ActiveAndroid.endTransaction();
             }
-            if (downloadProcessBar != null) {
-                downloadProcessBar.clear();
-                downloadProcessBar.setVisibility(View.GONE);
-            }
 
-            ((DownloadService) context).doPicListDownloadComplete(dirName, index, localPosition);
         } else if (currPicCount == currentIndex) {
             int next128Count = currentIndex + 128;
-            currentIndex = pics.length() < next128Count ? pics.length(): next128Count;
+            currentIndex = pics.size() < next128Count ? pics.size(): next128Count;
             try {
                 startMost128Task(currPicCount, currentIndex);
             } catch (JSONException e) {
