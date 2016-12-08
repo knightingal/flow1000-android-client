@@ -29,4 +29,6 @@ public class DLFilePathBean {
     public String src;
 
     public File dest;
+
+    public int picIndex;
 }

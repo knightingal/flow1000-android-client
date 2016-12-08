@@ -16,6 +16,7 @@
 
 package com.example.jianming.Tasks;
 
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -37,13 +38,13 @@ import java.io.IOException;
 
 public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
 
-    private AbsTask parentTask;
+    private DLAlbumTask parentTask;
 
     private static final String TAG = "DLImageTask";
 
     private TaskNotifier taskNotifier;
 
-    public DLImageTask(AbsTask parentTask, TaskNotifier taskNotifier) {
+    public DLImageTask(DLAlbumTask parentTask, TaskNotifier taskNotifier) {
         this.parentTask = parentTask;
         this.taskNotifier = taskNotifier;
     }
@@ -66,6 +67,13 @@ public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
             FileOutputStream fileOutputStream = new FileOutputStream(dest, true);
             fileOutputStream.write(bytes);
             fileOutputStream.close();
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(dest.getAbsolutePath(), options);
+            width = options.outWidth;
+            height = options.outHeight;
+            absolutePath = dest.getAbsolutePath();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,9 +81,16 @@ public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
         Log.d(TAG, "end download " + dest.getAbsolutePath());
     }
 
+    private int width = 0;
+
+    private int height = 0;
+
+    private String absolutePath = "";
+
     @Override
     protected void onPostExecute(Integer integer) {
         super.onPostExecute(integer);
+        parentTask.updatePicInfoBean(dlFilePathBean.picIndex, width, height, absolutePath);
         taskNotifier.onTaskComplete(parentTask, dlFilePathBean.index);
     }
 }
