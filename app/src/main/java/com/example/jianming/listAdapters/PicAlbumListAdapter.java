@@ -60,11 +60,14 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         viewHolder.textView.setText(dataArray.get(position).getPicAlbumData().getName());
 //        if (FileUtil.checkDirExist(context, dataArray.get(position).getName())) {
-        if (PicAlbumBean.getExistByServerIndex(dataArray.get(position).getPicAlbumData().getServerIndex()) == 1) {
+//        if (PicAlbumBean.getExistByServerIndex(dataArray.get(position).getPicAlbumData().getServerIndex()) == 1) {
+        if (dataArray.get(position).getPicAlbumData().getExist() == 1) {
             viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
+            viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = true;
         } else {
             viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
+            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
             viewHolder.exist = false;
         }
         viewHolder.serverIndex = dataArray.get(position).getPicAlbumData().getServerIndex();

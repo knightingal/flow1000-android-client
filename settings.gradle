@@ -1,1 +1,1 @@
-include ':app', ':zxingLib-release', ':processerlib-release'
+include ':app', ':zxingLib-release', ':processerlib-debug'

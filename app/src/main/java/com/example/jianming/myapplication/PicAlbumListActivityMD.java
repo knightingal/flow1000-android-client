@@ -34,7 +34,6 @@ import com.example.jianming.beans.UpdateStamp;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 import com.example.jianming.views.DownloadProcessBar;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonSyntaxException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -84,7 +83,13 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
             return;
         }
         viewHolder.downloadProcessBar.setPercent(counterBean.getCurr() * 100 / counterBean.getMax());
-        viewHolder.downloadProcessBar.invalidate();
+        viewHolder.downloadProcessBar.postInvalidate();
+        Log.d(TAG, "current = " + counterBean.getCurr() + " max = " + counterBean.getMax());
+        if (counterBean.getCurr() == counterBean.getMax()) {
+            picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().setExist(1);
+            picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().save();
+            picAlbumListAdapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -159,6 +164,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         }
     };
 
+    List<PicAlbumData> picAlbumDataList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,7 +177,6 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
 
         List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
-        List<PicAlbumData> picAlbumDataList = new ArrayList<>();
         for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
             PicAlbumData picAlbumData = new PicAlbumData();
             picAlbumData.setPicAlbumData(picAlbumBean);
@@ -314,13 +319,12 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                     ActiveAndroid.endTransaction();
                 }
                 List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
-                List<PicAlbumData> picAlbumDataList = new ArrayList<>();
                 for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
                     PicAlbumData picAlbumData = new PicAlbumData();
                     picAlbumData.setPicAlbumData(picAlbumBean);
                     picAlbumDataList.add(picAlbumData);
                 }
-                picAlbumListAdapter.setDataArray(picAlbumDataList);
+//                picAlbumListAdapter.setDataArray(picAlbumDataList);
                 picAlbumListAdapter.notifyDataSetChanged();
 
             }
