@@ -23,6 +23,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;
+import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.beans.AlbumInfoBean;
 import com.example.jianming.beans.DLFilePathBean;
 import com.example.jianming.beans.PicAlbumBean;
@@ -30,7 +31,6 @@ import com.example.jianming.beans.PicInfoBean;
 
 import org.nanjing.knightingal.processerlib.TaskNotifier;
 import org.nanjing.knightingal.processerlib.tasks.AbsTask;
-import org.nanjing.knightingal.processerlib.tools.StGson;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         for (PicInfoBean picInfoBean : picInfoBeanList) {
             albumInfoBean.pics.add(picInfoBean.getName());
             String picName = picInfoBean.getName();
-            String url = "http://192.168.0.102/static/" + albumInfoBean.dirName + "/" + picName;
+            String url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/source/" + albumInfoBean.dirName + "/" + picName;
             File directory = getAlbumStorageDir(this.context, albumInfoBean.dirName);
             File file = new File(directory, picName);
 
@@ -94,29 +94,11 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
             DLImageTask dlImageTask = new DLImageTask(this, this.taskNotifier);
             dlImageTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, dlFilePathBean);
         }
-
-
-//        for (String picName : albumInfoBean.pics) {
-//            String url = "http://192.168.0.102/static/" + albumInfoBean.dirName + "/" + picName;
-//            File directory = getAlbumStorageDir(this.context, albumInfoBean.dirName);
-//            File file = new File(directory, picName);
-//
-//            DLFilePathBean dlFilePathBean = new DLFilePathBean();
-//            dlFilePathBean.dest = file;
-//            dlFilePathBean.src = url;
-//            dlFilePathBean.index = index;
-//            DLImageTask dlImageTask = new DLImageTask(this, this.taskNotifier);
-//            dlImageTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, dlFilePathBean);
-//        }
     }
 
     private static File getAlbumStorageDir(Context context, String albumName) {
-
-        //File fileRoot = new File("/storage/sdcard1/Android/data/com.example.jianming.myapplication/files/Download/");
-        //File file = new File(fileRoot, albumName);
         File file = new File(context.getExternalFilesDir(
                 Environment.DIRECTORY_DOWNLOADS), albumName);
-
 
         if (file.mkdirs()) {
             Log.i(TAG, "Directory of " + file.getAbsolutePath() + " created");

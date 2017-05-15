@@ -70,8 +70,6 @@ public class DownloadPicListTask extends DownloadWebpageTask{
         final ObjectMapper mapper = new ObjectMapper();
         try {
             AlbumInfoBean albumInfoBean = mapper.readValue(s, AlbumInfoBean.class);
-//            JSONObject jsonObject = new JSONObject(s);
-            String dirName = albumInfoBean.dirName;
             pics = albumInfoBean.pics;
             picCountAll = pics.size();
 
@@ -88,7 +86,6 @@ public class DownloadPicListTask extends DownloadWebpageTask{
     private void startMost128Task(int start, int end) throws JSONException{
         PicAlbumBean picAlbumBean = PicAlbumBean.getByServerIndex(index);
         for (int i = start; i < end; i++) {
-//            int ii = start + i;
             String imgUrl = generateImgUrl(dirName, pics.get(i));
             PicInfoBean picInfoBean = downloadImg(imgUrl, dirName, pics.get(i));
 
@@ -100,7 +97,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
     }
 
     private String generateImgUrl(String dirName, String imgName) {
-        return ("http://%serverIP:%serverPort/static/%dirName/" + imgName)
+        return ("http://%serverIP:%serverPort/static/source/%dirName/" + imgName)
                 .replace("%serverIP", EnvArgs.serverIP)
                 .replace("%serverPort", EnvArgs.serverPort)
                 .replace("%dirName", dirName);
