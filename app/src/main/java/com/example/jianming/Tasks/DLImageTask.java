@@ -20,6 +20,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.jianming.Utils.Decryptor;
 import com.example.jianming.beans.DLFilePathBean;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -69,7 +70,8 @@ public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
             fileOutputStream.close();
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(dest.getAbsolutePath(), options);
+//            BitmapFactory.decodeFile(dest.getAbsolutePath(), options);
+            BitmapFactory.decodeByteArray(Decryptor.decrypt(bytes), 0, bytes.length, options);
             width = options.outWidth;
             height = options.outHeight;
             absolutePath = dest.getAbsolutePath();

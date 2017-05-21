@@ -82,7 +82,7 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         for (PicInfoBean picInfoBean : picInfoBeanList) {
             albumInfoBean.pics.add(picInfoBean.getName());
             String picName = picInfoBean.getName();
-            String url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/source/" + albumInfoBean.dirName + "/" + picName;
+            String url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/encrypted/" + albumInfoBean.dirName + "/" + picName + ".bin";
             File directory = getAlbumStorageDir(this.context, albumInfoBean.dirName);
             File file = new File(directory, picName);
 

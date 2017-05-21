@@ -97,7 +97,7 @@ public class DownloadPicListTask extends DownloadWebpageTask{
     }
 
     private String generateImgUrl(String dirName, String imgName) {
-        return ("http://%serverIP:%serverPort/static/source/%dirName/" + imgName)
+        return ("http://%serverIP:%serverPort/static/encrypted/%dirName/" + imgName + ".bin")
                 .replace("%serverIP", EnvArgs.serverIP)
                 .replace("%serverPort", EnvArgs.serverPort)
                 .replace("%dirName", dirName);

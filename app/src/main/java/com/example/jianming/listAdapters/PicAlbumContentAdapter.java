@@ -10,11 +10,19 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.example.jianming.Utils.Decryptor;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.R;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -66,7 +74,6 @@ public class PicAlbumContentAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        String imgUrl = ImageDownloader.Scheme.FILE.wrap((String) dataArray.get(position).getAbsolutePath());
         int width = dataArray.get(position).getWidth();
         int height = dataArray.get(position).getHeight();
 
@@ -78,7 +85,14 @@ public class PicAlbumContentAdapter extends BaseAdapter {
         lp.width = sreamWidth;
 
         holder.img.setLayoutParams(lp);
-        holder.img.setImageBitmap(BitmapFactory.decodeFile(dataArray.get(position).getAbsolutePath()));
+        File file = new File(dataArray.get(position).getAbsolutePath());
+
+        try {
+            byte[] enCryptedContent = FileUtils.readFileToByteArray(file);
+            holder.img.setImageBitmap(BitmapFactory.decodeByteArray(Decryptor.decrypt(enCryptedContent), 0, enCryptedContent.length));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         holder.img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

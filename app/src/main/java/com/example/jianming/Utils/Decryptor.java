@@ -15,14 +15,13 @@ import javax.crypto.spec.SecretKeySpec;
 public class Decryptor {
 
     public static byte[] decrypt(byte[] encrypted) {
-        byte[] iv = "201704162125".getBytes();
+        byte[] iv = "2017041621251234".getBytes();
         byte[] key = "".getBytes();
         try {
             Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
             SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
-            byte[] decrypted = cipher.doFinal(encrypted);
-            return decrypted;
+            return cipher.doFinal(encrypted);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
