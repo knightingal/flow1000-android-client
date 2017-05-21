@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicInfoBean;
-import com.example.jianming.listAdapters.PicAlbumAdapter;
+import com.example.jianming.listAdapters.PicAlbumContentAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ public class PicAlbumActivity extends ListActivity {
     }
 
     private void doShowListView() {
-        PicAlbumAdapter adapter = new PicAlbumAdapter(this);
+        PicAlbumContentAdapter adapter = new PicAlbumContentAdapter(this);
         adapter.setDataArray(picInfoBeanList);
         setListAdapter(adapter);
     }

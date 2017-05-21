@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.jianming.myapplication" >
+    package="com.example.jianming.myapplication">
 
     <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
-
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -22,7 +21,7 @@
         android:allowBackup="true"
         android:icon="@drawable/greenicon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme1" >
+        android:theme="@style/AppTheme.NoActionBar">
         <meta-data
             android:name="AA_DB_NAME"
             android:value="Local1000.db" />
@@ -34,41 +33,27 @@
             android:value="com.example.jianming.beans.PicAlbumBean, com.example.jianming.beans.PicInfoBean, com.example.jianming.beans.UpdateStamp" />
 
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
             android:name=".PicAlbumActivity"
-            android:label="@string/title_activity_list" >
-        </activity>
+            android:label="@string/title_activity_list" />
         <activity
             android:name=".PicContentActivity"
             android:label="@string/title_activity_xrx"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
-        </activity>
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
         <activity
-            android:name=".FileTrainingActivity"
-            android:label="@string/title_activity_file_training" >
-        </activity>
-        <activity
-            android:name=".PicAlbumListActivity"
-            android:label="@string/title_activity_pic_list_acivity" >
-        </activity>
+            android:name=".Local1KActivity"
+            android:label="@string/title_activity_file_training" />
         <activity
             android:name=".SettingActivity"
-            android:label="@string/title_activity_setting" >
-        </activity>
-        <activity android:name=".AboutActivity" >
-        </activity>
+            android:label="@string/title_activity_setting" />
+        <activity android:name=".AboutActivity" />
         <activity
             android:name=".TimestampActivity"
             android:label="@string/title_activity_timestamp"
-            android:theme="@style/AppTheme1" >
-        </activity>
+            android:theme="@style/AppTheme1" />
         <activity
             android:name=".Main2Activity"
             android:label="@string/title_activity_main2"
-            android:theme="@style/AppTheme1" >
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -79,14 +64,23 @@
             android:name="com.example.jianming.xzingdemo.CapActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
-        </activity>
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
 
         <service
             android:name="com.example.jianming.services.DownloadService"
             android:enabled="true"
-            android:exported="true" >
-        </service>
+            android:exported="true" />
+
+        <service
+            android:name="org.nanjing.knightingal.processerlib.Services.DownloadService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".PicAlbumListActivityMD"
+            android:label="@string/title_activity_pic_album_list_activity_md"
+            android:theme="@style/AppTheme1" />
+
     </application>
 
 </manifest>

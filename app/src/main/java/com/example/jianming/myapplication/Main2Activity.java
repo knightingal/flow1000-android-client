@@ -1,7 +1,6 @@
 package com.example.jianming.myapplication;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -23,10 +22,12 @@ import android.widget.Toast;
 import com.activeandroid.query.Delete;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.UpdateStamp;
-import com.example.jianming.services.DownloadService;
-import com.example.jianming.xzingdemo.CapActivity;
+//import com.example.jianming.services.DownloadService;
+//import com.example.jianming.xzingdemo.CapActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
+import org.nanjing.knightingal.processerlib.Services.DownloadService;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,7 +44,7 @@ public class Main2Activity extends AppCompatActivity
                 break;
 
             case R.id.picIndexBtn:
-                this.startActivity(new Intent(this, FileTrainingActivity.class));
+                this.startActivity(new Intent(this, Local1KActivity.class));
                 break;
 
             default:
@@ -145,7 +146,7 @@ public class Main2Activity extends AppCompatActivity
             Log.d(TAG, "onServiceConnected");
             DownloadService.LocalBinder binder = (DownloadService.LocalBinder) service;
             mService = binder.getService();
-            mService.callFromActivity();
+//            mService.callFromActivity();
             mBound = true;
         }
 
@@ -215,7 +216,7 @@ public class Main2Activity extends AppCompatActivity
         } else if (id == R.id.QR_code) {
             //QrcodeActivity
 //            startActivity(new Intent(this, CapActivity.class));
-            startActivityForResult(new Intent(this, CapActivity.class), I_CAP_ACTIVITY);
+//            startActivityForResult(new Intent(this, CapActivity.class), I_CAP_ACTIVITY);
         }
 
 

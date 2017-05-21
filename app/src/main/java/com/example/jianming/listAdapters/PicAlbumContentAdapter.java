@@ -1,8 +1,7 @@
 package com.example.jianming.listAdapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,18 +10,23 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.example.jianming.Utils.DIOptionsExactly;
+import com.example.jianming.Utils.Decryptor;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.R;
-import com.example.jianming.myapplication.PicContentActivity;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 
-public class PicAlbumAdapter extends BaseAdapter {
+public class PicAlbumContentAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
 
     private List<PicInfoBean> dataArray;
@@ -31,7 +35,7 @@ public class PicAlbumAdapter extends BaseAdapter {
 
     int sreamWidth;
 
-    public PicAlbumAdapter(PicAlbumActivity context) {
+    public PicAlbumContentAdapter(PicAlbumActivity context) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.sreamWidth = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE))
@@ -70,34 +74,38 @@ public class PicAlbumAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        String imgUrl = ImageDownloader.Scheme.FILE.wrap((String) dataArray.get(position).getAbsolutePath());
         int width = dataArray.get(position).getWidth();
         int height = dataArray.get(position).getHeight();
 
         float div = (float)height / (float)width;
 
         ViewGroup.LayoutParams lp = holder.img.getLayoutParams();
-        // sreamHeight  = height / width * sreamWidth
 
         lp.height = (int)(div * (float)sreamWidth);
         lp.width = sreamWidth;
 
         holder.img.setLayoutParams(lp);
-        ImageLoader.getInstance().displayImage(imgUrl, holder.img, DIOptionsExactly.getInstance().getOptions());
+        File file = new File(dataArray.get(position).getAbsolutePath());
+
+        try {
+            byte[] enCryptedContent = FileUtils.readFileToByteArray(file);
+            holder.img.setImageBitmap(BitmapFactory.decodeByteArray(Decryptor.decrypt(enCryptedContent), 0, enCryptedContent.length));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         holder.img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("Activity4List", (String) dataArray.get(position).getAbsolutePath());
                 String imgs[] = new String[dataArray.size()];
                 for (int i = 0; i < dataArray.size(); i++) {
-                    imgs[i] = (String) dataArray.get(i).getAbsolutePath();
+                    imgs[i] = dataArray.get(i).getAbsolutePath();
                 }
 
                 context.startPicContentActivity(imgs, position);
             }
         });
 
-        //holder.info.setText((String) dataArray.get(position).get("info"));
         return convertView;
     }
 

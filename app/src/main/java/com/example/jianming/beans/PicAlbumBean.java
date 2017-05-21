@@ -5,6 +5,7 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import com.example.jianming.annotations.JsonName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -36,6 +37,13 @@ public class PicAlbumBean extends Model{
                 executeSingle();
     }
 
+    public static PicAlbumBean getByInnerIndex(int index) {
+        return new Select().
+                from(PicAlbumBean.class).
+                where("innerindex = ?", index).
+                executeSingle();
+    }
+
     public static void deletePicAlbumFromDb(int serverIndex) {
         PicAlbumBean picAlbum = getByServerIndex(serverIndex);
         picAlbum.setExist(0).save();
@@ -58,17 +66,37 @@ public class PicAlbumBean extends Model{
 
     @JsonName("jsonName")
     @Column(name="Name")
+    @JsonProperty("name")
     private String name;
 
     @JsonName("jsonIndex")
-    @Column(name="server_index", index=true)
+    @Column(name="server_index")
+    @JsonProperty("index")
     private int serverIndex;
 
     @Column(name="exist")
     private int exist;
 
-//    @JsonName("jsonMtime")
-//    private String mtime;
+
+    @Column(name="innerindex", index=true)
+    private int innerIndex;
+
+    public int getInnerIndex() {
+        return innerIndex;
+    }
+
+    public void setInnerIndex(int innerIndex) {
+        this.innerIndex = innerIndex;
+    }
+    private String mtime;
+
+    public String getMtime() {
+        return mtime;
+    }
+
+    public void setMtime(String mtime) {
+        this.mtime = mtime;
+    }
 
     public String getName() {
         return name;
@@ -81,15 +109,6 @@ public class PicAlbumBean extends Model{
     public void setServerIndex(int serverIndex) {
         this.serverIndex = serverIndex;
     }
-
-//    public String getMtime() {
-//        return mtime;
-//    }
-//
-//    public void setMtime(String mtime) {
-//        this.mtime = mtime;
-//    }
-
 
     public int getExist() {
         return exist;
