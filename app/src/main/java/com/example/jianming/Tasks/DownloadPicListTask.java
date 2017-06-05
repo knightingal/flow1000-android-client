@@ -97,10 +97,18 @@ public class DownloadPicListTask extends DownloadWebpageTask{
     }
 
     private String generateImgUrl(String dirName, String imgName) {
-        return ("http://%serverIP:%serverPort/static/encrypted/%dirName/" + imgName + ".bin")
-                .replace("%serverIP", EnvArgs.serverIP)
-                .replace("%serverPort", EnvArgs.serverPort)
-                .replace("%dirName", dirName);
+        if (EnvArgs.isEncrypt) {
+            return ("http://%serverIP:%serverPort/static/encrypted/%dirName/" + imgName + ".bin")
+                    .replace("%serverIP", EnvArgs.serverIP)
+                    .replace("%serverPort", EnvArgs.serverPort)
+                    .replace("%dirName", dirName);
+        } else {
+            return ("http://%serverIP:%serverPort/static/source/%dirName/" + imgName + "")
+                    .replace("%serverIP", EnvArgs.serverIP)
+                    .replace("%serverPort", EnvArgs.serverPort)
+                    .replace("%dirName", dirName);
+        }
+
     }
 
     private PicInfoBean downloadImg(String imgUrl, final String dirName, final String picName) {

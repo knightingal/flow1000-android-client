@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.example.jianming.Utils.Decryptor;
+import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.R;
@@ -89,7 +90,11 @@ public class PicAlbumContentAdapter extends BaseAdapter {
 
         try {
             byte[] enCryptedContent = FileUtils.readFileToByteArray(file);
-            holder.img.setImageBitmap(BitmapFactory.decodeByteArray(Decryptor.decrypt(enCryptedContent), 0, enCryptedContent.length));
+            if (EnvArgs.isEncrypt) {
+                holder.img.setImageBitmap(BitmapFactory.decodeByteArray(Decryptor.decrypt(enCryptedContent), 0, enCryptedContent.length));
+            } else {
+                holder.img.setImageBitmap(BitmapFactory.decodeByteArray(enCryptedContent, 0, enCryptedContent.length));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

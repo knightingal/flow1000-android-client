@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.jianming.Utils.Decryptor;
+import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.beans.DLFilePathBean;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -71,13 +72,19 @@ public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
 //            BitmapFactory.decodeFile(dest.getAbsolutePath(), options);
-            BitmapFactory.decodeByteArray(Decryptor.decrypt(bytes), 0, bytes.length, options);
+            if (EnvArgs.isEncrypt) {
+                BitmapFactory.decodeByteArray(Decryptor.decrypt(bytes), 0, bytes.length, options);
+            } else {
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+            }
             width = options.outWidth;
             height = options.outHeight;
             absolutePath = dest.getAbsolutePath();
 
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e(TAG, "download " + src + " error, try again");
+            downloadUrl(src, dest);
         }
 
         Log.d(TAG, "end download " + dest.getAbsolutePath());
