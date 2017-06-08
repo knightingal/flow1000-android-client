@@ -21,7 +21,6 @@ import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.PicAlbumListActivityMD;
 import com.example.jianming.myapplication.R;
-import com.example.jianming.views.DownloadProcessBar;
 
 import org.nanjing.knightingal.processerlib.view.ProcessBar;
 
@@ -119,8 +118,6 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         public boolean exist = false;
 
         public ProcessBar downloadProcessBar;
-
-        public DownloadProcessBar downloadProcessView;
 
         public ViewHolder(View itemView) {
             super(itemView);

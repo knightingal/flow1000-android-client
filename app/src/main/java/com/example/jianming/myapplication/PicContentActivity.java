@@ -7,22 +7,24 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.example.jianming.services.DownloadService;
-import com.example.jianming.views.YImageSlider;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
-import com.example.jianming.Utils.DIOptionsNoneScaled;
+import org.nanking.knightingal.view.ImgChangeListener;
+import org.nanking.knightingal.view.KImageSlider;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class PicContentActivity extends Activity implements YImageSlider.ImgChangeListener {
+public class PicContentActivity extends Activity implements ImgChangeListener {
+
+    private static final String TAG = "PicContentActivity";
 
     @Bind(R.id.image)
-    public YImageSlider mImageSlider;
+    public KImageSlider mImageSlider;
 
     private String[] imgArray;
 
@@ -104,19 +106,31 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
     int index = 0;
     int pics[] = {R.drawable.f14_1, R.drawable.f14_2, R.drawable.f14_3, R.drawable.f14_4,};
 
-    public String onGetBackImg(YImageSlider yImageSlider) {
-        index--;
-        return getImgSrcByIndex(index - 1, yImageSlider);
-    }
 
-    public String onGetNextImg(YImageSlider yImageSlider) {
-        index++;
-        return getImgSrcByIndex(index + 1, yImageSlider);
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("position", index);
+        setResult(RESULT_OK, intent);
+        super.onBackPressed();
     }
 
     @Override
-    public String getImgSrcByIndex(int index, YImageSlider yImageSlider) {
+    public String onGetBackImg(KImageSlider kImageSlider) {
+        index--;
+        return getImgSrcByIndex(index - 1, kImageSlider);
+    }
+
+    @Override
+    public String onGetNextImg(KImageSlider kImageSlider) {
+        index++;
+        return getImgSrcByIndex(index + 1, kImageSlider);
+    }
+
+    @Override
+    public String getImgSrcByIndex(int index, KImageSlider kImageSlider) {
         String img = getImgByIndex(index);
+        Log.d(TAG, "getImgSrcByIndex " + index + " " + img);
         if (img != null) {
             if (imgArray != null) {
                 return ImageDownloader.Scheme.FILE.wrap(img);
@@ -126,13 +140,5 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
         } else {
             return null;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra("position", index);
-        setResult(RESULT_OK, intent);
-        super.onBackPressed();
     }
 }

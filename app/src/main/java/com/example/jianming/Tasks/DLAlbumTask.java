@@ -82,7 +82,12 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         for (PicInfoBean picInfoBean : picInfoBeanList) {
             albumInfoBean.pics.add(picInfoBean.getName());
             String picName = picInfoBean.getName();
-            String url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/encrypted/" + albumInfoBean.dirName + "/" + picName + ".bin";
+            String url;
+            if (EnvArgs.isEncrypt) {
+                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/encrypted/" + albumInfoBean.dirName + "/" + picName + ".bin";
+            } else {
+                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/source/" + albumInfoBean.dirName + "/" + picName + "";
+            }
             File directory = getAlbumStorageDir(this.context, albumInfoBean.dirName);
             File file = new File(directory, picName);
 

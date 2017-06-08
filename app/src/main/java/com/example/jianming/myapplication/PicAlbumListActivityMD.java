@@ -32,7 +32,6 @@ import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.beans.UpdateStamp;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
-import com.example.jianming.views.DownloadProcessBar;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONArray;
@@ -268,23 +267,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
     private boolean isNotExistItemShown = true;
 
-    public void doPicListDownloadComplete(String dirName, int index, int localPosition) {
-        picAlbumListAdapter.notifyDataSetChanged();
-    }
 
-    public DownloadProcessBar getDownloadProcessBarByIndex(int index, int localPosition) {
-        View firstView = listView.getChildAt(0);
-        View lastView = listView.getChildAt(listView.getChildCount() - 1);
-        int minIndex = ((PicAlbumListAdapter.ViewHolder)firstView.getTag()).localPosition;
-        int maxIndex = ((PicAlbumListAdapter.ViewHolder)lastView.getTag()).localPosition;
-
-        if (localPosition < minIndex || localPosition > maxIndex) {
-            return null;
-        }
-
-        View currView = listView.getChildAt(localPosition - minIndex);
-        return ((PicAlbumListAdapter.ViewHolder)currView.getTag()).downloadProcessView;
-    }
 
     private void startDownloadWebPage() {
         final UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("T_ALBUM_INFO");
