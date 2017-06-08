@@ -21,7 +21,6 @@ import android.view.View;
 
 import com.activeandroid.ActiveAndroid;
 import com.example.jianming.Tasks.DLAlbumTask;
-import com.example.jianming.Tasks.DownloadPicListTask;
 import com.example.jianming.Tasks.DownloadWebpageTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.NetworkUtil;
@@ -34,13 +33,9 @@ import com.example.jianming.beans.UpdateStamp;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.nanjing.knightingal.processerlib.RefreshListener;
 import org.nanjing.knightingal.processerlib.Services.DownloadService;
 import org.nanjing.knightingal.processerlib.beans.CounterBean;
-import org.nanjing.knightingal.processerlib.tools.StGson;
 
 import java.io.IOException;
 import java.util.ArrayList;
