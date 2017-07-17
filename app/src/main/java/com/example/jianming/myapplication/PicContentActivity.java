@@ -116,19 +116,19 @@ public class PicContentActivity extends Activity implements ImgChangeListener {
     }
 
     @Override
-    public String onGetBackImg(KImageSlider kImageSlider) {
+    public String onGetBackImg() {
         index--;
-        return getImgSrcByIndex(index - 1, kImageSlider);
+        return getImgSrcByIndex(index - 1);
     }
 
     @Override
-    public String onGetNextImg(KImageSlider kImageSlider) {
+    public String onGetNextImg() {
         index++;
-        return getImgSrcByIndex(index + 1, kImageSlider);
+        return getImgSrcByIndex(index + 1);
     }
 
     @Override
-    public String getImgSrcByIndex(int index, KImageSlider kImageSlider) {
+    public String getImgSrcByIndex(int index) {
         String img = getImgByIndex(index);
         Log.d(TAG, "getImgSrcByIndex " + index + " " + img);
         if (img != null) {

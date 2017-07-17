@@ -6,6 +6,7 @@
     android:paddingBottom="@dimen/new_activity_vertical_margin"
     tools:context="com.example.jianming.myapplication.PicContentActivity">
 
+    <!--<org.nanking.knightingal.view.KImageSlider-->
     <org.nanking.knightingal.view.KImageSlider
         android:layout_width="match_parent"
         android:layout_height="match_parent"
