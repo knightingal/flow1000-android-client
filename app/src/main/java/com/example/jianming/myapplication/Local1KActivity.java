@@ -5,25 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
-import com.activeandroid.ActiveAndroid;
-import com.example.jianming.Tasks.DownloadWebpageTask;
-import com.example.jianming.Utils.EnvArgs;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 import butterknife.OnClick;
-import com.example.jianming.Utils.NetworkUtil;
-import com.example.jianming.Utils.TimeUtil;
-import com.example.jianming.beans.PicAlbumBean;
-import com.example.jianming.beans.UpdateStamp;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class Local1KActivity extends AppCompatActivity {

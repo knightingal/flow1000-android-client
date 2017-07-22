@@ -19,11 +19,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.activeandroid.query.Delete;
-import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.Utils.Daos;
+import com.example.jianming.beans.DaoSession;
+import com.example.jianming.beans.PicAlbumBeanDao;
 import com.example.jianming.beans.UpdateStamp;
-//import com.example.jianming.services.DownloadService;
-//import com.example.jianming.xzingdemo.CapActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -35,6 +34,9 @@ import butterknife.OnClick;
 
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private DaoSession daoSession;
+    private PicAlbumBeanDao picAlbumBeanDao;
 
     @OnClick({R.id.su27, R.id.picIndexBtn})
     public void btnClicked(View v) {
@@ -67,6 +69,9 @@ public class Main2Activity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        daoSession = ((App)getApplication()).getDaoSession();
+        picAlbumBeanDao = daoSession.getPicAlbumBeanDao();
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main2);
@@ -229,8 +234,10 @@ public class Main2Activity extends AppCompatActivity
 
     private void clearDB() {
 //        UpdateStamp.delete(UpdateStamp.class, 1);
-        new Delete().from(UpdateStamp.class).execute();
-        new Delete().from(PicAlbumBean.class).execute();
+//        new Delete().from(UpdateStamp.class).execute();
+        Daos.updateStampDao.deleteAll();
+//        new Delete().from(PicAlbumBean.class).execute();
+        picAlbumBeanDao.deleteAll();
         initDB();
     }
 

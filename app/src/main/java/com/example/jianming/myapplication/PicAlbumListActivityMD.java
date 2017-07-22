@@ -19,20 +19,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.activeandroid.ActiveAndroid;
 import com.example.jianming.Tasks.DLAlbumTask;
 import com.example.jianming.Tasks.DownloadWebpageTask;
+import com.example.jianming.Utils.Daos;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.Utils.TimeUtil;
 import com.example.jianming.beans.AlbumInfoBean;
 import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.beans.PicAlbumBeanDao;
 import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.beans.UpdateStamp;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.greenrobot.greendao.database.Database;
 import org.nanjing.knightingal.processerlib.RefreshListener;
 import org.nanjing.knightingal.processerlib.Services.DownloadService;
 import org.nanjing.knightingal.processerlib.beans.CounterBean;
@@ -81,7 +83,8 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         Log.d(TAG, "current = " + counterBean.getCurr() + " max = " + counterBean.getMax());
         if (counterBean.getCurr() == counterBean.getMax()) {
             picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().setExist(1);
-            picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().save();
+            picAlbumBeanDao.update(picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData());
+//            picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().save();
             picAlbumListAdapter.notifyDataSetChanged();
         }
     }
@@ -107,17 +110,15 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                 final ObjectMapper mapper = new ObjectMapper();
                 try {
                     AlbumInfoBean albumInfoBean = mapper.readValue(s, AlbumInfoBean.class);
-                    ActiveAndroid.beginTransaction();
-                    int i = 0;
+                    Daos.db.beginTransaction();
                     for (String pic : albumInfoBean.pics) {
                         PicInfoBean picInfoBean = new PicInfoBean();
 
-                        picInfoBean.setAlbumInfo(picAlbumBean);
+                        picInfoBean.setAlbumIndex(picAlbumBean.getInnerIndex());
                         picInfoBean.setName(pic);
-                        picInfoBean.setIndex(i++);
-                        picInfoBean.save();
+                        ((App)getApplication()).getDaoSession().getPicInfoBeanDao().insert(picInfoBean);
                     }
-                    ActiveAndroid.setTransactionSuccessful();
+                    Daos.db.setTransactionSuccessful();
 
                     DLAlbumTask dlAlbumTask = new DLAlbumTask(PicAlbumListActivityMD.this);
                     dlAlbumTask.setTaskNotifier(downLoadService);
@@ -125,7 +126,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-                    ActiveAndroid.endTransaction();
+                    Daos.db.endTransaction();
                 }
             }
         }.execute(url);
@@ -160,9 +161,15 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
     List<PicAlbumData> picAlbumDataList = new ArrayList<>();
 
+    PicAlbumBeanDao picAlbumBeanDao;
+    Database db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        db = ((App)getApplication()).getDb();
+        picAlbumBeanDao = ((App)getApplication()).getDaoSession().getPicAlbumBeanDao();
         setContentView(R.layout.activity_pic_album_list_activity_md);
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -256,6 +263,10 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         }
         else {
             return PicAlbumBean.getAllExist();
+//            picAlbumBeanDao.queryBuilder()
+//                    .where(PicAlbumBeanDao.Properties.Exist.eq(1))
+//                    .orderAsc(PicAlbumBeanDao.Properties.Name)
+//                    .list();
         }
     }
 
@@ -279,22 +290,21 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
             @Override
             protected void onPostExecute(String s) {
                 try {
-                    ActiveAndroid.beginTransaction();
+                    db.beginTransaction();
                     albumStamp.setUpdateStamp(TimeUtil.getGmtInFormatyyyyMMddHHmmss());
                     albumStamp.save();
                     PicAlbumBean[] picAlbumBeanList = mapper.readValue(s, PicAlbumBean[].class);
                     int i = 0;
                     for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
-                        picAlbumBean.setInnerIndex(i++);
-                        picAlbumBean.save();
+                        picAlbumBeanDao.insert(picAlbumBean);
                     }
-                    ActiveAndroid.setTransactionSuccessful();
+                    db.setTransactionSuccessful();
                 }
                 catch (Exception e) {
                     e.printStackTrace();
                 }
                 finally {
-                    ActiveAndroid.endTransaction();
+                    db.endTransaction();
                 }
                 List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
                 for (PicAlbumBean picAlbumBean : picAlbumBeanList) {

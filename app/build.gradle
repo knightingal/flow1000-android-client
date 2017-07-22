@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 25
@@ -43,9 +44,10 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
-    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
+//    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
     compile 'com.android.support:design:23.1.0'
     compile 'com.android.support:design:23.1.0'
+    compile 'org.greenrobot:greendao:3.2.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.0'
     compile 'commons-io:commons-io:2.4'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

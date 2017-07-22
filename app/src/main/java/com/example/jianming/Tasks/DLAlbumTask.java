@@ -22,7 +22,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
-import com.activeandroid.ActiveAndroid;
+import com.example.jianming.Utils.Daos;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.beans.AlbumInfoBean;
 import com.example.jianming.beans.DLFilePathBean;
@@ -120,13 +120,13 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         processCount++;
         if (processCount == picInfoBeanList.size()) {
             try {
-                ActiveAndroid.beginTransaction();
+                Daos.db.beginTransaction();
                 for (PicInfoBean picInfoBean : picInfoBeanList) {
-                    picInfoBean.save();
+                    Daos.picInfoBeanDao.update(picInfoBean);
                 }
-                ActiveAndroid.setTransactionSuccessful();
+                Daos.db.setTransactionSuccessful();
             } finally {
-                ActiveAndroid.endTransaction();
+                Daos.db.endTransaction();
             }
         }
     }

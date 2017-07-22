@@ -1,49 +1,68 @@
 package com.example.jianming.beans;
 
-import com.activeandroid.Model;
-import com.activeandroid.annotation.Column;
-import com.activeandroid.annotation.Table;
-import com.activeandroid.query.Delete;
-import com.activeandroid.query.Select;
+
+import com.example.jianming.Utils.Daos;
+
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
 
 import java.util.List;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Created by Jianming on 2015/10/31.
  */
 
-@Table(name = "T_PIC_INFO")
-public class PicInfoBean extends Model {
+@Entity
+public class PicInfoBean  {
 
     public static List<PicInfoBean> queryByAlbum(PicAlbumBean picAlbumBean) {
-        return new Select().from(PicInfoBean.class).where("album_info = ?", picAlbumBean.getId()).
-                orderBy("pic_index").execute();
+        return Daos.picInfoBeanDao.queryBuilder()
+                .where(PicInfoBeanDao.Properties.AlbumIndex.eq(picAlbumBean.getInnerIndex()))
+                .orderAsc(PicInfoBeanDao.Properties.Index)
+                .list();
     }
 
     public static void deleteByAlbum(PicAlbumBean picAlbumBean) {
-        new Delete().from(PicInfoBean.class).where("album_info = ?", picAlbumBean.getId()).execute();
+        Daos.picInfoBeanDao.queryBuilder()
+                .where(PicInfoBeanDao.Properties.AlbumIndex.eq(picAlbumBean.getInnerIndex()))
+                .buildDelete().executeDeleteWithoutDetachingEntities();
     }
 
-    @Column(name="pic_name")
-    private String name;
+    public String getName() {
+        return this.name;
+    }
 
-    @Column(name="pic_index")
-    private int index;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    @Column(name="album_info")
-    private PicAlbumBean albumInfo;
+    public Long getIndex() {
+        return this.index;
+    }
 
-    @Column(name="absolute_path")
-    private String absolutePath;
+    public void setIndex(Long index) {
+        this.index = index;
+    }
 
-    @Column(name="pic_height")
-    private int height;
+    public Long getAlbumIndex() {
+        return this.albumIndex;
+    }
 
-    @Column(name="pic_width")
-    private int width;
+    public void setAlbumIndex(Long albumIndex) {
+        this.albumIndex = albumIndex;
+    }
+
+    public String getAbsolutePath() {
+        return this.absolutePath;
+    }
+
+    public void setAbsolutePath(String absolutePath) {
+        this.absolutePath = absolutePath;
+    }
 
     public int getHeight() {
-        return height;
+        return this.height;
     }
 
     public void setHeight(int height) {
@@ -51,42 +70,39 @@ public class PicInfoBean extends Model {
     }
 
     public int getWidth() {
-        return width;
+        return this.width;
     }
 
     public void setWidth(int width) {
         this.width = width;
     }
 
-    public String getAbsolutePath() {
-        return absolutePath;
-    }
+    private String name;
 
-    public void setAbsolutePath(String absolutePath) {
-        this.absolutePath = absolutePath;
-    }
+    @Id
+    private Long index;
 
-    public String getName() {
-        return name;
-    }
+    private Long albumIndex;
 
-    public void setName(String name) {
+    private String absolutePath;
+
+    private int height;
+
+    private int width;
+
+    @Generated(hash = 966401127)
+    public PicInfoBean(String name, Long index, Long albumIndex, String absolutePath, int height, int width) {
         this.name = name;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
         this.index = index;
+        this.albumIndex = albumIndex;
+        this.absolutePath = absolutePath;
+        this.height = height;
+        this.width = width;
     }
 
-    public PicAlbumBean getAlbumInfo() {
-        return albumInfo;
+    @Generated(hash = 540436994)
+    public PicInfoBean() {
     }
 
-    public void setAlbumInfo(PicAlbumBean albumInfo) {
-        this.albumInfo = albumInfo;
-    }
+
 }
