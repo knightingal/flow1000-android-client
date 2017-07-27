@@ -99,10 +99,10 @@ public class Main2Activity extends AppCompatActivity
     }
 
     private void initDB() {
-        UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("T_ALBUM_INFO");
+        UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("PIC_ALBUM_BEAN");
         if (albumStamp == null) {
             albumStamp = new UpdateStamp();
-            albumStamp.setTableName("T_ALBUM_INFO");
+            albumStamp.setTableName("PIC_ALBUM_BEAN");
             albumStamp.setUpdateStamp("20000101000000");
             albumStamp.save();
         }

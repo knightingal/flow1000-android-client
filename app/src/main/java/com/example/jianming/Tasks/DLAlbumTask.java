@@ -65,8 +65,11 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
 
     private Activity context;
 
+    private int position;
+
     private List<PicInfoBean> picInfoBeanList = null;
-    public DLAlbumTask(Activity context) {
+    public DLAlbumTask(Activity context, int position) {
+        this.position = position;
         this.context = context;
     }
     public void asyncStartDownload(int index) {
@@ -96,6 +99,7 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
             dlFilePathBean.src = url;
             dlFilePathBean.index = index;
             dlFilePathBean.picIndex = picInfoBeanList.indexOf(picInfoBean);
+            dlFilePathBean.position = position;
             DLImageTask dlImageTask = new DLImageTask(this, this.taskNotifier);
             dlImageTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, dlFilePathBean);
         }

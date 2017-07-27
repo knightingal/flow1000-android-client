@@ -90,7 +90,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
     }
 
 
-    public void asyncStartDownload(final int index) {
+    public void asyncStartDownload(final int index, final int position) {
 
         final PicAlbumBean picAlbumBean = PicAlbumBean.getByInnerIndex(index);
         int serverIndex = picAlbumBean.getServerIndex();
@@ -120,7 +120,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                     }
                     Daos.db.setTransactionSuccessful();
 
-                    DLAlbumTask dlAlbumTask = new DLAlbumTask(PicAlbumListActivityMD.this);
+                    DLAlbumTask dlAlbumTask = new DLAlbumTask(PicAlbumListActivityMD.this, position);
                     dlAlbumTask.setTaskNotifier(downLoadService);
                     downLoadService.asyncStartDownload(dlAlbumTask, index);
                 } catch (IOException e) {
@@ -276,7 +276,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
 
     private void startDownloadWebPage() {
-        final UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("T_ALBUM_INFO");
+        final UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("PIC_ALBUM_BEAN");
 
         String stringUrl = String.format(
                 "http://%s:%s/local1000/picIndexAjax?time_stamp=%s",
@@ -292,7 +292,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                 try {
                     db.beginTransaction();
                     albumStamp.setUpdateStamp(TimeUtil.getGmtInFormatyyyyMMddHHmmss());
-                    albumStamp.save();
+                    albumStamp.update();
                     PicAlbumBean[] picAlbumBeanList = mapper.readValue(s, PicAlbumBean[].class);
                     int i = 0;
                     for (PicAlbumBean picAlbumBean : picAlbumBeanList) {

@@ -6,6 +6,7 @@ import com.example.jianming.Utils.Daos;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 
 
 /**
@@ -24,12 +25,28 @@ public class UpdateStamp {
         Daos.updateStampDao.insert(this);
     }
 
+    public void update() {
+        Daos.updateStampDao.update(this);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Id
+    private Long id;
+
     private String tableName;
 
     private String updateStamp;
 
-    @Generated(hash = 1133476786)
-    public UpdateStamp(String tableName, String updateStamp) {
+    @Generated(hash = 1659781237)
+    public UpdateStamp(Long id, String tableName, String updateStamp) {
+        this.id = id;
         this.tableName = tableName;
         this.updateStamp = updateStamp;
     }

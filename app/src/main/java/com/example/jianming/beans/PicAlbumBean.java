@@ -13,7 +13,7 @@ public class PicAlbumBean {
     public static List<PicAlbumBean> getAll() {
 
         return Daos.picAlbumBeanDao.queryBuilder()
-                .orderAsc(PicAlbumBeanDao.Properties.Name)
+                .orderAsc(PicAlbumBeanDao.Properties.InnerIndex)
                 .list();
     }
 
@@ -21,7 +21,7 @@ public class PicAlbumBean {
 
           return Daos.picAlbumBeanDao.queryBuilder()
                     .where(PicAlbumBeanDao.Properties.Exist.eq(1))
-                    .orderAsc(PicAlbumBeanDao.Properties.Name)
+                    .orderAsc(PicAlbumBeanDao.Properties.InnerIndex)
                     .list();
     }
 

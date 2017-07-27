@@ -31,4 +31,6 @@ public class DLFilePathBean {
     public File dest;
 
     public int picIndex;
+
+    public int position;
 }
