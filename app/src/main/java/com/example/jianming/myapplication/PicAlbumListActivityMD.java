@@ -1,6 +1,5 @@
 package com.example.jianming.myapplication;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -8,8 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,27 +16,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.jianming.Tasks.DLAlbumTask;
-import com.example.jianming.Tasks.DownloadWebpageTask;
-import com.example.jianming.Utils.Daos;
+import com.example.jianming.Tasks.DownloadAlbumsTask;
+import com.example.jianming.Tasks.DownloadPicsTask;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.NetworkUtil;
-import com.example.jianming.Utils.TimeUtil;
-import com.example.jianming.beans.AlbumInfoBean;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumBeanDao;
 import com.example.jianming.beans.PicAlbumData;
-import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.beans.UpdateStamp;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.greenrobot.greendao.database.Database;
 import org.nanjing.knightingal.processerlib.RefreshListener;
 import org.nanjing.knightingal.processerlib.Services.DownloadService;
 import org.nanjing.knightingal.processerlib.beans.CounterBean;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,14 +55,21 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         refreshHandler.sendMessage(msg);
     }
 
-    Handler refreshHandler = new Handler() {
+    private static class RefreshHandler extends Handler {
+        PicAlbumListActivityMD picAlbumListActivityMD;
+
+        RefreshHandler(PicAlbumListActivityMD picAlbumListActivityMD) {
+            this.picAlbumListActivityMD = picAlbumListActivityMD;
+        }
+
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             CounterBean counterBean = (CounterBean) msg.getData().getSerializable("data");
-            refreshListItem(counterBean);
+            picAlbumListActivityMD.refreshListItem(counterBean);
         }
-    };
+    }
+    Handler refreshHandler = new RefreshHandler(this);
 
     private void refreshListItem(CounterBean counterBean) {
         PicAlbumListAdapter.ViewHolder viewHolder = ((PicAlbumListAdapter.ViewHolder)listView.findViewHolderForAdapterPosition(counterBean.getIndex()));
@@ -84,7 +82,6 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         if (counterBean.getCurr() == counterBean.getMax()) {
             picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().setExist(1);
             picAlbumBeanDao.update(picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData());
-//            picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().save();
             picAlbumListAdapter.notifyDataSetChanged();
         }
     }
@@ -98,43 +95,10 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                 .replace("%serverIP", EnvArgs.serverIP)
                 .replace("%serverPort", EnvArgs.serverPort);
 
-
-        new DownloadWebpageTask() {
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-
-                Log.i(TAG, s);
-
-
-                final ObjectMapper mapper = new ObjectMapper();
-                try {
-                    AlbumInfoBean albumInfoBean = mapper.readValue(s, AlbumInfoBean.class);
-                    Daos.db.beginTransaction();
-                    for (String pic : albumInfoBean.pics) {
-                        PicInfoBean picInfoBean = new PicInfoBean();
-
-                        picInfoBean.setAlbumIndex(picAlbumBean.getInnerIndex());
-                        picInfoBean.setName(pic);
-                        ((App)getApplication()).getDaoSession().getPicInfoBeanDao().insert(picInfoBean);
-                    }
-                    Daos.db.setTransactionSuccessful();
-
-                    DLAlbumTask dlAlbumTask = new DLAlbumTask(PicAlbumListActivityMD.this, position);
-                    dlAlbumTask.setTaskNotifier(downLoadService);
-                    downLoadService.asyncStartDownload(dlAlbumTask, index);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    Daos.db.endTransaction();
-                }
-            }
-        }.execute(url);
-
+        new DownloadPicsTask(this, position, index, downLoadService).execute(url);
     }
 
     PicAlbumListAdapter picAlbumListAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     @Bind(R.id.list_view11)
     public RecyclerView listView;
 
@@ -183,9 +147,8 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
             picAlbumData.setPicAlbumData(picAlbumBean);
             picAlbumDataList.add(picAlbumData);
         }
-//        picAlbumListAdapter.setDataArray(picAlbumDataList);
         listView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         listView.setLayoutManager(mLayoutManager);
 
         picAlbumListAdapter = new PicAlbumListAdapter(this);
@@ -263,10 +226,6 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         }
         else {
             return PicAlbumBean.getAllExist();
-//            picAlbumBeanDao.queryBuilder()
-//                    .where(PicAlbumBeanDao.Properties.Exist.eq(1))
-//                    .orderAsc(PicAlbumBeanDao.Properties.Name)
-//                    .list();
         }
     }
 
@@ -285,37 +244,18 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                 albumStamp.getUpdateStamp()
         );
         Log.d("startDownloadWebPage", stringUrl);
-        final ObjectMapper mapper = new ObjectMapper();
-        new DownloadWebpageTask() {
-            @Override
-            protected void onPostExecute(String s) {
-                try {
-                    db.beginTransaction();
-                    albumStamp.setUpdateStamp(TimeUtil.getGmtInFormatyyyyMMddHHmmss());
-                    albumStamp.update();
-                    PicAlbumBean[] picAlbumBeanList = mapper.readValue(s, PicAlbumBean[].class);
-                    int i = 0;
-                    for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
-                        picAlbumBeanDao.insert(picAlbumBean);
-                    }
-                    db.setTransactionSuccessful();
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    db.endTransaction();
-                }
-                List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
-                for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
-                    PicAlbumData picAlbumData = new PicAlbumData();
-                    picAlbumData.setPicAlbumData(picAlbumBean);
-                    picAlbumDataList.add(picAlbumData);
-                }
-//                picAlbumListAdapter.setDataArray(picAlbumDataList);
-                picAlbumListAdapter.notifyDataSetChanged();
+        new DownloadAlbumsTask(picAlbumBeanDao, this).execute(stringUrl);
 
-            }
-        }.execute(stringUrl);
+    }
+
+    public void refreshFrontPage() {
+        List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
+        for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
+            PicAlbumData picAlbumData = new PicAlbumData();
+            picAlbumData.setPicAlbumData(picAlbumBean);
+            picAlbumDataList.add(picAlbumData);
+        }
+        picAlbumListAdapter.notifyDataSetChanged();
+
     }
 }
