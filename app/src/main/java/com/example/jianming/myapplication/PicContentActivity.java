@@ -15,7 +15,7 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import org.nanking.knightingal.view.ImgChangeListener;
 import org.nanking.knightingal.view.KImageSlider;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
@@ -23,7 +23,7 @@ public class PicContentActivity extends Activity implements ImgChangeListener {
 
     private static final String TAG = "PicContentActivity";
 
-    @Bind(R.id.image)
+    @BindView(R.id.image)
     public KImageSlider mImageSlider;
 
     private String[] imgArray;
@@ -95,16 +95,17 @@ public class PicContentActivity extends Activity implements ImgChangeListener {
                 return null;
             }
         } else {
-            if (index >= 0 && index < pics.length) {
-                return pics[index] + "";
-            } else {
-                return null;
-            }
+            return null;
+//            if (index >= 0 && index < pics.length) {
+//                return pics[index] + "";
+//            } else {
+//                return null;
+//            }
         }
     }
 
     int index = 0;
-    int pics[] = {R.drawable.f14_1, R.drawable.f14_2, R.drawable.f14_3, R.drawable.f14_4,};
+//    int pics[] = {R.drawable.f14_1, R.drawable.f14_2, R.drawable.f14_3, R.drawable.f14_4,};
 
 
     @Override

@@ -1,56 +1,35 @@
 package com.example.jianming.beans;
+
 import com.example.jianming.Utils.Daos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 
 import java.util.List;
-import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
 public class PicAlbumBean {
+
     public static List<PicAlbumBean> getAll() {
 
         return Daos.picAlbumBeanDao.queryBuilder()
                 .orderDesc(PicAlbumBeanDao.Properties.InnerIndex)
                 .list();
     }
-
-    public static List<PicAlbumBean> getAllExist() {
-
-          return Daos.picAlbumBeanDao.queryBuilder()
-                    .where(PicAlbumBeanDao.Properties.Exist.eq(1))
-                    .orderDesc(PicAlbumBeanDao.Properties.InnerIndex)
-                    .list();
-    }
-
-
-
-    public static PicAlbumBean getByServerIndex(int serverIndex) {
-        return Daos.picAlbumBeanDao.queryBuilder()
-                .where(PicAlbumBeanDao.Properties.ServerIndex.eq(serverIndex))
-                .unique();
-    }
-
     public static PicAlbumBean getByInnerIndex(int index) {
         return Daos.picAlbumBeanDao.queryBuilder()
                 .where(PicAlbumBeanDao.Properties.InnerIndex.eq(index))
                 .unique();
     }
 
-    public static void deletePicAlbumFromDb(int serverIndex) {
-        Daos.picAlbumBeanDao.delete(getByServerIndex(serverIndex));
-    }
+    public static List<PicAlbumBean> getAllExist() {
 
-    public static void setExistByServerIndex(int serverIndex, int exist) {
-        PicAlbumBean picAlbumBean = getByInnerIndex(serverIndex);
-        picAlbumBean.setExist(exist);
-        Daos.picAlbumBeanDao.update(picAlbumBean);
-    }
-
-    public static int getExistByServerIndex(int serverIndex) {
-        return getByServerIndex(serverIndex).getExist();
+        return Daos.picAlbumBeanDao.queryBuilder()
+                .where(PicAlbumBeanDao.Properties.Exist.eq(1))
+                .orderDesc(PicAlbumBeanDao.Properties.InnerIndex)
+                .list();
     }
 
     public PicAlbumBean(int serverIndex, String name) {
@@ -58,6 +37,19 @@ public class PicAlbumBean {
         this.name = name;
         this.exist = 0;
     }
+
+    public static void deletePicAlbumFromDb(int serverIndex) {
+        Daos.picAlbumBeanDao.delete(getByServerIndex(serverIndex));
+    }
+    public static PicAlbumBean getByServerIndex(int serverIndex) {
+        return Daos.picAlbumBeanDao.queryBuilder()
+                .where(PicAlbumBeanDao.Properties.ServerIndex.eq(serverIndex))
+                .unique();
+    }
+
+    public PicAlbumBean() {
+    }
+
 
     @Generated(hash = 741092784)
     public PicAlbumBean(String name, int serverIndex, int exist, Long innerIndex,
@@ -67,10 +59,6 @@ public class PicAlbumBean {
         this.exist = exist;
         this.innerIndex = innerIndex;
         this.mtime = mtime;
-    }
-
-    @Generated(hash = 1417899696)
-    public PicAlbumBean() {
     }
 
     @JsonProperty("name")

@@ -10,7 +10,6 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +22,6 @@ import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumBeanDao;
 import com.example.jianming.beans.PicAlbumData;
-import com.example.jianming.beans.UpdateStamp;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 
 import org.greenrobot.greendao.database.Database;
@@ -34,7 +32,7 @@ import org.nanjing.knightingal.processerlib.beans.CounterBean;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PicAlbumListActivityMD extends AppCompatActivity implements RefreshListener {
@@ -99,7 +97,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
     }
 
     PicAlbumListAdapter picAlbumListAdapter;
-    @Bind(R.id.list_view11)
+    @BindView(R.id.list_view11)
     public RecyclerView listView;
 
     public DownloadService downLoadService = null;
@@ -136,8 +134,8 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         picAlbumBeanDao = ((App)getApplication()).getDaoSession().getPicAlbumBeanDao();
         setContentView(R.layout.activity_pic_album_list_activity_md);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
 
 
@@ -235,7 +233,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
 
     private void startDownloadWebPage() {
-        final UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("PIC_ALBUM_BEAN");
+        final com.example.jianming.beans.UpdateStamp albumStamp = com.example.jianming.beans.UpdateStamp.getUpdateStampByTableName("PIC_ALBUM_BEAN");
 
         String stringUrl = String.format(
                 "http://%s:%s/local1000/picIndexAjax?time_stamp=%s",

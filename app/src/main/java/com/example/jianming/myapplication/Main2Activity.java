@@ -28,7 +28,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.nanjing.knightingal.processerlib.Services.DownloadService;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -54,16 +54,16 @@ public class Main2Activity extends AppCompatActivity
         }
     }
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     public Toolbar toolbar;
 
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     public FloatingActionButton fab;
 
-    @Bind(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     public DrawerLayout drawer;
 
-    @Bind(R.id.nav_view)
+    @BindView(R.id.nav_view)
     public NavigationView navigationView;
 
     @Override
@@ -185,7 +185,7 @@ public class Main2Activity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -197,10 +197,10 @@ public class Main2Activity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_about) {
-            this.startActivity(new Intent(this, AboutActivity.class));
-            return true;
-        }
+//        if (id == R.id.action_about) {
+//            this.startActivity(new Intent(this, AboutActivity.class));
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -217,7 +217,7 @@ public class Main2Activity extends AppCompatActivity
             clearDB();
             Toast.makeText(this, "DB cleared", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.set_timestamp) {
-            startActivity(new Intent(this, TimestampActivity.class));
+//            startActivity(new Intent(this, TimestampActivity.class));
         } else if (id == R.id.QR_code) {
             //QrcodeActivity
 //            startActivity(new Intent(this, CapActivity.class));
