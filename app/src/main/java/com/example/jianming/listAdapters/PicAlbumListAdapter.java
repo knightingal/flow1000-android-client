@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -148,7 +147,11 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                         .replace("%serverIP", EnvArgs.serverIP)
                         .replace("%serverPort", EnvArgs.serverPort);
 //                ((PicAlbumListActivityMD)context).downLoadService.startDownload(serverIndex, getAdapterPosition(), name, this.downloadProcessView, url);
-                ((PicAlbumListActivityMD)context).asyncStartDownload(getAdapterPosition());
+                int innerIndex = dataArray.get(getAdapterPosition())
+                        .getPicAlbumData()
+                        .getInnerIndex()
+                        .intValue();
+                ((PicAlbumListActivityMD)context).asyncStartDownload(innerIndex, getAdapterPosition());
             }
         }
     }

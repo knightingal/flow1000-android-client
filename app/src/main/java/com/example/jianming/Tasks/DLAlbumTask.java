@@ -22,7 +22,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
-import com.activeandroid.ActiveAndroid;
+import com.example.jianming.Utils.Daos;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.beans.AlbumInfoBean;
 import com.example.jianming.beans.DLFilePathBean;
@@ -65,8 +65,11 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
 
     private Activity context;
 
+    private int position;
+
     private List<PicInfoBean> picInfoBeanList = null;
-    public DLAlbumTask(Activity context) {
+    public DLAlbumTask(Activity context, int position) {
+        this.position = position;
         this.context = context;
     }
     public void asyncStartDownload(int index) {
@@ -96,6 +99,7 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
             dlFilePathBean.src = url;
             dlFilePathBean.index = index;
             dlFilePathBean.picIndex = picInfoBeanList.indexOf(picInfoBean);
+            dlFilePathBean.position = position;
             DLImageTask dlImageTask = new DLImageTask(this, this.taskNotifier);
             dlImageTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, dlFilePathBean);
         }
@@ -120,13 +124,13 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         processCount++;
         if (processCount == picInfoBeanList.size()) {
             try {
-                ActiveAndroid.beginTransaction();
+                Daos.db.beginTransaction();
                 for (PicInfoBean picInfoBean : picInfoBeanList) {
-                    picInfoBean.save();
+                    Daos.picInfoBeanDao.update(picInfoBean);
                 }
-                ActiveAndroid.setTransactionSuccessful();
+                Daos.db.setTransactionSuccessful();
             } finally {
-                ActiveAndroid.endTransaction();
+                Daos.db.endTransaction();
             }
         }
     }

@@ -15,14 +15,10 @@ import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.R;
-import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 

@@ -2,31 +2,58 @@ package com.example.jianming.beans;
 
 import android.util.Log;
 
-import com.activeandroid.Model;
-import com.activeandroid.annotation.Column;
-import com.activeandroid.annotation.Table;
-import com.activeandroid.query.Select;
+import com.example.jianming.Utils.Daos;
+
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+
 
 /**
  * Created by Jianming on 2015/10/28.
  */
-@Table(name = "T_UPDATE_STAMP")
-public class UpdateStamp extends Model {
+@Entity
+public class UpdateStamp {
 
     public static UpdateStamp getUpdateStampByTableName(String tableName) {
-        UpdateStamp updateStamp =
-                new Select().from(UpdateStamp.class).
-                        where("table_name = ?", tableName).
-                        executeSingle();
-        Log.i("UpdateStamp", "updateStamp: " + updateStamp);
-        return updateStamp;
+        return Daos.updateStampDao.queryBuilder()
+                .where(UpdateStampDao.Properties.TableName.eq(tableName))
+                .build().unique();
     }
 
-    @Column(name="table_name")
+    public void save() {
+        Daos.updateStampDao.insert(this);
+    }
+
+    public void update() {
+        Daos.updateStampDao.update(this);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Id
+    private Long id;
+
     private String tableName;
 
-    @Column(name="update_stamp")
     private String updateStamp;
+
+    @Generated(hash = 1659781237)
+    public UpdateStamp(Long id, String tableName, String updateStamp) {
+        this.id = id;
+        this.tableName = tableName;
+        this.updateStamp = updateStamp;
+    }
+
+    @Generated(hash = 426198667)
+    public UpdateStamp() {
+    }
 
     public String getTableName() {
         return tableName;

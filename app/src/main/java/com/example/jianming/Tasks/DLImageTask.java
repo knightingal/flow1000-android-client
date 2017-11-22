@@ -100,6 +100,6 @@ public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
     protected void onPostExecute(Integer integer) {
         super.onPostExecute(integer);
         parentTask.updatePicInfoBean(dlFilePathBean.picIndex, width, height, absolutePath);
-        taskNotifier.onTaskComplete(parentTask, dlFilePathBean.index);
+        taskNotifier.onTaskComplete(parentTask, dlFilePathBean.position);
     }
 }

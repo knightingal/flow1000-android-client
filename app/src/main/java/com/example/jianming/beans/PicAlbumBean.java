@@ -1,61 +1,35 @@
 package com.example.jianming.beans;
-import com.activeandroid.Cache;
-import com.activeandroid.Model;
-import com.activeandroid.annotation.Column;
-import com.activeandroid.annotation.Table;
-import com.activeandroid.query.Select;
-import com.example.jianming.annotations.JsonName;
+
+import com.example.jianming.Utils.Daos;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 
 import java.util.List;
 
-@Table(name = "T_ALBUM_INFO")
-public class PicAlbumBean extends Model{
-    public PicAlbumBean() {}
+@Entity
+public class PicAlbumBean {
 
     public static List<PicAlbumBean> getAll() {
-        return new Select().
-                from(PicAlbumBean.class).
-                orderBy(Cache.getTableInfo(PicAlbumBean.class).getIdName()).
-                execute();
+
+        return Daos.picAlbumBeanDao.queryBuilder()
+                .orderDesc(PicAlbumBeanDao.Properties.InnerIndex)
+                .list();
+    }
+    public static PicAlbumBean getByInnerIndex(int index) {
+        return Daos.picAlbumBeanDao.queryBuilder()
+                .where(PicAlbumBeanDao.Properties.InnerIndex.eq(index))
+                .unique();
     }
 
     public static List<PicAlbumBean> getAllExist() {
-        return new Select().
-                from(PicAlbumBean.class).
-                where("exist = ?", 1).
-                orderBy(Cache.getTableInfo(PicAlbumBean.class).getIdName()).
-                execute();
-    }
 
-
-
-    public static PicAlbumBean getByServerIndex(int serverIndex) {
-        return new Select().
-                from(PicAlbumBean.class).
-                where("server_index = ?", serverIndex).
-                executeSingle();
-    }
-
-    public static PicAlbumBean getByInnerIndex(int index) {
-        return new Select().
-                from(PicAlbumBean.class).
-                where("innerindex = ?", index).
-                executeSingle();
-    }
-
-    public static void deletePicAlbumFromDb(int serverIndex) {
-        PicAlbumBean picAlbum = getByServerIndex(serverIndex);
-        picAlbum.setExist(0).save();
-        PicInfoBean.deleteByAlbum(picAlbum);
-    }
-
-    public static void setExistByServerIndex(int serverIndex, int exist) {
-        getByServerIndex(serverIndex).setExist(exist).save();
-    }
-
-    public static int getExistByServerIndex(int serverIndex) {
-        return getByServerIndex(serverIndex).getExist();
+        return Daos.picAlbumBeanDao.queryBuilder()
+                .where(PicAlbumBeanDao.Properties.Exist.eq(1))
+                .orderDesc(PicAlbumBeanDao.Properties.InnerIndex)
+                .list();
     }
 
     public PicAlbumBean(int serverIndex, String name) {
@@ -64,30 +38,41 @@ public class PicAlbumBean extends Model{
         this.exist = 0;
     }
 
-    @JsonName("jsonName")
-    @Column(name="Name")
+    public static void deletePicAlbumFromDb(int serverIndex) {
+        Daos.picAlbumBeanDao.delete(getByServerIndex(serverIndex));
+    }
+    public static PicAlbumBean getByServerIndex(int serverIndex) {
+        return Daos.picAlbumBeanDao.queryBuilder()
+                .where(PicAlbumBeanDao.Properties.ServerIndex.eq(serverIndex))
+                .unique();
+    }
+
+    public PicAlbumBean() {
+    }
+
+
+    @Generated(hash = 741092784)
+    public PicAlbumBean(String name, int serverIndex, int exist, Long innerIndex,
+            String mtime) {
+        this.name = name;
+        this.serverIndex = serverIndex;
+        this.exist = exist;
+        this.innerIndex = innerIndex;
+        this.mtime = mtime;
+    }
+
     @JsonProperty("name")
     private String name;
 
-    @JsonName("jsonIndex")
-    @Column(name="server_index")
     @JsonProperty("index")
     private int serverIndex;
 
-    @Column(name="exist")
     private int exist;
 
+    @Id
+    private Long innerIndex;
 
-    @Column(name="innerindex", index=true)
-    private int innerIndex;
 
-    public int getInnerIndex() {
-        return innerIndex;
-    }
-
-    public void setInnerIndex(int innerIndex) {
-        this.innerIndex = innerIndex;
-    }
     private String mtime;
 
     public String getMtime() {
@@ -121,5 +106,13 @@ public class PicAlbumBean extends Model{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setInnerIndex(Long innerIndex) {
+        this.innerIndex = innerIndex;
+    }
+
+    public Long getInnerIndex() {
+        return this.innerIndex;
     }
 }

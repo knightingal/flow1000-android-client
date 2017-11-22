@@ -16,22 +16,15 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
 
+    <!--android:name="com.activeandroid.app.Application"-->
     <application
-        android:name="com.activeandroid.app.Application"
+        android:name=".App"
         android:allowBackup="true"
-        android:icon="@drawable/greenicon"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <meta-data
-            android:name="AA_DB_NAME"
-            android:value="Local1000.db" />
-        <meta-data
-            android:name="AA_DB_VERSION"
-            android:value="5" />
-        <meta-data
-            android:name="AA_MODELS"
-            android:value="com.example.jianming.beans.PicAlbumBean, com.example.jianming.beans.PicInfoBean, com.example.jianming.beans.UpdateStamp" />
-
         <activity
             android:name=".PicAlbumActivity"
             android:label="@string/title_activity_list" />
@@ -45,11 +38,6 @@
         <activity
             android:name=".SettingActivity"
             android:label="@string/title_activity_setting" />
-        <activity android:name=".AboutActivity" />
-        <activity
-            android:name=".TimestampActivity"
-            android:label="@string/title_activity_timestamp"
-            android:theme="@style/AppTheme1" />
         <activity
             android:name=".Main2Activity"
             android:label="@string/title_activity_main2"
@@ -60,16 +48,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.example.jianming.xzingdemo.CapActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-
-        <service
-            android:name="com.example.jianming.services.DownloadService"
-            android:enabled="true"
-            android:exported="true" />
 
         <service
             android:name="org.nanjing.knightingal.processerlib.Services.DownloadService"
@@ -78,8 +56,7 @@
 
         <activity
             android:name=".PicAlbumListActivityMD"
-            android:label="@string/title_activity_pic_album_list_activity_md"
-            android:theme="@style/AppTheme1" />
+            android:label="@string/title_activity_pic_album_list_activity_md" />
 
     </application>
 

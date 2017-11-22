@@ -19,22 +19,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.activeandroid.query.Delete;
-import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.Utils.Daos;
+import com.example.jianming.beans.DaoSession;
+import com.example.jianming.beans.PicAlbumBeanDao;
 import com.example.jianming.beans.UpdateStamp;
-//import com.example.jianming.services.DownloadService;
-//import com.example.jianming.xzingdemo.CapActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import org.nanjing.knightingal.processerlib.Services.DownloadService;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private DaoSession daoSession;
+    private PicAlbumBeanDao picAlbumBeanDao;
 
     @OnClick({R.id.su27, R.id.picIndexBtn})
     public void btnClicked(View v) {
@@ -52,21 +54,24 @@ public class Main2Activity extends AppCompatActivity
         }
     }
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     public Toolbar toolbar;
 
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     public FloatingActionButton fab;
 
-    @Bind(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     public DrawerLayout drawer;
 
-    @Bind(R.id.nav_view)
+    @BindView(R.id.nav_view)
     public NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        daoSession = ((App)getApplication()).getDaoSession();
+        picAlbumBeanDao = daoSession.getPicAlbumBeanDao();
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main2);
@@ -94,10 +99,10 @@ public class Main2Activity extends AppCompatActivity
     }
 
     private void initDB() {
-        UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("T_ALBUM_INFO");
+        UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("PIC_ALBUM_BEAN");
         if (albumStamp == null) {
             albumStamp = new UpdateStamp();
-            albumStamp.setTableName("T_ALBUM_INFO");
+            albumStamp.setTableName("PIC_ALBUM_BEAN");
             albumStamp.setUpdateStamp("20000101000000");
             albumStamp.save();
         }
@@ -180,7 +185,7 @@ public class Main2Activity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -192,10 +197,10 @@ public class Main2Activity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_about) {
-            this.startActivity(new Intent(this, AboutActivity.class));
-            return true;
-        }
+//        if (id == R.id.action_about) {
+//            this.startActivity(new Intent(this, AboutActivity.class));
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -212,7 +217,7 @@ public class Main2Activity extends AppCompatActivity
             clearDB();
             Toast.makeText(this, "DB cleared", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.set_timestamp) {
-            startActivity(new Intent(this, TimestampActivity.class));
+//            startActivity(new Intent(this, TimestampActivity.class));
         } else if (id == R.id.QR_code) {
             //QrcodeActivity
 //            startActivity(new Intent(this, CapActivity.class));
@@ -229,8 +234,10 @@ public class Main2Activity extends AppCompatActivity
 
     private void clearDB() {
 //        UpdateStamp.delete(UpdateStamp.class, 1);
-        new Delete().from(UpdateStamp.class).execute();
-        new Delete().from(PicAlbumBean.class).execute();
+//        new Delete().from(UpdateStamp.class).execute();
+        Daos.updateStampDao.deleteAll();
+//        new Delete().from(PicAlbumBean.class).execute();
+        picAlbumBeanDao.deleteAll();
         initDB();
     }
 
