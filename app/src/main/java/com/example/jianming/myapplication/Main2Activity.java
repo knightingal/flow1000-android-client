@@ -38,13 +38,9 @@ public class Main2Activity extends AppCompatActivity
     private DaoSession daoSession;
     private PicAlbumBeanDao picAlbumBeanDao;
 
-    @OnClick({R.id.su27, R.id.picIndexBtn})
+    @OnClick({R.id.picIndexBtn})
     public void btnClicked(View v) {
         switch (v.getId()) {
-            case R.id.su27:
-                this.startActivity(new Intent(this, PicContentActivity.class));
-                break;
-
             case R.id.picIndexBtn:
                 this.startActivity(new Intent(this, Local1KActivity.class));
                 break;
