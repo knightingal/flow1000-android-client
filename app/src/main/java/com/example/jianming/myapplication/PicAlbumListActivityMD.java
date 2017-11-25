@@ -139,12 +139,12 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
 
 
-        List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
-        for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
-            PicAlbumData picAlbumData = new PicAlbumData();
-            picAlbumData.setPicAlbumData(picAlbumBean);
-            picAlbumDataList.add(picAlbumData);
-        }
+//        List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
+//        for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
+//            PicAlbumData picAlbumData = new PicAlbumData();
+//            picAlbumData.setPicAlbumData(picAlbumBean);
+//            picAlbumDataList.add(picAlbumData);
+//        }
         listView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         listView.setLayoutManager(mLayoutManager);

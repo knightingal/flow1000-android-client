@@ -65,7 +65,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             viewHolder.exist = true;
         } else {
             viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
-            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+            viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = false;
         }
         viewHolder.serverIndex = dataArray.get(position).getPicAlbumData().getServerIndex();
@@ -139,14 +139,11 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 intent.putExtra("serverIndex", serverIndex);
                 context.startActivity(intent);
             } else {
+                this.downloadProcessBar.setVisibility(View.VISIBLE);
                 File file = FileUtil.getAlbumStorageDir((PicAlbumListActivityMD)context, name);
                 if (file.mkdirs()) {
                     Log.i(TAG, file.getAbsolutePath() + " made");
                 }
-                String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + serverIndex)
-                        .replace("%serverIP", EnvArgs.serverIP)
-                        .replace("%serverPort", EnvArgs.serverPort);
-//                ((PicAlbumListActivityMD)context).downLoadService.startDownload(serverIndex, getAdapterPosition(), name, this.downloadProcessView, url);
                 int innerIndex = dataArray.get(getAdapterPosition())
                         .getPicAlbumData()
                         .getInnerIndex()
