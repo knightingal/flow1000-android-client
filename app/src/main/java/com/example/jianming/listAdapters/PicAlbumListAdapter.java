@@ -28,14 +28,12 @@ import java.util.List;
 
 public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapter.ViewHolder> {
     private final static String TAG = "PicAlbumListAdapter";
-    private final LayoutInflater mInflater;
     private List<PicAlbumData> dataArray;
 
     private Context context;
 
     public PicAlbumListAdapter(Context context) {
         this.context = context;
-        this.mInflater = LayoutInflater.from(context);
     }
 
     public void setDataArray(List<PicAlbumData> dataArray) {
@@ -57,8 +55,6 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         viewHolder.textView.setText(dataArray.get(position).getPicAlbumData().getName());
-//        if (FileUtil.checkDirExist(context, dataArray.get(position).getName())) {
-//        if (PicAlbumBean.getExistByServerIndex(dataArray.get(position).getPicAlbumData().getServerIndex()) == 1) {
         if (dataArray.get(position).getPicAlbumData().getExist() == 1) {
             viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
             viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
@@ -120,9 +116,9 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
         public ViewHolder(View itemView) {
             super(itemView);
-            this.textView = (TextView) itemView.findViewById(R.id.pic_text_view);
-            this.deleteBtn = (ImageView) itemView.findViewById(R.id.delete_btn);
-            this.downloadProcessBar = (ProcessBar) itemView.findViewById(R.id.customer_view1);
+            this.textView = itemView.findViewById(R.id.pic_text_view);
+            this.deleteBtn = itemView.findViewById(R.id.delete_btn);
+            this.downloadProcessBar = itemView.findViewById(R.id.customer_view1);
 
             itemView.setOnClickListener(this);
         }
@@ -134,13 +130,13 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             int serverIndex = this.serverIndex;
             if (this.exist) {
                 Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);
-                Intent intent = new Intent((PicAlbumListActivityMD)context, PicAlbumActivity.class);
+                Intent intent = new Intent(context, PicAlbumActivity.class);
                 intent.putExtra("name", name);
                 intent.putExtra("serverIndex", serverIndex);
                 context.startActivity(intent);
             } else {
                 this.downloadProcessBar.setVisibility(View.VISIBLE);
-                File file = FileUtil.getAlbumStorageDir((PicAlbumListActivityMD)context, name);
+                File file = FileUtil.getAlbumStorageDir(context, name);
                 if (file.mkdirs()) {
                     Log.i(TAG, file.getAbsolutePath() + " made");
                 }

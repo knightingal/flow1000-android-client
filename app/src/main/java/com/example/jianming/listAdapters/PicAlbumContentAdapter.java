@@ -28,14 +28,14 @@ public class PicAlbumContentAdapter extends BaseAdapter {
 
     private List<PicInfoBean> dataArray;
 
-    PicAlbumActivity context;
+    private PicAlbumActivity context;
 
-    int sreamWidth;
+    private int screamWidth;
 
     public PicAlbumContentAdapter(PicAlbumActivity context) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
-        this.sreamWidth = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE))
+        this.screamWidth = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay().getWidth();
     }
 
@@ -60,14 +60,16 @@ public class PicAlbumContentAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View view, ViewGroup parent) {
         ViewHolder holder;
-        if (convertView == null) {
+        View convertView;
+        if (view == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(R.layout.vlist, parent, false);
-            holder.img = (ImageView) convertView.findViewById(R.id.img);
+            holder.img = convertView.findViewById(R.id.img);
             convertView.setTag(holder);
         } else {
+            convertView = view;
             holder = (ViewHolder) convertView.getTag();
         }
 
@@ -78,8 +80,8 @@ public class PicAlbumContentAdapter extends BaseAdapter {
 
         ViewGroup.LayoutParams lp = holder.img.getLayoutParams();
 
-        lp.height = (int)(div * (float)sreamWidth);
-        lp.width = sreamWidth;
+        lp.height = (int)(div * (float)screamWidth);
+        lp.width = screamWidth;
 
         holder.img.setLayoutParams(lp);
         File file = new File(dataArray.get(position).getAbsolutePath());
@@ -97,7 +99,7 @@ public class PicAlbumContentAdapter extends BaseAdapter {
         holder.img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Activity4List", (String) dataArray.get(position).getAbsolutePath());
+                Log.d("Activity4List", dataArray.get(position).getAbsolutePath());
                 String imgs[] = new String[dataArray.size()];
                 for (int i = 0; i < dataArray.size(); i++) {
                     imgs[i] = dataArray.get(i).getAbsolutePath();
@@ -111,6 +113,6 @@ public class PicAlbumContentAdapter extends BaseAdapter {
     }
 
     public final class ViewHolder {
-        public ImageView img;
+        ImageView img;
     }
 }
