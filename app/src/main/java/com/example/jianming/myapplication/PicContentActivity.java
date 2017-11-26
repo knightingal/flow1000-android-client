@@ -1,15 +1,10 @@
 package com.example.jianming.myapplication;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 
-import com.example.jianming.services.DownloadService;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 import org.nanking.knightingal.view.ImgChangeListener;
@@ -31,43 +26,14 @@ public class PicContentActivity extends Activity implements ImgChangeListener {
     private int position;
 
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mBound) {
-            unbindService(mConnection);
-        }
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(this, DownloadService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    DownloadService mService;
 
-    private boolean mBound = false;
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            DownloadService.LocalBinder binder = (DownloadService.LocalBinder) service;
-            mService = binder.getService();
-            mService.callFromActivity();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mService = null;
-            mBound = false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,16 +62,10 @@ public class PicContentActivity extends Activity implements ImgChangeListener {
             }
         } else {
             return null;
-//            if (index >= 0 && index < pics.length) {
-//                return pics[index] + "";
-//            } else {
-//                return null;
-//            }
         }
     }
 
     int index = 0;
-//    int pics[] = {R.drawable.f14_1, R.drawable.f14_2, R.drawable.f14_3, R.drawable.f14_4,};
 
 
     @Override
