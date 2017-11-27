@@ -64,6 +64,10 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = false;
         }
+        if (((PicAlbumListActivityMD)context).downLoadService.getProcessingIds().contains(Integer.valueOf(position)))
+        {
+            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+        }
         viewHolder.serverIndex = dataArray.get(position).getPicAlbumData().getServerIndex();
         viewHolder.localPosition = position;
         viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {

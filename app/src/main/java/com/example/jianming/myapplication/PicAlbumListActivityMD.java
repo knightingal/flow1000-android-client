@@ -23,10 +23,10 @@ import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumBeanDao;
 import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
+import com.example.jianming.services.DownloadService;
 
 import org.greenrobot.greendao.database.Database;
 import org.nanjing.knightingal.processerlib.RefreshListener;
-import org.nanjing.knightingal.processerlib.Services.DownloadService;
 import org.nanjing.knightingal.processerlib.beans.CounterBean;
 
 import java.util.ArrayList;
@@ -78,6 +78,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         viewHolder.downloadProcessBar.postInvalidate();
         Log.d(TAG, "current = " + counterBean.getCurr() + " max = " + counterBean.getMax());
         if (counterBean.getCurr() == counterBean.getMax()) {
+            downLoadService.getProcessingIds().remove(Integer.valueOf(counterBean.getIndex()));
             picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().setExist(1);
             picAlbumBeanDao.update(picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData());
             picAlbumListAdapter.notifyDataSetChanged();
@@ -92,6 +93,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + serverIndex)
                 .replace("%serverIP", EnvArgs.serverIP)
                 .replace("%serverPort", EnvArgs.serverPort);
+        downLoadService.getProcessingIds().add(index);
 
         new DownloadPicsTask(this, position, index, downLoadService).execute(url);
     }
@@ -109,7 +111,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(TAG, "onServiceConnected");
             isBound = true;
-            downLoadService = ((DownloadService.LocalBinder) service).getService();
+            downLoadService = (DownloadService) ((DownloadService.LocalBinder) service).getService();
             downLoadService.setRefreshListener(TYPE_LIST, PicAlbumListActivityMD.this);
         }
 

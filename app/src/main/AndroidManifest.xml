@@ -49,10 +49,9 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name="org.nanjing.knightingal.processerlib.Services.DownloadService"
+        <service android:name="com.example.jianming.services.DownloadService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"/>
 
         <activity
             android:name=".PicAlbumListActivityMD"
