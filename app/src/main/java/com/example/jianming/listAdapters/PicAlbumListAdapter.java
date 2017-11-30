@@ -21,6 +21,7 @@ import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.PicAlbumListActivityMD;
 import com.example.jianming.myapplication.R;
 
+import org.nanjing.knightingal.processerlib.beans.Counter;
 import org.nanjing.knightingal.processerlib.view.ProcessBar;
 
 import java.io.File;
@@ -64,9 +65,15 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = false;
         }
-        if (((PicAlbumListActivityMD)context).downLoadService.getProcessingIds().contains(Integer.valueOf(position)))
+        if (((PicAlbumListActivityMD)context).downLoadService.counterSparseArray.get(position) != null)
         {
-            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+            Counter counter = ((PicAlbumListActivityMD)context).downLoadService.counterSparseArray.get(position);
+            viewHolder.downloadProcessBar.setPercent(counter.getCurr() * 100 / counter.getMax());
+            if (counter.getCurr() < counter.getMax() && counter.getCurr() > 0) {
+                viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
+            }
         }
         viewHolder.serverIndex = dataArray.get(position).getPicAlbumData().getServerIndex();
         viewHolder.localPosition = position;

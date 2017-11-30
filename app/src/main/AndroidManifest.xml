@@ -49,7 +49,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.example.jianming.services.DownloadService"
+        <service android:name="org.nanjing.knightingal.processerlib.Services.DownloadService"
             android:enabled="true"
             android:exported="true"/>
 

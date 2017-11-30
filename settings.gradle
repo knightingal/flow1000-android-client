@@ -1,1 +1,1 @@
-include ':app', ':processerlib-debug', ':kimageslider-release'
+include ':app', ':kimageslider-release', ':processerlib-debug'

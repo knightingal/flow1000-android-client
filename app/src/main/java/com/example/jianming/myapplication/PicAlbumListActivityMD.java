@@ -23,10 +23,10 @@ import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumBeanDao;
 import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
-import com.example.jianming.services.DownloadService;
 
 import org.greenrobot.greendao.database.Database;
 import org.nanjing.knightingal.processerlib.RefreshListener;
+import org.nanjing.knightingal.processerlib.Services.DownloadService;
 import org.nanjing.knightingal.processerlib.beans.CounterBean;
 
 import java.util.ArrayList;
@@ -71,18 +71,19 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
     private void refreshListItem(CounterBean counterBean) {
         PicAlbumListAdapter.ViewHolder viewHolder = ((PicAlbumListAdapter.ViewHolder)listView.findViewHolderForAdapterPosition(counterBean.getIndex()));
+        if (counterBean.getCurr() == counterBean.getMax()) {
+            picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().setExist(1);
+            picAlbumBeanDao.update(picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData());
+        }
+
+
         if (viewHolder == null) {
             return;
         }
         viewHolder.downloadProcessBar.setPercent(counterBean.getCurr() * 100 / counterBean.getMax());
         viewHolder.downloadProcessBar.postInvalidate();
+        picAlbumListAdapter.notifyDataSetChanged();
         Log.d(TAG, "current = " + counterBean.getCurr() + " max = " + counterBean.getMax());
-        if (counterBean.getCurr() == counterBean.getMax()) {
-            downLoadService.getProcessingIds().remove(Integer.valueOf(counterBean.getIndex()));
-            picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().setExist(1);
-            picAlbumBeanDao.update(picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData());
-            picAlbumListAdapter.notifyDataSetChanged();
-        }
     }
 
 
@@ -93,7 +94,6 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + serverIndex)
                 .replace("%serverIP", EnvArgs.serverIP)
                 .replace("%serverPort", EnvArgs.serverPort);
-        downLoadService.getProcessingIds().add(index);
 
         new DownloadPicsTask(this, position, index, downLoadService).execute(url);
     }
@@ -154,7 +154,12 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         picAlbumListAdapter = new PicAlbumListAdapter(this);
         picAlbumListAdapter.setDataArray(picAlbumDataList);
         listView.setAdapter(picAlbumListAdapter);
-        startDownloadWebPage();
+        if (NetworkUtil.isNetworkAvailable(this)) {
+            startDownloadWebPage();
+        }
+        else {
+            refreshFrontPage();
+        }
 
     }
 
