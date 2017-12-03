@@ -74,15 +74,14 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         if (counterBean.getCurr() == counterBean.getMax()) {
             picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().setExist(1);
             picAlbumBeanDao.update(picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData());
+            picAlbumListAdapter.notifyDataSetChanged();
         }
 
 
-        if (viewHolder == null) {
-            return;
+        if (viewHolder != null) {
+            viewHolder.downloadProcessBar.setPercent(counterBean.getCurr() * 100 / counterBean.getMax());
+            viewHolder.downloadProcessBar.postInvalidate();
         }
-        viewHolder.downloadProcessBar.setPercent(counterBean.getCurr() * 100 / counterBean.getMax());
-        viewHolder.downloadProcessBar.postInvalidate();
-        picAlbumListAdapter.notifyDataSetChanged();
         Log.d(TAG, "current = " + counterBean.getCurr() + " max = " + counterBean.getMax());
     }
 
