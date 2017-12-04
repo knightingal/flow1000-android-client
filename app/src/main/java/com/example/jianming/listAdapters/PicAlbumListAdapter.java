@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumData;
@@ -65,15 +64,16 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = false;
         }
-        if (((PicAlbumListActivityMD)context).downLoadService.counterSparseArray.get(position) != null)
+//        if (((PicAlbumListActivityMD)context).downLoadService.counterSparseArray.get(position) != null)
+        if (((PicAlbumListActivityMD)context).downLoadService.getProcessingIndex().contains(Integer.valueOf(position)))
         {
             Counter counter = ((PicAlbumListActivityMD)context).downLoadService.counterSparseArray.get(position);
-            viewHolder.downloadProcessBar.setPercent(counter.getCurr() * 100 / counter.getMax());
-            if (counter.getCurr() < counter.getMax() && counter.getCurr() > 0) {
-                viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+            if (counter == null) {
+                viewHolder.downloadProcessBar.setPercent(0);
             } else {
-                viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
+                viewHolder.downloadProcessBar.setPercent(counter.getCurr() * 100 / counter.getMax());
             }
+            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
         }
         viewHolder.serverIndex = dataArray.get(position).getPicAlbumData().getServerIndex();
         viewHolder.localPosition = position;
@@ -147,6 +147,8 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 context.startActivity(intent);
             } else {
                 this.downloadProcessBar.setVisibility(View.VISIBLE);
+                 ((PicAlbumListActivityMD)context).downLoadService.getProcessingIndex().add(getAdapterPosition());
+
                 File file = FileUtil.getAlbumStorageDir(context, name);
                 if (file.mkdirs()) {
                     Log.i(TAG, file.getAbsolutePath() + " made");

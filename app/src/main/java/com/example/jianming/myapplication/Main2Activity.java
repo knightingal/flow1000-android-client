@@ -22,10 +22,10 @@ import com.example.jianming.Utils.Daos;
 import com.example.jianming.beans.DaoSession;
 import com.example.jianming.beans.PicAlbumBeanDao;
 import com.example.jianming.beans.UpdateStamp;
+import com.example.jianming.services.DownloadService;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import org.nanjing.knightingal.processerlib.Services.DownloadService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -140,7 +140,7 @@ public class Main2Activity extends AppCompatActivity
             // We've bound to LocalService, cast the IBinder and get LocalService instance
             Log.d(TAG, "onServiceConnected");
             DownloadService.LocalBinder binder = (DownloadService.LocalBinder) service;
-            mService = binder.getService();
+            mService = (DownloadService) binder.getService();
             mBound = true;
         }
 

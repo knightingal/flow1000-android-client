@@ -23,10 +23,10 @@ import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumBeanDao;
 import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
+import com.example.jianming.services.DownloadService;
 
 import org.greenrobot.greendao.database.Database;
 import org.nanjing.knightingal.processerlib.RefreshListener;
-import org.nanjing.knightingal.processerlib.Services.DownloadService;
 import org.nanjing.knightingal.processerlib.beans.CounterBean;
 
 import java.util.ArrayList;
@@ -72,6 +72,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
     private void refreshListItem(CounterBean counterBean) {
         PicAlbumListAdapter.ViewHolder viewHolder = ((PicAlbumListAdapter.ViewHolder)listView.findViewHolderForAdapterPosition(counterBean.getIndex()));
         if (counterBean.getCurr() == counterBean.getMax()) {
+            downLoadService.getProcessingIndex().remove(Integer.valueOf(counterBean.getIndex()));
             picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().setExist(1);
             picAlbumBeanDao.update(picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData());
             picAlbumListAdapter.notifyDataSetChanged();
@@ -135,17 +136,6 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         picAlbumBeanDao = ((App)getApplication()).getDaoSession().getPicAlbumBeanDao();
         setContentView(R.layout.activity_pic_album_list_activity_md);
         ButterKnife.bind(this);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-
-
-
-//        List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
-//        for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
-//            PicAlbumData picAlbumData = new PicAlbumData();
-//            picAlbumData.setPicAlbumData(picAlbumBean);
-//            picAlbumDataList.add(picAlbumData);
-//        }
         listView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         listView.setLayoutManager(mLayoutManager);
