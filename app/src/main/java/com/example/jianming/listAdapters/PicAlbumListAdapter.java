@@ -54,8 +54,8 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
-        viewHolder.textView.setText(dataArray.get(position).getPicAlbumData().getName());
-        if (dataArray.get(position).getPicAlbumData().getExist() == 1) {
+        viewHolder.textView.setText(dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
+        if (dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getExist() == 1) {
             viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
             viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = true;
@@ -64,10 +64,8 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = false;
         }
-//        if (((PicAlbumListActivityMD)context).downLoadService.counterSparseArray.get(position) != null)
-        if (((PicAlbumListActivityMD)context).downLoadService.getProcessingIndex().contains(Integer.valueOf(position)))
-        {
-            Counter counter = ((PicAlbumListActivityMD)context).downLoadService.counterSparseArray.get(position);
+        if (((PicAlbumListActivityMD)context).downLoadService.getProcessingIndex().contains(viewHolder.getAdapterPosition())) {
+            Counter counter = ((PicAlbumListActivityMD)context).downLoadService.counterSparseArray.get(viewHolder.getAdapterPosition());
             if (counter == null) {
                 viewHolder.downloadProcessBar.setPercent(0);
             } else {
@@ -75,19 +73,18 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             }
             viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
         }
-        viewHolder.serverIndex = dataArray.get(position).getPicAlbumData().getServerIndex();
-        viewHolder.localPosition = position;
+        viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getServerIndex();
         viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(position).getPicAlbumData().getName() + " delete_btn");
+                Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName() + " delete_btn");
                 AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
                 builder.setMessage("delete this dir?");
                 builder.setTitle("");
                 builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(position).getPicAlbumData().getName());
+                        FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
                         viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
                         PicAlbumBean.deletePicAlbumFromDb(viewHolder.serverIndex);
                         dialog.dismiss();
@@ -113,19 +110,17 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView textView;
+        private TextView textView;
 
-        public ImageView deleteBtn;
+        private ImageView deleteBtn;
 
         public int serverIndex;
 
-        public int localPosition;
-
-        public boolean exist = false;
+        private boolean exist = false;
 
         public ProcessBar downloadProcessBar;
 
-        public ViewHolder(View itemView) {
+        private ViewHolder(View itemView) {
             super(itemView);
             this.textView = itemView.findViewById(R.id.pic_text_view);
             this.deleteBtn = itemView.findViewById(R.id.delete_btn);
