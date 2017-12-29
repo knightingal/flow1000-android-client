@@ -113,6 +113,11 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
             isBound = true;
             downLoadService = (DownloadService) ((DownloadService.LocalBinder) service).getService();
             downLoadService.setRefreshListener(TYPE_LIST, PicAlbumListActivityMD.this);
+            if (NetworkUtil.isNetworkAvailable(PicAlbumListActivityMD.this)) {
+                startDownloadWebPage();
+            } else {
+                refreshFrontPage();
+            }
         }
 
         @Override
@@ -143,13 +148,6 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         picAlbumListAdapter = new PicAlbumListAdapter(this);
         picAlbumListAdapter.setDataArray(picAlbumDataList);
         listView.setAdapter(picAlbumListAdapter);
-        if (NetworkUtil.isNetworkAvailable(this)) {
-            startDownloadWebPage();
-        }
-        else {
-            refreshFrontPage();
-        }
-
     }
 
     @Override
@@ -243,6 +241,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
     }
 
     public void refreshFrontPage() {
+        picAlbumDataList.clear();
         List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
         for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
             PicAlbumData picAlbumData = new PicAlbumData();

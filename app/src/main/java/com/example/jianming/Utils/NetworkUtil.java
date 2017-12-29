@@ -5,14 +5,16 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import com.squareup.okhttp.OkHttpClient;
 
-/**
- * Created by Jianming on 2015/9/16.
- */
 public class NetworkUtil {
 
     public static boolean isNetworkAvailable(Context context) {
-        NetworkInfo networkInfo = ((ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
+        ConnectivityManager connectivityManager = ((ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        if (connectivityManager != null) {
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            return networkInfo != null && networkInfo.isConnected();
+        } else {
+            return false;
+        }
     }
 
     public static OkHttpClient getOkHttpClient() {
