@@ -26,7 +26,7 @@ public class DownloadAlbumsTask extends DownloadWebpageTask {
         final ObjectMapper mapper = new ObjectMapper();
         try {
             Daos.db.beginTransaction();
-            albumStamp.setUpdateStamp(TimeUtil.getGmtInFormatyyyyMMddHHmmss());
+            albumStamp.setUpdateStamp(TimeUtil.currentFormatyyyyMMddHHmmss());
             albumStamp.update();
             PicAlbumBean[] picAlbumBeanList = mapper.readValue(s, PicAlbumBean[].class);
             for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
