@@ -44,7 +44,7 @@ public class DownloadPicsTask extends DownloadWebpageTask {
         try {
             AlbumInfoBean albumInfoBean = mapper.readValue(s, AlbumInfoBean.class);
             Daos.db.beginTransaction();
-            for (String pic : albumInfoBean.pics.subList(0, albumInfoBean.pics.size() > 128? 128:albumInfoBean.pics.size())) {
+            for (String pic : albumInfoBean.pics) {
                 PicInfoBean picInfoBean = new PicInfoBean();
 
                 picInfoBean.setAlbumIndex(picAlbumBean.getInnerIndex());
