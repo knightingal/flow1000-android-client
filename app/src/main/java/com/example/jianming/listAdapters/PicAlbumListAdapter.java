@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumData;
@@ -21,6 +20,7 @@ import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.PicAlbumListActivityMD;
 import com.example.jianming.myapplication.R;
 
+import org.nanjing.knightingal.processerlib.beans.Counter;
 import org.nanjing.knightingal.processerlib.view.ProcessBar;
 
 import java.io.File;
@@ -28,14 +28,12 @@ import java.util.List;
 
 public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapter.ViewHolder> {
     private final static String TAG = "PicAlbumListAdapter";
-    private final LayoutInflater mInflater;
     private List<PicAlbumData> dataArray;
 
     private Context context;
 
     public PicAlbumListAdapter(Context context) {
         this.context = context;
-        this.mInflater = LayoutInflater.from(context);
     }
 
     public void setDataArray(List<PicAlbumData> dataArray) {
@@ -56,31 +54,37 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
-        viewHolder.textView.setText(dataArray.get(position).getPicAlbumData().getName());
-//        if (FileUtil.checkDirExist(context, dataArray.get(position).getName())) {
-//        if (PicAlbumBean.getExistByServerIndex(dataArray.get(position).getPicAlbumData().getServerIndex()) == 1) {
-        if (dataArray.get(position).getPicAlbumData().getExist() == 1) {
+        viewHolder.textView.setText(dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
+        if (dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getExist() == 1) {
             viewHolder.textView.setTextColor(Color.rgb(0, 255, 0));
             viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = true;
         } else {
             viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
-            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+            viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = false;
         }
-        viewHolder.serverIndex = dataArray.get(position).getPicAlbumData().getServerIndex();
-        viewHolder.localPosition = position;
+        if (((PicAlbumListActivityMD)context).downLoadService.getProcessingIndex().contains(viewHolder.getAdapterPosition())) {
+            Counter counter = ((PicAlbumListActivityMD)context).downLoadService.counterSparseArray.get(viewHolder.getAdapterPosition());
+            if (counter == null) {
+                viewHolder.downloadProcessBar.setPercent(0);
+            } else {
+                viewHolder.downloadProcessBar.setPercent(counter.getCurr() * 100 / counter.getMax());
+            }
+            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+        }
+        viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getServerIndex();
         viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(position).getPicAlbumData().getName() + " delete_btn");
+                Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName() + " delete_btn");
                 AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
                 builder.setMessage("delete this dir?");
                 builder.setTitle("");
                 builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(position).getPicAlbumData().getName());
+                        FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
                         viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
                         PicAlbumBean.deletePicAlbumFromDb(viewHolder.serverIndex);
                         dialog.dismiss();
@@ -106,23 +110,21 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView textView;
+        private TextView textView;
 
-        public ImageView deleteBtn;
+        private ImageView deleteBtn;
 
         public int serverIndex;
 
-        public int localPosition;
-
-        public boolean exist = false;
+        private boolean exist = false;
 
         public ProcessBar downloadProcessBar;
 
-        public ViewHolder(View itemView) {
+        private ViewHolder(View itemView) {
             super(itemView);
-            this.textView = (TextView) itemView.findViewById(R.id.pic_text_view);
-            this.deleteBtn = (ImageView) itemView.findViewById(R.id.delete_btn);
-            this.downloadProcessBar = (ProcessBar) itemView.findViewById(R.id.customer_view1);
+            this.textView = itemView.findViewById(R.id.pic_text_view);
+            this.deleteBtn = itemView.findViewById(R.id.delete_btn);
+            this.downloadProcessBar = itemView.findViewById(R.id.customer_view1);
 
             itemView.setOnClickListener(this);
         }
@@ -134,19 +136,18 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             int serverIndex = this.serverIndex;
             if (this.exist) {
                 Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);
-                Intent intent = new Intent((PicAlbumListActivityMD)context, PicAlbumActivity.class);
+                Intent intent = new Intent(context, PicAlbumActivity.class);
                 intent.putExtra("name", name);
                 intent.putExtra("serverIndex", serverIndex);
                 context.startActivity(intent);
             } else {
-                File file = FileUtil.getAlbumStorageDir((PicAlbumListActivityMD)context, name);
+                this.downloadProcessBar.setVisibility(View.VISIBLE);
+                 ((PicAlbumListActivityMD)context).downLoadService.getProcessingIndex().add(getAdapterPosition());
+
+                File file = FileUtil.getAlbumStorageDir(context, name);
                 if (file.mkdirs()) {
                     Log.i(TAG, file.getAbsolutePath() + " made");
                 }
-                String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + serverIndex)
-                        .replace("%serverIP", EnvArgs.serverIP)
-                        .replace("%serverPort", EnvArgs.serverPort);
-//                ((PicAlbumListActivityMD)context).downLoadService.startDownload(serverIndex, getAdapterPosition(), name, this.downloadProcessView, url);
                 int innerIndex = dataArray.get(getAdapterPosition())
                         .getPicAlbumData()
                         .getInnerIndex()

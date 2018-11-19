@@ -15,7 +15,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -23,10 +22,10 @@ import com.example.jianming.Utils.Daos;
 import com.example.jianming.beans.DaoSession;
 import com.example.jianming.beans.PicAlbumBeanDao;
 import com.example.jianming.beans.UpdateStamp;
+import com.example.jianming.services.DownloadService;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import org.nanjing.knightingal.processerlib.Services.DownloadService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,13 +37,9 @@ public class Main2Activity extends AppCompatActivity
     private DaoSession daoSession;
     private PicAlbumBeanDao picAlbumBeanDao;
 
-    @OnClick({R.id.su27, R.id.picIndexBtn})
+    @OnClick({R.id.picIndexBtn})
     public void btnClicked(View v) {
         switch (v.getId()) {
-            case R.id.su27:
-                this.startActivity(new Intent(this, PicContentActivity.class));
-                break;
-
             case R.id.picIndexBtn:
                 this.startActivity(new Intent(this, Local1KActivity.class));
                 break;
@@ -118,16 +113,11 @@ public class Main2Activity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-//        if (mBound) {
-//            unbindService(mConnection);
-//        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//        Intent intent = new Intent(this, DownloadService.class);
-//        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -150,8 +140,7 @@ public class Main2Activity extends AppCompatActivity
             // We've bound to LocalService, cast the IBinder and get LocalService instance
             Log.d(TAG, "onServiceConnected");
             DownloadService.LocalBinder binder = (DownloadService.LocalBinder) service;
-            mService = binder.getService();
-//            mService.callFromActivity();
+            mService = (DownloadService) binder.getService();
             mBound = true;
         }
 
@@ -182,29 +171,6 @@ public class Main2Activity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_about) {
-//            this.startActivity(new Intent(this, AboutActivity.class));
-//            return true;
-//        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -233,10 +199,7 @@ public class Main2Activity extends AppCompatActivity
     private static final int I_CAP_ACTIVITY = 1;
 
     private void clearDB() {
-//        UpdateStamp.delete(UpdateStamp.class, 1);
-//        new Delete().from(UpdateStamp.class).execute();
         Daos.updateStampDao.deleteAll();
-//        new Delete().from(PicAlbumBean.class).execute();
         picAlbumBeanDao.deleteAll();
         initDB();
     }

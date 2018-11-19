@@ -10,22 +10,12 @@
     tools:showIn="@layout/app_bar_main2"
     tools:context="com.example.jianming.myapplication.Main2Activity">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/su27"
-        android:text="@string/su27"
-
-        />
-
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/pic_index"
         android:id="@+id/picIndexBtn"
-
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" android:layout_below="@+id/su27"/>
+        />
 
 </RelativeLayout>

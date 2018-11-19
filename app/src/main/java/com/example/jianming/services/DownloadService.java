@@ -1,63 +1,17 @@
 package com.example.jianming.services;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.Binder;
-import android.os.IBinder;
-import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class DownloadService extends Service {
-    private static final String TAG = "DownloadService";
+public class DownloadService extends org.nanjing.knightingal.processerlib.Services.DownloadService{
+    private List<Integer> processingIndex = new ArrayList<>();
 
-
-    IBinder mBinder = new LocalBinder();
-    public DownloadService() {
+    public List<Integer> getProcessingIndex() {
+        return processingIndex;
     }
 
-
-    public class LocalBinder extends Binder {
-        public DownloadService getService() {
-            return DownloadService.this;
-        }
-    }
-
-    public void callFromActivity() {
-        Log.d(TAG, "callFromActivity");
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind");
-        return mBinder;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(TAG, "onCreate");
-
-    }
-
-
-    boolean running;
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy");
-        running = false;
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand");
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        Log.d(TAG, "onUnbind");
-        return super.onUnbind(intent);
+    public void setProcessingIndex(List<Integer> processingIndex) {
+        this.processingIndex = processingIndex;
     }
 }
