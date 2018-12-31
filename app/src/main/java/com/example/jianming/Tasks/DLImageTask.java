@@ -23,8 +23,6 @@ import android.util.Log;
 import com.example.jianming.Utils.Decryptor;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.beans.DLFilePathBean;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
 
 import org.nanjing.knightingal.processerlib.TaskNotifier;
 import org.nanjing.knightingal.processerlib.tasks.AbsTask;
@@ -32,6 +30,9 @@ import org.nanjing.knightingal.processerlib.tasks.AbsTask;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 /**
  * @author Knightingal

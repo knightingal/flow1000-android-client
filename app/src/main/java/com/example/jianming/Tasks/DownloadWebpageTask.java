@@ -2,9 +2,10 @@ package com.example.jianming.Tasks;
 
 import android.os.AsyncTask;
 import com.example.jianming.Utils.NetworkUtil;
-import com.squareup.okhttp.Request;
 
 import java.io.IOException;
+
+import okhttp3.Request;
 
 public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
 
