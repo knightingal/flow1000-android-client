@@ -22,6 +22,7 @@ import android.util.Log;
 
 import com.example.jianming.Utils.Decryptor;
 import com.example.jianming.Utils.EnvArgs;
+import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.DLFilePathBean;
 
 import org.nanjing.knightingal.processerlib.TaskNotifier;
@@ -66,7 +67,7 @@ public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
         Log.d(TAG, "start download " + src);
         Request request = new Request.Builder().url(src).build();
         try {
-            byte[] bytes = new OkHttpClient().newCall(request).execute().body().bytes();
+            byte[] bytes = NetworkUtil.getOkHttpClient().newCall(request).execute().body().bytes();
             FileOutputStream fileOutputStream = new FileOutputStream(dest, true);
             fileOutputStream.write(bytes);
             fileOutputStream.close();
@@ -84,7 +85,7 @@ public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
 
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, "download " + src + " error, try again");
+            Log.e(TAG, "download " + src + " error");
             downloadUrl(src, dest);
         }
 
