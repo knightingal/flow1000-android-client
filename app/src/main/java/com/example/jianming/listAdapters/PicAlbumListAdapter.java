@@ -74,6 +74,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
         }
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getServerIndex();
+        viewHolder.position = viewHolder.getAdapterPosition();
         viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,6 +117,8 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
         public int serverIndex;
 
+        public int position;
+
         private boolean exist = false;
 
         public ProcessBar downloadProcessBar;
@@ -142,17 +145,17 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 context.startActivity(intent);
             } else {
                 this.downloadProcessBar.setVisibility(View.VISIBLE);
-                 ((PicAlbumListActivityMD)context).downLoadService.getProcessingIndex().add(getAdapterPosition());
+                 ((PicAlbumListActivityMD)context).downLoadService.getProcessingIndex().add(position);
 
                 File file = FileUtil.getAlbumStorageDir(context, name);
                 if (file.mkdirs()) {
                     Log.i(TAG, file.getAbsolutePath() + " made");
                 }
-                int innerIndex = dataArray.get(getAdapterPosition())
+                int innerIndex = dataArray.get(position)
                         .getPicAlbumData()
                         .getInnerIndex()
                         .intValue();
-                ((PicAlbumListActivityMD)context).asyncStartDownload(innerIndex, getAdapterPosition());
+                ((PicAlbumListActivityMD)context).asyncStartDownload(innerIndex, position);
             }
         }
     }
