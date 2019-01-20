@@ -2,6 +2,7 @@ package com.example.jianming.myapplication;
 
 import android.app.Application;
 
+import com.example.jianming.Utils.CrashHandler;
 import com.example.jianming.Utils.Daos;
 import com.example.jianming.beans.DaoMaster;
 import com.example.jianming.beans.DaoSession;
@@ -33,6 +34,8 @@ public class App extends Application {
         Daos.picInfoBeanDao = daoSession.getPicInfoBeanDao();
         Daos.updateStampDao = daoSession.getUpdateStampDao();
         Daos.db = db;
+
+        Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(this));
     }
 
 
