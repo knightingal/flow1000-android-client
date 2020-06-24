@@ -51,14 +51,17 @@ public class PicAlbumBean {
     }
 
 
-    @Generated(hash = 741092784)
+    @Generated(hash = 1894981859)
     public PicAlbumBean(String name, int serverIndex, int exist, Long innerIndex,
-            String mtime) {
+            String mtime, String cover, int coverWidth, int coverHeight) {
         this.name = name;
         this.serverIndex = serverIndex;
         this.exist = exist;
         this.innerIndex = innerIndex;
         this.mtime = mtime;
+        this.cover = cover;
+        this.coverWidth = coverWidth;
+        this.coverHeight = coverHeight;
     }
 
     @JsonProperty("name")
@@ -74,6 +77,12 @@ public class PicAlbumBean {
 
 
     private String mtime;
+
+    private String cover;
+
+    private int coverWidth;
+
+    private int coverHeight;
 
     public String getMtime() {
         return mtime;
@@ -114,5 +123,29 @@ public class PicAlbumBean {
 
     public Long getInnerIndex() {
         return this.innerIndex;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
+    public int getCoverWidth() {
+        return coverWidth;
+    }
+
+    public void setCoverWidth(int coverWidth) {
+        this.coverWidth = coverWidth;
+    }
+
+    public int getCoverHeight() {
+        return coverHeight;
+    }
+
+    public void setCoverHeight(int coverHeight) {
+        this.coverHeight = coverHeight;
     }
 }
