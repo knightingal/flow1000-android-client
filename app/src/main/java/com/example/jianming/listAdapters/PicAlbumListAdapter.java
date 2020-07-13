@@ -2,7 +2,6 @@ package com.example.jianming.listAdapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import androidx.recyclerview.widget.RecyclerView;
@@ -83,32 +82,20 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         }
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getServerIndex();
         viewHolder.position = viewHolder.getAdapterPosition();
-        viewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName() + " delete_btn");
-                AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
-                builder.setMessage("delete this dir?");
-                builder.setTitle("");
-                builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
-                        viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
-//                        PicAlbumBean.deletePicAlbumFromDb(viewHolder.serverIndex);
+        viewHolder.deleteBtn.setOnClickListener(v -> {
+            Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName() + " delete_btn");
+            AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
+            builder.setMessage("delete this dir?");
+            builder.setTitle("");
+            builder.setPositiveButton("yes", (dialog, which) -> {
+                FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
+                viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
 
-                        picAlbumDao.delete(picAlbumDao.getByServerIndex(viewHolder.serverIndex));
-                        dialog.dismiss();
-                    }
-                });
-                builder.setNegativeButton("no", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builder.create().show();
-            }
+                picAlbumDao.delete(picAlbumDao.getByServerIndex(viewHolder.serverIndex));
+                dialog.dismiss();
+            });
+            builder.setNegativeButton("no", (dialog, which) -> dialog.dismiss());
+            builder.create().show();
         });
     }
 
@@ -144,7 +131,6 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
         @Override
         public void onClick(View v) {
-            //PicAlbumListAdapter.ViewHolder holder = (PicAlbumListAdapter.ViewHolder) view.getTag();
             final String name = this.textView.getText().toString();
             int serverIndex = this.serverIndex;
             if (this.exist) {
