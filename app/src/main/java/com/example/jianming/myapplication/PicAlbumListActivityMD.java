@@ -10,6 +10,8 @@ import android.os.Message;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,15 +19,18 @@ import android.view.View;
 
 import com.example.jianming.Tasks.DownloadAlbumsTask;
 import com.example.jianming.Tasks.DownloadPicsTask;
+import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.PicAlbumBean;
-import com.example.jianming.beans.PicAlbumBeanDao;
+import com.example.jianming.beans.UpdateStamp;
+import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.beans.PicAlbumData;
+import com.example.jianming.dao.UpdataStampDao;
 import com.example.jianming.listAdapters.PicAlbumListAdapter;
 import com.example.jianming.services.DownloadService;
 
-import org.greenrobot.greendao.database.Database;
+
 import org.nanjing.knightingal.processerlib.RefreshListener;
 import org.nanjing.knightingal.processerlib.beans.CounterBean;
 
@@ -42,6 +47,12 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
     static {
         TYPE_LIST.add(TAG);
     }
+
+    AppDataBase db;
+
+    public PicAlbumDao picAlbumDao;
+
+    private UpdataStampDao updataStampDao;
 
     @Override
     public void doRefreshView(CounterBean counterBean) {
@@ -74,7 +85,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         if (counterBean.getCurr() == counterBean.getMax()) {
             downLoadService.getProcessingIndex().remove(Integer.valueOf(counterBean.getIndex()));
             picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData().setExist(1);
-            picAlbumBeanDao.update(picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData());
+            picAlbumDao.update(picAlbumDataList.get(counterBean.getIndex()).getPicAlbumData());
             picAlbumListAdapter.notifyDataSetChanged();
         }
 
@@ -89,7 +100,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
     public void asyncStartDownload(final int index, final int position) {
 
-        final PicAlbumBean picAlbumBean = PicAlbumBean.getByInnerIndex(index);
+        final PicAlbumBean picAlbumBean = picAlbumDao.getByInnerIndex(index);
         int serverIndex = picAlbumBean.getServerIndex();
         String url = ("http://%serverIP:%serverPort/local1000/picContentAjax?id=" + serverIndex)
                 .replace("%serverIP", EnvArgs.serverIP)
@@ -130,15 +141,18 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
     List<PicAlbumData> picAlbumDataList = new ArrayList<>();
 
-    PicAlbumBeanDao picAlbumBeanDao;
-    Database db;
+//    PicAlbumBeanDao picAlbumBeanDao;
+//    Database db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        db = ((App)getApplication()).getDb();
-        picAlbumBeanDao = ((App)getApplication()).getDaoSession().getPicAlbumBeanDao();
+        db = Room.databaseBuilder(getApplicationContext(),
+                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+
+        picAlbumDao = db.picAlbumDao();
+        updataStampDao = db.updataStampDao();
         setContentView(R.layout.activity_pic_album_list_activity_md);
         ButterKnife.bind(this);
         listView.setHasFixedSize(true);
@@ -204,8 +218,8 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                 View lastView = listView.getChildAt(listView.getChildCount() - 1);
                 int firstIndex = ((PicAlbumListAdapter.ViewHolder)firstView.getTag()).serverIndex;
                 int lastIndex = ((PicAlbumListAdapter.ViewHolder)lastView.getTag()).serverIndex;
-                Log.d(TAG, firstIndex + " " + PicAlbumBean.getByServerIndex(firstIndex).getName());
-                Log.d(TAG, lastIndex + " " + PicAlbumBean.getByServerIndex(lastIndex).getName());
+                Log.d(TAG, firstIndex + " " + picAlbumDao.getByServerIndex(firstIndex).getName());
+                Log.d(TAG, lastIndex + " " + picAlbumDao.getByServerIndex(lastIndex).getName());
             }
         }
 
@@ -214,10 +228,10 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
     private List<PicAlbumBean> getDataSourceFromJsonFile() {
         if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this)) {
-            return PicAlbumBean.getAll();
+            return picAlbumDao.getAll();
         }
         else {
-            return PicAlbumBean.getAllExist();
+            return picAlbumDao.getAllExist();
         }
     }
 
@@ -227,7 +241,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
 
 
     private void startDownloadWebPage() {
-        final com.example.jianming.beans.UpdateStamp albumStamp = com.example.jianming.beans.UpdateStamp.getUpdateStampByTableName("PIC_ALBUM_BEAN");
+        UpdateStamp albumStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN");
 
         String stringUrl = String.format(
                 "http://%s:%s/local1000/picIndexAjax?time_stamp=%s",
@@ -236,7 +250,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                 albumStamp.getUpdateStamp()
         );
         Log.d("startDownloadWebPage", stringUrl);
-        new DownloadAlbumsTask(picAlbumBeanDao, this).execute(stringUrl);
+        new DownloadAlbumsTask(this).execute(stringUrl);
 
     }
 

@@ -20,8 +20,6 @@ public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
         
     }
 
-
-
     private String downloadUrl(String strUrl) throws IOException {
         Request request = new Request.Builder().url(strUrl).build();
         return  NetworkUtil.getOkHttpClient().newCall(request).execute().body().string();

@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +15,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.Utils.FileUtil;
-import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumData;
+import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.PicAlbumListActivityMD;
 import com.example.jianming.myapplication.R;
@@ -32,8 +35,13 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
     private Context context;
 
+    private PicAlbumDao picAlbumDao;
+
     public PicAlbumListAdapter(Context context) {
         this.context = context;
+        AppDataBase db = Room.databaseBuilder(context,
+                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+        picAlbumDao = db.picAlbumDao();
     }
 
     public void setDataArray(List<PicAlbumData> dataArray) {
@@ -87,7 +95,9 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                     public void onClick(DialogInterface dialog, int which) {
                         FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
                         viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
-                        PicAlbumBean.deletePicAlbumFromDb(viewHolder.serverIndex);
+//                        PicAlbumBean.deletePicAlbumFromDb(viewHolder.serverIndex);
+
+                        picAlbumDao.delete(picAlbumDao.getByServerIndex(viewHolder.serverIndex));
                         dialog.dismiss();
                     }
                 });

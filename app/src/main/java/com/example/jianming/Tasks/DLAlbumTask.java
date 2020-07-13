@@ -18,16 +18,19 @@ package com.example.jianming.Tasks;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
-import com.example.jianming.Utils.Daos;
+import androidx.room.Room;
+
+import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.beans.AlbumInfoBean;
 import com.example.jianming.beans.DLFilePathBean;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicInfoBean;
+import com.example.jianming.dao.PicAlbumDao;
+import com.example.jianming.dao.PicInfoDao;
 
 import org.nanjing.knightingal.processerlib.TaskNotifier;
 import org.nanjing.knightingal.processerlib.tasks.AbsTask;
@@ -92,17 +95,23 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
     private Activity context;
 
     private int position;
+    PicAlbumDao picAlbumDao;
+    PicInfoDao picInfoDao;
+    AppDataBase db;
 
     private List<PicInfoBean> picInfoBeanList = null;
     public DLAlbumTask(Activity context, int position) {
         this.position = position;
         this.context = context;
+        db = Room.databaseBuilder(context,
+                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+        picAlbumDao = db.picAlbumDao();
+        picInfoDao = db.picInfoDao();
     }
     public void asyncStartDownload(int index) {
-//        AlbumInfoBean albumInfoBean = StGson.gson.fromJson(ALBUM_INFOS[index], AlbumInfoBean.class);
 
-        PicAlbumBean picAlbumBean = PicAlbumBean.getByInnerIndex(index);
-        picInfoBeanList = PicInfoBean.queryByAlbum(picAlbumBean);
+        PicAlbumBean picAlbumBean = picAlbumDao.getByInnerIndex(index);
+        picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.getInnerIndex());
 
         AlbumInfoBean albumInfoBean = new AlbumInfoBean();
         albumInfoBean.dirName = picAlbumBean.getName();
@@ -150,13 +159,13 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         processCount++;
         if (processCount == picInfoBeanList.size()) {
             try {
-                Daos.db.beginTransaction();
+                db.beginTransaction();
                 for (PicInfoBean picInfoBean : picInfoBeanList) {
-                    Daos.picInfoBeanDao.update(picInfoBean);
+                    picInfoDao.update(picInfoBean);
                 }
-                Daos.db.setTransactionSuccessful();
+                db.setTransactionSuccessful();
             } finally {
-                Daos.db.endTransaction();
+                db.endTransaction();
             }
         }
     }
@@ -164,8 +173,8 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
     @Override
     public int getTaskSize(int index) {
         if (picInfoBeanList == null) {
-            PicAlbumBean picAlbumBean = PicAlbumBean.getByInnerIndex(index);
-            picInfoBeanList = PicInfoBean.queryByAlbum(picAlbumBean);
+            PicAlbumBean picAlbumBean = picAlbumDao.getByInnerIndex(index);
+            picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.getInnerIndex());
         }
         return picInfoBeanList.size();
     }

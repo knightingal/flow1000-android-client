@@ -1,13 +1,11 @@
 package com.example.jianming.beans;
 
 
-import com.example.jianming.Utils.Daos;
-
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import java.util.List;
-import org.greenrobot.greendao.annotation.Generated;
+
 
 /**
  * Created by Jianming on 2015/10/31.
@@ -15,19 +13,6 @@ import org.greenrobot.greendao.annotation.Generated;
 
 @Entity
 public class PicInfoBean  {
-
-    public static List<PicInfoBean> queryByAlbum(PicAlbumBean picAlbumBean) {
-        return Daos.picInfoBeanDao.queryBuilder()
-                .where(PicInfoBeanDao.Properties.AlbumIndex.eq(picAlbumBean.getInnerIndex()))
-                .orderAsc(PicInfoBeanDao.Properties.Index)
-                .list();
-    }
-
-    public static void deleteByAlbum(PicAlbumBean picAlbumBean) {
-        Daos.picInfoBeanDao.queryBuilder()
-                .where(PicInfoBeanDao.Properties.AlbumIndex.eq(picAlbumBean.getInnerIndex()))
-                .buildDelete().executeDeleteWithoutDetachingEntities();
-    }
 
     public String getName() {
         return this.name;
@@ -79,7 +64,7 @@ public class PicInfoBean  {
 
     private String name;
 
-    @Id
+    @PrimaryKey
     private Long index;
 
     private Long albumIndex;
@@ -90,19 +75,7 @@ public class PicInfoBean  {
 
     private int width;
 
-    @Generated(hash = 966401127)
-    public PicInfoBean(String name, Long index, Long albumIndex, String absolutePath, int height, int width) {
-        this.name = name;
-        this.index = index;
-        this.albumIndex = albumIndex;
-        this.absolutePath = absolutePath;
-        this.height = height;
-        this.width = width;
-    }
 
-    @Generated(hash = 540436994)
-    public PicInfoBean() {
-    }
 
 
 }

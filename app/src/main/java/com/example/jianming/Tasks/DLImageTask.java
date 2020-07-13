@@ -26,13 +26,11 @@ import com.example.jianming.Utils.NetworkUtil;
 import com.example.jianming.beans.DLFilePathBean;
 
 import org.nanjing.knightingal.processerlib.TaskNotifier;
-import org.nanjing.knightingal.processerlib.tasks.AbsTask;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 /**

@@ -1,44 +1,62 @@
 package com.example.jianming.Tasks;
 
 
-import com.example.jianming.Utils.Daos;
+import androidx.room.Room;
+
+import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.Utils.TimeUtil;
 import com.example.jianming.beans.PicAlbumBean;
-import com.example.jianming.beans.PicAlbumBeanDao;
+
 import com.example.jianming.beans.UpdateStamp;
+import com.example.jianming.dao.PicAlbumDao;
+import com.example.jianming.dao.UpdataStampDao;
 import com.example.jianming.myapplication.PicAlbumListActivityMD;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.lang.ref.SoftReference;
 
 public class DownloadAlbumsTask extends DownloadWebpageTask {
-    private PicAlbumBeanDao picAlbumBeanDao;
-    private final UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("PIC_ALBUM_BEAN");
-    private SoftReference<PicAlbumListActivityMD> activityMD;
+    private PicAlbumDao picAlbumDao;
+    private UpdataStampDao updataStampDao;
 
-    public DownloadAlbumsTask(PicAlbumBeanDao picAlbumBeanDao, PicAlbumListActivityMD activityMD) {
-        this.picAlbumBeanDao = picAlbumBeanDao;
+    private SoftReference<PicAlbumListActivityMD> activityMD;
+    AppDataBase db;
+
+
+    public DownloadAlbumsTask(PicAlbumListActivityMD activityMD) {
+
         this.activityMD = new SoftReference<>(activityMD);
+
+
+        AppDataBase db = Room.databaseBuilder(activityMD.getApplicationContext(),
+                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+        this.picAlbumDao = db.picAlbumDao();
+        this.updataStampDao = db.updataStampDao();
+        this.db = db;
     }
 
     @Override
     protected void onPostExecute(String s) {
         final ObjectMapper mapper = new ObjectMapper();
         try {
-            Daos.db.beginTransaction();
-            albumStamp.setUpdateStamp(TimeUtil.currentFormatyyyyMMddHHmmss());
-            albumStamp.update();
+//            Daos.db.beginTransaction();
+            db.beginTransaction();
+            UpdateStamp updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN");
+            updateStamp.setUpdateStamp(TimeUtil.currentFormatyyyyMMddHHmmss());
+            updataStampDao.update(updateStamp);
             PicAlbumBean[] picAlbumBeanList = mapper.readValue(s, PicAlbumBean[].class);
             for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
-                picAlbumBeanDao.insert(picAlbumBean);
+                picAlbumDao.insert(picAlbumBean);
             }
-            Daos.db.setTransactionSuccessful();
+//            Daos.db.setTransactionSuccessful();
+            db.setTransactionSuccessful();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         finally {
-            Daos.db.endTransaction();
+//            Daos.db.endTransaction();
+            db.endTransaction();
         }
         activityMD.get().refreshFrontPage();
     }

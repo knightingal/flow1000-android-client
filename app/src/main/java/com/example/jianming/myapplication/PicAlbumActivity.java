@@ -4,7 +4,9 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.jianming.beans.PicAlbumBean;
+import androidx.room.Room;
+
+import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.listAdapters.PicAlbumContentAdapter;
 
@@ -31,13 +33,10 @@ public class PicAlbumActivity extends ListActivity {
 
         dirName = this.getIntent().getStringExtra("name");
         albumIndex = this.getIntent().getIntExtra("serverIndex", 0);
-//        File file = FileUtil.getAlbumStorageDir(this, dirName);
-//        File[] pics = file.listFiles();
-//        for (File pic : pics) {
-//            picList.add(pic.getAbsolutePath());
-//        }
 
-        picInfoBeanList = PicInfoBean.queryByAlbum(PicAlbumBean.getByServerIndex(albumIndex));
+        AppDataBase db = Room.databaseBuilder(this,
+                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+        picInfoBeanList = db.picInfoDao().queryByAlbumInnerIndex(db.picAlbumDao().getByServerIndex(albumIndex).getInnerIndex());
         doShowListView();
     }
 

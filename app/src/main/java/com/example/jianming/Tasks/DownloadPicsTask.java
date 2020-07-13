@@ -4,10 +4,14 @@ package com.example.jianming.Tasks;
 import android.app.Activity;
 import android.util.Log;
 
-import com.example.jianming.Utils.Daos;
+import androidx.room.Room;
+
+import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.beans.AlbumInfoBean;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicInfoBean;
+import com.example.jianming.dao.PicAlbumDao;
+import com.example.jianming.dao.PicInfoDao;
 import com.example.jianming.myapplication.App;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,12 +27,19 @@ public class DownloadPicsTask extends DownloadWebpageTask {
     private int position;
     private int index;
     private SoftReference<DownloadService> downloadService;
-
+    AppDataBase db;
+    PicAlbumDao picAlbumDao;
+    PicInfoDao picInfoDao;
     public DownloadPicsTask(Activity activity, int position, int index, DownloadService downloadService) {
         this.activity = new SoftReference<>(activity);
         this.position = position;
         this.index = index;
         this.downloadService = new SoftReference<>(downloadService);
+        AppDataBase db = Room.databaseBuilder(activity.getApplicationContext(),
+                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+        this.db = db;
+        picAlbumDao = db.picAlbumDao();
+        picInfoDao = db.picInfoDao();
     }
 
 
@@ -36,22 +47,22 @@ public class DownloadPicsTask extends DownloadWebpageTask {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
 
-        final PicAlbumBean picAlbumBean = PicAlbumBean.getByInnerIndex(index);
+        final PicAlbumBean picAlbumBean = picAlbumDao.getByInnerIndex(index);
         Log.i(TAG, s);
 
 
         final ObjectMapper mapper = new ObjectMapper();
         try {
             AlbumInfoBean albumInfoBean = mapper.readValue(s, AlbumInfoBean.class);
-            Daos.db.beginTransaction();
+            db.beginTransaction();
             for (String pic : albumInfoBean.pics) {
                 PicInfoBean picInfoBean = new PicInfoBean();
 
                 picInfoBean.setAlbumIndex(picAlbumBean.getInnerIndex());
                 picInfoBean.setName(pic);
-                ((App)activity.get().getApplication()).getDaoSession().getPicInfoBeanDao().insert(picInfoBean);
+                picInfoDao.insert(picInfoBean);
             }
-            Daos.db.setTransactionSuccessful();
+            db.setTransactionSuccessful();
 
             DLAlbumTask dlAlbumTask = new DLAlbumTask(activity.get(), position);
             dlAlbumTask.setTaskNotifier(downloadService.get());
@@ -59,7 +70,7 @@ public class DownloadPicsTask extends DownloadWebpageTask {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            Daos.db.endTransaction();
+            db.endTransaction();
         }
     }
 

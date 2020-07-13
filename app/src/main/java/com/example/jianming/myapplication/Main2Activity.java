@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+
+import com.example.jianming.Utils.AppDataBase;
+import com.example.jianming.dao.PicAlbumDao;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import android.util.Log;
@@ -15,12 +18,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.room.Room;
+
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.jianming.Utils.Daos;
-import com.example.jianming.beans.DaoSession;
-import com.example.jianming.beans.PicAlbumBeanDao;
+
 import com.example.jianming.beans.UpdateStamp;
 import com.example.jianming.services.DownloadService;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -34,8 +37,8 @@ import butterknife.OnClick;
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private DaoSession daoSession;
-    private PicAlbumBeanDao picAlbumBeanDao;
+
+    private PicAlbumDao picAlbumBeanDao;
 
     @OnClick({R.id.picIndexBtn})
     public void btnClicked(View v) {
@@ -48,6 +51,8 @@ public class Main2Activity extends AppCompatActivity
                 break;
         }
     }
+
+    AppDataBase db;
 
     @BindView(R.id.toolbar)
     public Toolbar toolbar;
@@ -64,9 +69,11 @@ public class Main2Activity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        db = Room.databaseBuilder(this,
+                AppDataBase.class, "database-name").allowMainThreadQueries().build();
 
-        daoSession = ((App)getApplication()).getDaoSession();
-        picAlbumBeanDao = daoSession.getPicAlbumBeanDao();
+
+        picAlbumBeanDao = db.picAlbumDao();
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main2);
@@ -94,12 +101,12 @@ public class Main2Activity extends AppCompatActivity
     }
 
     private void initDB() {
-        UpdateStamp albumStamp = UpdateStamp.getUpdateStampByTableName("PIC_ALBUM_BEAN");
+        UpdateStamp albumStamp = this.db.updataStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN");
         if (albumStamp == null) {
             albumStamp = new UpdateStamp();
             albumStamp.setTableName("PIC_ALBUM_BEAN");
             albumStamp.setUpdateStamp("20000101000000");
-            albumStamp.save();
+            this.db.updataStampDao().save(albumStamp);
         }
     }
 
@@ -199,8 +206,8 @@ public class Main2Activity extends AppCompatActivity
     private static final int I_CAP_ACTIVITY = 1;
 
     private void clearDB() {
-        Daos.updateStampDao.deleteAll();
-        picAlbumBeanDao.deleteAll();
+        this.db.updataStampDao().deleteAll(null);
+        picAlbumBeanDao.deleteAll(null);
         initDB();
     }
 
