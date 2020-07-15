@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.example.jianming.beans;
-
-import java.util.List;
+package com.example.jianming.beans
 
 /**
  * @author Knightingal
  * @since v1.0
  */
-
-public class AlbumInfoBean {
-    public String picpage;
-
-    public String dirName;
-
-    public List<String> pics;
-}
+data class AlbumInfoBean (
+        var picpage: String,
+        var dirName: String,
+        var pics: List<String>
+)

@@ -10,8 +10,8 @@ import androidx.room.PrimaryKey
 data class PicInfoBean (
     @PrimaryKey
     var index: Long? = null,
-    var name: String? = null,
-    var albumIndex: Long? = null,
+    var name: String,
+    var albumIndex: Long,
     var absolutePath: String? = null,
     var height: Int = 0,
     var width: Int = 0

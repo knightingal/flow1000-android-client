@@ -113,20 +113,21 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         PicAlbumBean picAlbumBean = picAlbumDao.getByInnerIndex(index);
         picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.getInnerIndex());
 
-        AlbumInfoBean albumInfoBean = new AlbumInfoBean();
-        albumInfoBean.dirName = picAlbumBean.getName();
-        albumInfoBean.picpage = "" + (picAlbumBean.getServerIndex());
-        albumInfoBean.pics = new ArrayList<String>();
+        AlbumInfoBean albumInfoBean = new AlbumInfoBean(
+                "" + (picAlbumBean.getServerIndex()),
+                picAlbumBean.getName(),
+                new ArrayList<String>()
+        );
         for (PicInfoBean picInfoBean : picInfoBeanList) {
-            albumInfoBean.pics.add(picInfoBean.getName());
+            albumInfoBean.getPics().add(picInfoBean.getName());
             String picName = picInfoBean.getName();
             String url;
             if (EnvArgs.isEncrypt) {
-                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/encrypted/" + albumInfoBean.dirName + "/" + picName + ".bin";
+                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/encrypted/" + albumInfoBean.getDirName() + "/" + picName + ".bin";
             } else {
-                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/source/" + albumInfoBean.dirName + "/" + picName + "";
+                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/source/" + albumInfoBean.getDirName() + "/" + picName + "";
             }
-            File directory = getAlbumStorageDir(this.context, albumInfoBean.dirName);
+            File directory = getAlbumStorageDir(this.context, albumInfoBean.getDirName());
             File file = new File(directory, picName);
 
             DLFilePathBean dlFilePathBean = new DLFilePathBean();

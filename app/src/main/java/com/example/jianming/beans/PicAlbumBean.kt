@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 @Entity
 data class PicAlbumBean (
     @JsonProperty("name")
-    var name: String? = null,
+    var name: String,
 
     @JsonProperty("index")
     var serverIndex: Int = 0,

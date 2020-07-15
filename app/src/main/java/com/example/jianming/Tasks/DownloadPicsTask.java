@@ -14,6 +14,7 @@ import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.dao.PicInfoDao;
 import com.example.jianming.myapplication.App;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
 
 import org.nanjing.knightingal.processerlib.Services.DownloadService;
 
@@ -51,15 +52,12 @@ public class DownloadPicsTask extends DownloadWebpageTask {
         Log.i(TAG, s);
 
 
-        final ObjectMapper mapper = new ObjectMapper();
+        final ObjectMapper mapper = new ObjectMapper().registerModule(new KotlinModule());
         try {
             AlbumInfoBean albumInfoBean = mapper.readValue(s, AlbumInfoBean.class);
             db.beginTransaction();
-            for (String pic : albumInfoBean.pics) {
-                PicInfoBean picInfoBean = new PicInfoBean();
-
-                picInfoBean.setAlbumIndex(picAlbumBean.getInnerIndex());
-                picInfoBean.setName(pic);
+            for (String pic : albumInfoBean.getPics()) {
+                PicInfoBean picInfoBean = new PicInfoBean(null, pic, picAlbumBean.getInnerIndex(), null, 0, 0);
                 picInfoDao.insert(picInfoBean);
             }
             db.setTransactionSuccessful();

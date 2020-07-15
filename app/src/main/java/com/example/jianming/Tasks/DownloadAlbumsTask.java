@@ -12,6 +12,7 @@ import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.dao.UpdataStampDao;
 import com.example.jianming.myapplication.PicAlbumListActivityMD;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
 
 import java.lang.ref.SoftReference;
 
@@ -37,7 +38,7 @@ public class DownloadAlbumsTask extends DownloadWebpageTask {
 
     @Override
     protected void onPostExecute(String s) {
-        final ObjectMapper mapper = new ObjectMapper();
+        final ObjectMapper mapper = new ObjectMapper().registerModule(new KotlinModule());
         try {
 //            Daos.db.beginTransaction();
             db.beginTransaction();
