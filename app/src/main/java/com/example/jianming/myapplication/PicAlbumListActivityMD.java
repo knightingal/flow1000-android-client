@@ -10,6 +10,7 @@ import android.os.Message;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import android.util.Log;
 import android.view.Menu;
@@ -145,8 +146,8 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        db = Room.databaseBuilder(getApplicationContext(),
-//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+        db = Room.databaseBuilder(getApplicationContext(),
+                AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
 
         picAlbumDao = db.picAlbumDao();
         updataStampDao = db.updataStampDao();

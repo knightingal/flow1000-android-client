@@ -11,11 +11,11 @@ import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.dao.PicInfoDao;
 import com.example.jianming.dao.UpdataStampDao;
 
-@Database(entities = {UpdateStamp.class}, version = 2)
+@Database(entities = {UpdateStamp.class, PicAlbumBean.class, PicInfoBean.class}, version = 2)
 public abstract class AppDataBase extends RoomDatabase {
-    public PicAlbumDao picAlbumDao() {return null;}
+    public abstract PicAlbumDao picAlbumDao();
 
-    public PicInfoDao picInfoDao() {return null;}
+    public abstract PicInfoDao picInfoDao();
 
     public abstract UpdataStampDao updataStampDao();
 }

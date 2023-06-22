@@ -1,7 +1,7 @@
 package com.example.jianming.Tasks;
 
 
-//import androidx.room.Room;
+import androidx.room.Room;
 
 import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.Utils.TimeUtil;
@@ -29,8 +29,8 @@ public class DownloadAlbumsTask extends DownloadWebpageTask {
         this.activityMD = new SoftReference<>(activityMD);
 
 
-//        AppDataBase db = Room.databaseBuilder(activityMD.getApplicationContext(),
-//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+        AppDataBase db = Room.databaseBuilder(activityMD.getApplicationContext(),
+                AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
         this.picAlbumDao = db.picAlbumDao();
         this.updataStampDao = db.updataStampDao();
         this.db = db;
@@ -40,8 +40,7 @@ public class DownloadAlbumsTask extends DownloadWebpageTask {
     protected void onPostExecute(String s) {
         final ObjectMapper mapper = new ObjectMapper().registerModule(new KotlinModule());
         try {
-//            Daos.db.beginTransaction();
-//            db.beginTransaction();
+            db.beginTransaction();
             UpdateStamp updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN");
             updateStamp.setUpdateStamp(TimeUtil.currentFormatyyyyMMddHHmmss());
             updataStampDao.update(updateStamp);
@@ -49,15 +48,13 @@ public class DownloadAlbumsTask extends DownloadWebpageTask {
             for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
                 picAlbumDao.insert(picAlbumBean);
             }
-//            Daos.db.setTransactionSuccessful();
-//            db.setTransactionSuccessful();
+            db.setTransactionSuccessful();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         finally {
-//            Daos.db.endTransaction();
-//            db.endTransaction();
+            db.endTransaction();
         }
         activityMD.get().refreshFrontPage();
     }

@@ -1,10 +1,15 @@
 package com.example.jianming.beans
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 
 /**
  * Created by Jianming on 2015/10/31.
  */
+@Entity
 data class PicInfoBean (
+    @PrimaryKey
     var index: Long? = null,
     var name: String,
     var albumIndex: Long,

@@ -37,7 +37,6 @@ public class Main2Activity extends AppCompatActivity
 
     private PicAlbumDao picAlbumBeanDao;
 
-//    @OnClick({R.id.picIndexBtn})
     public void btnClicked(View v) {
         if (v.getId() == R.id.picIndexBtn) {
             this.startActivity(new Intent(this, Local1KActivity.class));
@@ -47,16 +46,12 @@ public class Main2Activity extends AppCompatActivity
 
     AppDataBase db;
 
-//    @BindView(R.id.toolbar)
     public Toolbar toolbar;
 
-//    @BindView(R.id.fab)
     public FloatingActionButton fab;
 
-//    @BindView(R.id.drawer_layout)
     public DrawerLayout drawer;
 
-//    @BindView(R.id.nav_view)
     public NavigationView navigationView;
 
     @Override
@@ -64,10 +59,9 @@ public class Main2Activity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         db = Room.databaseBuilder(getApplicationContext(),
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
-//        db = new AppDataBase();
 
 
-//        picAlbumBeanDao = db.picAlbumDao();
+        picAlbumBeanDao = db.picAlbumDao();
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main2);
@@ -206,9 +200,9 @@ public class Main2Activity extends AppCompatActivity
     private static final int I_CAP_ACTIVITY = 1;
 
     private void clearDB() {
-//        this.db.updataStampDao().deleteAll(null);
-//        picAlbumBeanDao.deleteAll(null);
-//        initDB();
+        this.db.updataStampDao().deleteAll(null);
+        picAlbumBeanDao.deleteAll(null);
+        initDB();
     }
 
     @Override
