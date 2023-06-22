@@ -18,6 +18,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.room.Room;
 
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -61,12 +62,12 @@ public class Main2Activity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        db = Room.databaseBuilder(this,
-//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
-        db = new AppDataBase();
+        db = Room.databaseBuilder(getApplicationContext(),
+                AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
+//        db = new AppDataBase();
 
 
-        picAlbumBeanDao = db.picAlbumDao();
+//        picAlbumBeanDao = db.picAlbumDao();
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main2);
@@ -100,13 +101,13 @@ public class Main2Activity extends AppCompatActivity
     }
 
     private void initDB() {
-//        UpdateStamp albumStamp = this.db.updataStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN");
-//        if (albumStamp == null) {
-//            albumStamp = new UpdateStamp();
-//            albumStamp.setTableName("PIC_ALBUM_BEAN");
-//            albumStamp.setUpdateStamp("20000101000000");
-//            this.db.updataStampDao().save(albumStamp);
-//        }
+        UpdateStamp albumStamp = this.db.updataStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN");
+        if (albumStamp == null) {
+            albumStamp = new UpdateStamp();
+            albumStamp.setTableName("PIC_ALBUM_BEAN");
+            albumStamp.setUpdateStamp("20000101000000");
+            this.db.updataStampDao().save(albumStamp);
+        }
     }
 
     @Override

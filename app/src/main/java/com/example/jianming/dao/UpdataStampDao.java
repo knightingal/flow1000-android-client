@@ -1,21 +1,27 @@
 package com.example.jianming.dao;
 
 
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.Update;
+
 import com.example.jianming.beans.UpdateStamp;
 
 import java.util.List;
 
-//@Dao
+@Dao
 public interface UpdataStampDao {
-//    @Query("select * from UpdateStamp where tableName = :tableName")
+    @Query("select * from UpdateStamp where table_name = :tableName")
     UpdateStamp getUpdateStampByTableName(String tableName);
 
-//    @Update
+    @Update
     void update(UpdateStamp updateStamp);
 
-//    @Insert
+    @Insert
     void save(UpdateStamp albumStamp);
 
-//    @Delete
+    @Delete
     void deleteAll(List<UpdateStamp> updateStampList);
 }
