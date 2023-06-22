@@ -44,11 +44,11 @@ dependencies {
 
     implementation("com.fasterxml.jackson.core:jackson-databind:+")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:+")
-    implementation("commons-io:commons-io:+")
     implementation("com.squareup.okhttp3:okhttp:+")
 
     implementation( "com.google.code.gson:gson:+")
 
+    implementation("com.google.guava:guava:32.0.1-android")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
