@@ -5,10 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
-import butterknife.ButterKnife;
-
-import butterknife.OnClick;
-
 
 public class Local1KActivity extends AppCompatActivity {
 
@@ -19,12 +15,11 @@ public class Local1KActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_1k);
-        ButterKnife.bind(this);
+        findViewById(R.id.local1000).setOnClickListener(v -> goToLocal1000());
 
 
     }
 
-    @OnClick(R.id.local1000)
     public void goToLocal1000() {
         Intent intent = new Intent(self, PicAlbumListActivityMD.class);
         startActivity(intent);

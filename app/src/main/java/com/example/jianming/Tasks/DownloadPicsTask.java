@@ -4,7 +4,6 @@ package com.example.jianming.Tasks;
 import android.app.Activity;
 import android.util.Log;
 
-import androidx.room.Room;
 
 import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.beans.AlbumInfoBean;
@@ -36,8 +35,8 @@ public class DownloadPicsTask extends DownloadWebpageTask {
         this.position = position;
         this.index = index;
         this.downloadService = new SoftReference<>(downloadService);
-        AppDataBase db = Room.databaseBuilder(activity.getApplicationContext(),
-                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+//        AppDataBase db = Room.databaseBuilder(activity.getApplicationContext(),
+//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
         this.db = db;
         picAlbumDao = db.picAlbumDao();
         picInfoDao = db.picInfoDao();
@@ -55,12 +54,12 @@ public class DownloadPicsTask extends DownloadWebpageTask {
         final ObjectMapper mapper = new ObjectMapper().registerModule(new KotlinModule());
         try {
             AlbumInfoBean albumInfoBean = mapper.readValue(s, AlbumInfoBean.class);
-            db.beginTransaction();
+//            db.beginTransaction();
             for (String pic : albumInfoBean.getPics()) {
                 PicInfoBean picInfoBean = new PicInfoBean(null, pic, picAlbumBean.getInnerIndex(), null, 0, 0);
                 picInfoDao.insert(picInfoBean);
             }
-            db.setTransactionSuccessful();
+//            db.setTransactionSuccessful();
 
             DLAlbumTask dlAlbumTask = new DLAlbumTask(activity.get(), position);
             dlAlbumTask.setTaskNotifier(downloadService.get());
@@ -68,7 +67,7 @@ public class DownloadPicsTask extends DownloadWebpageTask {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            db.endTransaction();
+//            db.endTransaction();
         }
     }
 

@@ -86,16 +86,16 @@ public class PicAlbumContentAdapter extends BaseAdapter {
         holder.img.setLayoutParams(lp);
         File file = new File(dataArray.get(position).getAbsolutePath());
 
-        try {
-            byte[] enCryptedContent = FileUtils.readFileToByteArray(file);
-            if (EnvArgs.isEncrypt) {
-                holder.img.setImageBitmap(BitmapFactory.decodeByteArray(Decryptor.decrypt(enCryptedContent), 0, enCryptedContent.length));
-            } else {
-                holder.img.setImageBitmap(BitmapFactory.decodeByteArray(enCryptedContent, 0, enCryptedContent.length));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            byte[] enCryptedContent = FileUtils.readFileToByteArray(file);
+//            if (EnvArgs.isEncrypt) {
+//                holder.img.setImageBitmap(BitmapFactory.decodeByteArray(Decryptor.decrypt(enCryptedContent), 0, enCryptedContent.length));
+//            } else {
+//                holder.img.setImageBitmap(BitmapFactory.decodeByteArray(enCryptedContent, 0, enCryptedContent.length));
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         holder.img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

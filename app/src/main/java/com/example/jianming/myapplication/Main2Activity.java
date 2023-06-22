@@ -18,7 +18,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.room.Room;
 
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -30,9 +29,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,44 +36,47 @@ public class Main2Activity extends AppCompatActivity
 
     private PicAlbumDao picAlbumBeanDao;
 
-    @OnClick({R.id.picIndexBtn})
+//    @OnClick({R.id.picIndexBtn})
     public void btnClicked(View v) {
-        switch (v.getId()) {
-            case R.id.picIndexBtn:
-                this.startActivity(new Intent(this, Local1KActivity.class));
-                break;
-
-            default:
-                break;
+        if (v.getId() == R.id.picIndexBtn) {
+            this.startActivity(new Intent(this, Local1KActivity.class));
         }
+
     }
 
     AppDataBase db;
 
-    @BindView(R.id.toolbar)
+//    @BindView(R.id.toolbar)
     public Toolbar toolbar;
 
-    @BindView(R.id.fab)
+//    @BindView(R.id.fab)
     public FloatingActionButton fab;
 
-    @BindView(R.id.drawer_layout)
+//    @BindView(R.id.drawer_layout)
     public DrawerLayout drawer;
 
-    @BindView(R.id.nav_view)
+//    @BindView(R.id.nav_view)
     public NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = Room.databaseBuilder(this,
-                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+//        db = Room.databaseBuilder(this,
+//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+        db = new AppDataBase();
 
 
         picAlbumBeanDao = db.picAlbumDao();
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main2);
-        ButterKnife.bind(this);
+        toolbar = findViewById(R.id.toolbar);
+        fab = findViewById(R.id.fab);
+        drawer = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+
+        findViewById(R.id.picIndexBtn).setOnClickListener(this::btnClicked);
+
         setSupportActionBar(toolbar);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -101,13 +100,13 @@ public class Main2Activity extends AppCompatActivity
     }
 
     private void initDB() {
-        UpdateStamp albumStamp = this.db.updataStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN");
-        if (albumStamp == null) {
-            albumStamp = new UpdateStamp();
-            albumStamp.setTableName("PIC_ALBUM_BEAN");
-            albumStamp.setUpdateStamp("20000101000000");
-            this.db.updataStampDao().save(albumStamp);
-        }
+//        UpdateStamp albumStamp = this.db.updataStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN");
+//        if (albumStamp == null) {
+//            albumStamp = new UpdateStamp();
+//            albumStamp.setTableName("PIC_ALBUM_BEAN");
+//            albumStamp.setUpdateStamp("20000101000000");
+//            this.db.updataStampDao().save(albumStamp);
+//        }
     }
 
     @Override
@@ -206,9 +205,9 @@ public class Main2Activity extends AppCompatActivity
     private static final int I_CAP_ACTIVITY = 1;
 
     private void clearDB() {
-        this.db.updataStampDao().deleteAll(null);
-        picAlbumBeanDao.deleteAll(null);
-        initDB();
+//        this.db.updataStampDao().deleteAll(null);
+//        picAlbumBeanDao.deleteAll(null);
+//        initDB();
     }
 
     @Override

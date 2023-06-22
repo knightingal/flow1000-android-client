@@ -5,21 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
-import org.nanking.knightingal.view.ImgChangeListener;
-import org.nanking.knightingal.view.KImageSlider;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import org.nanking.knightingal.kslideviewlib.YImageSlider;
 
 
-public class PicContentActivity extends Activity implements ImgChangeListener {
+public class PicContentActivity extends Activity implements YImageSlider.ImgChangeListener {
 
     private static final String TAG = "PicContentActivity";
 
-    @BindView(R.id.image)
-    public KImageSlider mImageSlider;
+//    @BindView(R.id.image)
+    public YImageSlider mImageSlider;
 
     private String[] imgArray;
 
@@ -39,8 +37,9 @@ public class PicContentActivity extends Activity implements ImgChangeListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pic_content);
+        mImageSlider = findViewById(R.id.image);
 
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
 
         mImageSlider.setImgChangeListener(this);
         imgArray = getIntent().getStringArrayExtra("imgArray");
@@ -76,19 +75,37 @@ public class PicContentActivity extends Activity implements ImgChangeListener {
         super.onBackPressed();
     }
 
+    @NonNull
     @Override
-    public String onGetBackImg() {
+    public String onGetBackImg(@NonNull YImageSlider yImageSlider) {
         index--;
         return getImgSrcByIndex(index - 1);
     }
 
+    @NonNull
     @Override
-    public String onGetNextImg() {
+    public String onGetNextImg(@NonNull YImageSlider yImageSlider) {
         index++;
         return getImgSrcByIndex(index + 1);
     }
 
+    @NonNull
     @Override
+    public String getImgSrcByIndex(int index, @NonNull YImageSlider yImageSlider) {
+        String img = getImgByIndex(index);
+        Log.d(TAG, "getImgSrcByIndex " + index + " " + img);
+        if (img != null) {
+            if (imgArray != null) {
+                return ImageDownloader.Scheme.FILE.wrap(img);
+            } else {
+                return ImageDownloader.Scheme.DRAWABLE.wrap(img);
+            }
+        } else {
+            return null;
+        }
+    }
+
+
     public String getImgSrcByIndex(int index) {
         String img = getImgByIndex(index);
         Log.d(TAG, "getImgSrcByIndex " + index + " " + img);

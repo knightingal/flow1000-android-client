@@ -2,27 +2,26 @@ package com.example.jianming.myapplication;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.view.View;
 import android.widget.EditText;
 
 import com.example.jianming.Utils.EnvArgs;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 
 public class SettingActivity extends AppCompatActivity {
 
-    @BindView(R.id.ip_edit)
+//    @BindView(R.id.ip_edit)
     public EditText ipEditText;
 
-    @BindView(R.id.port_edit)
+//    @BindView(R.id.port_edit)
     public EditText portEditText;
 
 //    @BindView(R.id.tl_custom)
 //    Toolbar toolbar;
 
-    @OnClick(R.id.button_done)
+//    @OnClick(R.id.button_done)
     public void doDoneBtn() {
         String ip = ipEditText.getText().toString();
         String port = portEditText.getText().toString();
@@ -36,7 +35,10 @@ public class SettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-        ButterKnife.bind(this);
+        ipEditText = findViewById(R.id.ip_edit);
+        portEditText = findViewById(R.id.port_edit);
+        ipEditText = findViewById(R.id.ip_edit);
+        findViewById(R.id.button_done).setOnClickListener(v -> doDoneBtn());
 
 //        setSupportActionBar(toolbar);
 

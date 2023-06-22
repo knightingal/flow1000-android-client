@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,9 +37,9 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
     public PicAlbumListAdapter(Context context) {
         this.context = context;
-        AppDataBase db = Room.databaseBuilder(context,
-                AppDataBase.class, "database-name").allowMainThreadQueries().build();
-        picAlbumDao = db.picAlbumDao();
+//        AppDataBase db = Room.databaseBuilder(context,
+//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+//        picAlbumDao = db.picAlbumDao();
     }
 
     public void setDataArray(List<PicAlbumData> dataArray) {

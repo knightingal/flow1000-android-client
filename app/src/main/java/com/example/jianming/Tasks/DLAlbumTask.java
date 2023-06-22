@@ -21,7 +21,6 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-import androidx.room.Room;
 
 import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.Utils.EnvArgs;
@@ -103,10 +102,10 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
     public DLAlbumTask(Activity context, int position) {
         this.position = position;
         this.context = context;
-        db = Room.databaseBuilder(context,
-                AppDataBase.class, "database-name").allowMainThreadQueries().build();
-        picAlbumDao = db.picAlbumDao();
-        picInfoDao = db.picInfoDao();
+//        db = Room.databaseBuilder(context,
+//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+//        picAlbumDao = db.picAlbumDao();
+//        picInfoDao = db.picInfoDao();
     }
     public void asyncStartDownload(int index) {
 
@@ -158,17 +157,17 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         picInfoBeanList.get(index).setHeight(height);
         picInfoBeanList.get(index).setAbsolutePath(path);
         processCount++;
-        if (processCount == picInfoBeanList.size()) {
-            try {
-                db.beginTransaction();
-                for (PicInfoBean picInfoBean : picInfoBeanList) {
-                    picInfoDao.update(picInfoBean);
-                }
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
-        }
+//        if (processCount == picInfoBeanList.size()) {
+//            try {
+//                db.beginTransaction();
+//                for (PicInfoBean picInfoBean : picInfoBeanList) {
+//                    picInfoDao.update(picInfoBean);
+//                }
+//                db.setTransactionSuccessful();
+//            } finally {
+//                db.endTransaction();
+//            }
+//        }
     }
 
     @Override

@@ -10,7 +10,6 @@ import android.os.Message;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import android.util.Log;
 import android.view.Menu;
@@ -37,8 +36,6 @@ import org.nanjing.knightingal.processerlib.beans.CounterBean;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class PicAlbumListActivityMD extends AppCompatActivity implements RefreshListener {
 
@@ -110,7 +107,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
     }
 
     PicAlbumListAdapter picAlbumListAdapter;
-    @BindView(R.id.list_view11)
+//    @BindView(R.id.list_view11)
     public RecyclerView listView;
 
     public DownloadService downLoadService = null;
@@ -148,13 +145,14 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        db = Room.databaseBuilder(getApplicationContext(),
-                AppDataBase.class, "database-name").allowMainThreadQueries().build();
+//        db = Room.databaseBuilder(getApplicationContext(),
+//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
 
         picAlbumDao = db.picAlbumDao();
         updataStampDao = db.updataStampDao();
         setContentView(R.layout.activity_pic_album_list_activity_md);
-        ButterKnife.bind(this);
+        listView = findViewById(R.id.list_view11);
+//        ButterKnife.bind(this);
         listView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         listView.setLayoutManager(mLayoutManager);
