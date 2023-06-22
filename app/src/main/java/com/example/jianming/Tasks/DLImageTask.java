@@ -56,35 +56,33 @@ public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
     @Override
     protected Integer doInBackground(DLFilePathBean... dlFilePathBeen) {
         this.dlFilePathBean = dlFilePathBeen[0];
-        downloadUrl(dlFilePathBeen[0].src, dlFilePathBeen[0].dest);
+        downloadUrl(dlFilePathBeen[0].src, dlFilePathBeen[0].dest, dlFilePathBeen[0].encrypted);
 
         return 0;
     }
 
-    private void downloadUrl(String src, File dest)  {
+    private void downloadUrl(String src, File dest, boolean encrypted)  {
         Log.d(TAG, "start download " + src);
         Request request = new Request.Builder().url(src).build();
         try {
             byte[] bytes = NetworkUtil.getOkHttpClient().newCall(request).execute().body().bytes();
-            FileOutputStream fileOutputStream = new FileOutputStream(dest, true);
-            fileOutputStream.write(bytes);
-            fileOutputStream.close();
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-//            BitmapFactory.decodeFile(dest.getAbsolutePath(), options);
-            if (EnvArgs.isEncrypt) {
-                BitmapFactory.decodeByteArray(Decryptor.decrypt(bytes), 0, bytes.length, options);
-            } else {
-                BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+            if (encrypted) {
+                bytes = Decryptor.decrypt(bytes);
             }
+            BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
             width = options.outWidth;
             height = options.outHeight;
             absolutePath = dest.getAbsolutePath();
+            FileOutputStream fileOutputStream = new FileOutputStream(dest, true);
+            fileOutputStream.write(bytes);
+            fileOutputStream.close();
 
         } catch (IOException e) {
             e.printStackTrace();
             Log.e(TAG, "download " + src + " error");
-            downloadUrl(src, dest);
+            downloadUrl(src, dest, encrypted);
         }
 
         Log.d(TAG, "end download " + dest.getAbsolutePath());

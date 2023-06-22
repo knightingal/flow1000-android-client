@@ -33,4 +33,6 @@ public class DLFilePathBean {
     public int picIndex;
 
     public int position;
+
+    public boolean encrypted;
 }

@@ -124,8 +124,8 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
             albumInfoBean.getPics().add(picInfoBean.getName());
             String picName = picInfoBean.getName();
             String url;
-            if (EnvArgs.isEncrypt) {
-                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/encrypted/" + albumInfoBean.getDirName() + "/" + picName + ".bin";
+            if (AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getEncryped()) {
+                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/linux1000/" + AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getBaseUrl() + "/" + albumInfoBean.getDirName() + "/" + picName + ".bin";
             } else {
                 url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/linux1000/" + AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getBaseUrl() + "/" + albumInfoBean.getDirName() + "/" + picName + "";
             }
@@ -138,6 +138,7 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
             dlFilePathBean.index = index;
             dlFilePathBean.picIndex = picInfoBeanList.indexOf(picInfoBean);
             dlFilePathBean.position = position;
+            dlFilePathBean.encrypted = AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getEncryped();
             DLImageTask dlImageTask = new DLImageTask(this, this.taskNotifier);
             dlImageTask.executeOnExecutor(THREAD_POOL_EXECUTOR, dlFilePathBean);
         }
