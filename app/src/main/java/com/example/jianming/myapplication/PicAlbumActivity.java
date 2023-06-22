@@ -11,6 +11,7 @@ import com.example.jianming.listAdapters.PicAlbumContentAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import androidx.room.Room;
 
 
 public class PicAlbumActivity extends ListActivity {
@@ -33,9 +34,9 @@ public class PicAlbumActivity extends ListActivity {
         dirName = this.getIntent().getStringExtra("name");
         albumIndex = this.getIntent().getIntExtra("serverIndex", 0);
 
-//        AppDataBase db = Room.databaseBuilder(this,
-//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
-//        picInfoBeanList = db.picInfoDao().queryByAlbumInnerIndex(db.picAlbumDao().getByServerIndex(albumIndex).getInnerIndex());
+        AppDataBase db = Room.databaseBuilder(this,
+                AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
+        picInfoBeanList = db.picInfoDao().queryByAlbumInnerIndex(db.picAlbumDao().getByServerIndex(albumIndex).getInnerIndex());
         doShowListView();
     }
 

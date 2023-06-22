@@ -16,7 +16,6 @@ import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.R;
 
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,16 +85,17 @@ public class PicAlbumContentAdapter extends BaseAdapter {
         holder.img.setLayoutParams(lp);
         File file = new File(dataArray.get(position).getAbsolutePath());
 
-//        try {
-//            byte[] enCryptedContent = FileUtils.readFileToByteArray(file);
-//            if (EnvArgs.isEncrypt) {
-//                holder.img.setImageBitmap(BitmapFactory.decodeByteArray(Decryptor.decrypt(enCryptedContent), 0, enCryptedContent.length));
-//            } else {
-//                holder.img.setImageBitmap(BitmapFactory.decodeByteArray(enCryptedContent, 0, enCryptedContent.length));
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+
+            byte[] enCryptedContent = com.google.common.io.Files.toByteArray(file);
+            if (EnvArgs.isEncrypt) {
+                holder.img.setImageBitmap(BitmapFactory.decodeByteArray(Decryptor.decrypt(enCryptedContent), 0, enCryptedContent.length));
+            } else {
+                holder.img.setImageBitmap(BitmapFactory.decodeByteArray(enCryptedContent, 0, enCryptedContent.length));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         holder.img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

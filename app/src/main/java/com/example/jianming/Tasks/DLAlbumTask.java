@@ -22,6 +22,8 @@ import android.os.Environment;
 import android.util.Log;
 
 
+import androidx.room.Room;
+
 import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.Utils.EnvArgs;
 import com.example.jianming.beans.AlbumInfoBean;
@@ -30,6 +32,7 @@ import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.dao.PicInfoDao;
+import com.example.jianming.myapplication.AlbumConfigKt;
 
 import org.nanjing.knightingal.processerlib.TaskNotifier;
 import org.nanjing.knightingal.processerlib.tasks.AbsTask;
@@ -102,10 +105,10 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
     public DLAlbumTask(Activity context, int position) {
         this.position = position;
         this.context = context;
-//        db = Room.databaseBuilder(context,
-//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
-//        picAlbumDao = db.picAlbumDao();
-//        picInfoDao = db.picInfoDao();
+        db = Room.databaseBuilder(context,
+                AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
+        picAlbumDao = db.picAlbumDao();
+        picInfoDao = db.picInfoDao();
     }
     public void asyncStartDownload(int index) {
 
@@ -124,7 +127,7 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
             if (EnvArgs.isEncrypt) {
                 url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/encrypted/" + albumInfoBean.getDirName() + "/" + picName + ".bin";
             } else {
-                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/static/source/" + albumInfoBean.getDirName() + "/" + picName + "";
+                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/linux1000/" + AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getBaseUrl() + "/" + albumInfoBean.getDirName() + "/" + picName + "";
             }
             File directory = getAlbumStorageDir(this.context, albumInfoBean.getDirName());
             File file = new File(directory, picName);
@@ -157,17 +160,17 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         picInfoBeanList.get(index).setHeight(height);
         picInfoBeanList.get(index).setAbsolutePath(path);
         processCount++;
-//        if (processCount == picInfoBeanList.size()) {
-//            try {
-//                db.beginTransaction();
-//                for (PicInfoBean picInfoBean : picInfoBeanList) {
-//                    picInfoDao.update(picInfoBean);
-//                }
-//                db.setTransactionSuccessful();
-//            } finally {
-//                db.endTransaction();
-//            }
-//        }
+        if (processCount == picInfoBeanList.size()) {
+            try {
+                db.beginTransaction();
+                for (PicInfoBean picInfoBean : picInfoBeanList) {
+                    picInfoDao.update(picInfoBean);
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+            }
+        }
     }
 
     @Override
