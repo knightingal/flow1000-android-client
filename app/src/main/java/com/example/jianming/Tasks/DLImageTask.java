@@ -56,7 +56,7 @@ public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
     @Override
     protected Integer doInBackground(DLFilePathBean... dlFilePathBeen) {
         this.dlFilePathBean = dlFilePathBeen[0];
-        downloadUrl(dlFilePathBeen[0].src, dlFilePathBeen[0].dest, dlFilePathBeen[0].encrypted);
+        downloadUrl(dlFilePathBeen[0].getSrc(), dlFilePathBeen[0].getDest(), dlFilePathBeen[0].getEncrypted());
 
         return 0;
     }
@@ -97,7 +97,7 @@ public class DLImageTask extends AsyncTask<DLFilePathBean, Void, Integer> {
     @Override
     protected void onPostExecute(Integer integer) {
         super.onPostExecute(integer);
-        parentTask.updatePicInfoBean(dlFilePathBean.picIndex, width, height, absolutePath);
-        taskNotifier.onTaskComplete(parentTask, dlFilePathBean.position);
+        parentTask.updatePicInfoBean(dlFilePathBean.getPicIndex(), width, height, absolutePath);
+        taskNotifier.onTaskComplete(parentTask, dlFilePathBean.getPosition());
     }
 }

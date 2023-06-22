@@ -132,13 +132,14 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
             File directory = getAlbumStorageDir(this.context, albumInfoBean.getDirName());
             File file = new File(directory, picName);
 
-            DLFilePathBean dlFilePathBean = new DLFilePathBean();
-            dlFilePathBean.dest = file;
-            dlFilePathBean.src = url;
-            dlFilePathBean.index = index;
-            dlFilePathBean.picIndex = picInfoBeanList.indexOf(picInfoBean);
-            dlFilePathBean.position = position;
-            dlFilePathBean.encrypted = AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getEncryped();
+            DLFilePathBean dlFilePathBean = new DLFilePathBean(
+                    index,
+                    url,
+                    file,
+                    picInfoBeanList.indexOf(picInfoBean),
+                    position,
+                    AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getEncryped()
+            );
             DLImageTask dlImageTask = new DLImageTask(this, this.taskNotifier);
             dlImageTask.executeOnExecutor(THREAD_POOL_EXECUTOR, dlFilePathBean);
         }
