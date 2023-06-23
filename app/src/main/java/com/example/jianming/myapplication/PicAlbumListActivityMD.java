@@ -206,8 +206,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                 List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
                 List<PicAlbumData> picAlbumDataList = new ArrayList<>();
                 for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
-                    PicAlbumData picAlbumData = new PicAlbumData();
-                    picAlbumData.setPicAlbumData(picAlbumBean);
+                    PicAlbumData picAlbumData = new PicAlbumData(picAlbumBean);
                     picAlbumDataList.add(picAlbumData);
                 }
                 picAlbumListAdapter.setDataArray(picAlbumDataList);
@@ -257,8 +256,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
         picAlbumDataList.clear();
         List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
         for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
-            PicAlbumData picAlbumData = new PicAlbumData();
-            picAlbumData.setPicAlbumData(picAlbumBean);
+            PicAlbumData picAlbumData = new PicAlbumData(picAlbumBean);
             picAlbumDataList.add(picAlbumData);
         }
         picAlbumListAdapter.notifyDataSetChanged();
