@@ -32,6 +32,7 @@ import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicInfoBean;
 import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.dao.PicInfoDao;
+import com.example.jianming.myapplication.AlbumConfig;
 import com.example.jianming.myapplication.AlbumConfigKt;
 
 import org.nanjing.knightingal.processerlib.TaskNotifier;
@@ -123,11 +124,15 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         for (PicInfoBean picInfoBean : picInfoBeanList) {
             albumInfoBean.getPics().add(picInfoBean.getName());
             String picName = picInfoBean.getName();
-            String url;
-            if (AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getEncryped()) {
-                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/linux1000/" + AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getBaseUrl() + "/" + albumInfoBean.getDirName() + "/" + picName + ".bin";
-            } else {
-                url = "http://" + EnvArgs.serverIP + ":" + EnvArgs.serverPort + "/linux1000/" + AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getBaseUrl() + "/" + albumInfoBean.getDirName() + "/" + picName + "";
+            AlbumConfig albumConfig = AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum());
+
+            String url = String.format("http://%s:%s/linux1000/%s/%s/%s",
+                    EnvArgs.serverIP, EnvArgs.serverPort,
+                    albumConfig.getBaseUrl(),
+                    albumInfoBean.getDirName(), picName
+            );
+            if (albumConfig.getEncryped()) {
+                url = url + ".bin";
             }
             File directory = getAlbumStorageDir(this.context, albumInfoBean.getDirName());
             File file = new File(directory, picName);
