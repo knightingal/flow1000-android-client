@@ -68,8 +68,9 @@ dependencies {
     implementation("com.nostra13.universalimageloader:universal-image-loader:1.9.5")
 
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
+    var jacksonVersion = "2.15.2"
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
 
     implementation( "com.google.code.gson:gson:2.10.1")
@@ -95,6 +96,6 @@ dependencies {
     implementation("androidx.room:room-paging:$roomVersion")
 
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 }
