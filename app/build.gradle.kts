@@ -65,14 +65,14 @@ android {
 
 dependencies {
 
-    implementation("com.nostra13.universalimageloader:universal-image-loader:+")
+    implementation("com.nostra13.universalimageloader:universal-image-loader:1.9.5")
 
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:+")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:+")
-    implementation("com.squareup.okhttp3:okhttp:+")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
 
-    implementation( "com.google.code.gson:gson:+")
+    implementation( "com.google.code.gson:gson:2.10.1")
 
     implementation("com.google.guava:guava:32.0.1-android")
     implementation("androidx.core:core-ktx:1.9.0")
@@ -84,32 +84,14 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
 
-
-
     val roomVersion = "2.5.1"
-
     implementation("androidx.room:room-runtime:$roomVersion")
-//    annotationProcessor("androidx.room:room-compiler:$roomVersion")
-
-    // To use Kotlin Symbol Processing (KSP)
     ksp("androidx.room:room-compiler:$roomVersion")
-
-    // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$roomVersion")
-
-    // optional - RxJava2 support for Room
     implementation("androidx.room:room-rxjava2:$roomVersion")
-
-    // optional - RxJava3 support for Room
     implementation("androidx.room:room-rxjava3:$roomVersion")
-
-    // optional - Guava support for Room, including Optional and ListenableFuture
     implementation("androidx.room:room-guava:$roomVersion")
-
-    // optional - Test helpers
     testImplementation("androidx.room:room-testing:$roomVersion")
-
-    // optional - Paging 3 Integration
     implementation("androidx.room:room-paging:$roomVersion")
 
 
