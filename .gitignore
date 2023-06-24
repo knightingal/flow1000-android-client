@@ -12,6 +12,7 @@
 /.idea/jarRepositories.xml
 /.idea/caches
 /.idea/codeStyles/Project.xml
+.idea/
 .DS_Store
 */build
 *.iml
