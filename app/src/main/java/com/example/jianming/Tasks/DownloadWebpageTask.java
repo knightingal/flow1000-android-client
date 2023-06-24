@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import okhttp3.Request;
 
-public class DownloadWebpageTask extends AsyncTask<String, Void, String> {
+public abstract class DownloadWebpageTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... urls) {

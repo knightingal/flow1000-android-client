@@ -17,7 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.jianming.Tasks.DownloadAlbumsTask;
+import com.example.jianming.Tasks.ConcurrencyDownloadAlbumsTask;
 import com.example.jianming.Tasks.DownloadPicsTask;
 import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.Utils.EnvArgs;
@@ -36,6 +36,9 @@ import org.nanjing.knightingal.processerlib.beans.CounterBean;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 
 public class PicAlbumListActivityMD extends AppCompatActivity implements RefreshListener {
@@ -248,18 +251,20 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                 albumStamp.getUpdateStamp()
         );
         Log.d("startDownloadWebPage", stringUrl);
-        new DownloadAlbumsTask(this).execute(stringUrl);
+        new ConcurrencyDownloadAlbumsTask(getApplicationContext()).startDownload(stringUrl, refreshFrontPage());
 
     }
 
-    public void refreshFrontPage() {
-        picAlbumDataList.clear();
-        List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
-        for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
-            PicAlbumData picAlbumData = new PicAlbumData(picAlbumBean);
-            picAlbumDataList.add(picAlbumData);
-        }
-        picAlbumListAdapter.notifyDataSetChanged();
-
+    public Function0<Unit> refreshFrontPage() {
+        return () -> {
+            picAlbumDataList.clear();
+            List<PicAlbumBean> picAlbumBeanList = getDataSourceFromJsonFile();
+            for (PicAlbumBean picAlbumBean : picAlbumBeanList) {
+                PicAlbumData picAlbumData = new PicAlbumData(picAlbumBean);
+                picAlbumDataList.add(picAlbumData);
+            }
+            picAlbumListAdapter.notifyDataSetChanged();
+            return null;
+        };
     }
 }
