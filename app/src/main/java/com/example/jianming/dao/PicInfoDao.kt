@@ -15,11 +15,11 @@ import java.util.List;
 interface PicInfoDao {
 
     @Insert
-    fun insert(picInfoBean:PicInfoBean );
+    fun insert(picInfoBean: PicInfoBean)
 
     @Query("select * from PicInfoBean where albumIndex = :innerIndex")
-    fun queryByAlbumInnerIndex(innerIndex:Long):List<PicInfoBean>;
+    fun queryByAlbumInnerIndex(innerIndex: Long):List<PicInfoBean>
 
     @Update
-    fun update( picInfoBean:PicInfoBean);
+    fun update(picInfoBean: PicInfoBean);
 }

@@ -12,29 +12,29 @@ import com.example.jianming.beans.PicAlbumBean;
 import java.util.List;
 
 @Dao
-public interface PicAlbumDao {
+interface PicAlbumDao {
 
     @Query("select * from PicAlbumBean")
-    List<PicAlbumBean> getAll();
+    fun getAll(): List<PicAlbumBean>
 
     @Update
-    void update(PicAlbumBean picAlbumData);
+    fun update( picAlbumData: PicAlbumBean)
 
     @Query("select * from PicAlbumBean where innerIndex = :index")
-    PicAlbumBean getByInnerIndex(int index);
+    fun getByInnerIndex(index: Int): PicAlbumBean
 
     @Query("select * from PicAlbumBean where serverIndex = :serverIndex")
-    PicAlbumBean getByServerIndex(int serverIndex);
+    fun getByServerIndex(serverIndex: Int): PicAlbumBean
 
     @Query("select * from PicAlbumBean where exist = 1")
-    List<PicAlbumBean> getAllExist();
+    fun getAllExist(): List<PicAlbumBean>
 
     @Insert
-    void insert(PicAlbumBean picAlbumBean);
+    fun insert(picAlbumBean: PicAlbumBean)
 
     @Delete
-    void deleteAll(List<PicAlbumBean> picAlbumBeanList);
+    fun deleteAll(picAlbumBeanList: List<PicAlbumBean>)
 
     @Delete
-    void delete(PicAlbumBean picAlbumBean);
+    fun delete(picAlbumBean: PicAlbumBean)
 }

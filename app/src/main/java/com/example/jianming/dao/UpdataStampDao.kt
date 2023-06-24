@@ -12,16 +12,16 @@ import com.example.jianming.beans.UpdateStamp;
 import java.util.List;
 
 @Dao
-public interface UpdataStampDao {
+interface UpdataStampDao {
     @Query("select * from UpdateStamp where table_name = :tableName")
-    UpdateStamp getUpdateStampByTableName(String tableName);
+    fun getUpdateStampByTableName(tableName: String):UpdateStamp
 
     @Update
-    void update(UpdateStamp updateStamp);
+    fun update(updateStamp: UpdateStamp)
 
     @Insert
-    void save(UpdateStamp albumStamp);
+    fun save(albumStamp: UpdateStamp)
 
     @Delete
-    void deleteAll(List<UpdateStamp> updateStampList);
+    fun deleteAll(updateStampList: List<UpdateStamp>)
 }
