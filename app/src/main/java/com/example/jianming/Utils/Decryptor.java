@@ -1,6 +1,8 @@
 package com.example.jianming.Utils;
 
 
+import com.example.jianming.myapplication.BuildConfig;
+
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -16,23 +18,18 @@ public class Decryptor {
 
     public static byte[] decrypt(byte[] encrypted) {
         byte[] iv = "2017041621251234".getBytes();
-        byte[] key = "".getBytes();
+        byte[] key = BuildConfig.password.getBytes();
         try {
             Cipher cipher = Cipher.getInstance("AES/CFB/NoPadding");
             SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
             return cipher.doFinal(encrypted);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
+        } catch (NoSuchAlgorithmException |
+                 NoSuchPaddingException |
+                 InvalidKeyException |
+                 BadPaddingException |
+                 IllegalBlockSizeException |
+                 InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
         return null;

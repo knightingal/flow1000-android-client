@@ -6,17 +6,18 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-// Create a variable called keystorePropertiesFile, and initialize it to your
-// keystore.properties file, in the rootProject folder.
-val keystorePropertiesFile = rootProject.file("keystore.properties")
-
-// Initialize a new Properties() object called keystoreProperties.
-val keystoreProperties = Properties()
-
-// Load your keystore.properties file into the keystoreProperties object.
+var keystorePropertiesFile = rootProject.file("keystore.properties")
+var keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
+var localPropertiesFile = rootProject.file("local.properties")
+var localProperties = Properties()
+localProperties.load(FileInputStream(localPropertiesFile))
+
 android {
+    buildFeatures {
+        buildConfig = true
+    }
     signingConfigs {
         getByName("debug") {
             keyAlias = keystoreProperties["keyAlias"] as String
@@ -45,7 +46,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "password", "\"${localProperties["password"] as String}\"")
+        }
         release {
+            buildConfigField("String", "password", "\"${localProperties["password"] as String}\"")
             isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
