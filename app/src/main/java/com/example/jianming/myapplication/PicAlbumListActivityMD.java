@@ -128,7 +128,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
             if (NetworkUtil.isNetworkAvailable(PicAlbumListActivityMD.this)) {
                 startDownloadWebPage();
             } else {
-                refreshFrontPage();
+                refreshFrontPage().invoke();
             }
         }
 
@@ -251,6 +251,7 @@ public class PicAlbumListActivityMD extends AppCompatActivity implements Refresh
                 albumStamp.getUpdateStamp()
         );
         Log.d("startDownloadWebPage", stringUrl);
+
         new ConcurrencyDownloadAlbumsTask(getApplicationContext()).startDownload(stringUrl, refreshFrontPage());
 
     }
