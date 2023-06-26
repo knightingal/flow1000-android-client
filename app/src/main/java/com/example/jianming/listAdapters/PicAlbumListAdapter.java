@@ -18,7 +18,7 @@ import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.myapplication.PicAlbumActivity;
-import com.example.jianming.myapplication.PicAlbumListActivityMD;
+import com.example.jianming.myapplication.PicAlbumListActivity;
 import com.example.jianming.myapplication.R;
 
 import org.nanjing.knightingal.processerlib.beans.Counter;
@@ -70,8 +70,8 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = false;
         }
-        if (((PicAlbumListActivityMD)context).downLoadService.getProcessingIndex().contains(viewHolder.getAdapterPosition())) {
-            Counter counter = ((PicAlbumListActivityMD)context).downLoadService.counterSparseArray.get(viewHolder.getAdapterPosition());
+        if (((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().contains(viewHolder.getAdapterPosition())) {
+            Counter counter = ((PicAlbumListActivity)context).getDownLoadService().counterSparseArray.get(viewHolder.getAdapterPosition());
             if (counter == null) {
                 viewHolder.downloadProcessBar.setPercent(0);
             } else {
@@ -140,7 +140,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 context.startActivity(intent);
             } else {
                 this.downloadProcessBar.setVisibility(View.VISIBLE);
-                 ((PicAlbumListActivityMD)context).downLoadService.getProcessingIndex().add(position);
+                 ((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().add(position);
 
                 File file = FileUtil.getAlbumStorageDir(context, name);
                 if (file.mkdirs()) {
@@ -150,7 +150,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                         .getPicAlbumData()
                         .getInnerIndex();
                 if (innerIndex != null) {
-                    ((PicAlbumListActivityMD) context).asyncStartDownload(innerIndex.intValue(), position);
+                    ((PicAlbumListActivity) context).asyncStartDownload(innerIndex.intValue(), position);
                 }
             }
         }

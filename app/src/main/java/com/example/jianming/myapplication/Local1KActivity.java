@@ -21,7 +21,7 @@ public class Local1KActivity extends AppCompatActivity {
     }
 
     public void goToLocal1000() {
-        Intent intent = new Intent(self, PicAlbumListActivityMD.class);
+        Intent intent = new Intent(self, PicAlbumListActivity.class);
         startActivity(intent);
     }
 
