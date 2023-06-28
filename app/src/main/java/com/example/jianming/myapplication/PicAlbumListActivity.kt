@@ -99,14 +99,21 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        downLoadService?.removeListener()
+        downLoadService = null
+        unbindService(conn)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        bindService(Intent(this, DownloadService::class.java), conn, BIND_AUTO_CREATE)
+    }
+
     private fun startDownloadWebPage() {
         val (_, _, updateStamp) = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
-        val stringUrl = String.format(
-            "http://%s:%s/local1000/picIndexAjax?time_stamp=%s",
-            EnvArgs.serverIP,
-            EnvArgs.serverPort,
-            updateStamp
-        )
+        val stringUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picIndexAjax?time_stamp=${updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
         ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(stringUrl, refreshFrontPage)
     }
@@ -132,17 +139,6 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        downLoadService?.removeListener()
-        downLoadService = null
-        unbindService(conn)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        bindService(Intent(this, DownloadService::class.java), conn, BIND_AUTO_CREATE)
-    }
 
     override fun doRefreshView(counterBean: CounterBean?) {
 
@@ -188,9 +184,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     fun asyncStartDownload(index: Int, position: Int) {
         val (_, serverIndex) = picAlbumDao.getByInnerIndex(index)
-        val url = "http://%serverIP:%serverPort/local1000/picContentAjax?id=$serverIndex"
-            .replace("%serverIP", EnvArgs.serverIP)
-            .replace("%serverPort", EnvArgs.serverPort)
+        val url = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picContentAjax?id=$serverIndex"
         DownloadPicsTask(this, position, index, downLoadService).execute(url)
     }
 }
