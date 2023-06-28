@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.ViewBinding
 import java.util.Properties
 import java.io.FileInputStream
 plugins {
@@ -66,6 +67,13 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    val viewBindingFun : ViewBinding.() -> Unit = {
+        enable = true
+    }
+    viewBinding (viewBindingFun)
+
+
 }
 
 dependencies {
