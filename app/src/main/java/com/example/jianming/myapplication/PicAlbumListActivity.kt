@@ -47,6 +47,9 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val offline = intent.getBooleanExtra("offline", false)
+        isNotExistItemShown = !offline
+
         db = databaseBuilder(
             applicationContext,
             AppDataBase::class.java, "database-flow1000"
@@ -85,7 +88,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
                 TYPE_LIST,
                 this@PicAlbumListActivity
             )
-            if (NetworkUtil.isNetworkAvailable(this@PicAlbumListActivity)) {
+            if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this@PicAlbumListActivity)) {
                 startDownloadWebPage()
             } else {
                 refreshFrontPage.invoke()
@@ -129,7 +132,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     }
 
-    private val isNotExistItemShown = true
+    private var isNotExistItemShown = true
 
     private fun getDataSourceFromJsonFile(): List<PicAlbumBean> {
         return if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this)) {

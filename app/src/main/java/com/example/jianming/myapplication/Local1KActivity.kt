@@ -12,9 +12,18 @@ class Local1KActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityLocal1kBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_local_1k)
+        val view = binding.root
+        setContentView(view)
         binding.local1000.setOnClickListener {
             startActivity(Intent(this, PicAlbumListActivity::class.java))
         }
+
+        binding.offline.setOnClickListener {
+            val intent = Intent(this, PicAlbumListActivity::class.java).apply {
+                putExtra("offline", true)
+            }
+            startActivity(intent)
+        }
+
     }
 }
