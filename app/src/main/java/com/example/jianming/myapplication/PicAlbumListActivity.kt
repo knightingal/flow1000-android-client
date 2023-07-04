@@ -115,8 +115,8 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
     }
 
     private fun startDownloadWebPage() {
-        val (_, _, updateStamp) = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
-        val stringUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picIndexAjax?time_stamp=${updateStamp}"
+        val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
+        val stringUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
         ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(stringUrl, refreshFrontPage)
     }
