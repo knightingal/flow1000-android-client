@@ -36,35 +36,22 @@ class ConcurrencyDownloadAlbumsTask {
         this.db = db
     }
 
-    fun startDownload(url: String, callBack: () -> Unit): Unit {
+    fun startDownload(url: String, callBack: (body: String) -> Unit): Unit {
         runBlocking {
             launch {
-                makeRequest(url)
-                callBack()
+                val body = makeRequest(url)
+                callBack(body)
             }
         }
     }
 
-    private suspend fun makeRequest(url: String): Unit {
+    private suspend fun makeRequest(url: String): String {
         return withContext(Dispatchers.IO) {
             var request = Request.Builder().url(url).build()
 
             var body = NetworkUtil.getOkHttpClient().newCall(request).execute().body.string()
 
-            var mapper = jacksonObjectMapper()
-            try {
-                db.beginTransaction()
-                var updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
-                updateStamp.updateStamp = TimeUtil.currentFormatyyyyMMddHHmmss();
-                updateStampDao.update(updateStamp)
-                var picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(body)
-                picAlbumBeanList.forEach { picAlbumDao.insert(it) }
-                db.setTransactionSuccessful()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                db.endTransaction()
-            }
+            body
         }
     }
 

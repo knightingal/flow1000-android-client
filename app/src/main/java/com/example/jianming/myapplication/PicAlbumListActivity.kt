@@ -17,15 +17,19 @@ import com.example.jianming.Tasks.DownloadPicsTask
 import com.example.jianming.Utils.AppDataBase
 import com.example.jianming.Utils.EnvArgs
 import com.example.jianming.Utils.NetworkUtil
+import com.example.jianming.Utils.TimeUtil
 import com.example.jianming.beans.PicAlbumBean
 import com.example.jianming.beans.PicAlbumData
 import com.example.jianming.dao.PicAlbumDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicAlbumListAdapter
 import com.example.jianming.services.DownloadService
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.nanjing.knightingal.processerlib.RefreshListener
 import org.nanjing.knightingal.processerlib.Services.DownloadService.LocalBinder
 import org.nanjing.knightingal.processerlib.beans.CounterBean
+
+import com.fasterxml.jackson.module.kotlin.readValue
 
 class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
@@ -118,7 +122,27 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
         val stringUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
-        ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(stringUrl, refreshFrontPage)
+        ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(stringUrl, downloadCallback)
+    }
+
+    private val downloadCallback: (body: String) -> Unit = {body ->
+        val mapper = jacksonObjectMapper()
+        try {
+            db.beginTransaction()
+            val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
+            updateStamp.updateStamp = TimeUtil.currentFormatyyyyMMddHHmmss()
+            updataStampDao.update(updateStamp)
+            val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(body)
+            picAlbumBeanList.forEach { picAlbumDao.insert(it) }
+            db.setTransactionSuccessful()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            db.endTransaction()
+        }
+
+        refreshFrontPage.invoke()
+
     }
 
     private val refreshFrontPage: () -> Unit = {
