@@ -143,6 +143,12 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
         refreshFrontPage.invoke()
 
+//        val stringUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picIndexAjax?client_status=PENDING"
+//        ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(stringUrl) {it ->
+//            val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(it)
+//            picAlbumBeanList.forEach{picAlbumDao.update(it)}
+//        }
+
     }
 
     private val refreshFrontPage: () -> Unit = {

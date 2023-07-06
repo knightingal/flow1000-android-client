@@ -25,18 +25,18 @@ public class PicAlbumActivity extends ListActivity {
 
     String dirName;
 
-    int albumIndex;
+    Long albumIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         dirName = this.getIntent().getStringExtra("name");
-        albumIndex = this.getIntent().getIntExtra("serverIndex", 0);
+        albumIndex = this.getIntent().getLongExtra("serverIndex", 0);
 
         AppDataBase db = Room.databaseBuilder(this,
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
-        picInfoBeanList = db.picInfoDao().queryByAlbumInnerIndex(db.picAlbumDao().getByServerIndex(albumIndex).getInnerIndex());
+        picInfoBeanList = db.picInfoDao().queryByAlbumInnerIndex(db.picAlbumDao().getByServerIndex(albumIndex).getId());
         doShowListView();
     }
 

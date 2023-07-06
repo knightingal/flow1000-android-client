@@ -114,10 +114,10 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
     public void asyncStartDownload(int index) {
 
         PicAlbumBean picAlbumBean = picAlbumDao.getByInnerIndex(index);
-        picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.getInnerIndex());
+        picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.getId());
 
         AlbumInfoBean albumInfoBean = new AlbumInfoBean(
-                "" + (picAlbumBean.getServerIndex()),
+                "" + (picAlbumBean.getId()),
                 picAlbumBean.getName(),
                 new ArrayList<String>()
         );
@@ -184,7 +184,7 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
     public int getTaskSize(int index) {
         if (picInfoBeanList == null) {
             PicAlbumBean picAlbumBean = picAlbumDao.getByInnerIndex(index);
-            picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.getInnerIndex());
+            picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.getId());
         }
         return picInfoBeanList.size();
     }

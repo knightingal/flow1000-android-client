@@ -57,7 +57,7 @@ public class DownloadPicsTask extends DownloadWebpageTask {
             AlbumInfoBean albumInfoBean = mapper.readValue(s, AlbumInfoBean.class);
             db.beginTransaction();
             for (String pic : albumInfoBean.getPics()) {
-                PicInfoBean picInfoBean = new PicInfoBean(null, pic, picAlbumBean.getInnerIndex(), null, 0, 0);
+                PicInfoBean picInfoBean = new PicInfoBean(null, pic, picAlbumBean.getId(), null, 0, 0);
                 picInfoDao.insert(picInfoBean);
             }
             db.setTransactionSuccessful();

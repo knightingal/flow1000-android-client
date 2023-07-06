@@ -20,11 +20,11 @@ interface PicAlbumDao {
     @Update
     fun update( picAlbumData: PicAlbumBean)
 
-    @Query("select * from PicAlbumBean where innerIndex = :index")
+    @Query("select * from PicAlbumBean where id = :index")
     fun getByInnerIndex(index: Int): PicAlbumBean
 
-    @Query("select * from PicAlbumBean where serverIndex = :serverIndex")
-    fun getByServerIndex(serverIndex: Int): PicAlbumBean
+    @Query("select * from PicAlbumBean where id = :serverIndex")
+    fun getByServerIndex(serverIndex: Long): PicAlbumBean
 
     @Query("select * from PicAlbumBean where exist = 1")
     fun getAllExist(): List<PicAlbumBean>
