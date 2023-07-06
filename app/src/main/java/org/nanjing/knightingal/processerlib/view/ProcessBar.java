@@ -24,6 +24,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import com.example.jianming.myapplication.R;
+
 /**
  * @author Knightingal
  * @since v1.0
@@ -60,10 +62,10 @@ public class ProcessBar extends View{
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        paint.setColor(Color.GRAY);
+        paint.setColor(getContext().getColor(R.color.md_theme_light_secondaryContainer));
         canvas.drawRect(0, 0, this.width, 10, paint);
 
-        paint.setColor(Color.GREEN);
+        paint.setColor(getContext().getColor(R.color.md_theme_light_onSecondaryContainer));
         this.length = this.width * this.percent / 100;
 //        Log.d(TAG, "draw length = " + this.length);
         canvas.drawRect(0, 0, this.length, 10, paint);

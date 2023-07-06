@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.Utils.FileUtil;
 import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.dao.PicAlbumDao;
@@ -62,11 +61,13 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         viewHolder.textView.setText(dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
         if (dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getExist() == 1) {
-            viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurface));
+            viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer));
+            viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer));
             viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = true;
         } else {
             viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurfaceVariant));
+            viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_surfaceVariant));
             viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
             viewHolder.exist = false;
         }
@@ -79,7 +80,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             }
             viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
         }
-        viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getServerIndex();
+        viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getId();
         viewHolder.position = viewHolder.getAdapterPosition();
         viewHolder.deleteBtn.setOnClickListener(v -> {
             Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName() + " delete_btn");
@@ -111,7 +112,9 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
         private ImageView deleteBtn;
 
-        public int serverIndex;
+        private View itemView;
+
+        public long serverIndex;
 
         public int position;
 
@@ -124,6 +127,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             this.textView = itemView.findViewById(R.id.pic_text_view);
             this.deleteBtn = itemView.findViewById(R.id.delete_btn);
             this.downloadProcessBar = itemView.findViewById(R.id.customer_view1);
+            this.itemView = itemView;
 
             itemView.setOnClickListener(this);
         }
@@ -131,7 +135,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         @Override
         public void onClick(View v) {
             final String name = this.textView.getText().toString();
-            int serverIndex = this.serverIndex;
+            Long serverIndex = this.serverIndex;
             if (this.exist) {
                 Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);
                 Intent intent = new Intent(context, PicAlbumActivity.class);
@@ -148,7 +152,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 }
                 Long innerIndex = dataArray.get(position)
                         .getPicAlbumData()
-                        .getInnerIndex();
+                        .getId();
                 if (innerIndex != null) {
                     ((PicAlbumListActivity) context).asyncStartDownload(innerIndex.intValue(), position);
                 }
