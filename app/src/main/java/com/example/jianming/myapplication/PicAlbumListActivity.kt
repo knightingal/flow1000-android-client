@@ -13,14 +13,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room.databaseBuilder
 import com.example.jianming.Tasks.ConcurrencyDownloadAlbumsTask
-import com.example.jianming.Tasks.DownloadPicsTask
+import com.example.jianming.Tasks.DLAlbumTask
 import com.example.jianming.Utils.AppDataBase
 import com.example.jianming.Utils.EnvArgs
 import com.example.jianming.Utils.NetworkUtil
 import com.example.jianming.Utils.TimeUtil
+import com.example.jianming.beans.AlbumInfoBean
 import com.example.jianming.beans.PicAlbumBean
 import com.example.jianming.beans.PicAlbumData
+import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.dao.PicAlbumDao
+import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicAlbumListAdapter
 import com.example.jianming.services.DownloadService
@@ -38,6 +41,8 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
     private lateinit var db: AppDataBase
 
     private lateinit var picAlbumDao: PicAlbumDao
+
+    private lateinit var picInfoDao: PicInfoDao
 
     private lateinit var updataStampDao: UpdataStampDao
 
@@ -60,6 +65,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         ).allowMainThreadQueries().build()
 
         picAlbumDao = db.picAlbumDao()
+        picInfoDao = db.picInfoDao()
         updataStampDao = db.updataStampDao()
 
         setContentView(R.layout.activity_pic_album_list_activity_md)
@@ -143,11 +149,11 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
         refreshFrontPage.invoke()
 
-//        val stringUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picIndexAjax?client_status=PENDING"
-//        ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(stringUrl) {it ->
-//            val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(it)
-//            picAlbumBeanList.forEach{picAlbumDao.update(it)}
-//        }
+        val stringUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picIndexAjax?client_status=PENDING"
+        ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(stringUrl) {it ->
+            val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(it)
+            picAlbumBeanList.forEach{picAlbumDao.update(it)}
+        }
 
     }
 
@@ -215,9 +221,37 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
     }
 
 
-    fun asyncStartDownload(index: Int, position: Int) {
-        val (_, serverIndex) = picAlbumDao.getByInnerIndex(index)
-        val url = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picContentAjax?id=$serverIndex"
-        DownloadPicsTask(this, position, index, downLoadService).execute(url)
+    fun asyncStartDownload(index: Long, position: Int) {
+        val url = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picContentAjax?id=$index"
+//        DownloadPicsTask(this, position, index, downLoadService).execute(url)
+        ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(url) {body ->
+            val picAlbumBean = picAlbumDao.getByInnerIndex(index)
+
+            val mapper = jacksonObjectMapper()
+            try {
+                val albumInfoBean: AlbumInfoBean = mapper.readValue(body)
+                db.beginTransaction()
+                albumInfoBean.pics.forEach { pic ->
+                    val picInfoBean: PicInfoBean = PicInfoBean(
+                        null,
+                        pic,
+                        picAlbumBean.id,
+                        null,
+                        0,
+                        0
+                    )
+                    picInfoDao.insert(picInfoBean)
+
+                }
+                db.setTransactionSuccessful()
+                val dlAlbumTask = DLAlbumTask(this, position)
+                dlAlbumTask.setTaskNotifier(downLoadService)
+                downLoadService?.asyncStartDownload(dlAlbumTask, index)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                db.endTransaction()
+            }
+        }
     }
 }

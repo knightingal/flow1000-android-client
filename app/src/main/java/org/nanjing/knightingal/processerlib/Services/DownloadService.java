@@ -142,7 +142,7 @@ public class DownloadService extends Service implements TaskNotifier {
     }
 
 
-    public void asyncStartDownload(AbsTask task, Integer... params) {
+    public void asyncStartDownload(AbsTask task, Long... params) {
 //        SleepTask sleepTask = new SleepTask(this);
 //        sleepTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, index);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);

@@ -54,7 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @since v1.0
  */
 
-public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
+public class DLAlbumTask extends AbsTask<Long, Void, Integer> {
 
     private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR;
     private static final BlockingQueue<Runnable> sPoolWorkQueue = new LinkedBlockingQueue<Runnable>(256);
@@ -79,8 +79,8 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
     private final static String TAG = "DLAlbumTask";
 
     @Override
-    protected Integer doInBackground(Integer... params) {
-        int index = params[0];
+    protected Integer doInBackground(Long... params) {
+        Long index = params[0];
         asyncStartDownload(index);
 
 
@@ -111,7 +111,7 @@ public class DLAlbumTask extends AbsTask<Integer, Void, Integer> {
         picAlbumDao = db.picAlbumDao();
         picInfoDao = db.picInfoDao();
     }
-    public void asyncStartDownload(int index) {
+    public void asyncStartDownload(Long index) {
 
         PicAlbumBean picAlbumBean = picAlbumDao.getByInnerIndex(index);
         picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.getId());

@@ -153,9 +153,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 Long innerIndex = dataArray.get(position)
                         .getPicAlbumData()
                         .getId();
-                if (innerIndex != null) {
-                    ((PicAlbumListActivity) context).asyncStartDownload(innerIndex.intValue(), position);
-                }
+                ((PicAlbumListActivity) context).asyncStartDownload(innerIndex.intValue(), position);
             }
         }
     }
