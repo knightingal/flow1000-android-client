@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room.databaseBuilder
-import com.example.jianming.Tasks.ConcurrencyDownloadAlbumsTask
+import com.example.jianming.Tasks.ConcurrencyJsonApiTask
 import com.example.jianming.Tasks.DLAlbumTask
 import com.example.jianming.Utils.AppDataBase
 import com.example.jianming.Utils.EnvArgs
@@ -128,7 +128,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
         val stringUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
-        ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(stringUrl, downloadCallback)
+        ConcurrencyJsonApiTask.startDownload(stringUrl, downloadCallback)
     }
 
     private val downloadCallback: (body: String) -> Unit = {body ->
@@ -150,7 +150,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         refreshFrontPage.invoke()
 
         val stringUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picIndexAjax?client_status=PENDING"
-        ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(stringUrl) {it ->
+        ConcurrencyJsonApiTask.startDownload(stringUrl) { it ->
             val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(it)
             picAlbumBeanList.forEach{picAlbumDao.update(it)}
         }
@@ -224,7 +224,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
     fun asyncStartDownload(index: Long, position: Int) {
         val url = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picContentAjax?id=$index"
 //        DownloadPicsTask(this, position, index, downLoadService).execute(url)
-        ConcurrencyDownloadAlbumsTask(applicationContext).startDownload(url) {body ->
+        ConcurrencyJsonApiTask.startDownload(url) { body ->
             val picAlbumBean = picAlbumDao.getByInnerIndex(index)
 
             val mapper = jacksonObjectMapper()
@@ -244,14 +244,14 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
                 }
                 db.setTransactionSuccessful()
-                val dlAlbumTask = DLAlbumTask(this, position)
-                dlAlbumTask.setTaskNotifier(downLoadService)
-                downLoadService?.asyncStartDownload(dlAlbumTask, index)
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 db.endTransaction()
             }
+            val dlAlbumTask = DLAlbumTask(this, position)
+            dlAlbumTask.setTaskNotifier(downLoadService)
+            downLoadService?.asyncStartDownload(dlAlbumTask, index)
         }
     }
 }
