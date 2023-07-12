@@ -22,5 +22,5 @@ package com.example.jianming.beans
 data class AlbumInfoBean (
         var picpage: String,
         var dirName: String,
-        var pics: List<String>
+        var pics: MutableList<String>
 )

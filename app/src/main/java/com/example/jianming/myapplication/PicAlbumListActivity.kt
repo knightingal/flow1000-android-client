@@ -249,9 +249,9 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
             } finally {
                 db.endTransaction()
             }
-            val dlAlbumTask = DLAlbumTask(this, position)
-            dlAlbumTask.setTaskNotifier(downLoadService)
-            downLoadService?.asyncStartDownload(dlAlbumTask, index)
+//            val dlAlbumTask = DLAlbumTask(this, position)
+//            dlAlbumTask.setTaskNotifier(downLoadService)
+            downLoadService?.asyncStartDownload(index, position)
         }
     }
 }

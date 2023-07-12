@@ -25,6 +25,8 @@ import android.util.Log;
 import android.util.SparseArray;
 
 
+import com.example.jianming.Tasks.ConcurrencySectionTask;
+
 import org.nanjing.knightingal.processerlib.beans.Counter;
 import org.nanjing.knightingal.processerlib.beans.CounterBean;
 import org.nanjing.knightingal.processerlib.RefreshListener;
@@ -79,55 +81,10 @@ public class DownloadService extends Service implements TaskNotifier {
         return mBinder;
     }
 
-    Thread th;
-    private void startCounter() {
-        th = new Thread(r);
-        running = true;
-        th.start();
-
-    }
 
     List<Counter> counterList = new ArrayList<Counter>();
     boolean running;
 
-    int info = 0;
-    Runnable r = new Runnable() {
-        @Override
-        public void run() {
-            while(running) {
-                try {
-                    Thread.sleep(40);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-//                Log.d(TAG, "thread report!");
-                try {
-                    InetAddress address = InetAddress.getByName("192.168.0.103");
-                    DatagramSocket socket = new DatagramSocket();
-
-                    String sendData = StGson.gson.toJson(counterList);
-                    byte[] bytes = sendData.getBytes();
-                    DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, 9600);
-                    socket.send(packet);
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                } catch (SocketException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                for (Counter counter : counterList) {
-                    if (refreshListener != null) {
-                        refreshListener.doRefreshView(new CounterBean(counter.getIndex(), counter.getCurr(), counter.getMax(), ""));
-                    }
-                    counter.inc();
-
-
-                }
-                info++;
-            }
-        }
-    };
 
     public class LocalBinder extends Binder {
         public DownloadService getService() {
@@ -151,13 +108,16 @@ public class DownloadService extends Service implements TaskNotifier {
 //        dlAlbumTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, index);
     }
 
+    public void asyncStartDownload(Long index, int position) {
+        new ConcurrencySectionTask(this, position, this).asyncStartDownload(index);
+    }
+
 
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-        running = false;
     }
 
     public SparseArray<Counter> counterSparseArray = new SparseArray<>();
@@ -177,4 +137,14 @@ public class DownloadService extends Service implements TaskNotifier {
             refreshListener.doRefreshView(new CounterBean(index, counter.getCurr(), counter.getMax(), type));
         }
     }
+
+    @Override
+    public void onTaskComplete(int index, int currentCount, int max) {
+
+        if (refreshListener != null && typeList != null ) {
+            refreshListener.doRefreshView(new CounterBean(index, currentCount, max, ""));
+        }
+
+    }
+
 }

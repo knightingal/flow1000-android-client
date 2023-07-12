@@ -142,7 +142,7 @@ public class DLAlbumTask extends AbsTask<Long, Void, Integer> {
         }
     }
 
-    private static File getAlbumStorageDir(Context context, String albumName) {
+    public static File getAlbumStorageDir(Context context, String albumName) {
         File file = new File(context.getExternalFilesDir(
                 Environment.DIRECTORY_DOWNLOADS), albumName);
 

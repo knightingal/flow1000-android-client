@@ -31,10 +31,8 @@ public class CounterBean implements Serializable {
 
     private int index;
 
-    private String type;
 
     public CounterBean(int index, int curr, int max, String type) {
-        this.type = type;
         this.curr = curr;
         this.max = max;
         this.index = index;
@@ -70,8 +68,5 @@ public class CounterBean implements Serializable {
         this.index = index;
     }
 
-    public String getType() {
-        return type;
-    }
 
 }

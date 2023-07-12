@@ -8,7 +8,6 @@ import androidx.room.Update;
 
 import com.example.jianming.beans.PicInfoBean;
 
-import java.util.List;
 
 
 @Dao

@@ -25,4 +25,5 @@ import org.nanjing.knightingal.processerlib.tasks.AbsTask;
 
 public interface TaskNotifier {
     void onTaskComplete(AbsTask task, int index);
+    void onTaskComplete(int index, int currentCount, int max);
 }
