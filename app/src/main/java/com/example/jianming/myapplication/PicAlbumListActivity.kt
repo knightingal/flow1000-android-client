@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room.databaseBuilder
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
-import com.example.jianming.Tasks.DLAlbumTask
 import com.example.jianming.Utils.AppDataBase
 import com.example.jianming.Utils.EnvArgs
 import com.example.jianming.Utils.NetworkUtil
@@ -211,13 +210,12 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
             picAlbumListAdapter.notifyDataSetChanged()
         }
         if (viewHolder != null) {
-            viewHolder.downloadProcessBar.percent = counterBean.curr * 100 / counterBean.max
+//            viewHolder.downloadProcessBar.percent = counterBean.curr * 100 / counterBean.max
+            viewHolder.downloadProcessBar.setProgress(counterBean.curr, true)
+            viewHolder.downloadProcessBar.max = counterBean.max
             viewHolder.downloadProcessBar.postInvalidate()
         }
-        Log.d(
-            TAG,
-            "current = " + counterBean.curr + " max = " + counterBean.max
-        )
+        Log.d(TAG, "current = " + counterBean.curr + " max = " + counterBean.max)
     }
 
 

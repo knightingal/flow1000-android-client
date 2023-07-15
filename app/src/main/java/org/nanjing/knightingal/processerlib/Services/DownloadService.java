@@ -139,10 +139,16 @@ public class DownloadService extends Service implements TaskNotifier {
     }
 
     @Override
-    public void onTaskComplete(int index, int currentCount, int max) {
+    public void onTaskComplete(int position, int currentCount, int max) {
+        Counter counter = counterSparseArray.get(position);
+        if (counter == null) {
+            counter = new Counter(0, max, 1, position);
+            counterSparseArray.put(position, counter);
+        }
+        counter.inc();
 
         if (refreshListener != null && typeList != null ) {
-            refreshListener.doRefreshView(new CounterBean(index, currentCount, max, ""));
+            refreshListener.doRefreshView(new CounterBean(position, currentCount, max, ""));
         }
 
     }

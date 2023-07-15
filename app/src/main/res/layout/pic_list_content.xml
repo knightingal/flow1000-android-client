@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingBottom="16dp"
     android:paddingTop="16dp"
-    >
+    android:id="@+id/pic_list_content">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/pic_text_view"
+        android:layout_centerVertical="true"
         android:text="text"
         />
 
-    <ImageView
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/download_process"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/delete_btn"
-        android:layout_alignParentRight="true"
-        />
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="center"
+        android:layout_marginEnd="16dp"
+        android:indeterminate="false"
+        app:indicatorSize="24dp"
+        android:max="100"
+        android:progress="90" />
+
+    <!--    <ImageView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/delete_btn"-->
+<!--        android:layout_alignParentRight="true"-->
+<!--        />-->
 
     <!--
     <com.example.jianming.views.DownloadProcessBar
@@ -29,12 +44,12 @@
         android:visibility="gone"
         />
     -->
-    <org.nanjing.knightingal.processerlib.view.ProcessBar
-        android:id="@+id/customer_view1"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:visibility="invisible"
-        android:layout_below="@+id/pic_text_view"
-        />
+<!--    <org.nanjing.knightingal.processerlib.view.ProcessBar-->
+<!--        android:id="@+id/customer_view1"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="2dp"-->
+<!--        android:visibility="visible"-->
+<!--        android:layout_below="@+id/pic_text_view"-->
+<!--        />-->
 
 </RelativeLayout>

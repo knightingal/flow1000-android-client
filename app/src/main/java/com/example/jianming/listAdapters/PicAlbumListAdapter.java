@@ -19,6 +19,7 @@ import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.myapplication.PicAlbumActivity;
 import com.example.jianming.myapplication.PicAlbumListActivity;
 import com.example.jianming.myapplication.R;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.nanjing.knightingal.processerlib.beans.Counter;
 import org.nanjing.knightingal.processerlib.view.ProcessBar;
@@ -63,40 +64,41 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         if (dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getExist() == 1) {
             viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer));
             viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer));
-            viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
+            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
             viewHolder.exist = true;
         } else {
             viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurfaceVariant));
             viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_surfaceVariant));
-            viewHolder.downloadProcessBar.setVisibility(View.INVISIBLE);
+            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
             viewHolder.exist = false;
         }
         if (((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().contains(viewHolder.getAdapterPosition())) {
             Counter counter = ((PicAlbumListActivity)context).getDownLoadService().counterSparseArray.get(viewHolder.getAdapterPosition());
             if (counter == null) {
-                viewHolder.downloadProcessBar.setPercent(0);
+                viewHolder.downloadProcessBar.setProgress(0);
             } else {
-                viewHolder.downloadProcessBar.setPercent(counter.getCurr() * 100 / counter.getMax());
+                viewHolder.downloadProcessBar.setProgress(counter.getCurr(), true);
+                viewHolder.downloadProcessBar.setMax(counter.getMax());
             }
             viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
         }
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getId();
         viewHolder.position = viewHolder.getAdapterPosition();
-        viewHolder.deleteBtn.setOnClickListener(v -> {
-            Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName() + " delete_btn");
-            AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
-            builder.setMessage("delete this dir?");
-            builder.setTitle("");
-            builder.setPositiveButton("yes", (dialog, which) -> {
-                FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
-                viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
-
-                picAlbumDao.delete(picAlbumDao.getByServerIndex(viewHolder.serverIndex));
-                dialog.dismiss();
-            });
-            builder.setNegativeButton("no", (dialog, which) -> dialog.dismiss());
-            builder.create().show();
-        });
+//        viewHolder.deleteBtn.setOnClickListener(v -> {
+//            Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName() + " delete_btn");
+//            AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
+//            builder.setMessage("delete this dir?");
+//            builder.setTitle("");
+//            builder.setPositiveButton("yes", (dialog, which) -> {
+//                FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
+//                viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
+//
+//                picAlbumDao.delete(picAlbumDao.getByServerIndex(viewHolder.serverIndex));
+//                dialog.dismiss();
+//            });
+//            builder.setNegativeButton("no", (dialog, which) -> dialog.dismiss());
+//            builder.create().show();
+//        });
     }
 
 
@@ -110,7 +112,6 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView textView;
 
-        private ImageView deleteBtn;
 
         private View itemView;
 
@@ -120,13 +121,13 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
         private boolean exist = false;
 
-        public ProcessBar downloadProcessBar;
+        public CircularProgressIndicator downloadProcessBar;
 
         private ViewHolder(View itemView) {
             super(itemView);
             this.textView = itemView.findViewById(R.id.pic_text_view);
-            this.deleteBtn = itemView.findViewById(R.id.delete_btn);
-            this.downloadProcessBar = itemView.findViewById(R.id.customer_view1);
+//            this.deleteBtn = itemView.findViewById(R.id.delete_btn);
+            this.downloadProcessBar = itemView.findViewById(R.id.download_process);
             this.itemView = itemView;
 
             itemView.setOnClickListener(this);

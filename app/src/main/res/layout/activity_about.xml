@@ -24,4 +24,13 @@
         android:layout_below="@+id/image_view_logo"
         android:layout_centerHorizontal="true"
         />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/circular_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:max="100"
+        android:progress="30"
+        android:indeterminate="false"/>
 </RelativeLayout>
