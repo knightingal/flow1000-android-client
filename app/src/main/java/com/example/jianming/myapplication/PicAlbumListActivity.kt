@@ -193,7 +193,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         }
         if (viewHolder != null) {
             MainScope().launch {
-                viewHolder.downloadProcessBar.setProgressCompat(currCount, true)
+                viewHolder.downloadProcessBar.setProgressCompat(currCount, false)
                 viewHolder.downloadProcessBar.max = max
                 Log.d(TAG, "current = $currCount max = $max")
             }
