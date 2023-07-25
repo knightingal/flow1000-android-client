@@ -1,16 +1,12 @@
 package com.example.jianming.myapplication;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 
 import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.dao.PicAlbumDao;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import android.util.Log;
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
 import androidx.core.view.GravityCompat;
@@ -25,7 +21,6 @@ import android.widget.Toast;
 
 
 import com.example.jianming.beans.UpdateStamp;
-import com.example.jianming.services.DownloadService;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -91,7 +86,6 @@ public class Main2Activity extends AppCompatActivity
 
         initDB();
 
-        startService(new Intent(this, DownloadService.class));
     }
 
     private void initDB() {
@@ -127,38 +121,15 @@ public class Main2Activity extends AppCompatActivity
 
     }
 
-    DownloadService mService;
 
     private boolean mBound = false;
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        private static final String TAG = "ServiceConnection";
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            Log.d(TAG, "onServiceConnected");
-            DownloadService.LocalBinder binder = (DownloadService.LocalBinder) service;
-            mService = (DownloadService) binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.d(TAG, "onServiceConnected");
-            mService = null;
-            mBound = false;
-        }
-    };
 
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(this, DownloadService.class));
     }
 
     @Override

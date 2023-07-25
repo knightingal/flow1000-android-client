@@ -53,9 +53,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.example.jianming.services.DownloadService"
-            android:enabled="true"
-            android:exported="true"/>
         <service android:name="com.example.jianming.services.KtDownloadService"
             android:enabled="true"
             android:exported="true"/>
