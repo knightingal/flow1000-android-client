@@ -3,6 +3,7 @@ package com.example.jianming.myapplication
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -12,7 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room.databaseBuilder
+import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
+import com.example.jianming.Tasks.DLAlbumTask
 import com.example.jianming.Utils.AppDataBase
 import com.example.jianming.Utils.EnvArgs
 import com.example.jianming.Utils.NetworkUtil
@@ -25,13 +28,15 @@ import com.example.jianming.dao.PicAlbumDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicAlbumListAdapter
-import com.example.jianming.services.DownloadService
+import com.example.jianming.services.KtDownloadService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.nanjing.knightingal.processerlib.RefreshListener
-import org.nanjing.knightingal.processerlib.Services.DownloadService.LocalBinder
-import org.nanjing.knightingal.processerlib.beans.CounterBean
-
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import org.nanjing.knightingal.processerlib.RefreshListener
+import org.nanjing.knightingal.processerlib.beans.CounterBean
+import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 
 class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
@@ -84,17 +89,16 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     val TYPE_LIST: List<String> = listOf(TAG)
 
-    var downLoadService: DownloadService? = null
+    var downLoadService: KtDownloadService? = null
 
 
     var isBound = false
     private val conn: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             Log.d(TAG, "onServiceConnected")
             isBound = true
-            downLoadService = (service as LocalBinder).service as DownloadService
+            downLoadService = (binder as KtDownloadService.LocalBinder).getService() as KtDownloadService
             downLoadService!!.setRefreshListener(
-                TYPE_LIST,
                 this@PicAlbumListActivity
             )
             if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this@PicAlbumListActivity)) {
@@ -113,14 +117,14 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     override fun onPause() {
         super.onPause()
-        downLoadService?.removeListener()
+        downLoadService?.removeRefreshListener()
         downLoadService = null
         unbindService(conn)
     }
 
     override fun onStart() {
         super.onStart()
-        bindService(Intent(this, DownloadService::class.java), conn, BIND_AUTO_CREATE)
+        bindService(Intent(this, KtDownloadService::class.java), conn, BIND_AUTO_CREATE)
     }
 
     private fun startDownloadWebPage() {
@@ -178,13 +182,22 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
     }
 
 
-    override fun doRefreshView(counterBean: CounterBean?) {
-
-        val msg = Message()
-        val data = Bundle()
-        data.putSerializable("data", counterBean)
-        msg.data = data
-        refreshHandler.sendMessage(msg)
+    override fun doRefreshView(position: Int, currCount: Int, max: Int) {
+        val viewHolder =
+            listView.findViewHolderForAdapterPosition(position) as PicAlbumListAdapter.ViewHolder?
+        if (currCount == max) {
+//            downLoadService!!.processingIndex.remove(Integer.valueOf(position))
+            picAlbumDataList[position].picAlbumData.exist = 1
+            picAlbumDao.update(picAlbumDataList[position].picAlbumData)
+            picAlbumListAdapter.notifyDataSetChanged()
+        }
+        if (viewHolder != null) {
+            MainScope().launch {
+                viewHolder.downloadProcessBar.setProgressCompat(currCount, true)
+                viewHolder.downloadProcessBar.max = max
+                Log.d(TAG, "current = $currCount max = $max")
+            }
+        }
     }
 
 
@@ -204,14 +217,14 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         val viewHolder =
             listView.findViewHolderForAdapterPosition(counterBean.index) as PicAlbumListAdapter.ViewHolder?
         if (counterBean.curr == counterBean.max) {
-            downLoadService!!.processingIndex.remove(Integer.valueOf(counterBean.index))
+//            downLoadService!!.processingIndex.remove(Integer.valueOf(counterBean.index))
             picAlbumDataList[counterBean.index].picAlbumData.exist = 1
             picAlbumDao.update(picAlbumDataList[counterBean.index].picAlbumData)
             picAlbumListAdapter.notifyDataSetChanged()
         }
         if (viewHolder != null) {
 //            viewHolder.downloadProcessBar.percent = counterBean.curr * 100 / counterBean.max
-            viewHolder.downloadProcessBar.setProgress(counterBean.curr, true)
+            viewHolder.downloadProcessBar.setProgressCompat(counterBean.curr, false)
             viewHolder.downloadProcessBar.max = counterBean.max
             viewHolder.downloadProcessBar.postInvalidate()
         }
@@ -220,8 +233,12 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
 
     fun asyncStartDownload(index: Long, position: Int) {
+        downLoadService?.startDownloadAlbum(index, position)
+    }
+
+    fun asyncStartDownload1(index: Long, position: Int) {
+
         val url = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picContentAjax?id=$index"
-//        DownloadPicsTask(this, position, index, downLoadService).execute(url)
         ConcurrencyJsonApiTask.startDownload(url) { body ->
             val picAlbumBean = picAlbumDao.getByInnerIndex(index)
 
@@ -247,9 +264,62 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
             } finally {
                 db.endTransaction()
             }
-//            val dlAlbumTask = DLAlbumTask(this, position)
-//            dlAlbumTask.setTaskNotifier(downLoadService)
-            downLoadService?.asyncStartDownload(index, position)
+
+
+            val picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.id)
+
+            val albumInfoBean = AlbumInfoBean(
+                "${picAlbumBean.id}",
+                picAlbumBean.name,
+                mutableListOf()
+            )
+            val processCount = AtomicInteger(0)
+            picInfoBeanList.forEach { picInfoBean ->
+
+                albumInfoBean.pics.add(picInfoBean.name)
+                val picName = picInfoBean.name
+                val albumConfig = getAlbumConfig(picAlbumBean.album)
+
+                var imgUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}" +
+                        "/linux1000/${albumConfig.baseUrl}/${albumInfoBean.dirName}/${picName}"
+
+                if (albumConfig.encryped) {
+                    imgUrl += ".bin"
+                }
+                val directory = DLAlbumTask.getAlbumStorageDir(applicationContext, albumInfoBean.dirName)
+                val file = File(directory, picName)
+                ConcurrencyImageTask.downloadUrl(imgUrl, file, albumConfig.encryped) {bytes ->
+
+                    val currCount = processCount.incrementAndGet()
+                    val options = BitmapFactory.Options()
+                    options.inJustDecodeBounds = true
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                    val width = options.outWidth
+                    val height = options.outHeight
+                    val absolutePath = file.absolutePath
+
+                    picInfoBean.width = width
+                    picInfoBean.height = height
+                    picInfoBean.absolutePath = absolutePath
+
+                    val viewHolder = listView.findViewHolderForAdapterPosition(position) as PicAlbumListAdapter.ViewHolder?
+                    MainScope().launch() {
+                        viewHolder?.downloadProcessBar?.setProgressCompat(currCount, true)
+                        viewHolder?.downloadProcessBar?.max = picInfoBeanList.size
+                    }
+                    if (currCount == picInfoBeanList.size) {
+                        try {
+                            db.beginTransaction()
+                            for (pic in picInfoBeanList) {
+                                picInfoDao.update(pic)
+                            }
+                            db.setTransactionSuccessful()
+                        } finally {
+                            db.endTransaction()
+                        }
+                    }
+                }
+            }
         }
     }
 }

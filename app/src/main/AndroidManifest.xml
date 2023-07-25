@@ -36,6 +36,11 @@
             android:name=".SettingActivity"
             android:label="@string/title_activity_setting" />
         <activity
+            android:name=".AboutActivity"
+            android:exported="true"
+            android:label="@string/title_activity_setting" >
+        </activity>
+        <activity
             android:name=".Main2Activity"
             android:label="@string/title_activity_main2"
             android:exported="true"
@@ -49,6 +54,9 @@
         </activity>
 
         <service android:name="com.example.jianming.services.DownloadService"
+            android:enabled="true"
+            android:exported="true"/>
+        <service android:name="com.example.jianming.services.KtDownloadService"
             android:enabled="true"
             android:exported="true"/>
 

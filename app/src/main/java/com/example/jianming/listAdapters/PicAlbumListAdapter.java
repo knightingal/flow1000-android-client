@@ -72,16 +72,16 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
             viewHolder.exist = false;
         }
-        if (((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().contains(viewHolder.getAdapterPosition())) {
-            Counter counter = ((PicAlbumListActivity)context).getDownLoadService().counterSparseArray.get(viewHolder.getAdapterPosition());
-            if (counter == null) {
-                viewHolder.downloadProcessBar.setProgress(0);
-            } else {
-                viewHolder.downloadProcessBar.setProgress(counter.getCurr(), true);
-                viewHolder.downloadProcessBar.setMax(counter.getMax());
-            }
-            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
-        }
+//        if (((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().contains(viewHolder.getAdapterPosition())) {
+//            Counter counter = ((PicAlbumListActivity)context).getDownLoadService().counterSparseArray.get(viewHolder.getAdapterPosition());
+//            if (counter == null) {
+//                viewHolder.downloadProcessBar.setProgress(0);
+//            } else {
+//                viewHolder.downloadProcessBar.setProgress(counter.getCurr(), true);
+//                viewHolder.downloadProcessBar.setMax(counter.getMax());
+//            }
+//            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+//        }
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getId();
         viewHolder.position = viewHolder.getAdapterPosition();
 //        viewHolder.deleteBtn.setOnClickListener(v -> {
@@ -137,6 +137,9 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         public void onClick(View v) {
             final String name = this.textView.getText().toString();
             Long serverIndex = this.serverIndex;
+
+//            startProcess(position, 0);
+
             if (this.exist) {
                 Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);
                 Intent intent = new Intent(context, PicAlbumActivity.class);
@@ -145,7 +148,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 context.startActivity(intent);
             } else {
                 this.downloadProcessBar.setVisibility(View.VISIBLE);
-                 ((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().add(position);
+//                 ((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().add(position);
 
                 File file = FileUtil.getAlbumStorageDir(context, name);
                 if (file.mkdirs()) {
@@ -156,6 +159,26 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                         .getId();
                 ((PicAlbumListActivity) context).asyncStartDownload(innerIndex.intValue(), position);
             }
+        }
+
+        private void startProcess(int position, int start) {
+            if (start + 20 > 100) {
+                return;
+            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    downloadProcessBar.setProgressCompat(start + 20, true);
+                    downloadProcessBar.setMax(200);
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    startProcess(position, start + 20);
+                }
+            }).start();
         }
     }
 }

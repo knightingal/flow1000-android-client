@@ -6,6 +6,7 @@ import com.example.jianming.Utils.Decryptor
 import com.example.jianming.Utils.NetworkUtil
 import com.example.jianming.beans.PicInfoBean
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -18,12 +19,10 @@ import java.io.IOException
 object ConcurrencyImageTask {
     private const val TAG = "DLImageTask"
     fun downloadUrl(src: String, dest: File, encrypted: Boolean, callback: (bytes: ByteArray) -> Unit): Unit {
-        runBlocking {
-            launch {
-                val bytes = makeRequest(src, dest, encrypted)
-                if (bytes != null) {
-                    callback(bytes)
-                }
+        MainScope().launch {
+            val bytes = makeRequest(src, dest, encrypted)
+            if (bytes != null) {
+                callback(bytes)
             }
         }
     }

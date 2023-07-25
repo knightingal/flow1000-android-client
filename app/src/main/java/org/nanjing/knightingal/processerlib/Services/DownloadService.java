@@ -114,6 +114,10 @@ public class DownloadService extends Service implements TaskNotifier {
 
 
 
+
+
+
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -134,7 +138,7 @@ public class DownloadService extends Service implements TaskNotifier {
 
         String type = task.getType();
         if (refreshListener != null && typeList != null && typeList.contains(type)) {
-            refreshListener.doRefreshView(new CounterBean(index, counter.getCurr(), counter.getMax(), type));
+            refreshListener.doRefreshView(index, counter.getCurr(), counter.getMax());
         }
     }
 
@@ -148,7 +152,7 @@ public class DownloadService extends Service implements TaskNotifier {
         counter.inc();
 
         if (refreshListener != null && typeList != null ) {
-            refreshListener.doRefreshView(new CounterBean(position, currentCount, max, ""));
+            refreshListener.doRefreshView(position, currentCount, max );
         }
 
     }

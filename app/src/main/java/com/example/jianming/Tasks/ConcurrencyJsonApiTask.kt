@@ -2,6 +2,7 @@ package com.example.jianming.Tasks
 
 import com.example.jianming.Utils.NetworkUtil
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -10,11 +11,9 @@ import okhttp3.Request
 object ConcurrencyJsonApiTask {
 
     fun startDownload(url: String, callBack: (body: String) -> Unit): Unit {
-        runBlocking {
-            launch {
-                val body = makeRequest(url)
-                callBack(body)
-            }
+        MainScope().launch {
+            val body = makeRequest(url)
+            callBack(body)
         }
     }
 
