@@ -32,20 +32,22 @@ object ConcurrencyImageTask {
             Log.d(TAG, "start download $src")
             val request = Request.Builder().url(src).build()
             var bytes: ByteArray? = null
-            try {
-                bytes = NetworkUtil.getOkHttpClient().newCall(request).execute().body.bytes()
-                val options: BitmapFactory.Options = BitmapFactory.Options()
-                options.inJustDecodeBounds = true
-                if (encrypted) {
-                    bytes = Decryptor.decrypt(bytes)
+            while (true) {
+                try {
+                    bytes = NetworkUtil.getOkHttpClient().newCall(request).execute().body.bytes()
+                    val options: BitmapFactory.Options = BitmapFactory.Options()
+                    options.inJustDecodeBounds = true
+                    if (encrypted) {
+                        bytes = Decryptor.decrypt(bytes)
+                    }
+                    val fileOutputStream = FileOutputStream(dest, true)
+                    fileOutputStream.write(bytes)
+                    fileOutputStream.close()
+                    break
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    Log.e(TAG, "download $src error")
                 }
-                val fileOutputStream = FileOutputStream(dest, true)
-                fileOutputStream.write(bytes)
-                fileOutputStream.close()
-
-            } catch (e: IOException) {
-                e.printStackTrace()
-                Log.e(TAG, "download $src error")
             }
             bytes
 
