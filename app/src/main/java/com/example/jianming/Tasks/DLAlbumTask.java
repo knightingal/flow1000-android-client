@@ -60,7 +60,6 @@ public class DLAlbumTask extends AbsTask<Long, Void, Integer> {
     @Override
     protected Integer doInBackground(Long... params) {
         Long index = params[0];
-        asyncStartDownload(index);
         return null;
     }
 
@@ -87,59 +86,6 @@ public class DLAlbumTask extends AbsTask<Long, Void, Integer> {
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
         picAlbumDao = db.picAlbumDao();
         picInfoDao = db.picInfoDao();
-    }
-    public void asyncStartDownload(Long index) {
-
-        PicAlbumBean picAlbumBean = picAlbumDao.getByInnerIndex(index);
-        picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.getId());
-
-        AlbumInfoBean albumInfoBean = new AlbumInfoBean(
-                "" + (picAlbumBean.getId()),
-                picAlbumBean.getName(),
-                new ArrayList<String>()
-        );
-        for (PicInfoBean picInfoBean : picInfoBeanList) {
-            albumInfoBean.getPics().add(picInfoBean.getName());
-            String picName = picInfoBean.getName();
-            AlbumConfig albumConfig = AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum());
-
-            String url = String.format("http://%s:%s/linux1000/%s/%s/%s",
-                    EnvArgs.serverIP, EnvArgs.serverPort,
-                    albumConfig.getBaseUrl(),
-                    albumInfoBean.getDirName(), picName
-            );
-            if (albumConfig.getEncryped()) {
-                url = url + ".bin";
-            }
-            File directory = getAlbumStorageDir(this.context, albumInfoBean.getDirName());
-            File file = new File(directory, picName);
-
-            DLFilePathBean dlFilePathBean = new DLFilePathBean(
-                    index,
-                    url,
-                    file,
-                    picInfoBeanList.indexOf(picInfoBean),
-                    position,
-                    AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getEncryped()
-            );
-
-            Function1<byte[], Unit> callback = bytes -> {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-                int width = options.outWidth;
-                int height = options.outHeight;
-                String absolutePath = file.getAbsolutePath();
-                updatePicInfoBean(picInfoBeanList.indexOf(picInfoBean), width, height, absolutePath);
-                taskNotifier.onTaskComplete(DLAlbumTask.this, position);
-
-                return Unit.INSTANCE;
-            };
-
-
-            ConcurrencyImageTask.INSTANCE.downloadUrl(url, file,
-                    AlbumConfigKt.getAlbumConfig(picAlbumBean.getAlbum()).getEncryped(), callback);
-        }
     }
 
     public static File getAlbumStorageDir(Context context, String albumName) {

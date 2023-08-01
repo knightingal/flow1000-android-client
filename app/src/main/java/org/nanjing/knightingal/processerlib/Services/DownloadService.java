@@ -108,9 +108,6 @@ public class DownloadService extends Service implements TaskNotifier {
 //        dlAlbumTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, index);
     }
 
-    public void asyncStartDownload(Long index, int position) {
-        new ConcurrencySectionTask(this, position, this).asyncStartDownload(index);
-    }
 
 
 
