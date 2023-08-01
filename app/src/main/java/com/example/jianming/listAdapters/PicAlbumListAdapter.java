@@ -148,6 +148,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 context.startActivity(intent);
             } else {
                 this.downloadProcessBar.setVisibility(View.VISIBLE);
+                this.downloadProcessBar.setIndeterminate(true);
 //                 ((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().add(position);
 
                 File file = FileUtil.getAlbumStorageDir(context, name);
