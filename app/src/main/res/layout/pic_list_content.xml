@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/pic_text_view"
         android:layout_centerVertical="true"
+        android:singleLine="true"
         android:text="text"
         />
 
@@ -28,28 +29,5 @@
         android:max="100"
         android:progress="0" />
 
-    <!--    <ImageView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:id="@+id/delete_btn"-->
-<!--        android:layout_alignParentRight="true"-->
-<!--        />-->
-
-    <!--
-    <com.example.jianming.views.DownloadProcessBar
-        android:id="@+id/customer_view1"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_below="@+id/pic_text_view"
-        android:visibility="gone"
-        />
-    -->
-<!--    <org.nanjing.knightingal.processerlib.view.ProcessBar-->
-<!--        android:id="@+id/customer_view1"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="2dp"-->
-<!--        android:visibility="visible"-->
-<!--        android:layout_below="@+id/pic_text_view"-->
-<!--        />-->
 
 </RelativeLayout>
