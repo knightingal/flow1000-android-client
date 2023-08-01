@@ -46,44 +46,6 @@ class ConcurrencySectionTask  {
     }
 
 
-    public fun asyncStartDownload(index: Long) : Unit {
-        val picAlbumBean = picAlbumDao.getByInnerIndex(index)
-        picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.id)
-        val albumInfoBean = AlbumInfoBean(
-            "${picAlbumBean.id}",
-            picAlbumBean.name,
-            mutableListOf()
-        )
-        picInfoBeanList.forEach { picInfoBean ->
-            albumInfoBean.pics.add(picInfoBean.name)
-            val picName = picInfoBean.name
-            val albumConfig = getAlbumConfig(picAlbumBean.album)
-            var url = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}" +
-                    "/linux1000/${albumConfig.baseUrl}/${albumInfoBean.dirName}/${picName}"
-
-            if (albumConfig.encryped) {
-                url = url + ".bin"
-            }
-            val directory = DLAlbumTask.getAlbumStorageDir(context, albumInfoBean.dirName)
-            val file = File(directory, picName)
-
-            ConcurrencyImageTask.downloadUrl(url, file, albumConfig.encryped) {bytes ->
-                val options = BitmapFactory.Options()
-                options.inJustDecodeBounds = true
-                BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-                val width = options.outWidth
-                val height = options.outHeight
-                val absolutePath = file.absolutePath
-
-                updatePicInfoBean(picInfoBeanList.indexOf(picInfoBean), width, height, absolutePath)
-
-                taskNotifier.onTaskComplete(position, processCount.get(), picInfoBeanList.size)
-
-
-            }
-        }
-
-    }
 
     private val processCount = AtomicInteger(0)
 
