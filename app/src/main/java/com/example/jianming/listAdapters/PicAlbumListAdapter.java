@@ -1,19 +1,17 @@
 package com.example.jianming.listAdapters;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.jianming.Utils.FileUtil;
+import com.example.jianming.Utils.TimeUtil;
 import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.myapplication.PicAlbumActivity;
@@ -21,10 +19,10 @@ import com.example.jianming.myapplication.PicAlbumListActivity;
 import com.example.jianming.myapplication.R;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
-import org.nanjing.knightingal.processerlib.beans.Counter;
-import org.nanjing.knightingal.processerlib.view.ProcessBar;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapter.ViewHolder> {
@@ -55,12 +53,13 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         ViewHolder vh = new ViewHolder(v);
         v.setTag(vh);
         return vh;
-
     }
+
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
-        viewHolder.textView.setText(dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
+
+        viewHolder.textView.setText(formatTitle(dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName()));
         if (dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getExist() == 1) {
             viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer));
             viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer));
@@ -124,6 +123,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         public CircularProgressIndicator downloadProcessBar;
 
         private ViewHolder(View itemView) {
+
             super(itemView);
             this.textView = itemView.findViewById(R.id.pic_text_view);
 //            this.deleteBtn = itemView.findViewById(R.id.delete_btn);
@@ -162,24 +162,23 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             }
         }
 
-        private void startProcess(int position, int start) {
-            if (start + 20 > 100) {
-                return;
-            }
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    downloadProcessBar.setProgressCompat(start + 20, true);
-                    downloadProcessBar.setMax(200);
+    }
 
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    startProcess(position, start + 20);
-                }
-            }).start();
+    private static String formatTitle(String sourceTitle) {
+        if (sourceTitle.length() > 14) {
+            String timeStamp = sourceTitle.substring(0, 14);
+            boolean isTimeStamp = true;
+            try {
+                new SimpleDateFormat("yyyyMMddHHmmss").parse(timeStamp);
+            } catch (ParseException e) {
+                isTimeStamp = false;
+            }
+            if (isTimeStamp) {
+                return sourceTitle.substring(14);
+            }
+            return sourceTitle;
+
         }
+        return sourceTitle;
     }
 }
