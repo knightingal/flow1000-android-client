@@ -45,7 +45,7 @@ class ImgListAdapter constructor(private val context: AlbumContentActivity) :
     @RequiresApi(Build.VERSION_CODES.R)
     override fun getView(position: Int, view: View?, parent: ViewGroup?): View {
 
-        var holder: ViewHolder
+        val holder: ViewHolder
         val convertView: View
         if (view == null) {
             holder = ViewHolder()
