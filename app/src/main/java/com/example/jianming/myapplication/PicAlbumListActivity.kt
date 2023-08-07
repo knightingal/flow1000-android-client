@@ -1,29 +1,23 @@
 package com.example.jianming.myapplication
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.os.Handler
 import android.os.IBinder
-import android.os.Message
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room.databaseBuilder
-import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
-import com.example.jianming.Tasks.DLAlbumTask
 import com.example.jianming.Utils.AppDataBase
 import com.example.jianming.Utils.EnvArgs
 import com.example.jianming.Utils.NetworkUtil
 import com.example.jianming.Utils.TimeUtil
-import com.example.jianming.beans.AlbumInfoBean
 import com.example.jianming.beans.PicAlbumBean
 import com.example.jianming.beans.PicAlbumData
-import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.dao.PicAlbumDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
@@ -34,9 +28,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.nanjing.knightingal.processerlib.RefreshListener
-import org.nanjing.knightingal.processerlib.beans.CounterBean
-import java.io.File
-import java.util.concurrent.atomic.AtomicInteger
 
 class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
@@ -158,6 +149,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private val refreshFrontPage: () -> Unit = {
         picAlbumDataList.clear()
         val picAlbumBeanList = getDataSourceFromJsonFile()
@@ -180,6 +172,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun doRefreshView(position: Int, currCount: Int, max: Int) {
         val viewHolder =
             listView.findViewHolderForAdapterPosition(position) as PicAlbumListAdapter.ViewHolder?
