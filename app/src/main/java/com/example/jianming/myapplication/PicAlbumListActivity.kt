@@ -87,8 +87,6 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     }
 
-    val TYPE_LIST: List<String> = listOf(TAG)
-
     var downLoadService: KtDownloadService? = null
 
 
@@ -186,7 +184,6 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         val viewHolder =
             listView.findViewHolderForAdapterPosition(position) as PicAlbumListAdapter.ViewHolder?
         if (currCount == max) {
-//            downLoadService!!.processingIndex.remove(Integer.valueOf(position))
             picAlbumDataList[position].picAlbumData.exist = 1
             picAlbumDao.update(picAlbumDataList[position].picAlbumData)
             picAlbumListAdapter.notifyDataSetChanged()
@@ -199,37 +196,6 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
                 Log.d(TAG, "current = $currCount max = $max")
             }
         }
-    }
-
-
-    private class RefreshHandler internal constructor(var picAlbumListActivity: PicAlbumListActivity) :
-        Handler() {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            val counterBean = msg.data.getSerializable("data") as CounterBean
-            picAlbumListActivity.refreshListItem(counterBean)
-        }
-    }
-
-    var refreshHandler: Handler = RefreshHandler(this)
-
-
-    private fun refreshListItem(counterBean: CounterBean) {
-        val viewHolder =
-            listView.findViewHolderForAdapterPosition(counterBean.index) as PicAlbumListAdapter.ViewHolder?
-        if (counterBean.curr == counterBean.max) {
-//            downLoadService!!.processingIndex.remove(Integer.valueOf(counterBean.index))
-            picAlbumDataList[counterBean.index].picAlbumData.exist = 1
-            picAlbumDao.update(picAlbumDataList[counterBean.index].picAlbumData)
-            picAlbumListAdapter.notifyDataSetChanged()
-        }
-        if (viewHolder != null) {
-//            viewHolder.downloadProcessBar.percent = counterBean.curr * 100 / counterBean.max
-            viewHolder.downloadProcessBar.setProgressCompat(counterBean.curr, false)
-            viewHolder.downloadProcessBar.max = counterBean.max
-            viewHolder.downloadProcessBar.postInvalidate()
-        }
-        Log.d(TAG, "current = " + counterBean.curr + " max = " + counterBean.max)
     }
 
 
