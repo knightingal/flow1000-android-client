@@ -16,6 +16,7 @@ import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.myapplication.AlbumContentActivity;
 import com.example.jianming.myapplication.PicAlbumListActivity;
 import com.example.jianming.myapplication.R;
+import com.example.jianming.services.Counter;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 
@@ -23,6 +24,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapter.ViewHolder> {
     private final static String TAG = "PicAlbumListAdapter";
@@ -70,16 +72,27 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
             viewHolder.exist = false;
         }
-//        if (((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().contains(viewHolder.getAdapterPosition())) {
-//            Counter counter = ((PicAlbumListActivity)context).getDownLoadService().counterSparseArray.get(viewHolder.getAdapterPosition());
-//            if (counter == null) {
-//                viewHolder.downloadProcessBar.setProgress(0);
-//            } else {
-//                viewHolder.downloadProcessBar.setProgress(counter.getCurr(), true);
-//                viewHolder.downloadProcessBar.setMax(counter.getMax());
-//            }
-//            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
-//        }
+        if (((PicAlbumListActivity) context).getDownLoadService() != null) {
+            if (Objects.requireNonNull(((PicAlbumListActivity) context).getDownLoadService())
+                    .getProcessCounter().containsKey(viewHolder.getAdapterPosition())) {
+                Counter counter = ((PicAlbumListActivity) context).getDownLoadService()
+                        .getProcessCounter().get(viewHolder.getAdapterPosition());
+                if (counter != null) {
+                    viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+                    if (counter.getProcess() == 0 ) {
+                        viewHolder.downloadProcessBar.setIndeterminate(true);
+                    } else {
+                        viewHolder.downloadProcessBar.setIndeterminate(false);
+                        viewHolder.downloadProcessBar.setProgress(counter.getProcess(), true);
+                        viewHolder.downloadProcessBar.setMax(counter.getMax());
+                    }
+                } else {
+                    viewHolder.downloadProcessBar.setVisibility(View.GONE);
+                }
+            } else {
+                viewHolder.downloadProcessBar.setVisibility(View.GONE);
+            }
+        }
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getId();
         viewHolder.position = viewHolder.getAdapterPosition();
 //        viewHolder.deleteBtn.setOnClickListener(v -> {

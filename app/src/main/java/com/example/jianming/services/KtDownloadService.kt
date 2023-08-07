@@ -15,12 +15,9 @@ import com.example.jianming.beans.AlbumInfoBean
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.dao.PicAlbumDao
 import com.example.jianming.dao.PicInfoDao
-import com.example.jianming.listAdapters.PicAlbumListAdapter
 import com.example.jianming.myapplication.getAlbumConfig
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import org.nanjing.knightingal.processerlib.RefreshListener
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
@@ -33,13 +30,16 @@ class KtDownloadService : Service() {
     private lateinit var picAlbumDao : PicAlbumDao
     private lateinit var picInfoDao : PicInfoDao
 
+    val processCounter = hashMapOf<Int, Counter>()
+
+
     private var refreshListener: RefreshListener? = null
 
-    public fun setRefreshListener(refreshListener: RefreshListener) {
+    fun setRefreshListener(refreshListener: RefreshListener) {
         this.refreshListener = refreshListener
     }
 
-    public fun removeRefreshListener() {
+    fun removeRefreshListener() {
         this.refreshListener = null
     }
 
@@ -87,13 +87,13 @@ class KtDownloadService : Service() {
             }
 
             val picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.id)
+            processCounter[position] = Counter(picInfoBeanList.size)
 
             val albumInfoBean = AlbumInfoBean(
                 "${picAlbumBean.id}",
                 picAlbumBean.name,
                 mutableListOf()
             )
-            val processCount = AtomicInteger(0)
             picInfoBeanList.forEach { picInfoBean ->
                 albumInfoBean.pics.add(picInfoBean.name)
                 val picName = picInfoBean.name
@@ -109,7 +109,7 @@ class KtDownloadService : Service() {
                 val file = File(directory, picName)
                 ConcurrencyImageTask.downloadUrl(imgUrl, file, albumConfig.encryped) { bytes ->
 
-                    val currCount = processCount.incrementAndGet()
+                    val currCount = processCounter[position]?.incProcess() as Int
                     val options = BitmapFactory.Options()
                     options.inJustDecodeBounds = true
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
@@ -123,11 +123,6 @@ class KtDownloadService : Service() {
 
                     refreshListener?.doRefreshView(position, currCount, picInfoBeanList.size)
 
-//                    val viewHolder = listView.findViewHolderForAdapterPosition(position) as PicAlbumListAdapter.ViewHolder?
-//                    MainScope().launch() {
-//                        viewHolder?.downloadProcessBar?.setProgressCompat(currCount, true)
-//                        viewHolder?.downloadProcessBar?.max = picInfoBeanList.size
-//                    }
                     if (currCount == picInfoBeanList.size) {
                         try {
                             db.beginTransaction()
@@ -138,11 +133,11 @@ class KtDownloadService : Service() {
                         } finally {
                             db.endTransaction()
                         }
+                        processCounter.remove(position)
                     }
+
                 }
             }
-
-
         }
     }
 
@@ -151,4 +146,14 @@ class KtDownloadService : Service() {
             return this@KtDownloadService
         }
     }
+}
+
+class Counter(val max: Int) {
+    private val process: AtomicInteger = AtomicInteger(0)
+
+    fun incProcess(): Int {
+        return process.incrementAndGet()
+    }
+
+    fun getProcess() = process.get()
 }

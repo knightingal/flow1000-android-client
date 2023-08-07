@@ -20,8 +20,7 @@ import com.google.common.io.Files
 import java.io.File
 import java.io.IOException
 
-class ImgListAdapter constructor(private val context: AlbumContentActivity) :
-    BaseAdapter() {
+class ImgListAdapter constructor(private val context: AlbumContentActivity) : BaseAdapter() {
 
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
 
