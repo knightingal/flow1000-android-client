@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 
-import com.example.jianming.Utils.EnvArgs;
 
 
 
@@ -23,10 +22,6 @@ public class SettingActivity extends AppCompatActivity {
 
 //    @OnClick(R.id.button_done)
     public void doDoneBtn() {
-        String ip = ipEditText.getText().toString();
-        String port = portEditText.getText().toString();
-        EnvArgs.serverIP = ip;
-        EnvArgs.serverPort = port;
         finish();
     }
 
