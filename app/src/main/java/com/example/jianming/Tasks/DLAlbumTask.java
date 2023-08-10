@@ -53,40 +53,9 @@ import kotlin.jvm.functions.Function1;
  * @since v1.0
  */
 
-public class DLAlbumTask extends AbsTask<Long, Void, Integer> {
+public class DLAlbumTask  {
 
-    private final static String TAG = "DLAlbumTask";
-
-    @Override
-    protected Integer doInBackground(Long... params) {
-        Long index = params[0];
-        return null;
-    }
-
-
-    public void setTaskNotifier(TaskNotifier taskNotifier) {
-        this.type = "PicAlbumListActivityMD";
-        this.taskNotifier = taskNotifier;
-    }
-
-    private TaskNotifier taskNotifier;
-
-    private Activity context;
-
-    private final int position;
-    PicAlbumDao picAlbumDao;
-    PicInfoDao picInfoDao;
-    AppDataBase db;
-
-    private List<PicInfoBean> picInfoBeanList = null;
-    public DLAlbumTask(Activity context, int position) {
-        this.position = position;
-        this.context = context;
-        db = Room.databaseBuilder(context,
-                AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
-        picAlbumDao = db.picAlbumDao();
-        picInfoDao = db.picInfoDao();
-    }
+    private static final String TAG = "DLAlbumTask";
 
     public static File getAlbumStorageDir(Context context, String albumName) {
         File file = new File(context.getExternalFilesDir(
@@ -98,33 +67,5 @@ public class DLAlbumTask extends AbsTask<Long, Void, Integer> {
         return file;
     }
 
-    private final AtomicInteger processCount = new AtomicInteger(0);
-
-    void updatePicInfoBean(int index, int width, int height, String path) {
-        picInfoBeanList.get(index).setWidth(width);
-        picInfoBeanList.get(index).setHeight(height);
-        picInfoBeanList.get(index).setAbsolutePath(path);
-        int currCount = processCount.incrementAndGet();
-        if (currCount == picInfoBeanList.size()) {
-            try {
-                db.beginTransaction();
-                for (PicInfoBean picInfoBean : picInfoBeanList) {
-                    picInfoDao.update(picInfoBean);
-                }
-                db.setTransactionSuccessful();
-            } finally {
-                db.endTransaction();
-            }
-        }
-    }
-
-    @Override
-    public int getTaskSize(int index) {
-        if (picInfoBeanList == null) {
-            PicAlbumBean picAlbumBean = picAlbumDao.getByInnerIndex(index);
-            picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.getId());
-        }
-        return picInfoBeanList.size();
-    }
 
 }
