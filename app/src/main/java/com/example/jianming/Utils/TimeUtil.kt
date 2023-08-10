@@ -1,16 +1,15 @@
-package com.example.jianming.Utils;
+package com.example.jianming.Utils
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import android.annotation.SuppressLint
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.GregorianCalendar
 
-public class TimeUtil {
-    public static String getCurrentInFormatyyyyMMddHHmmss() {
-        return new SimpleDateFormat("yyyyMMddHHmmss").format(new GregorianCalendar().getTime());
-    }
+object TimeUtil {
 
-    public static String currentFormatyyyyMMddHHmmss() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-        return df.format(new Date());
+    @SuppressLint("SimpleDateFormat")
+    fun currentTimeFormat(): String {
+        val df = SimpleDateFormat("yyyyMMddHHmmss")
+        return df.format(Date())
     }
 }

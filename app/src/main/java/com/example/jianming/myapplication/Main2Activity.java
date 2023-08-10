@@ -89,12 +89,12 @@ public class Main2Activity extends AppCompatActivity
     }
 
     private void initDB() {
-        UpdateStamp albumStamp = this.db.updataStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN");
+        UpdateStamp albumStamp = this.db.updateStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN");
         if (albumStamp == null) {
             albumStamp = new UpdateStamp();
             albumStamp.setTableName("PIC_ALBUM_BEAN");
             albumStamp.setUpdateStamp("20000101000000");
-            this.db.updataStampDao().save(albumStamp);
+            this.db.updateStampDao().save(albumStamp);
         }
     }
 
@@ -171,7 +171,7 @@ public class Main2Activity extends AppCompatActivity
     private static final int I_CAP_ACTIVITY = 1;
 
     private void clearDB() {
-        this.db.updataStampDao().deleteAll(null);
+        this.db.updateStampDao().deleteAll(null);
         picAlbumBeanDao.deleteAll(null);
         initDB();
     }

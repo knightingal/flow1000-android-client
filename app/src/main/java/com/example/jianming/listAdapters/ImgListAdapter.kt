@@ -12,7 +12,6 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import com.example.jianming.Utils.Decryptor
-import com.example.jianming.Utils.EnvArgs
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.myapplication.AlbumContentActivity
 import com.example.jianming.myapplication.R
@@ -72,23 +71,13 @@ class ImgListAdapter constructor(private val context: AlbumContentActivity) : Ba
 
         try {
             val enCryptedContent = Files.toByteArray(file)
-            if (EnvArgs.isEncrypt) {
-                holder.img!!.setImageBitmap(
-                    BitmapFactory.decodeByteArray(
-                        Decryptor.decrypt(
-                            enCryptedContent
-                        ), 0, enCryptedContent.size
-                    )
+            holder.img!!.setImageBitmap(
+                BitmapFactory.decodeByteArray(
+                    enCryptedContent,
+                    0,
+                    enCryptedContent.size
                 )
-            } else {
-                holder.img!!.setImageBitmap(
-                    BitmapFactory.decodeByteArray(
-                        enCryptedContent,
-                        0,
-                        enCryptedContent.size
-                    )
-                )
-            }
+            )
         } catch (e: IOException) {
             e.printStackTrace()
         }

@@ -1,21 +1,20 @@
-package com.example.jianming.Utils;
+package com.example.jianming.Utils
 
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import com.example.jianming.beans.PicAlbumBean
+import com.example.jianming.beans.PicInfoBean
+import com.example.jianming.beans.UpdateStamp
+import com.example.jianming.dao.PicAlbumDao
+import com.example.jianming.dao.PicInfoDao
+import com.example.jianming.dao.UpdataStampDao
 
-import androidx.room.Database;
-import androidx.room.RoomDatabase;
+@Database(entities = [UpdateStamp::class, PicAlbumBean::class, PicInfoBean::class], version = 2)
+abstract class AppDataBase : RoomDatabase() {
 
-import com.example.jianming.beans.PicAlbumBean;
-import com.example.jianming.beans.PicInfoBean;
-import com.example.jianming.beans.UpdateStamp;
-import com.example.jianming.dao.PicAlbumDao;
-import com.example.jianming.dao.PicInfoDao;
-import com.example.jianming.dao.UpdataStampDao;
+    abstract fun picAlbumDao(): PicAlbumDao
 
-@Database(entities = {UpdateStamp.class, PicAlbumBean.class, PicInfoBean.class}, version = 2)
-public abstract class AppDataBase extends RoomDatabase {
-    public abstract PicAlbumDao picAlbumDao();
+    abstract fun picInfoDao(): PicInfoDao
 
-    public abstract PicInfoDao picInfoDao();
-
-    public abstract UpdataStampDao updataStampDao();
+    abstract fun updateStampDao(): UpdataStampDao
 }

@@ -1,5 +1,7 @@
 package com.example.jianming.services
 
+import SERVER_IP
+import SERVER_PORT
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -11,9 +13,7 @@ import android.util.Log
 import androidx.room.Room
 import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
-import com.example.jianming.Tasks.DLAlbumTask
 import com.example.jianming.Utils.AppDataBase
-import com.example.jianming.Utils.EnvArgs
 import com.example.jianming.beans.AlbumInfoBean
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.dao.PicAlbumDao
@@ -62,7 +62,7 @@ class KtDownloadService : Service() {
     }
 
     fun startDownloadAlbum(index: Long, position: Int) {
-        val url = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}/local1000/picContentAjax?id=$index"
+        val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=$index"
 
         ConcurrencyJsonApiTask.startDownload(url) {body ->
             val picAlbumBean = picAlbumDao.getByInnerIndex(index)
@@ -102,7 +102,7 @@ class KtDownloadService : Service() {
                 val picName = picInfoBean.name
                 val albumConfig = getAlbumConfig(picAlbumBean.album)
 
-                var imgUrl = "http://${EnvArgs.serverIP}:${EnvArgs.serverPort}" +
+                var imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
                         "/linux1000/${albumConfig.baseUrl}/${albumInfoBean.dirName}/${picName}"
 
                 if (albumConfig.encryped) {
