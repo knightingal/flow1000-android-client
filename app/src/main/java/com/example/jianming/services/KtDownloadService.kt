@@ -1,10 +1,13 @@
 package com.example.jianming.services
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Binder
+import android.os.Environment
 import android.os.IBinder
+import android.util.Log
 import androidx.room.Room
 import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
@@ -105,7 +108,7 @@ class KtDownloadService : Service() {
                 if (albumConfig.encryped) {
                     imgUrl += ".bin"
                 }
-                val directory = DLAlbumTask.getAlbumStorageDir(applicationContext, albumInfoBean.dirName)
+                val directory = getAlbumStorageDir(applicationContext, albumInfoBean.dirName)
                 val file = File(directory, picName)
                 ConcurrencyImageTask.downloadUrl(imgUrl, file, albumConfig.encryped) { bytes ->
 
@@ -146,6 +149,17 @@ class KtDownloadService : Service() {
             return this@KtDownloadService
         }
     }
+
+
+}
+
+private fun getAlbumStorageDir(context: Context, albumName: String): File {
+    val externalFilesDirBase = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+    val file = File(externalFilesDirBase, albumName)
+    if (file.mkdirs()) {
+        Log.i("KtDownloadService", "Directory of $file.absolutePath created")
+    }
+    return file
 }
 
 class Counter(val max: Int) {
