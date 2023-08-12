@@ -30,5 +30,16 @@
         android:max="100"
         android:progress="0" />
 
+    <ImageButton
+        android:id="@+id/btn_delete"
+        android:src="@drawable/ic_keyboard_arrow_right_black_48dp"
+        android:layout_gravity="center"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_width="24dp"
+        android:visibility="gone"
+        android:layout_height="24dp"
+        />
+
 
 </RelativeLayout>

@@ -34,7 +34,7 @@ object ConcurrencyImageTask {
             var bytes: ByteArray? = null
             while (true) {
                 try {
-                    bytes = NetworkUtil.getOkHttpClient().newCall(request).execute().body.bytes()
+                    bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
                     val options: BitmapFactory.Options = BitmapFactory.Options()
                     options.inJustDecodeBounds = true
                     if (encrypted) {

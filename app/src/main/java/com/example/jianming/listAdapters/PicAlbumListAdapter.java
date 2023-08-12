@@ -2,17 +2,25 @@ package com.example.jianming.listAdapters;
 
 import android.content.Context;
 import android.content.Intent;
-import androidx.recyclerview.widget.RecyclerView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.jianming.Utils.AppDataBase;
 import com.example.jianming.Utils.FileUtil;
+import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.dao.PicAlbumDao;
+import com.example.jianming.dao.PicInfoDao;
 import com.example.jianming.myapplication.AlbumContentActivity;
 import com.example.jianming.myapplication.PicAlbumListActivity;
 import com.example.jianming.myapplication.R;
@@ -34,11 +42,14 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
     private PicAlbumDao picAlbumDao;
 
+    private PicInfoDao picInfoDao;
+
     public PicAlbumListAdapter(Context context) {
         this.context = context;
-//        AppDataBase db = Room.databaseBuilder(context,
-//                AppDataBase.class, "database-name").allowMainThreadQueries().build();
-//        picAlbumDao = db.picAlbumDao();
+        AppDataBase db = Room.databaseBuilder(context,
+                AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
+        picAlbumDao = db.picAlbumDao();
+        picInfoDao = db.picInfoDao();
     }
 
     public void setDataArray(List<PicAlbumData> dataArray) {
@@ -56,21 +67,30 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         return vh;
     }
 
+    private void renderExistItem(final ViewHolder viewHolder) {
+        viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer));
+        viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer));
+        viewHolder.downloadProcessBar.setVisibility(View.GONE);
+        viewHolder.deleteBtn.setVisibility(View.VISIBLE);
+        viewHolder.exist = true;
+    }
+
+    private void renderNonExistItem(final ViewHolder viewHolder) {
+        viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurfaceVariant));
+        viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_surfaceVariant));
+        viewHolder.deleteBtn.setVisibility(View.GONE);
+        viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+        viewHolder.exist = false;
+    }
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
 
         viewHolder.textView.setText(formatTitle(dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName()));
         if (dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getExist() == 1) {
-            viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer));
-            viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer));
-            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
-            viewHolder.exist = true;
+            renderExistItem(viewHolder);
         } else {
-            viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurfaceVariant));
-            viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_surfaceVariant));
-            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
-            viewHolder.exist = false;
+            renderNonExistItem(viewHolder);
         }
         if (((PicAlbumListActivity) context).getDownLoadService() != null) {
             if (Objects.requireNonNull(((PicAlbumListActivity) context).getDownLoadService())
@@ -95,21 +115,26 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         }
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getId();
         viewHolder.position = viewHolder.getAdapterPosition();
-//        viewHolder.deleteBtn.setOnClickListener(v -> {
-//            Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName() + " delete_btn");
-//            AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
-//            builder.setMessage("delete this dir?");
-//            builder.setTitle("");
-//            builder.setPositiveButton("yes", (dialog, which) -> {
-//                FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
-//                viewHolder.textView.setTextColor(Color.rgb(0, 128, 0));
-//
-//                picAlbumDao.delete(picAlbumDao.getByServerIndex(viewHolder.serverIndex));
-//                dialog.dismiss();
-//            });
-//            builder.setNegativeButton("no", (dialog, which) -> dialog.dismiss());
-//            builder.create().show();
-//        });
+        viewHolder.deleteBtn.setOnClickListener(v -> {
+            Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName() + " delete_btn");
+            AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
+            builder.setMessage("delete this dir?");
+            builder.setTitle("");
+            builder.setPositiveButton("yes", (dialog, which) -> {
+                FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
+                PicAlbumBean picAlbumData = dataArray.get(position).getPicAlbumData();
+
+                picInfoDao.deleteByAlbumInnerIndex(viewHolder.serverIndex);
+                picAlbumData.setExist(0);
+                picAlbumDao.update(picAlbumData);
+
+                dialog.dismiss();
+                notifyDataSetChanged();
+//                renderNonExistItem(viewHolder);
+            });
+            builder.setNegativeButton("no", (dialog, which) -> dialog.dismiss());
+            builder.create().show();
+        });
     }
 
 
@@ -121,6 +146,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private final ImageButton deleteBtn;
         private TextView textView;
 
 
@@ -138,7 +164,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
             super(itemView);
             this.textView = itemView.findViewById(R.id.pic_text_view);
-//            this.deleteBtn = itemView.findViewById(R.id.delete_btn);
+            this.deleteBtn = itemView.findViewById(R.id.btn_delete);
             this.downloadProcessBar = itemView.findViewById(R.id.download_process);
             this.itemView = itemView;
 

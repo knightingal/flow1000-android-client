@@ -21,7 +21,7 @@ object ConcurrencyJsonApiTask {
         return withContext(Dispatchers.IO) {
             var request = Request.Builder().url(url).build()
 
-            var body = NetworkUtil.getOkHttpClient().newCall(request).execute().body.string()
+            var body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
 
             body
         }
