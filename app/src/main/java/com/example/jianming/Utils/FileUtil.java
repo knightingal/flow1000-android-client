@@ -30,11 +30,15 @@ public class FileUtil {
         File file = new File(context.getExternalFilesDir(
                 Environment.DIRECTORY_DOWNLOADS), albumName
         );
-        File[] files = file.listFiles();
-        for (File imgFile : files) {
-            imgFile.delete();
+        try {
+            File[] files = file.listFiles();
+            for (File imgFile : files) {
+                imgFile.delete();
+            }
+            file.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        file.delete();
     }
 
     public static boolean checkDirExist(Context context, String albumName) {
