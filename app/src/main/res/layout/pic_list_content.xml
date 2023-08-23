@@ -26,13 +26,13 @@
         android:layout_gravity="center"
         android:layout_marginEnd="16dp"
         android:indeterminate="false"
-        app:indicatorSize="24dp"
+        app:indicatorSize="16dp"
         android:max="100"
         android:progress="0" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/btn_delete"
-        android:src="@drawable/ic_keyboard_arrow_right_black_48dp"
+        android:src="@drawable/delete"
         android:layout_gravity="center"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="16dp"
