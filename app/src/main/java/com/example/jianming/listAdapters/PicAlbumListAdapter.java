@@ -31,17 +31,18 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapter.ViewHolder> {
     private final static String TAG = "PicAlbumListAdapter";
     private List<PicAlbumData> dataArray;
 
-    private Context context;
+    private final Context context;
 
-    private PicAlbumDao picAlbumDao;
+    private final PicAlbumDao picAlbumDao;
 
-    private PicInfoDao picInfoDao;
+    private final PicInfoDao picInfoDao;
 
     public PicAlbumListAdapter(Context context) {
         this.context = context;
@@ -146,10 +147,9 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final ImageView deleteBtn;
-        private TextView textView;
+        private final TextView textView;
 
-
-        private View itemView;
+        private final View itemView;
 
         public long serverIndex;
 
@@ -175,11 +175,11 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             final String name = this.textView.getText().toString();
             Long serverIndex = this.serverIndex;
 
-//            startProcess(position, 0);
-
             if (this.exist) {
                 Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);
-                Intent intent = new Intent(context, AlbumContentActivity.class);
+
+                Intent intent = new Intent()
+                        .setClassName(context, AlbumContentActivity.class.getName());
                 intent.putExtra("name", name);
                 intent.putExtra("serverIndex", serverIndex);
                 context.startActivity(intent);
@@ -206,7 +206,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
             String timeStamp = sourceTitle.substring(0, 14);
             boolean isTimeStamp = true;
             try {
-                new SimpleDateFormat("yyyyMMddHHmmss").parse(timeStamp);
+                new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINESE).parse(timeStamp);
             } catch (ParseException e) {
                 isTimeStamp = false;
             }

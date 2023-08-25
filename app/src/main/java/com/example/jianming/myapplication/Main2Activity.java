@@ -34,7 +34,7 @@ public class Main2Activity extends AppCompatActivity
 
     public void btnClicked(View v) {
         if (v.getId() == R.id.picIndexBtn) {
-            this.startActivity(new Intent(this, Local1KActivity.class));
+            this.startActivity(new Intent().setClassName(this, Local1KActivity.class.getName()));
         }
 
     }
