@@ -93,30 +93,32 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
     @Override
     public String getImgSrcByIndex(int index, @NonNull YImageSlider yImageSlider) {
         String img = getImgByIndex(index);
-        Log.d(TAG, "getImgSrcByIndex " + index + " " + img);
-        if (img != null) {
-            if (imgArray != null) {
-                return ImageDownloader.Scheme.FILE.wrap(img);
-            } else {
-                return ImageDownloader.Scheme.DRAWABLE.wrap(img);
-            }
-        } else {
-            return null;
-        }
+        return img;
+//        Log.d(TAG, "getImgSrcByIndex " + index + " " + img);
+//        if (img != null) {
+//            if (imgArray != null) {
+//                return ImageDownloader.Scheme.FILE.wrap(img);
+//            } else {
+//                return ImageDownloader.Scheme.DRAWABLE.wrap(img);
+//            }
+//        } else {
+//            return null;
+//        }
     }
 
 
     public String getImgSrcByIndex(int index) {
         String img = getImgByIndex(index);
-        Log.d(TAG, "getImgSrcByIndex " + index + " " + img);
-        if (img != null) {
-            if (imgArray != null) {
-                return ImageDownloader.Scheme.FILE.wrap(img);
-            } else {
-                return ImageDownloader.Scheme.DRAWABLE.wrap(img);
-            }
-        } else {
-            return null;
-        }
+        return img;
+//        Log.d(TAG, "getImgSrcByIndex " + index + " " + img);
+//        if (img != null) {
+//            if (imgArray != null) {
+//                return ImageDownloader.Scheme.FILE.wrap(img);
+//            } else {
+//                return ImageDownloader.Scheme.DRAWABLE.wrap(img);
+//            }
+//        } else {
+//            return null;
+//        }
     }
 }
