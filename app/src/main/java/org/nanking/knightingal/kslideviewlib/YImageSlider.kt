@@ -194,6 +194,7 @@ class YImageSlider : ViewGroup {
 //            ImageLoader.getInstance().displayImage(null, hideLeft)
             hideLeft.isDisplay = (false);
         }
+        requestLayout()
 
     }
 
@@ -223,6 +224,7 @@ class YImageSlider : ViewGroup {
             nextButton.visibility = (View.INVISIBLE)
             hideRight.isDisplay = (false)
         }
+        requestLayout()
     }
 
 

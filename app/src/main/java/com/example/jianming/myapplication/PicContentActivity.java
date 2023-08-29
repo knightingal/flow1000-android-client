@@ -53,15 +53,7 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
     }
 
     private String getImgByIndex(int index) {
-        if (imgArray != null) {
-            if (index >= 0 && index < imgArray.length) {
-                return imgArray[index];
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
+        return imgArray[index % imgArray.length];
     }
 
     int index = 0;
@@ -78,6 +70,7 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
     @NonNull
     @Override
     public String onGetBackImg(@NonNull YImageSlider yImageSlider) {
+        index = (index + imgArray.length) % imgArray.length;
         index--;
         return getImgSrcByIndex(index - 1);
     }
@@ -85,6 +78,7 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
     @NonNull
     @Override
     public String onGetNextImg(@NonNull YImageSlider yImageSlider) {
+        index = index % imgArray.length;
         index++;
         return getImgSrcByIndex(index + 1);
     }
@@ -92,33 +86,11 @@ public class PicContentActivity extends Activity implements YImageSlider.ImgChan
     @NonNull
     @Override
     public String getImgSrcByIndex(int index, @NonNull YImageSlider yImageSlider) {
-        String img = getImgByIndex(index);
-        return img;
-//        Log.d(TAG, "getImgSrcByIndex " + index + " " + img);
-//        if (img != null) {
-//            if (imgArray != null) {
-//                return ImageDownloader.Scheme.FILE.wrap(img);
-//            } else {
-//                return ImageDownloader.Scheme.DRAWABLE.wrap(img);
-//            }
-//        } else {
-//            return null;
-//        }
+        return getImgByIndex((index + imgArray.length) % imgArray.length);
     }
 
 
     public String getImgSrcByIndex(int index) {
-        String img = getImgByIndex(index);
-        return img;
-//        Log.d(TAG, "getImgSrcByIndex " + index + " " + img);
-//        if (img != null) {
-//            if (imgArray != null) {
-//                return ImageDownloader.Scheme.FILE.wrap(img);
-//            } else {
-//                return ImageDownloader.Scheme.DRAWABLE.wrap(img);
-//            }
-//        } else {
-//            return null;
-//        }
+        return getImgByIndex((index + imgArray.length) % imgArray.length);
     }
 }
