@@ -83,37 +83,9 @@ class YImageView(
 
         val contentImageWidth = yImageSlider.contentView.bitmapW
 
-        val left = if (locationIndex == 1)
-            if (yImageSlider.alingLeftOrRight == 0)
-                contentImageWidth + YImageSlider.SPLITE_W
-            else
-                screamW + YImageSlider.SPLITE_W
-        else if (locationIndex == -1)
-            if (yImageSlider.alingLeftOrRight == 0)
-                -bitmapW - YImageSlider.SPLITE_W
-            else
-                -(bitmapW + YImageSlider.SPLITE_W + contentImageWidth - screamW)
-        else
-            if (yImageSlider.alingLeftOrRight == 0)
-                0
-            else
-                -(contentImageWidth - screamW)
+        val left = calLeftPoint(contentImageWidth)
 
-        val right = if (locationIndex == 1)
-            if (yImageSlider.alingLeftOrRight == 0)
-                contentImageWidth + YImageSlider.SPLITE_W + bitmapW
-            else
-                screamW + YImageSlider.SPLITE_W + bitmapW
-        else if (locationIndex == -1)
-            if (yImageSlider.alingLeftOrRight == 0)
-                -YImageSlider.SPLITE_W
-            else
-                -(YImageSlider.SPLITE_W + contentImageWidth - screamW)
-        else
-            if (yImageSlider.alingLeftOrRight == 0)
-                bitmapW
-            else
-                screamW
+        val right = calRightPoint(contentImageWidth)
 
         val top = (screamH - bitmapH) / 2
         originY = top
@@ -124,6 +96,58 @@ class YImageView(
         x = left.toFloat()
         y = top.toFloat()
         return isChanged;
+    }
+
+    private fun calLeftPoint(contentImageWidth: Int): Int {
+        when (locationIndex) {
+            1 -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    contentImageWidth + YImageSlider.SPLITE_W
+                } else {
+                    screamW + YImageSlider.SPLITE_W
+                }
+            }
+            -1 -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    -bitmapW - YImageSlider.SPLITE_W
+                } else {
+                    -(bitmapW + YImageSlider.SPLITE_W + contentImageWidth - screamW)
+                }
+            }
+            else -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    0
+                } else {
+                    -(contentImageWidth - screamW)
+                }
+            }
+        }
+    }
+
+    private fun calRightPoint(contentImageWidth: Int): Int {
+        when (locationIndex) {
+            1 -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    contentImageWidth + YImageSlider.SPLITE_W + bitmapW
+                } else {
+                    screamW + YImageSlider.SPLITE_W + bitmapW
+                }
+            }
+            -1 -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    -YImageSlider.SPLITE_W
+                } else {
+                    -(YImageSlider.SPLITE_W + contentImageWidth - screamW)
+                }
+            }
+            else -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    bitmapW
+                } else {
+                    screamW
+                }
+            }
+        }
     }
 
     override fun onTouchEvent(event:MotionEvent):Boolean {
