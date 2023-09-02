@@ -42,13 +42,15 @@ class YImageView : AppCompatImageView {
 
     var originY:Int = 0
 
+    private val fitAllImageSize: Boolean = true
+
     override fun setFrame(l:Int, t:Int, r:Int, b:Int):Boolean {
         screamH = b - t
         screamW = r - l
         minX = screamW - bitmap_W
         minY = if (screamH - bitmap_H > 0) 0 else screamH - bitmap_H
 
-        if (bitmap_W < screamW) {
+        if (bitmap_W < screamW || fitAllImageSize) {
             val rat = (bitmap_H.toFloat())/(bitmap_W.toFloat())
             bitmap_W = screamW
             bitmap_H = (rat * bitmap_W).toInt()
