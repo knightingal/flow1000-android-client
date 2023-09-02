@@ -66,8 +66,8 @@ class ImgListAdapter constructor(private val context: AlbumContentActivity) : Ba
         lp.width = screamWidth
 
         holder.img!!.layoutParams = lp
-        val file = dataArray[position].absolutePath?.let { File(it) }
 
+        val file = File(dataArray[position].absolutePath as String)
 
         try {
             val enCryptedContent = Files.toByteArray(file)

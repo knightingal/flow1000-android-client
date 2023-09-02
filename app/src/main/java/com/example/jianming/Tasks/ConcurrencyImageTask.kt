@@ -31,7 +31,7 @@ object ConcurrencyImageTask {
         return withContext(Dispatchers.IO) {
             Log.d(TAG, "start download $src")
             val request = Request.Builder().url(src).build()
-            var bytes: ByteArray? = null
+            var bytes: ByteArray?
             while (true) {
                 try {
                     bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
