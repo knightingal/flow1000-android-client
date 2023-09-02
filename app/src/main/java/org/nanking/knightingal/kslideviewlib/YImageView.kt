@@ -72,14 +72,14 @@ class YImageView(
     override fun setFrame(l:Int, t:Int, r:Int, b:Int):Boolean {
         screamH = b - t
         screamW = r - l
-        minX = screamW - bitmapW
-        minY = if (screamH - bitmapH > 0) 0 else screamH - bitmapH
 
         if (bitmapW < screamW || fitAllImageSize) {
             val rat = (bitmapH.toFloat())/(bitmapW.toFloat())
             bitmapW = screamW
             bitmapH = (rat * bitmapW).toInt()
         }
+        minX = screamW - bitmapW
+        minY = if (screamH - bitmapH > 0) 0 else screamH - bitmapH
 
         val contentImageWidth = yImageSlider.contentView.bitmapW
 
