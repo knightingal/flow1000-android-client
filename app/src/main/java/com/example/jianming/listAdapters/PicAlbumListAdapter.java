@@ -20,9 +20,9 @@ import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.dao.PicInfoDao;
-import com.example.jianming.myapplication.AlbumContentActivity;
 import com.example.jianming.myapplication.PicAlbumListActivity;
 import com.example.jianming.myapplication.R;
+import com.example.jianming.myapplication.SectionImageListActivity;
 import com.example.jianming.services.Counter;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
@@ -179,7 +179,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);
 
                 Intent intent = new Intent()
-                        .setClassName(context, AlbumContentActivity.class.getName());
+                        .setClassName(context, SectionImageListActivity.class.getName());
                 intent.putExtra("name", name);
                 intent.putExtra("serverIndex", serverIndex);
                 context.startActivity(intent);
