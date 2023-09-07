@@ -87,7 +87,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             Log.d(TAG, "onServiceConnected")
             isBound = true
-            downLoadService = (binder as KtDownloadService.LocalBinder).getService() as KtDownloadService
+            downLoadService = (binder as KtDownloadService.LocalBinder).getService()
             downLoadService!!.setRefreshListener(
                 this@PicAlbumListActivity
             )
@@ -126,18 +126,12 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     private val downloadCallback: (body: String) -> Unit = {body ->
         val mapper = jacksonObjectMapper()
-        try {
-            db.beginTransaction()
+        db.runInTransaction() {
             val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
             updateStamp.updateStamp = TimeUtil.currentTimeFormat()
             updataStampDao.update(updateStamp)
             val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(body)
             picAlbumBeanList.forEach { picAlbumDao.insert(it) }
-            db.setTransactionSuccessful()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            db.endTransaction()
         }
 
         refreshFrontPage.invoke()

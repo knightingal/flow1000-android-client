@@ -36,9 +36,9 @@ class YImageSlider : ViewGroup {
 
 
     private fun init(context:Context) {
-        contentView = YImageView(context, this, 0, 0)
-        hideLeft = YImageView(context, this, -1, 1)
-        hideRight = YImageView(context, this, 1, 2)
+        contentView = YImageView(context, this, 0, )
+        hideLeft = YImageView(context, this, -1, )
+        hideRight = YImageView(context, this, 1, )
 
         contentView.postGetBackImg = this::onGetBackImg
         hideLeft.postGetBackImg = this::onGetBackImg

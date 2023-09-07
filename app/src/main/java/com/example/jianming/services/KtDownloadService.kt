@@ -67,10 +67,8 @@ class KtDownloadService : Service() {
         ConcurrencyJsonApiTask.startDownload(url) {body ->
             val picAlbumBean = picAlbumDao.getByInnerIndex(index)
             val mapper = jacksonObjectMapper()
-            try {
-                val albumInfoBean: AlbumInfoBean = mapper.readValue(body)
-                db.beginTransaction()
-                albumInfoBean.pics.forEach { pic ->
+            db.runInTransaction() {
+                (mapper.readValue(body) as AlbumInfoBean).pics.forEach { pic ->
                     val picInfoBean: PicInfoBean = PicInfoBean(
                         null,
                         pic,
@@ -80,13 +78,7 @@ class KtDownloadService : Service() {
                         0
                     )
                     picInfoDao.insert(picInfoBean)
-
                 }
-                db.setTransactionSuccessful()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                db.endTransaction()
             }
 
             val picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.id)
@@ -127,14 +119,10 @@ class KtDownloadService : Service() {
                     refreshListener?.doRefreshView(position, currCount, picInfoBeanList.size)
 
                     if (currCount == picInfoBeanList.size) {
-                        try {
-                            db.beginTransaction()
+                        db.runInTransaction() {
                             for (pic in picInfoBeanList) {
                                 picInfoDao.update(pic)
                             }
-                            db.setTransactionSuccessful()
-                        } finally {
-                            db.endTransaction()
                         }
                         processCounter.remove(position)
                     }

@@ -6,10 +6,9 @@ import okhttp3.OkHttpClient
 
 object NetworkUtil {
     fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connectivityManager.activeNetworkInfo
-        return networkInfo != null && networkInfo.isConnected
+        val connectivityManager = context.getSystemService(ConnectivityManager::class.java)
+        val currentNetWork = connectivityManager.activeNetwork
+        return currentNetWork != null
     }
 
     val okHttpClient = OkHttpClient()

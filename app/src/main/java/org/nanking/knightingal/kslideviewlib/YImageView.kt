@@ -23,7 +23,6 @@ class YImageView(
     context: Context,
     private val yImageSlider: YImageSlider,
     var locationIndex: Int,
-    id: Int
 ) : AppCompatImageView(context) {
     companion object {
         private const val TAG = "YImageView"
