@@ -25,7 +25,7 @@ import org.nanjing.knightingal.processerlib.RefreshListener
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
-class KtDownloadService : Service() {
+class DownloadService : Service() {
 
     private val binder: IBinder = LocalBinder();
 
@@ -133,8 +133,8 @@ class KtDownloadService : Service() {
     }
 
     inner class LocalBinder : Binder() {
-        fun getService(): KtDownloadService {
-            return this@KtDownloadService
+        fun getService(): DownloadService {
+            return this@DownloadService
         }
     }
 

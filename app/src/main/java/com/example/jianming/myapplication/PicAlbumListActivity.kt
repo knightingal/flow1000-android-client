@@ -23,7 +23,7 @@ import com.example.jianming.dao.PicAlbumDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicAlbumListAdapter
-import com.example.jianming.services.KtDownloadService
+import com.example.jianming.services.DownloadService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.MainScope
@@ -79,7 +79,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     }
 
-    var downLoadService: KtDownloadService? = null
+    var downLoadService: DownloadService? = null
 
 
     var isBound = false
@@ -87,7 +87,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             Log.d(TAG, "onServiceConnected")
             isBound = true
-            downLoadService = (binder as KtDownloadService.LocalBinder).getService()
+            downLoadService = (binder as DownloadService.LocalBinder).getService()
             downLoadService!!.setRefreshListener(
                 this@PicAlbumListActivity
             )
@@ -114,7 +114,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     override fun onStart() {
         super.onStart()
-        bindService(Intent(this, KtDownloadService::class.java), conn, BIND_AUTO_CREATE)
+        bindService(Intent(this, DownloadService::class.java), conn, BIND_AUTO_CREATE)
     }
 
     private fun startDownloadWebPage() {
