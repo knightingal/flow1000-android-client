@@ -2,18 +2,15 @@ package com.example.jianming.Tasks
 
 import android.graphics.BitmapFactory
 import android.util.Log
-import com.example.jianming.Utils.Decryptor
-import com.example.jianming.Utils.NetworkUtil
-import com.example.jianming.beans.PicInfoBean
+import com.example.jianming.util.Decryptor
+import com.example.jianming.util.NetworkUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
-import java.io.FileWriter
 import java.io.IOException
 
 object ConcurrencyImageTask {

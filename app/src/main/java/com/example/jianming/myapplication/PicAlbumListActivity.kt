@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room.databaseBuilder
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
-import com.example.jianming.Utils.AppDataBase
-import com.example.jianming.Utils.NetworkUtil
-import com.example.jianming.Utils.TimeUtil
+import com.example.jianming.util.AppDataBase
+import com.example.jianming.util.NetworkUtil
+import com.example.jianming.util.TimeUtil
 import com.example.jianming.beans.PicAlbumBean
 import com.example.jianming.beans.PicAlbumData
 import com.example.jianming.dao.PicAlbumDao

@@ -2,7 +2,7 @@ package com.example.jianming.myapplication;
 
 import android.app.Application;
 
-import com.example.jianming.Utils.CrashHandler;
+import com.example.jianming.util.CrashHandler;
 
 
 public class App extends Application {

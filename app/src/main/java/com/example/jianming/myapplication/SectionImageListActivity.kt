@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import com.example.jianming.Utils.AppDataBase
+import com.example.jianming.util.AppDataBase
 import com.example.jianming.listAdapters.RecImgListAdapter
 
 class SectionImageListActivity : AppCompatActivity(){

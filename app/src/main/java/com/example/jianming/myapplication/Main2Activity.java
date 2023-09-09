@@ -3,7 +3,7 @@ package com.example.jianming.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.jianming.Utils.AppDataBase;
+import com.example.jianming.util.AppDataBase;
 import com.example.jianming.dao.PicAlbumDao;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;

@@ -13,7 +13,7 @@ import android.util.Log
 import androidx.room.Room
 import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
-import com.example.jianming.Utils.AppDataBase
+import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.AlbumInfoBean
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.dao.PicAlbumDao

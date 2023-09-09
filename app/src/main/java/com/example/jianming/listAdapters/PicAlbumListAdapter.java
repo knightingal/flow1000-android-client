@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jianming.Utils.AppDataBase;
-import com.example.jianming.Utils.FileUtil;
+import com.example.jianming.util.AppDataBase;
+import com.example.jianming.util.FileUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicAlbumData;
 import com.example.jianming.dao.PicAlbumDao;
