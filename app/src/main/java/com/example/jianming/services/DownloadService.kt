@@ -125,6 +125,9 @@ class DownloadService : Service() {
                             }
                         }
                         processCounter.remove(index)
+                        val completeUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                                "/local1000/completeSection?id=" + index
+                        ConcurrencyJsonApiTask.startPost(completeUrl, "") {}
                     }
 
                 }
