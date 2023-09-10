@@ -137,11 +137,31 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
             val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
             ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
                 val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(pendingBody)
-                picAlbumBeanList.forEach{
-                    picAlbumDao.update(it)
-                    asyncStartDownload(it.id, picAlbumDataList.indexOf(picAlbumDataList.stream().filter{item ->
-                        item.picAlbumBean.id == it.id
-                    }.findFirst().get()));
+                if (picAlbumBeanList.isNotEmpty()) {
+                    picAlbumBeanList.forEach {
+                        picAlbumDao.update(it)
+                        asyncStartDownload(it.id, picAlbumDataList.indexOf(picAlbumDataList.stream().filter { item ->
+                            item.picAlbumBean.id == it.id
+                        }.findFirst().get()));
+                    }
+                }
+            }
+            val localUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
+            ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
+                val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(pendingBody)
+                if (picAlbumBeanList.isNotEmpty()) {
+                    picAlbumBeanList.forEach {
+                        val existAlbum = picAlbumDao.getByInnerIndex(it.id)
+                        if (existAlbum.exist != 1) {
+                            picAlbumDao.update(it)
+                            asyncStartDownload(
+                                it.id,
+                                picAlbumDataList.indexOf(picAlbumDataList.stream().filter { item ->
+                                    item.picAlbumBean.id == it.id
+                                }.findFirst().get())
+                            );
+                        }
+                    }
                 }
             }
         }
