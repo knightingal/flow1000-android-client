@@ -9,6 +9,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -92,7 +93,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
                 this@PicAlbumListActivity
             )
             if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this@PicAlbumListActivity)) {
-                startDownloadWebPage()
+                startDownloadPicIndex()
             } else {
                 refreshFrontPage.invoke()
             }
@@ -117,32 +118,35 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         bindService(Intent(this, DownloadService::class.java), conn, BIND_AUTO_CREATE)
     }
 
-    private fun startDownloadWebPage() {
+    private fun startDownloadPicIndex() {
         val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
-        ConcurrencyJsonApiTask.startDownload(stringUrl, downloadCallback)
+        ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
+            val mapper = jacksonObjectMapper()
+            db.runInTransaction() {
+                val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
+                updateStamp.updateStamp = TimeUtil.currentTimeFormat()
+                updataStampDao.update(updateStamp)
+                val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(allBody)
+                picAlbumBeanList.forEach { picAlbumDao.insert(it) }
+            }
+
+            refreshFrontPage.invoke()
+
+            val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
+            ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
+                val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(pendingBody)
+                picAlbumBeanList.forEach{
+                    picAlbumDao.update(it)
+                    asyncStartDownload(it.id, picAlbumDataList.indexOf(picAlbumDataList.stream().filter{item ->
+                        item.picAlbumBean.id == it.id
+                    }.findFirst().get()));
+                }
+            }
+        }
     }
 
-    private val downloadCallback: (body: String) -> Unit = {body ->
-        val mapper = jacksonObjectMapper()
-        db.runInTransaction() {
-            val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
-            updateStamp.updateStamp = TimeUtil.currentTimeFormat()
-            updataStampDao.update(updateStamp)
-            val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(body)
-            picAlbumBeanList.forEach { picAlbumDao.insert(it) }
-        }
-
-        refreshFrontPage.invoke()
-
-        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
-        ConcurrencyJsonApiTask.startDownload(stringUrl) { it ->
-            val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(it)
-            picAlbumBeanList.forEach{picAlbumDao.update(it)}
-        }
-
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     private val refreshFrontPage: () -> Unit = {
@@ -172,12 +176,13 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         val viewHolder =
             listView.findViewHolderForAdapterPosition(position) as PicAlbumListAdapter.ViewHolder?
         if (currCount == max) {
-            picAlbumDataList[position].picAlbumData.exist = 1
-            picAlbumDao.update(picAlbumDataList[position].picAlbumData)
+            picAlbumDataList[position].picAlbumBean.exist = 1
+            picAlbumDao.update(picAlbumDataList[position].picAlbumBean)
             picAlbumListAdapter.notifyDataSetChanged()
         }
         if (viewHolder != null) {
             MainScope().launch {
+                viewHolder.downloadProcessBar.visibility = View.VISIBLE
                 viewHolder.downloadProcessBar.isIndeterminate = false
                 viewHolder.downloadProcessBar.setProgressCompat(currCount, false)
                 viewHolder.downloadProcessBar.max = max

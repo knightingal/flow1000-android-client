@@ -33,7 +33,7 @@ class DownloadService : Service() {
     private lateinit var picAlbumDao : PicAlbumDao
     private lateinit var picInfoDao : PicInfoDao
 
-    val processCounter = hashMapOf<Int, Counter>()
+    val processCounter = hashMapOf<Long, Counter>()
 
 
     private var refreshListener: RefreshListener? = null
@@ -82,7 +82,7 @@ class DownloadService : Service() {
             }
 
             val picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.id)
-            processCounter[position] = Counter(picInfoBeanList.size)
+            processCounter[index] = Counter(picInfoBeanList.size)
 
             val albumInfoBean = AlbumInfoBean(
                 "${picAlbumBean.id}",
@@ -104,7 +104,7 @@ class DownloadService : Service() {
                 val file = File(directory, picName)
                 ConcurrencyImageTask.downloadUrl(imgUrl, file, albumConfig.encryped) { bytes ->
 
-                    val currCount = processCounter[position]?.incProcess() as Int
+                    val currCount = processCounter[index]?.incProcess() as Int
                     val options = BitmapFactory.Options()
                     options.inJustDecodeBounds = true
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
@@ -124,7 +124,7 @@ class DownloadService : Service() {
                                 picInfoDao.update(pic)
                             }
                         }
-                        processCounter.remove(position)
+                        processCounter.remove(index)
                     }
 
                 }
@@ -150,7 +150,7 @@ private fun getAlbumStorageDir(context: Context, albumName: String): File {
     return file
 }
 
-class Counter(val max: Int) {
+class Counter(val max: Int, ) {
     private val process: AtomicInteger = AtomicInteger(0)
 
     fun incProcess(): Int {

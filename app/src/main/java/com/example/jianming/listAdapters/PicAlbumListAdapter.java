@@ -85,18 +85,20 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
+        dataArray.get(position).setPosition(position);
 
-        viewHolder.textView.setText(formatTitle(dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName()));
-        if (dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getExist() == 1) {
+        viewHolder.textView.setText(formatTitle(dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getName()));
+        if (dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getExist() == 1) {
             renderExistItem(viewHolder);
         } else {
             renderNonExistItem(viewHolder);
         }
         if (((PicAlbumListActivity) context).getDownLoadService() != null) {
+            long albumId = dataArray.get(position).getPicAlbumBean().getId();
             if (Objects.requireNonNull(((PicAlbumListActivity) context).getDownLoadService())
-                    .getProcessCounter().containsKey(viewHolder.getAdapterPosition())) {
+                    .getProcessCounter().containsKey(albumId)) {
                 Counter counter = ((PicAlbumListActivity) context).getDownLoadService()
-                        .getProcessCounter().get(viewHolder.getAdapterPosition());
+                        .getProcessCounter().get(albumId);
                 if (counter != null) {
                     viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
                     if (counter.getProcess() == 0 ) {
@@ -113,16 +115,16 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 viewHolder.downloadProcessBar.setVisibility(View.GONE);
             }
         }
-        viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getId();
+        viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getId();
         viewHolder.position = viewHolder.getAdapterPosition();
         viewHolder.deleteBtn.setOnClickListener(v -> {
-            Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName() + " delete_btn");
+            Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getName() + " delete_btn");
             AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
             builder.setMessage("delete this dir?");
             builder.setTitle("");
             builder.setPositiveButton("yes", (dialog, which) -> {
-                FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumData().getName());
-                PicAlbumBean picAlbumData = dataArray.get(position).getPicAlbumData();
+                FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getName());
+                PicAlbumBean picAlbumData = dataArray.get(position).getPicAlbumBean();
 
                 picInfoDao.deleteByAlbumInnerIndex(viewHolder.serverIndex);
                 picAlbumData.setExist(0);
@@ -192,10 +194,10 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 if (file.mkdirs()) {
                     Log.i(TAG, file.getAbsolutePath() + " made");
                 }
-                Long innerIndex = dataArray.get(position)
-                        .getPicAlbumData()
+                long innerIndex = dataArray.get(position)
+                        .getPicAlbumBean()
                         .getId();
-                ((PicAlbumListActivity) context).asyncStartDownload(innerIndex.intValue(), position);
+                ((PicAlbumListActivity) context).asyncStartDownload((int) innerIndex, position);
             }
         }
 
