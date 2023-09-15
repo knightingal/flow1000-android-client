@@ -40,8 +40,8 @@ android {
         applicationId = "com.example.flow1000client"
         minSdk = 29
         targetSdk = 33
-        versionCode = 8
-        versionName = "8.0"
+        versionCode = 9
+        versionName = "9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
