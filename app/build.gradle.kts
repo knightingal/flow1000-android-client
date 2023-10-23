@@ -1,10 +1,42 @@
 import com.android.build.api.dsl.ViewBinding
-import java.util.Properties
+import com.android.build.gradle.internal.api.ApkVariantOutputImpl
+import java.io.BufferedReader
 import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+}
+
+
+fun releaseTime(): String = SimpleDateFormat("yyMMdd").format(Date())
+
+fun versionCode(): Int = SimpleDateFormat("yyMMdd0HH").format(Date()).toInt()
+
+fun commitNum(): String {
+    val resultArray = "git describe --always".execute().text().trim().split("-")
+    return resultArray[resultArray.size - 1]
+}
+
+fun String.execute(): Process {
+    val runtime = Runtime.getRuntime()
+    return runtime.exec(this)
+}
+
+fun Process.text(): String {
+    val inputStream = this.inputStream
+    val insReader = InputStreamReader(inputStream)
+    val bufReader = BufferedReader(insReader)
+    var output = ""
+    var line: String? = ""
+    line = bufReader.readLine()
+    output += line
+    return output
 }
 
 var keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -40,8 +72,8 @@ android {
         applicationId = "com.example.flow1000client"
         minSdk = 29
         targetSdk = 33
-        versionCode = 9
-        versionName = "9.0"
+        versionCode = versionCode()
+        versionName = "${releaseTime()}-${commitNum()}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,6 +92,17 @@ android {
             )
         }
     }
+
+
+    applicationVariants.forEach { variant ->
+        variant.outputs.forEach {
+            println("=============name====================")
+            println(it.outputFile.name + "\n")
+            (it as ApkVariantOutputImpl).outputFileName = "${defaultConfig.applicationId}_${variant.name}_${variant.versionName}.apk"
+        }
+    }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -75,6 +118,8 @@ android {
 
 
 }
+
+
 
 dependencies {
 
