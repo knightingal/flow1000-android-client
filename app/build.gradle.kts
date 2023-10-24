@@ -33,7 +33,7 @@ fun Process.text(): String {
     val insReader = InputStreamReader(inputStream)
     val bufReader = BufferedReader(insReader)
     var output = ""
-    var line: String? = ""
+    var line: String = ""
     line = bufReader.readLine()
     output += line
     return output
@@ -66,12 +66,12 @@ android {
         }
     }
     namespace = "com.example.jianming.myapplication"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.flow1000client"
         minSdk = 29
-        targetSdk = 33
+        targetSdk = 34
         versionCode = versionCode()
         versionName = "${releaseTime()}-${commitNum()}"
 
