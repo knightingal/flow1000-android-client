@@ -94,15 +94,6 @@ android {
     }
 
 
-    applicationVariants.forEach { variant ->
-        variant.outputs.forEach {
-            println("=============name====================")
-            println(it.outputFile.name + "\n")
-            (it as ApkVariantOutputImpl).outputFileName = "${defaultConfig.applicationId}_${variant.name}_${variant.versionName}.apk"
-        }
-    }
-
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
