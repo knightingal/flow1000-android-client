@@ -1,11 +1,15 @@
 import com.android.build.api.dsl.ViewBinding
-import com.android.build.gradle.internal.api.ApkVariantOutputImpl
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Properties
+import okhttp3.OkHttpClient
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 
 plugins {
     id("com.android.application")
@@ -13,6 +17,12 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+buildscript {
+    dependencies{
+
+        classpath("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
+    }
+}
 
 fun releaseTime(): String = SimpleDateFormat("yyMMdd").format(Date())
 
@@ -108,6 +118,33 @@ android {
     viewBinding (viewBindingFun)
 
 
+}
+
+
+task("releaseUpload") {
+    dependsOn("assembleRelease")
+    doLast {
+        println("do releaseUpload")
+        val target = "${project.buildDir}/outputs/apk/release/app-release.apk"
+        println(target)
+        val client:OkHttpClient = OkHttpClient().newBuilder().build();
+        val mediaType = "text/plain".toMediaTypeOrNull()
+        val body = MultipartBody.Builder().setType(MultipartBody.FORM)
+            .addFormDataPart("file", target,
+                File(target).asRequestBody("application/octet-stream".toMediaTypeOrNull())
+            )
+            .build()
+        val request = Request.Builder()
+            .url("http://localhost:8001/apkConfig/upload")
+            .method("POST", body)
+            .build()
+        val response = client.newCall(request).execute()
+        println("${response.code.toString()}  ${response.body.string()}")
+
+
+
+
+    }
 }
 
 
