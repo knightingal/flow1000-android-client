@@ -135,7 +135,7 @@ task("releaseUpload") {
             )
             .build()
         val request = Request.Builder()
-            .url("http://localhost:8001/apkConfig/upload")
+            .url("http://localhost:8000/apkConfig/upload")
             .method("POST", body)
             .build()
         val response = client.newCall(request).execute()
