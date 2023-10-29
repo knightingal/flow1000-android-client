@@ -128,7 +128,6 @@ task("releaseUpload") {
         val target = "${project.buildDir}/outputs/apk/release/app-release.apk"
         println(target)
         val client:OkHttpClient = OkHttpClient().newBuilder().build();
-        val mediaType = "text/plain".toMediaTypeOrNull()
         val body = MultipartBody.Builder().setType(MultipartBody.FORM)
             .addFormDataPart("file", target,
                 File(target).asRequestBody("application/octet-stream".toMediaTypeOrNull())
@@ -140,10 +139,6 @@ task("releaseUpload") {
             .build()
         val response = client.newCall(request).execute()
         println("${response.code.toString()}  ${response.body.string()}")
-
-
-
-
     }
 }
 
