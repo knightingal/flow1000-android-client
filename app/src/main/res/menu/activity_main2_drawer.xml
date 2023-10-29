@@ -10,6 +10,8 @@
             android:title="Set Timestamp" />
         <item android:id="@+id/QR_code" android:icon="@android:drawable/ic_menu_manage"
             android:title="QR Code" />
+        <item android:id="@+id/about" android:icon="@android:drawable/ic_menu_manage"
+                android:title="About" />
     </group>
 
     <!--<item android:title="Communicate">-->

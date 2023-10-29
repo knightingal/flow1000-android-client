@@ -160,6 +160,8 @@ public class Main2Activity extends AppCompatActivity
             //QrcodeActivity
 //            startActivity(new Intent(this, CapActivity.class));
 //            startActivityForResult(new Intent(this, CapActivity.class), I_CAP_ACTIVITY);
+        } else if (id == R.id.about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
 
