@@ -46,15 +46,4 @@
         android:layout_centerHorizontal="true"
         />
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/download_process1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="center"
-        android:layout_marginEnd="16dp"
-        android:indeterminate="false"
-        app:indicatorSize="24dp"
-        android:max="100"
-        android:progress="0" />
 </RelativeLayout>

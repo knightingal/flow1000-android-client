@@ -11,7 +11,6 @@ class AboutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
-        val progressIndicator = findViewById<CircularProgressIndicator>(R.id.download_process1)
         val versionCodeText = findViewById<TextView>(R.id.version_code)
         val versionNameText = findViewById<TextView>(R.id.version_name)
         val imageView = findViewById<ImageView>(R.id.image_view_logo)
