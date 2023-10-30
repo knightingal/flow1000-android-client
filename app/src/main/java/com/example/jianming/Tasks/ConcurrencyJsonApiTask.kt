@@ -35,7 +35,7 @@ object ConcurrencyJsonApiTask {
             body
         }
     }
-    private suspend fun makeRequest(url: String): String {
+    suspend fun makeRequest(url: String): String {
         return withContext(Dispatchers.IO) {
             var request = Request.Builder().url(url).build()
 
