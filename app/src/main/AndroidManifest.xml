@@ -60,15 +60,17 @@
             android:name=".PicAlbumListActivity"
             android:label="@string/title_activity_pic_album_list_activity_md" />
         
+
         <provider
-                android:authorities="com.example.flow1000client.fileprovider"
                 android:name="androidx.core.content.FileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
+                android:authorities="com.example.flow1000client.fileprovider"
+                android:grantUriPermissions="true"
+                android:exported="false">
             <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/file_paths" />
         </provider>
+
 
 
 

@@ -32,9 +32,7 @@ object ConcurrencyApkTask {
             while (true) {
                 try {
                     bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
-                    val options: BitmapFactory.Options = BitmapFactory.Options()
-                    options.inJustDecodeBounds = true
-                    val fileOutputStream = FileOutputStream(dest, true)
+                    val fileOutputStream = FileOutputStream(dest, false)
                     fileOutputStream.write(bytes)
                     fileOutputStream.close()
                     break

@@ -53,9 +53,10 @@ class AboutActivity : AppCompatActivity() {
                 Log.d("about", apkConfig.toString())
                 if (apkConfig.versionCode > versionCode) {
                     Toast.makeText(this@AboutActivity, "you have newer apk", Toast.LENGTH_LONG).show()
-                    val directory = File(this@AboutActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "apk")
+                    //val directory = this@AboutActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+                    val directory = this@AboutActivity.getExternalFilesDir(null)
                     apkFile = File(directory, apkConfig.apkName)
-                    directory.mkdirs()
+//                    directory.mkdirs()
                     ConcurrencyApkTask.makeRequest(apkConfig.downloadUrl, apkFile)
 
                     val intent = Intent(
@@ -63,6 +64,7 @@ class AboutActivity : AppCompatActivity() {
                             "package:$packageName"
                         )
                     )
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     startActivityForResult(intent, 1)
                 } else {
                     Toast.makeText(this@AboutActivity, "you are in newest apk", Toast.LENGTH_LONG).show()
@@ -75,22 +77,21 @@ class AboutActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == 0) {
             if (requestCode == 1) {
                 openAPKFile()
             }
-        }
     }
 
     private fun openAPKFile() {
         val mimeDefault = "application/vnd.android.package-archive"
+        Log.d("file", "file path: ${apkFile.toString()}")
         try {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             //兼容7.0
             val contentUri = FileProvider.getUriForFile(
-                this,
-                packageName + ".fileprovider", apkFile
+                this@AboutActivity,
+                "com.example.flow1000client.fileprovider", apkFile
             )
             intent.setDataAndType(contentUri, mimeDefault)
                 //如果APK安装界面存在，携带请求码跳转。使用forResult是为了处理用户 取消 安装的事件。外面这层判断理论上来说可以不要，但是由于国内的定制，这个加上还是比较保险的
