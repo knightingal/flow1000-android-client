@@ -88,14 +88,13 @@ class AboutActivity : AppCompatActivity() {
         try {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            //兼容7.0
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             val contentUri = FileProvider.getUriForFile(
                 this@AboutActivity,
                 "com.example.flow1000client.fileprovider", apkFile
             )
             intent.setDataAndType(contentUri, mimeDefault)
-                //如果APK安装界面存在，携带请求码跳转。使用forResult是为了处理用户 取消 安装的事件。外面这层判断理论上来说可以不要，但是由于国内的定制，这个加上还是比较保险的
-            startActivityForResult(intent, 2)
+            startActivity(intent)
         } catch (e: Throwable) {
             e.printStackTrace()
         }
