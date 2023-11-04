@@ -46,19 +46,16 @@ class AboutActivity : AppCompatActivity() {
 
         launcher = registerForActivityResult(
             object: ActivityResultContract<Intent, Boolean>() {
-                override fun createIntent(context: Context, input: Intent): Intent {
-                    return input
-                }
-
-                override fun parseResult(resultCode: Int, intent: Intent?): Boolean {
-                    return resultCode == RESULT_OK
-                }
+                override fun createIntent(context: Context, input: Intent) = input
+                override fun parseResult(resultCode: Int, intent: Intent?) = resultCode == RESULT_OK
             }
         ) {
-            if (it) {
-                openAPKFile()
-            } else {
-                Toast.makeText(this@AboutActivity, "you did not grant the permission", Toast.LENGTH_LONG).show()
+            when (it) {
+                true -> openAPKFile()
+                else -> Toast.makeText(this@AboutActivity,
+                        "you did not grant the permission",
+                        Toast.LENGTH_LONG)
+                        .show()
             }
         }
 

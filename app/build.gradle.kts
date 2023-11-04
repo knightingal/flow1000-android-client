@@ -26,8 +26,8 @@ buildscript {
 
 fun releaseTime(): String = SimpleDateFormat("yyMMdd").format(Date())
 
-//fun versionCode(): Int = SimpleDateFormat("yyMMdd0HH").format(Date()).toInt()
-fun versionCode(): Int = 10
+fun versionCode(): Int = SimpleDateFormat("yyMMdd0HH").format(Date()).toInt()
+//fun versionCode(): Int = 10
 
 fun commitNum(): String {
     val resultArray = "git describe --always".execute().text().trim().split("-")
