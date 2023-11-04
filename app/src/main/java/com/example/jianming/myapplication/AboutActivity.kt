@@ -2,6 +2,7 @@ package com.example.jianming.myapplication
 
 import SERVER_IP
 import SERVER_PORT
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,6 +13,9 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.example.jianming.Tasks.ConcurrencyApkTask
@@ -27,6 +31,10 @@ import java.io.File
 class AboutActivity : AppCompatActivity() {
 
     private var versionCode: Long = 0
+
+    private lateinit var launcher: ActivityResultLauncher<Intent>
+
+    private lateinit var apkFile: File
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
@@ -34,6 +42,28 @@ class AboutActivity : AppCompatActivity() {
         val versionNameText = findViewById<TextView>(R.id.version_name)
         val imageView = findViewById<ImageView>(R.id.image_view_logo)
         val packageManager = packageManager
+
+
+        launcher = registerForActivityResult(
+            object: ActivityResultContract<Intent, Boolean>() {
+                override fun createIntent(context: Context, input: Intent): Intent {
+                    return input
+                }
+
+                override fun parseResult(resultCode: Int, intent: Intent?): Boolean {
+                    return resultCode == RESULT_OK
+                }
+            }
+        ) {
+            if (it) {
+                openAPKFile()
+            } else {
+                Toast.makeText(this@AboutActivity, "you did not grant the permission", Toast.LENGTH_LONG).show()
+            }
+        }
+
+
+
         try {
             val packageInfo = packageManager.getPackageInfo(packageName, 0)
             val versionName = packageInfo.versionName
@@ -58,13 +88,17 @@ class AboutActivity : AppCompatActivity() {
                     directory.mkdirs()
                     ConcurrencyApkTask.makeRequest(apkConfig.downloadUrl, apkFile)
 
-                    val intent = Intent(
-                        Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse(
-                            "package:$packageName"
+                    if (getPackageManager().canRequestPackageInstalls()) {
+                        openAPKFile()
+                    } else {
+                        val intent = Intent(
+                            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse(
+                                "package:$packageName"
+                            )
                         )
-                    )
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    startActivityForResult(intent, 1)
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        launcher.launch(intent)
+                    }
                 } else {
                     Toast.makeText(this@AboutActivity, "you are in newest apk", Toast.LENGTH_LONG).show()
                 }
@@ -72,14 +106,7 @@ class AboutActivity : AppCompatActivity() {
         }
     }
 
-    lateinit var apkFile: File
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1) {
-            openAPKFile()
-        }
-    }
 
     private fun openAPKFile() {
         val mimeDefault = "application/vnd.android.package-archive"
