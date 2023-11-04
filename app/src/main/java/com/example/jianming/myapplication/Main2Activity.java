@@ -150,7 +150,6 @@ public class Main2Activity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.settings) {
-            startActivity(new Intent(this, SettingActivity.class));
         } else if (id == R.id.clear_database) {
             clearDB();
             Toast.makeText(this, "DB cleared", Toast.LENGTH_SHORT).show();

@@ -32,9 +32,6 @@
             android:name=".Local1KActivity"
             android:label="@string/title_activity_file_training" />
         <activity
-            android:name=".SettingActivity"
-            android:label="@string/title_activity_setting" />
-        <activity
             android:name=".AboutActivity"
             android:exported="true"
             android:label="@string/title_activity_setting" >
