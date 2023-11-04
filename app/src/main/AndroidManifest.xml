@@ -63,7 +63,7 @@
 
         <provider
                 android:name="androidx.core.content.FileProvider"
-                android:authorities="com.example.flow1000client.fileprovider"
+                android:authorities="com.example.flow1000client.file_provider"
                 android:grantUriPermissions="true"
                 android:exported="false">
             <meta-data

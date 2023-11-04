@@ -53,10 +53,9 @@ class AboutActivity : AppCompatActivity() {
                 Log.d("about", apkConfig.toString())
                 if (apkConfig.versionCode > versionCode) {
                     Toast.makeText(this@AboutActivity, "you have newer apk", Toast.LENGTH_LONG).show()
-                    //val directory = this@AboutActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-                    val directory = this@AboutActivity.getExternalFilesDir(null)
+                    val directory = File(this@AboutActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "apk")
                     apkFile = File(directory, apkConfig.apkName)
-//                    directory.mkdirs()
+                    directory.mkdirs()
                     ConcurrencyApkTask.makeRequest(apkConfig.downloadUrl, apkFile)
 
                     val intent = Intent(
@@ -77,9 +76,9 @@ class AboutActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-            if (requestCode == 1) {
-                openAPKFile()
-            }
+        if (requestCode == 1) {
+            openAPKFile()
+        }
     }
 
     private fun openAPKFile() {
@@ -91,7 +90,8 @@ class AboutActivity : AppCompatActivity() {
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             val contentUri = FileProvider.getUriForFile(
                 this@AboutActivity,
-                "com.example.flow1000client.fileprovider", apkFile
+                "com.example.flow1000client.file_provider",
+                apkFile
             )
             intent.setDataAndType(contentUri, mimeDefault)
             startActivity(intent)
