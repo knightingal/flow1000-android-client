@@ -1,18 +1,11 @@
-package com.example.jianming.myapplication;
+package com.example.jianming.myapplication
 
-import android.app.Application;
+import android.app.Application
+import com.example.jianming.util.CrashHandler
 
-import com.example.jianming.util.CrashHandler;
-
-
-public class App extends Application {
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(this));
+class App : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this))
     }
-
-
 }
