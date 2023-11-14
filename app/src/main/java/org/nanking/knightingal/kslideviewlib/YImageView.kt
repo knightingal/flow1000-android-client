@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
@@ -15,88 +16,140 @@ import androidx.appcompat.widget.AppCompatImageView
 
 import java.util.ArrayList
 
-class YImageView : AppCompatImageView {
-    companion object {
-        private val TAG = "YImageView"
-        private val ANIM_DURATION:Long = 500
-    }
-    val viewId:Int
+private const val ENABLE_ANIM_TO_NEXT_IMAGE = false
 
-    private val yImageSlider:YImageSlider
-    var locationIndex:Int
+@SuppressLint("ViewConstructor")
+class YImageView(
+    context: Context,
+    private val yImageSlider: YImageSlider,
+    var locationIndex: Int,
+) : AppCompatImageView(context) {
+    companion object {
+        private const val TAG = "YImageView"
+        private const val ANIM_DURATION:Long = 500
+    }
 
     var isDisplay = true
+    var vx = 0.toFloat()
+    var vy = 0.toFloat()
+
+    private var lastX = 0.toFloat()
+    private var lastY = 0.toFloat()
+    private var lastEventTime = 0.toLong()
+    private var currentX = 0.toFloat()
+    private var currentY = 0.toFloat()
+    private var newX = 0.toFloat()
+    private var newY = 0.toFloat()
+    private var bitmapW:Int = 0
+    private var bitmapH:Int = 0
 
 
     private var minX = 0
     private var minY = 0
 
-    constructor(context:Context, yImageSlider:YImageSlider, locationIndex:Int,  id:Int):super(context) {
-        this.viewId = id
-        this.yImageSlider = yImageSlider
-        this.locationIndex = locationIndex
-    }
+    private var screamH:Int = 0
+    private var screamW:Int = 0
 
-    var screamH:Int = 0
-    var screamW:Int = 0
+    private var originY:Int = 0
 
-    var originY:Int = 0
+    private val fitAllImageSize: Boolean = true
+
+    private var setX: AnimatorSet = AnimatorSet()
+    private var setY: AnimatorSet = AnimatorSet()
+    private var setYE: AnimatorSet = AnimatorSet()
+    private var setXE: AnimatorSet = AnimatorSet()
+    lateinit var animDataX:AnimData
+    lateinit var animDataY:AnimData
+
+    lateinit var postGetBackImg: ()->Unit
+    lateinit var postGetNextImg: ()->Unit
+
+    lateinit var postXEdgeEvent: ()->Unit
+    lateinit var postYEdgeEvent: ()->Unit
+
+    private var isOnLeftEdge = false
+    private var isOnRightEdge = false
+
 
     override fun setFrame(l:Int, t:Int, r:Int, b:Int):Boolean {
         screamH = b - t
         screamW = r - l
-        minX = screamW - bitmap_W
-        minY = if (screamH - bitmap_H > 0) 0 else screamH - bitmap_H
 
-        if (bitmap_W < screamW) {
-            val rat = (bitmap_H.toFloat())/(bitmap_W.toFloat())
-            bitmap_W = screamW
-            bitmap_H = (rat * bitmap_W).toInt()
+        if (bitmapW < screamW || fitAllImageSize) {
+            val rat = (bitmapH.toFloat())/(bitmapW.toFloat())
+            bitmapW = screamW
+            bitmapH = (rat * bitmapW).toInt()
         }
+        minX = screamW - bitmapW
+        minY = if (screamH - bitmapH > 0) 0 else screamH - bitmapH
 
-        val contentImageWidth = yImageSlider.contentView.bitmap_W
+        val contentImageWidth = yImageSlider.contentView.bitmapW
 
-        val left = if (locationIndex == 1)
-            if (yImageSlider.alingLeftOrRight == 0)
-                contentImageWidth + YImageSlider.SPLITE_W
-            else
-                screamW + YImageSlider.SPLITE_W
-        else if (locationIndex == -1)
-            if (yImageSlider.alingLeftOrRight == 0)
-                -bitmap_W - YImageSlider.SPLITE_W
-            else
-                -(bitmap_W + YImageSlider.SPLITE_W + contentImageWidth - screamW)
-        else
-            if (yImageSlider.alingLeftOrRight == 0)
-                0
-            else
-                -(contentImageWidth - screamW)
+        val left = calLeftPoint(contentImageWidth)
 
-        val right = if (locationIndex == 1)
-            if (yImageSlider.alingLeftOrRight == 0)
-                contentImageWidth + YImageSlider.SPLITE_W + bitmap_W
-            else
-                screamW + YImageSlider.SPLITE_W + bitmap_W
-        else if (locationIndex == -1)
-            if (yImageSlider.alingLeftOrRight == 0)
-                -YImageSlider.SPLITE_W
-            else
-                -(YImageSlider.SPLITE_W + contentImageWidth - screamW)
-        else
-            if (yImageSlider.alingLeftOrRight == 0)
-                bitmap_W
-            else
-                screamW
+        val right = calRightPoint(contentImageWidth)
 
-        val top = (screamH - bitmap_H) / 2
+        val top = (screamH - bitmapH) / 2
         originY = top
-        val bottom = top + bitmap_H
+        val bottom = top + bitmapH
         Log.d(TAG, "left=$left, right=$right, top=$top, bottom=$bottom")
 
-        val isChanged = super.setFrame(0, top, bitmap_W, bottom)
+        val isChanged = super.setFrame(0, top, bitmapW, bottom)
         x = left.toFloat()
         y = top.toFloat()
         return isChanged;
+    }
+
+    private fun calLeftPoint(contentImageWidth: Int): Int {
+        when (locationIndex) {
+            1 -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    contentImageWidth + YImageSlider.SPLITE_W
+                } else {
+                    screamW + YImageSlider.SPLITE_W
+                }
+            }
+            -1 -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    -bitmapW - YImageSlider.SPLITE_W
+                } else {
+                    -(bitmapW + YImageSlider.SPLITE_W + contentImageWidth - screamW)
+                }
+            }
+            else -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    0
+                } else {
+                    -(contentImageWidth - screamW)
+                }
+            }
+        }
+    }
+
+    private fun calRightPoint(contentImageWidth: Int): Int {
+        when (locationIndex) {
+            1 -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    contentImageWidth + YImageSlider.SPLITE_W + bitmapW
+                } else {
+                    screamW + YImageSlider.SPLITE_W + bitmapW
+                }
+            }
+            -1 -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    -YImageSlider.SPLITE_W
+                } else {
+                    -(YImageSlider.SPLITE_W + contentImageWidth - screamW)
+                }
+            }
+            else -> {
+                return if (yImageSlider.alingLeftOrRight == 0) {
+                    bitmapW
+                } else {
+                    screamW
+                }
+            }
+        }
     }
 
     override fun onTouchEvent(event:MotionEvent):Boolean {
@@ -108,10 +161,6 @@ class YImageView : AppCompatImageView {
         return true
     }
 
-    var setX: AnimatorSet = AnimatorSet()
-    var setY: AnimatorSet= AnimatorSet()
-    var setYE: AnimatorSet= AnimatorSet()
-    var setXE: AnimatorSet= AnimatorSet()
 
 
     private fun  doXAnimationEnd(duration: Long) {
@@ -129,13 +178,13 @@ class YImageView : AppCompatImageView {
                 yImageSlider.hideLeft,
                 View.X,
                 yImageSlider.hideLeft.x,
-                destX - yImageSlider.hideLeft.bitmap_W - YImageSlider.SPLITE_W
+                destX - yImageSlider.hideLeft.bitmapW - YImageSlider.SPLITE_W
         ))
         animators.add(ObjectAnimator.ofFloat(
                 yImageSlider.hideRight,
                 View.X,
                 yImageSlider.hideRight.x,
-                destX + bitmap_W + YImageSlider.SPLITE_W
+                destX + bitmapW + YImageSlider.SPLITE_W
         ))
 
         setXE.playTogether(animators)
@@ -186,10 +235,10 @@ class YImageView : AppCompatImageView {
         var useAccelerateInterpolator = false
         if (currPos > 0 || currPos < minPos) {
             useAccelerateInterpolator = true
-            if (currPos > 0) {
-                dest = 0.toFloat()
+            dest = if (currPos > 0) {
+                0.toFloat()
             } else {
-                dest = minPos.toFloat()
+                minPos.toFloat()
             }
         }
 
@@ -216,16 +265,16 @@ class YImageView : AppCompatImageView {
         var dest = currPos + velocity * ANIM_DURATION / 2000
         var useAccelerateInterpolator = false
         var duration = ANIM_DURATION
-        if (bitmap_H < screamH) {
+        if (bitmapH < screamH) {
             dest = originY.toFloat()
         } else {
 
             if (currPos > 0 || currPos < minPos) {
                 useAccelerateInterpolator = true
-                if (currPos > 0) {
-                    dest = 0.toFloat()
+                dest = if (currPos > 0) {
+                    0.toFloat()
                 } else {
-                    dest = minPos.toFloat()
+                    minPos.toFloat()
                 }
             }
 
@@ -245,8 +294,6 @@ class YImageView : AppCompatImageView {
         return AnimData(dest, useAccelerateInterpolator, duration)
     }
 
-    lateinit var animDataX:AnimData
-    lateinit var animDataY:AnimData
 
     fun doBackImgAnim() {
         setX = AnimatorSet()
@@ -256,7 +303,7 @@ class YImageView : AppCompatImageView {
                 this,
                 View.X,
                 x,
-                (yImageSlider.hideLeft.bitmap_W + YImageSlider.SPLITE_W).toFloat()
+                (yImageSlider.hideLeft.bitmapW + YImageSlider.SPLITE_W).toFloat()
         ))
         animators.add(ObjectAnimator.ofFloat(
                 this,
@@ -290,9 +337,9 @@ class YImageView : AppCompatImageView {
                 this,
                 View.X,
                 x,
-                -(bitmap_W
+                -(bitmapW
                         + YImageSlider.SPLITE_W
-                        + yImageSlider.hideRight.bitmap_W
+                        + yImageSlider.hideRight.bitmapW
                         - screamW).toFloat()
         ))
         Log.d(TAG, "doNextImgAnim, originY=$originY")
@@ -306,7 +353,7 @@ class YImageView : AppCompatImageView {
                 yImageSlider.hideRight,
                 View.X,
                 yImageSlider.hideRight.x,
-                -(yImageSlider.hideRight.bitmap_W - screamW).toFloat()
+                -(yImageSlider.hideRight.bitmapW - screamW).toFloat()
         ))
         animators.add(ObjectAnimator.ofFloat(
                 yImageSlider.hideRight,
@@ -325,61 +372,70 @@ class YImageView : AppCompatImageView {
         setX.start()
     }
 
-    private fun onTouchUp() {
-        val upx = x
-        if (upx > 0 && yImageSlider.hideLeft.isDisplay) {
-            doBackImgAnim()
-        } else if (upx < screamW - this.bitmap_W && yImageSlider.hideRight.isDisplay) {
-            doNextImgAnim()
-        } else if (upx > screamW / 3 && yImageSlider.hideLeft.isDisplay) {
-            doBackImgAnim()
-        } else if (upx + this.bitmap_W < screamW * 2 / 3 && yImageSlider.hideRight.isDisplay) {
-            doNextImgAnim()
+    private fun animBack() {
+        animDataX = calAnimDataX(x, minX, vx)
+        setX = AnimatorSet()
+        val animators = ArrayList<Animator>()
+        animators.add(ObjectAnimator.ofFloat(this, View.X, x, animDataX.dest))
+        animators.add(ObjectAnimator.ofFloat(
+            yImageSlider.hideLeft,
+            View.X,
+            yImageSlider.hideLeft.x,
+            animDataX.dest - yImageSlider.hideLeft.bitmapW - YImageSlider.SPLITE_W
+        ))
+        animators.add(ObjectAnimator.ofFloat(
+            yImageSlider.hideRight,
+            View.X,
+            yImageSlider.hideRight.x,
+            animDataX.dest + bitmapW + YImageSlider.SPLITE_W
+        ))
+        setX.playTogether(animators)
+        setX.duration = animDataX.duration
+        if (animDataX.useAccelerateInterpolator) {
+            setX.interpolator = AccelerateInterpolator()
         } else {
-            animDataX = calAnimDataX(x, minX, vx)
-            setX = AnimatorSet()
-            val animators = ArrayList<Animator>()
-            animators.add(ObjectAnimator.ofFloat(this, View.X, x, animDataX.dest))
-            animators.add(ObjectAnimator.ofFloat(
-                    yImageSlider.hideLeft,
-                    View.X,
-                    yImageSlider.hideLeft.x,
-                    animDataX.dest - yImageSlider.hideLeft.bitmap_W - YImageSlider.SPLITE_W
-            ))
-            animators.add(ObjectAnimator.ofFloat(
-                    yImageSlider.hideRight,
-                    View.X,
-                    yImageSlider.hideRight.x,
-                    animDataX.dest + bitmap_W + YImageSlider.SPLITE_W
-            ))
-            setX.playTogether(animators)
-            setX.duration = animDataX.duration
-            if (animDataX.useAccelerateInterpolator) {
-                setX.interpolator = AccelerateInterpolator()
-            } else {
-                postXEdgeEvent()
-                setX.interpolator = DecelerateInterpolator()
+            postXEdgeEvent()
+            setX.interpolator = DecelerateInterpolator()
+        }
+
+        setX.addListener(object : AnimatorListenerAdapter() {
+            var isCanceled = false
+
+            override fun onAnimationEnd(animation: Animator) {
+                vx = 0.toFloat()
+                if (!isCanceled) {
+                    if (animDataX.duration < ANIM_DURATION) {
+                        postXEdgeEvent()
+                        doXAnimationEnd(ANIM_DURATION - animDataX.duration)
+                    }
+                }
+
             }
 
-            setX.addListener(object : AnimatorListenerAdapter() {
-                var isCanceled = false
+            override fun onAnimationCancel(animation: Animator) {
+                isCanceled = true
+            }
+        })
+        setX.start()
 
-                override fun onAnimationEnd(animation: Animator) {
-                    vx = 0.toFloat()
-                    if (!isCanceled) {
-                        if (animDataX.duration < ANIM_DURATION) {
-                            postXEdgeEvent()
-                            doXAnimationEnd(ANIM_DURATION - animDataX.duration)
-                        }
-                    }
+    }
 
-                }
-
-                override fun onAnimationCancel(animation: Animator) {
-                    isCanceled = true
-                }
-            })
-            setX.start()
+    private fun onTouchUp() {
+        val upx = x
+        if (ENABLE_ANIM_TO_NEXT_IMAGE) {
+            if (upx > 0 && yImageSlider.hideLeft.isDisplay) {
+                doBackImgAnim()
+            } else if (upx < screamW - this.bitmapW && yImageSlider.hideRight.isDisplay) {
+                doNextImgAnim()
+            } else if (upx > screamW / 3 && yImageSlider.hideLeft.isDisplay) {
+                doBackImgAnim()
+            } else if (upx + this.bitmapW < screamW * 2 / 3 && yImageSlider.hideRight.isDisplay) {
+                doNextImgAnim()
+            } else {
+                animBack()
+            }
+        } else {
+            animBack()
         }
         animDataY = calAnimDataY(y, minY, vy)
 
@@ -419,14 +475,6 @@ class YImageView : AppCompatImageView {
         hideImageAnimBack()
     }
 
-    lateinit var postGetBackImg: ()->Unit
-    lateinit var postGetNextImg: ()->Unit
-
-    lateinit var postXEdgeEvent: ()->Unit
-    lateinit var postYEdgeEvent: ()->Unit
-
-    var isOnLeftEdge = false
-    var isOnRightEdge = false
 
 
     private fun  onTouchDown(event: MotionEvent) {
@@ -445,7 +493,7 @@ class YImageView : AppCompatImageView {
 
         isOnLeftEdge = this.x >= 0
 
-        isOnRightEdge = this.y <= screamW - bitmap_W
+        isOnRightEdge = this.y <= screamW - bitmapW
 
         currentX = event.rawX
         lastX = event.rawX
@@ -455,17 +503,6 @@ class YImageView : AppCompatImageView {
         lastEventTime = event.eventTime
     }
 
-    var lastX = 0.toFloat()
-    var lastY = 0.toFloat()
-
-    var lastEventTime = 0.toLong()
-
-    var currentX = 0.toFloat()
-    var currentY = 0.toFloat()
-    var newX = 0.toFloat()
-    var newY = 0.toFloat()
-    var vx = 0.toFloat()
-    var vy = 0.toFloat()
 
     private fun onTouchMove(event: MotionEvent) {
         newX = event.rawX
@@ -502,12 +539,10 @@ class YImageView : AppCompatImageView {
 
     override fun setImageBitmap(bm: Bitmap?) {
         super.setImageBitmap(bm)
-        bitmap_W = bm!!.width
-        bitmap_H = bm.height
+        bitmapW = bm!!.width
+        bitmapH = bm.height
     }
 
 
-    private var bitmap_W:Int = 0
-    private var bitmap_H:Int = 0
 
 }

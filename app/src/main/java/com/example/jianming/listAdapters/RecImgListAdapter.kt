@@ -8,70 +8,52 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.BaseAdapter
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
-import com.example.jianming.Utils.Decryptor
+import androidx.recyclerview.widget.RecyclerView
 import com.example.jianming.beans.PicInfoBean
-import com.example.jianming.myapplication.AlbumContentActivity
 import com.example.jianming.myapplication.R
+import com.example.jianming.myapplication.SectionImageListActivity
 import com.google.common.io.Files
 import java.io.File
 import java.io.IOException
 
-class ImgListAdapter constructor(private val context: AlbumContentActivity) : BaseAdapter() {
-
-    private val mInflater: LayoutInflater = LayoutInflater.from(context)
+class RecImgListAdapter(private val context: SectionImageListActivity, private val dataArray: List<PicInfoBean>) : RecyclerView.Adapter<ImgViewHolder>() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     private val screamWidth : Int = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
         .currentWindowMetrics.bounds.width()
 
-    var dataArray: List<PicInfoBean>  = listOf()
 
-    override fun getCount(): Int = dataArray.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImgViewHolder {
 
+        val v: View = LayoutInflater.from(parent.context)
+            .inflate(R.layout.vlist, parent, false)
 
-    override fun getItem(position: Int): PicInfoBean {
-        return dataArray[position]
+        return ImgViewHolder(v)
     }
 
-    override fun getItemId(position: Int): Long {
-        return dataArray[position].index as Long
+    override fun getItemCount(): Int {
+        return dataArray.size
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    override fun getView(position: Int, view: View?, parent: ViewGroup?): View {
-
-        val holder: ViewHolder
-        val convertView: View
-        if (view == null) {
-            holder = ViewHolder()
-            convertView = mInflater.inflate(R.layout.vlist, parent, false)
-            holder.img = convertView.findViewById(R.id.img)
-            convertView.tag = holder
-        } else {
-            convertView = view
-            holder = convertView.tag as ViewHolder
-        }
-
+    override fun onBindViewHolder(holder: ImgViewHolder, position: Int) {
         val width = dataArray[position].width
         val height = dataArray[position].height
 
         val div = height.toFloat() / width.toFloat()
-
-        val lp = holder.img!!.layoutParams
+        val lp = holder.img.layoutParams
 
         lp.height = (div * screamWidth.toFloat()).toInt()
         lp.width = screamWidth
+        holder.img.layoutParams = lp
 
-        holder.img!!.layoutParams = lp
-        val file = dataArray[position].absolutePath?.let { File(it) }
-
+        val file = File(dataArray[position].absolutePath as String)
 
         try {
             val enCryptedContent = Files.toByteArray(file)
-            holder.img!!.setImageBitmap(
+            holder.img.setImageBitmap(
                 BitmapFactory.decodeByteArray(
                     enCryptedContent,
                     0,
@@ -81,7 +63,7 @@ class ImgListAdapter constructor(private val context: AlbumContentActivity) : Ba
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        holder.img!!.setOnClickListener {
+        holder.img.setOnClickListener {
             Log.d("Activity4List", dataArray[position].absolutePath!!)
             val imgs = arrayOfNulls<String>(dataArray.size)
             for (i in dataArray.indices) {
@@ -90,11 +72,13 @@ class ImgListAdapter constructor(private val context: AlbumContentActivity) : Ba
             context.startPicContentActivity(imgs, position)
         }
 
-        return convertView
+    }
+}
 
+class ImgViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    val img: ImageView
+    init {
+        img = itemView.findViewById(R.id.img)
     }
 
-    public final class ViewHolder {
-        var img: ImageView? = null
-    }
 }

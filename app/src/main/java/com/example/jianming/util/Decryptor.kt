@@ -1,4 +1,4 @@
-package com.example.jianming.Utils
+package com.example.jianming.util
 
 import com.example.jianming.myapplication.BuildConfig
 import java.security.InvalidAlgorithmParameterException

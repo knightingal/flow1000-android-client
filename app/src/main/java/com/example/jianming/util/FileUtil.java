@@ -1,4 +1,4 @@
-package com.example.jianming.Utils;
+package com.example.jianming.util;
 
 import android.content.Context;
 import android.os.Environment;

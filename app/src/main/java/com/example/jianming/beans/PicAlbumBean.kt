@@ -23,11 +23,13 @@ data class PicAlbumBean (
     var album: String? = null,
 
     var clientStatus: ClientStatus
-)
-
-enum class ClientStatus {
-    NONE,
-    PENDING,
-    LOCAL
+) {
+    enum class ClientStatus {
+        NONE,
+        PENDING,
+        LOCAL
+    }
 }
+
+
 

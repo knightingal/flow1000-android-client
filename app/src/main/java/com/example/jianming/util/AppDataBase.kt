@@ -1,4 +1,4 @@
-package com.example.jianming.Utils
+package com.example.jianming.util
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -9,7 +9,7 @@ import com.example.jianming.dao.PicAlbumDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 
-@Database(entities = [UpdateStamp::class, PicAlbumBean::class, PicInfoBean::class], version = 2)
+@Database(entities = [UpdateStamp::class, PicAlbumBean::class, PicInfoBean::class], version = 2, exportSchema = false)
 abstract class AppDataBase : RoomDatabase() {
 
     abstract fun picAlbumDao(): PicAlbumDao

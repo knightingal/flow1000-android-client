@@ -1,7 +1,10 @@
 package org.nanking.knightingal.kslideviewlib
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -10,6 +13,7 @@ import android.widget.ImageView
 import com.example.jianming.myapplication.R
 
 import com.nostra13.universalimageloader.core.ImageLoader
+import java.io.File
 
 class YImageSlider : ViewGroup {
     companion object {
@@ -32,9 +36,9 @@ class YImageSlider : ViewGroup {
 
 
     private fun init(context:Context) {
-        contentView = YImageView(context, this, 0, 0)
-        hideLeft = YImageView(context, this, -1, 1)
-        hideRight = YImageView(context, this, 1, 2)
+        contentView = YImageView(context, this, 0, )
+        hideLeft = YImageView(context, this, -1, )
+        hideRight = YImageView(context, this, 1, )
 
         contentView.postGetBackImg = this::onGetBackImg
         hideLeft.postGetBackImg = this::onGetBackImg
@@ -110,7 +114,8 @@ class YImageSlider : ViewGroup {
             val src = imgChangeListener?.getImgSrcByIndex(index - 1, this)
             val yImageView = hideLeft
             if (src != null) {
-                ImageLoader.getInstance().displayImage(src, yImageView, DIOptionsNoneScaled.options)
+                val mb = BitmapFactory.decodeFile(src)
+                yImageView.setImageBitmap(mb)
                 yImageView.isDisplay = true
             } else {
                 yImageView.isDisplay = false
@@ -124,7 +129,8 @@ class YImageSlider : ViewGroup {
             val src = imgChangeListener?.getImgSrcByIndex(index, this);
             val yImageView = contentView
             if (src != null) {
-                ImageLoader.getInstance().displayImage(src, yImageView, DIOptionsNoneScaled.options);
+                val mb = BitmapFactory.decodeFile(src)
+                yImageView.setImageBitmap(mb)
                 yImageView.isDisplay = true
             } else {
                 yImageView.isDisplay = false
@@ -137,7 +143,9 @@ class YImageSlider : ViewGroup {
             val src = imgChangeListener?.getImgSrcByIndex(index + 1, this)
             val yImageView = hideRight
             if (src != null) {
-                ImageLoader.getInstance().displayImage(src, yImageView, DIOptionsNoneScaled.options)
+                val mb = BitmapFactory.decodeFile(src)
+                yImageView.setImageBitmap(mb)
+//                ImageLoader.getInstance().displayImage(src, yImageView, DIOptionsNoneScaled.options)
                 yImageView.isDisplay = true
             } else {
                 yImageView.isDisplay = false
@@ -176,13 +184,17 @@ class YImageSlider : ViewGroup {
             if (nextButton.visibility == View.INVISIBLE) {
                 nextButton.visibility = (View.VISIBLE)
             }
-            ImageLoader.getInstance().displayImage(imgUrl, hideLeft, DIOptionsNoneScaled.options)
+            val mb = BitmapFactory.decodeFile(imgUrl)
+            hideLeft.setImageBitmap(mb)
+
+//            ImageLoader.getInstance().displayImage(imgUrl, hideLeft, DIOptionsNoneScaled.options)
             hideLeft.isDisplay=(true)
         } else {
             backButton.visibility = (View.INVISIBLE)
-            ImageLoader.getInstance().displayImage(null, hideLeft)
+//            ImageLoader.getInstance().displayImage(null, hideLeft)
             hideLeft.isDisplay = (false);
         }
+        requestLayout()
 
     }
 
@@ -205,13 +217,14 @@ class YImageSlider : ViewGroup {
             if (backButton.visibility == View.INVISIBLE) {
                 backButton.visibility = (View.VISIBLE)
             }
-            ImageLoader.getInstance().displayImage(imgUrl, hideRight, DIOptionsNoneScaled.options);
+            val mb = BitmapFactory.decodeFile(imgUrl)
+            hideRight.setImageBitmap(mb)
             hideRight.isDisplay = (true)
         } else {
             nextButton.visibility = (View.INVISIBLE)
-            ImageLoader.getInstance().displayImage(null, hideRight);
             hideRight.isDisplay = (false)
         }
+        requestLayout()
     }
 
 

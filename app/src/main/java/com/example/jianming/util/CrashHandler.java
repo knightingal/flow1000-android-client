@@ -1,4 +1,4 @@
-package com.example.jianming.Utils;
+package com.example.jianming.util;
 
 import android.os.Environment;
 import android.text.TextUtils;

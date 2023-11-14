@@ -13,18 +13,18 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-object ConcurrencyImageTask {
+object ConcurrencyApkTask {
     private const val TAG = "DLImageTask"
-    fun downloadUrl(src: String, dest: File, encrypted: Boolean, callback: (bytes: ByteArray) -> Unit): Unit {
+    fun downloadUrl(src: String, dest: File, callback: (bytes: ByteArray) -> Unit): Unit {
         MainScope().launch {
-            val bytes = makeRequest(src, dest, encrypted)
+            val bytes = makeRequest(src, dest)
             if (bytes != null) {
                 callback(bytes)
             }
         }
     }
 
-    private suspend fun makeRequest(src: String, dest: File, encrypted: Boolean): ByteArray? {
+    suspend fun makeRequest(src: String, dest: File): ByteArray? {
         return withContext(Dispatchers.IO) {
             Log.d(TAG, "start download $src")
             val request = Request.Builder().url(src).build()
@@ -32,12 +32,7 @@ object ConcurrencyImageTask {
             while (true) {
                 try {
                     bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
-                    val options: BitmapFactory.Options = BitmapFactory.Options()
-                    options.inJustDecodeBounds = true
-                    if (encrypted) {
-                        bytes = Decryptor.decrypt(bytes)
-                    }
-                    val fileOutputStream = FileOutputStream(dest, true)
+                    val fileOutputStream = FileOutputStream(dest, false)
                     fileOutputStream.write(bytes)
                     fileOutputStream.close()
                     break

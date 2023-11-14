@@ -9,21 +9,22 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room.databaseBuilder
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
-import com.example.jianming.Utils.AppDataBase
-import com.example.jianming.Utils.NetworkUtil
-import com.example.jianming.Utils.TimeUtil
+import com.example.jianming.util.AppDataBase
+import com.example.jianming.util.NetworkUtil
+import com.example.jianming.util.TimeUtil
 import com.example.jianming.beans.PicAlbumBean
 import com.example.jianming.beans.PicAlbumData
 import com.example.jianming.dao.PicAlbumDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicAlbumListAdapter
-import com.example.jianming.services.KtDownloadService
+import com.example.jianming.services.DownloadService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.MainScope
@@ -79,7 +80,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     }
 
-    var downLoadService: KtDownloadService? = null
+    var downLoadService: DownloadService? = null
 
 
     var isBound = false
@@ -87,12 +88,12 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             Log.d(TAG, "onServiceConnected")
             isBound = true
-            downLoadService = (binder as KtDownloadService.LocalBinder).getService() as KtDownloadService
+            downLoadService = (binder as DownloadService.LocalBinder).getService()
             downLoadService!!.setRefreshListener(
                 this@PicAlbumListActivity
             )
             if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this@PicAlbumListActivity)) {
-                startDownloadWebPage()
+                startDownloadPicIndex()
             } else {
                 refreshFrontPage.invoke()
             }
@@ -114,41 +115,58 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     override fun onStart() {
         super.onStart()
-        bindService(Intent(this, KtDownloadService::class.java), conn, BIND_AUTO_CREATE)
+        bindService(Intent(this, DownloadService::class.java), conn, BIND_AUTO_CREATE)
     }
 
-    private fun startDownloadWebPage() {
+    private fun startDownloadPicIndex() {
         val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
-        ConcurrencyJsonApiTask.startDownload(stringUrl, downloadCallback)
+        ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
+            val mapper = jacksonObjectMapper()
+            db.runInTransaction() {
+                val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
+                updateStamp.updateStamp = TimeUtil.currentTimeFormat()
+                updataStampDao.update(updateStamp)
+                val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(allBody)
+                picAlbumBeanList.forEach { picAlbumDao.insert(it) }
+            }
+
+            refreshFrontPage.invoke()
+
+            val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
+            ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
+                val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(pendingBody)
+                if (picAlbumBeanList.isNotEmpty()) {
+                    picAlbumBeanList.forEach {
+                        picAlbumDao.update(it)
+                        asyncStartDownload(it.id, picAlbumDataList.indexOf(picAlbumDataList.stream().filter { item ->
+                            item.picAlbumBean.id == it.id
+                        }.findFirst().get()));
+                    }
+                }
+            }
+            val localUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
+            ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
+                val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(pendingBody)
+                if (picAlbumBeanList.isNotEmpty()) {
+                    picAlbumBeanList.forEach {
+                        val existAlbum = picAlbumDao.getByInnerIndex(it.id)
+                        if (existAlbum.exist != 1) {
+                            picAlbumDao.update(it)
+                            asyncStartDownload(
+                                it.id,
+                                picAlbumDataList.indexOf(picAlbumDataList.stream().filter { item ->
+                                    item.picAlbumBean.id == it.id
+                                }.findFirst().get())
+                            );
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    private val downloadCallback: (body: String) -> Unit = {body ->
-        val mapper = jacksonObjectMapper()
-        try {
-            db.beginTransaction()
-            val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
-            updateStamp.updateStamp = TimeUtil.currentTimeFormat()
-            updataStampDao.update(updateStamp)
-            val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(body)
-            picAlbumBeanList.forEach { picAlbumDao.insert(it) }
-            db.setTransactionSuccessful()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            db.endTransaction()
-        }
-
-        refreshFrontPage.invoke()
-
-        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
-        ConcurrencyJsonApiTask.startDownload(stringUrl) { it ->
-            val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(it)
-            picAlbumBeanList.forEach{picAlbumDao.update(it)}
-        }
-
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     private val refreshFrontPage: () -> Unit = {
@@ -178,12 +196,13 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         val viewHolder =
             listView.findViewHolderForAdapterPosition(position) as PicAlbumListAdapter.ViewHolder?
         if (currCount == max) {
-            picAlbumDataList[position].picAlbumData.exist = 1
-            picAlbumDao.update(picAlbumDataList[position].picAlbumData)
+            picAlbumDataList[position].picAlbumBean.exist = 1
+            picAlbumDao.update(picAlbumDataList[position].picAlbumBean)
             picAlbumListAdapter.notifyDataSetChanged()
         }
         if (viewHolder != null) {
             MainScope().launch {
+                viewHolder.downloadProcessBar.visibility = View.VISIBLE
                 viewHolder.downloadProcessBar.isIndeterminate = false
                 viewHolder.downloadProcessBar.setProgressCompat(currCount, false)
                 viewHolder.downloadProcessBar.max = max

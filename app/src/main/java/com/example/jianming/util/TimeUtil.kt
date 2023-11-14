@@ -1,9 +1,8 @@
-package com.example.jianming.Utils
+package com.example.jianming.util
 
 import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.GregorianCalendar
 
 object TimeUtil {
 

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.jianming.myapplication">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Include next permission if you want to allow UIL to cache images on SD card -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- Include next permission if you want to allow UIL to cache images on SD card -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -18,12 +17,12 @@
         android:name=".App"
         android:allowBackup="true"
         android:usesCleartextTraffic="true"
-        android:icon="@mipmap/greenicon"
+        android:icon="@drawable/app_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".AlbumContentActivity"
+            android:name=".SectionImageListActivity"
             android:label="@string/title_activity_list" />
         <activity
             android:name=".PicContentActivity"
@@ -32,9 +31,6 @@
         <activity
             android:name=".Local1KActivity"
             android:label="@string/title_activity_file_training" />
-        <activity
-            android:name=".SettingActivity"
-            android:label="@string/title_activity_setting" />
         <activity
             android:name=".AboutActivity"
             android:exported="true"
@@ -53,13 +49,27 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.example.jianming.services.KtDownloadService"
+        <service android:name="com.example.jianming.services.DownloadService"
             android:enabled="true"
             android:exported="true"/>
 
         <activity
             android:name=".PicAlbumListActivity"
             android:label="@string/title_activity_pic_album_list_activity_md" />
+        
+
+        <provider
+                android:name="androidx.core.content.FileProvider"
+                android:authorities="com.example.flow1000client.file_provider"
+                android:grantUriPermissions="true"
+                android:exported="false">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/file_paths" />
+        </provider>
+
+
+
 
     </application>
 

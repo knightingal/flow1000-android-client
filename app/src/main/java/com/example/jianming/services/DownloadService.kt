@@ -13,7 +13,7 @@ import android.util.Log
 import androidx.room.Room
 import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
-import com.example.jianming.Utils.AppDataBase
+import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.AlbumInfoBean
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.dao.PicAlbumDao
@@ -25,7 +25,7 @@ import org.nanjing.knightingal.processerlib.RefreshListener
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
-class KtDownloadService : Service() {
+class DownloadService : Service() {
 
     private val binder: IBinder = LocalBinder();
 
@@ -33,7 +33,7 @@ class KtDownloadService : Service() {
     private lateinit var picAlbumDao : PicAlbumDao
     private lateinit var picInfoDao : PicInfoDao
 
-    val processCounter = hashMapOf<Int, Counter>()
+    val processCounter = hashMapOf<Long, Counter>()
 
 
     private var refreshListener: RefreshListener? = null
@@ -67,10 +67,8 @@ class KtDownloadService : Service() {
         ConcurrencyJsonApiTask.startDownload(url) {body ->
             val picAlbumBean = picAlbumDao.getByInnerIndex(index)
             val mapper = jacksonObjectMapper()
-            try {
-                val albumInfoBean: AlbumInfoBean = mapper.readValue(body)
-                db.beginTransaction()
-                albumInfoBean.pics.forEach { pic ->
+            db.runInTransaction() {
+                (mapper.readValue(body) as AlbumInfoBean).pics.forEach { pic ->
                     val picInfoBean: PicInfoBean = PicInfoBean(
                         null,
                         pic,
@@ -80,17 +78,11 @@ class KtDownloadService : Service() {
                         0
                     )
                     picInfoDao.insert(picInfoBean)
-
                 }
-                db.setTransactionSuccessful()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                db.endTransaction()
             }
 
             val picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.id)
-            processCounter[position] = Counter(picInfoBeanList.size)
+            processCounter[index] = Counter(picInfoBeanList.size)
 
             val albumInfoBean = AlbumInfoBean(
                 "${picAlbumBean.id}",
@@ -112,7 +104,7 @@ class KtDownloadService : Service() {
                 val file = File(directory, picName)
                 ConcurrencyImageTask.downloadUrl(imgUrl, file, albumConfig.encryped) { bytes ->
 
-                    val currCount = processCounter[position]?.incProcess() as Int
+                    val currCount = processCounter[index]?.incProcess() as Int
                     val options = BitmapFactory.Options()
                     options.inJustDecodeBounds = true
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
@@ -127,16 +119,15 @@ class KtDownloadService : Service() {
                     refreshListener?.doRefreshView(position, currCount, picInfoBeanList.size)
 
                     if (currCount == picInfoBeanList.size) {
-                        try {
-                            db.beginTransaction()
+                        db.runInTransaction() {
                             for (pic in picInfoBeanList) {
                                 picInfoDao.update(pic)
                             }
-                            db.setTransactionSuccessful()
-                        } finally {
-                            db.endTransaction()
                         }
-                        processCounter.remove(position)
+                        processCounter.remove(index)
+                        val completeUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                                "/local1000/completeSection?id=" + index
+                        ConcurrencyJsonApiTask.startPost(completeUrl, "") {}
                     }
 
                 }
@@ -145,8 +136,8 @@ class KtDownloadService : Service() {
     }
 
     inner class LocalBinder : Binder() {
-        fun getService(): KtDownloadService {
-            return this@KtDownloadService
+        fun getService(): DownloadService {
+            return this@DownloadService
         }
     }
 
@@ -162,7 +153,7 @@ private fun getAlbumStorageDir(context: Context, albumName: String): File {
     return file
 }
 
-class Counter(val max: Int) {
+class Counter(val max: Int, ) {
     private val process: AtomicInteger = AtomicInteger(0)
 
     fun incProcess(): Int {

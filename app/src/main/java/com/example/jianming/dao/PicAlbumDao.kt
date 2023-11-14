@@ -9,7 +9,6 @@ import androidx.room.Update;
 
 import com.example.jianming.beans.PicAlbumBean;
 
-import java.util.List;
 
 @Dao
 interface PicAlbumDao {

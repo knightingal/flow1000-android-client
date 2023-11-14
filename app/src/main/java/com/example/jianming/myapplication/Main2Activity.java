@@ -3,7 +3,7 @@ package com.example.jianming.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.jianming.Utils.AppDataBase;
+import com.example.jianming.util.AppDataBase;
 import com.example.jianming.dao.PicAlbumDao;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -34,7 +34,7 @@ public class Main2Activity extends AppCompatActivity
 
     public void btnClicked(View v) {
         if (v.getId() == R.id.picIndexBtn) {
-            this.startActivity(new Intent(this, Local1KActivity.class));
+            this.startActivity(new Intent().setClassName(this, Local1KActivity.class.getName()));
         }
 
     }
@@ -150,7 +150,6 @@ public class Main2Activity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.settings) {
-            startActivity(new Intent(this, SettingActivity.class));
         } else if (id == R.id.clear_database) {
             clearDB();
             Toast.makeText(this, "DB cleared", Toast.LENGTH_SHORT).show();
@@ -160,6 +159,8 @@ public class Main2Activity extends AppCompatActivity
             //QrcodeActivity
 //            startActivity(new Intent(this, CapActivity.class));
 //            startActivityForResult(new Intent(this, CapActivity.class), I_CAP_ACTIVITY);
+        } else if (id == R.id.about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
 
 

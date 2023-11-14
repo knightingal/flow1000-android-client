@@ -13,30 +13,37 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/greenicon"
+        android:src="@drawable/app_icon"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/image_view_logo"
         android:layout_marginTop="72dp" />
 
     <TextView
+            android:id="@+id/version_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="20230101"
+            android:layout_marginTop="16dp"
+            android:layout_below="@+id/image_view_logo"
+            android:layout_centerHorizontal="true"
+            />
+    <TextView
+            android:id="@+id/version_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="20230101-version"
+            android:layout_marginTop="16dp"
+            android:layout_below="@+id/version_code"
+            android:layout_centerHorizontal="true"
+            />
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Developed by Knightingal"
         android:layout_marginTop="16dp"
-        android:layout_below="@+id/image_view_logo"
+        android:layout_below="@+id/version_name"
         android:layout_centerHorizontal="true"
         />
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/download_process1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="center"
-        android:layout_marginEnd="16dp"
-        android:indeterminate="false"
-        app:indicatorSize="24dp"
-        android:max="100"
-        android:progress="0" />
 </RelativeLayout>
