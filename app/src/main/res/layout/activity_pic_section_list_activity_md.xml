@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.jianming.myapplication.PicAlbumListActivity">
+    tools:context="com.example.jianming.myapplication.PicSectionListActivity">
 
 
-    <include layout="@layout/content_pic_album_list_activity_md" />
+    <include layout="@layout/content_pic_section_list_activity_md" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

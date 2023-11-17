@@ -1,6 +1,6 @@
 package com.example.jianming.beans
 
 
-class PicAlbumData(var picAlbumBean: PicAlbumBean ) {
+class PicSectionData(var picAlbumBean: PicAlbumBean ) {
     var position: Int? = null
 }

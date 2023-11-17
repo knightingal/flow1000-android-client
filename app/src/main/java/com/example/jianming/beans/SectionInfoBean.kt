@@ -19,7 +19,7 @@ package com.example.jianming.beans
  * @author Knightingal
  * @since v1.0
  */
-data class AlbumInfoBean (
+data class SectionInfoBean (
         var picpage: String,
         var dirName: String,
         var pics: MutableList<String>

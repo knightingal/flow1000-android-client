@@ -19,11 +19,11 @@ import com.example.jianming.util.AppDataBase
 import com.example.jianming.util.NetworkUtil
 import com.example.jianming.util.TimeUtil
 import com.example.jianming.beans.PicAlbumBean
-import com.example.jianming.beans.PicAlbumData
+import com.example.jianming.beans.PicSectionData
 import com.example.jianming.dao.PicAlbumDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
-import com.example.jianming.listAdapters.PicAlbumListAdapter
+import com.example.jianming.listAdapters.PicSectionListAdapter
 import com.example.jianming.services.DownloadService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -31,7 +31,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.nanjing.knightingal.processerlib.RefreshListener
 
-class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
+class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
 
     private val TAG = "PicAlbumListActivityMD"
@@ -44,11 +44,11 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
     private lateinit var updataStampDao: UpdataStampDao
 
 
-    private lateinit var picAlbumListAdapter: PicAlbumListAdapter
+    private lateinit var picAlbumListAdapter: PicSectionListAdapter
 
     private lateinit var listView: RecyclerView
 
-    private var picAlbumDataList: MutableList<PicAlbumData> = mutableListOf();
+    private var picSectionDataList: MutableList<PicSectionData> = mutableListOf();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +65,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         picInfoDao = db.picInfoDao()
         updataStampDao = db.updateStampDao()
 
-        setContentView(R.layout.activity_pic_album_list_activity_md)
+        setContentView(R.layout.activity_pic_section_list_activity_md)
 
 
         listView = findViewById(R.id.list_view11)
@@ -73,8 +73,9 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
         listView.layoutManager = mLayoutManager
 
-        picAlbumListAdapter = PicAlbumListAdapter(this)
-        picAlbumListAdapter.setDataArray(picAlbumDataList)
+        picAlbumListAdapter =
+            PicSectionListAdapter(this)
+        picAlbumListAdapter.setDataArray(picSectionDataList)
         listView.adapter = picAlbumListAdapter
 
 
@@ -90,9 +91,9 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
             isBound = true
             downLoadService = (binder as DownloadService.LocalBinder).getService()
             downLoadService!!.setRefreshListener(
-                this@PicAlbumListActivity
+                this@PicSectionListActivity
             )
-            if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this@PicAlbumListActivity)) {
+            if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this@PicSectionListActivity)) {
                 startDownloadPicIndex()
             } else {
                 refreshFrontPage.invoke()
@@ -140,7 +141,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
                 if (picAlbumBeanList.isNotEmpty()) {
                     picAlbumBeanList.forEach {
                         picAlbumDao.update(it)
-                        asyncStartDownload(it.id, picAlbumDataList.indexOf(picAlbumDataList.stream().filter { item ->
+                        asyncStartDownload(it.id, picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
                             item.picAlbumBean.id == it.id
                         }.findFirst().get()));
                     }
@@ -156,7 +157,7 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
                             picAlbumDao.update(it)
                             asyncStartDownload(
                                 it.id,
-                                picAlbumDataList.indexOf(picAlbumDataList.stream().filter { item ->
+                                picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
                                     item.picAlbumBean.id == it.id
                                 }.findFirst().get())
                             );
@@ -170,11 +171,11 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
 
     @SuppressLint("NotifyDataSetChanged")
     private val refreshFrontPage: () -> Unit = {
-        picAlbumDataList.clear()
+        picSectionDataList.clear()
         val picAlbumBeanList = getDataSourceFromJsonFile()
         for (picAlbumBean in picAlbumBeanList) {
-            val picAlbumData = PicAlbumData(picAlbumBean)
-            picAlbumDataList.add(picAlbumData)
+            val picSectionData = PicSectionData(picAlbumBean)
+            picSectionDataList.add(picSectionData)
         }
         picAlbumListAdapter.notifyDataSetChanged()
 
@@ -194,10 +195,10 @@ class PicAlbumListActivity : AppCompatActivity(), RefreshListener {
     @SuppressLint("NotifyDataSetChanged")
     override fun doRefreshView(position: Int, currCount: Int, max: Int) {
         val viewHolder =
-            listView.findViewHolderForAdapterPosition(position) as PicAlbumListAdapter.ViewHolder?
+            listView.findViewHolderForAdapterPosition(position) as PicSectionListAdapter.ViewHolder?
         if (currCount == max) {
-            picAlbumDataList[position].picAlbumBean.exist = 1
-            picAlbumDao.update(picAlbumDataList[position].picAlbumBean)
+            picSectionDataList[position].picAlbumBean.exist = 1
+            picAlbumDao.update(picSectionDataList[position].picAlbumBean)
             picAlbumListAdapter.notifyDataSetChanged()
         }
         if (viewHolder != null) {

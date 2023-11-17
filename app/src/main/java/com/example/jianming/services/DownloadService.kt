@@ -14,7 +14,7 @@ import androidx.room.Room
 import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
 import com.example.jianming.util.AppDataBase
-import com.example.jianming.beans.AlbumInfoBean
+import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.dao.PicAlbumDao
 import com.example.jianming.dao.PicInfoDao
@@ -68,7 +68,7 @@ class DownloadService : Service() {
             val picAlbumBean = picAlbumDao.getByInnerIndex(index)
             val mapper = jacksonObjectMapper()
             db.runInTransaction() {
-                (mapper.readValue(body) as AlbumInfoBean).pics.forEach { pic ->
+                (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
                     val picInfoBean: PicInfoBean = PicInfoBean(
                         null,
                         pic,
@@ -84,23 +84,23 @@ class DownloadService : Service() {
             val picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.id)
             processCounter[index] = Counter(picInfoBeanList.size)
 
-            val albumInfoBean = AlbumInfoBean(
+            val sectionInfoBean = SectionInfoBean(
                 "${picAlbumBean.id}",
                 picAlbumBean.name,
                 mutableListOf()
             )
             picInfoBeanList.forEach { picInfoBean ->
-                albumInfoBean.pics.add(picInfoBean.name)
+                sectionInfoBean.pics.add(picInfoBean.name)
                 val picName = picInfoBean.name
                 val albumConfig = getAlbumConfig(picAlbumBean.album)
 
                 var imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                        "/linux1000/${albumConfig.baseUrl}/${albumInfoBean.dirName}/${picName}"
+                        "/linux1000/${albumConfig.baseUrl}/${sectionInfoBean.dirName}/${picName}"
 
                 if (albumConfig.encryped) {
                     imgUrl += ".bin"
                 }
-                val directory = getAlbumStorageDir(applicationContext, albumInfoBean.dirName)
+                val directory = getAlbumStorageDir(applicationContext, sectionInfoBean.dirName)
                 val file = File(directory, picName)
                 ConcurrencyImageTask.downloadUrl(imgUrl, file, albumConfig.encryped) { bytes ->
 

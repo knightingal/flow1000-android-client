@@ -17,10 +17,10 @@ import android.widget.TextView;
 import com.example.jianming.util.AppDataBase;
 import com.example.jianming.util.FileUtil;
 import com.example.jianming.beans.PicAlbumBean;
-import com.example.jianming.beans.PicAlbumData;
+import com.example.jianming.beans.PicSectionData;
 import com.example.jianming.dao.PicAlbumDao;
 import com.example.jianming.dao.PicInfoDao;
-import com.example.jianming.myapplication.PicAlbumListActivity;
+import com.example.jianming.myapplication.PicSectionListActivity;
 import com.example.jianming.myapplication.R;
 import com.example.jianming.myapplication.SectionImageListActivity;
 import com.example.jianming.services.Counter;
@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapter.ViewHolder> {
+public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAdapter.ViewHolder> {
     private final static String TAG = "PicAlbumListAdapter";
-    private List<PicAlbumData> dataArray;
+    private List<PicSectionData> dataArray;
 
     private final Context context;
 
@@ -44,7 +44,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
 
     private final PicInfoDao picInfoDao;
 
-    public PicAlbumListAdapter(Context context) {
+    public PicSectionListAdapter(Context context) {
         this.context = context;
         AppDataBase db = Room.databaseBuilder(context,
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
@@ -52,7 +52,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         picInfoDao = db.picInfoDao();
     }
 
-    public void setDataArray(List<PicAlbumData> dataArray) {
+    public void setDataArray(List<PicSectionData> dataArray) {
         this.dataArray = dataArray;
     }
 
@@ -93,11 +93,11 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         } else {
             renderNonExistItem(viewHolder);
         }
-        if (((PicAlbumListActivity) context).getDownLoadService() != null) {
+        if (((PicSectionListActivity) context).getDownLoadService() != null) {
             long albumId = dataArray.get(position).getPicAlbumBean().getId();
-            if (Objects.requireNonNull(((PicAlbumListActivity) context).getDownLoadService())
+            if (Objects.requireNonNull(((PicSectionListActivity) context).getDownLoadService())
                     .getProcessCounter().containsKey(albumId)) {
-                Counter counter = ((PicAlbumListActivity) context).getDownLoadService()
+                Counter counter = ((PicSectionListActivity) context).getDownLoadService()
                         .getProcessCounter().get(albumId);
                 if (counter != null) {
                     viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
@@ -118,19 +118,19 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getId();
         viewHolder.position = viewHolder.getAdapterPosition();
         viewHolder.deleteBtn.setOnClickListener(v -> {
-            Log.d(TAG, "you clicked " + PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getName() + " delete_btn");
-            AlertDialog.Builder builder = new AlertDialog.Builder(PicAlbumListAdapter.this.context);
+            Log.d(TAG, "you clicked " + PicSectionListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getName() + " delete_btn");
+            AlertDialog.Builder builder = new AlertDialog.Builder(PicSectionListAdapter.this.context);
             builder.setMessage("delete this dir?");
             builder.setTitle("");
             builder.setPositiveButton("yes", (dialog, which) -> {
-                FileUtil.removeDir(PicAlbumListAdapter.this.context, PicAlbumListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getName());
+                FileUtil.removeDir(PicSectionListAdapter.this.context, PicSectionListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getName());
                 PicAlbumBean picAlbumData = dataArray.get(position).getPicAlbumBean();
 
                 picInfoDao.deleteByAlbumInnerIndex(viewHolder.serverIndex);
                 picAlbumData.setExist(0);
                 picAlbumDao.update(picAlbumData);
 
-                DeleteAlbumKt.postDeleteAlbum(viewHolder.serverIndex);
+                DeleteAlbumKt.postDeleteSection(viewHolder.serverIndex);
                 dialog.dismiss();
                 notifyDataSetChanged();
 //                renderNonExistItem(viewHolder);
@@ -198,7 +198,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 long innerIndex = dataArray.get(position)
                         .getPicAlbumBean()
                         .getId();
-                ((PicAlbumListActivity) context).asyncStartDownload((int) innerIndex, position);
+                ((PicSectionListActivity) context).asyncStartDownload((int) innerIndex, position);
             }
         }
 

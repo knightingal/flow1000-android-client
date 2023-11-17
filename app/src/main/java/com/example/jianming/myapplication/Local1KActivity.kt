@@ -15,12 +15,12 @@ class Local1KActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         binding.local1000.setOnClickListener {
-            startActivity(Intent().setClass(this, PicAlbumListActivity::class.java))
+            startActivity(Intent().setClass(this, PicSectionListActivity::class.java))
         }
 
         binding.offline.setOnClickListener {
             val intent = Intent()
-                .setClass(this, PicAlbumListActivity::class.java)
+                .setClass(this, PicSectionListActivity::class.java)
                 .putExtra("offline", true)
             startActivity(intent)
         }

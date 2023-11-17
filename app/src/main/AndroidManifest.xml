@@ -54,8 +54,8 @@
             android:exported="true"/>
 
         <activity
-            android:name=".PicAlbumListActivity"
-            android:label="@string/title_activity_pic_album_list_activity_md" />
+            android:name=".PicSectionListActivity"
+            android:label="@string/title_activity_pic_section_list_activity_md" />
         
 
         <provider

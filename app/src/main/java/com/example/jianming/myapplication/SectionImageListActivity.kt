@@ -19,7 +19,7 @@ class SectionImageListActivity : AppCompatActivity(){
     private lateinit var launcher: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_pic_album_list_activity_md)
+        setContentView(R.layout.activity_pic_section_list_activity_md)
         recyclerView = findViewById(R.id.list_view11)
         recyclerView.setHasFixedSize(true)
 
