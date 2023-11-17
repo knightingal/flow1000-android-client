@@ -11,7 +11,7 @@ import com.example.jianming.beans.PicAlbumBean;
 
 
 @Dao
-interface PicAlbumDao {
+interface PicSectionDao {
 
     @Query("select * from PicAlbumBean")
     fun getAll(): List<PicAlbumBean>

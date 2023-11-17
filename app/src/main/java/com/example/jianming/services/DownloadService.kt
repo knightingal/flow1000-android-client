@@ -16,7 +16,7 @@ import com.example.jianming.Tasks.ConcurrencyJsonApiTask
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.beans.PicInfoBean
-import com.example.jianming.dao.PicAlbumDao
+import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.myapplication.getAlbumConfig
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -30,7 +30,7 @@ class DownloadService : Service() {
     private val binder: IBinder = LocalBinder();
 
     private lateinit var db: AppDataBase
-    private lateinit var picAlbumDao : PicAlbumDao
+    private lateinit var picSectionDao : PicSectionDao
     private lateinit var picInfoDao : PicInfoDao
 
     val processCounter = hashMapOf<Long, Counter>()
@@ -57,7 +57,7 @@ class DownloadService : Service() {
             applicationContext,
             AppDataBase::class.java, "database-flow1000"
         ).allowMainThreadQueries().build()
-        picAlbumDao = db.picAlbumDao()
+        picSectionDao = db.picSectionDao()
         picInfoDao = db.picInfoDao()
     }
 
@@ -65,7 +65,7 @@ class DownloadService : Service() {
         val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=$index"
 
         ConcurrencyJsonApiTask.startDownload(url) {body ->
-            val picAlbumBean = picAlbumDao.getByInnerIndex(index)
+            val picAlbumBean = picSectionDao.getByInnerIndex(index)
             val mapper = jacksonObjectMapper()
             db.runInTransaction() {
                 (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->

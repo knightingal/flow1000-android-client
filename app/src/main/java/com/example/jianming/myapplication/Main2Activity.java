@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.jianming.util.AppDataBase;
-import com.example.jianming.dao.PicAlbumDao;
+import com.example.jianming.dao.PicSectionDao;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
@@ -30,7 +30,7 @@ public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
-    private PicAlbumDao picAlbumBeanDao;
+    private PicSectionDao picAlbumBeanDao;
 
     public void btnClicked(View v) {
         if (v.getId() == R.id.picIndexBtn) {
@@ -56,7 +56,7 @@ public class Main2Activity extends AppCompatActivity
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
 
 
-        picAlbumBeanDao = db.picAlbumDao();
+        picAlbumBeanDao = db.picSectionDao();
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main2);

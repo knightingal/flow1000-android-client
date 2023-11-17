@@ -20,7 +20,7 @@ import com.example.jianming.util.NetworkUtil
 import com.example.jianming.util.TimeUtil
 import com.example.jianming.beans.PicAlbumBean
 import com.example.jianming.beans.PicSectionData
-import com.example.jianming.dao.PicAlbumDao
+import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
@@ -37,7 +37,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     private val TAG = "PicAlbumListActivityMD"
     private lateinit var db: AppDataBase
 
-    private lateinit var picAlbumDao: PicAlbumDao
+    private lateinit var picSectionDao: PicSectionDao
 
     private lateinit var picInfoDao: PicInfoDao
 
@@ -61,7 +61,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
             AppDataBase::class.java, "database-flow1000"
         ).allowMainThreadQueries().build()
 
-        picAlbumDao = db.picAlbumDao()
+        picSectionDao = db.picSectionDao()
         picInfoDao = db.picInfoDao()
         updataStampDao = db.updateStampDao()
 
@@ -130,7 +130,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
                 updataStampDao.update(updateStamp)
                 val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(allBody)
-                picAlbumBeanList.forEach { picAlbumDao.insert(it) }
+                picAlbumBeanList.forEach { picSectionDao.insert(it) }
             }
 
             refreshFrontPage.invoke()
@@ -140,7 +140,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
                 val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(pendingBody)
                 if (picAlbumBeanList.isNotEmpty()) {
                     picAlbumBeanList.forEach {
-                        picAlbumDao.update(it)
+                        picSectionDao.update(it)
                         asyncStartDownload(it.id, picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
                             item.picAlbumBean.id == it.id
                         }.findFirst().get()));
@@ -152,9 +152,9 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
                 val picAlbumBeanList: List<PicAlbumBean> = mapper.readValue(pendingBody)
                 if (picAlbumBeanList.isNotEmpty()) {
                     picAlbumBeanList.forEach {
-                        val existAlbum = picAlbumDao.getByInnerIndex(it.id)
+                        val existAlbum = picSectionDao.getByInnerIndex(it.id)
                         if (existAlbum.exist != 1) {
-                            picAlbumDao.update(it)
+                            picSectionDao.update(it)
                             asyncStartDownload(
                                 it.id,
                                 picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
@@ -185,9 +185,9 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
     private fun getDataSourceFromJsonFile(): List<PicAlbumBean> {
         return if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this)) {
-            picAlbumDao.getAll().toList()
+            picSectionDao.getAll().toList()
         } else {
-            picAlbumDao.getAllExist().toList()
+            picSectionDao.getAllExist().toList()
         }
     }
 
@@ -198,7 +198,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
             listView.findViewHolderForAdapterPosition(position) as PicSectionListAdapter.ViewHolder?
         if (currCount == max) {
             picSectionDataList[position].picAlbumBean.exist = 1
-            picAlbumDao.update(picSectionDataList[position].picAlbumBean)
+            picSectionDao.update(picSectionDataList[position].picAlbumBean)
             picAlbumListAdapter.notifyDataSetChanged()
         }
         if (viewHolder != null) {

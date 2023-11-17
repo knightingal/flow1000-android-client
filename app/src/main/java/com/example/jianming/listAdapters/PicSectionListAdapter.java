@@ -18,7 +18,7 @@ import com.example.jianming.util.AppDataBase;
 import com.example.jianming.util.FileUtil;
 import com.example.jianming.beans.PicAlbumBean;
 import com.example.jianming.beans.PicSectionData;
-import com.example.jianming.dao.PicAlbumDao;
+import com.example.jianming.dao.PicSectionDao;
 import com.example.jianming.dao.PicInfoDao;
 import com.example.jianming.myapplication.PicSectionListActivity;
 import com.example.jianming.myapplication.R;
@@ -40,7 +40,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
 
     private final Context context;
 
-    private final PicAlbumDao picAlbumDao;
+    private final PicSectionDao picSectionDao;
 
     private final PicInfoDao picInfoDao;
 
@@ -48,7 +48,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         this.context = context;
         AppDataBase db = Room.databaseBuilder(context,
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
-        picAlbumDao = db.picAlbumDao();
+        picSectionDao = db.picSectionDao();
         picInfoDao = db.picInfoDao();
     }
 
@@ -128,7 +128,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
 
                 picInfoDao.deleteByAlbumInnerIndex(viewHolder.serverIndex);
                 picAlbumData.setExist(0);
-                picAlbumDao.update(picAlbumData);
+                picSectionDao.update(picAlbumData);
 
                 DeleteAlbumKt.postDeleteSection(viewHolder.serverIndex);
                 dialog.dismiss();

@@ -5,14 +5,14 @@ import androidx.room.RoomDatabase
 import com.example.jianming.beans.PicAlbumBean
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.beans.UpdateStamp
-import com.example.jianming.dao.PicAlbumDao
+import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 
 @Database(entities = [UpdateStamp::class, PicAlbumBean::class, PicInfoBean::class], version = 2, exportSchema = false)
 abstract class AppDataBase : RoomDatabase() {
 
-    abstract fun picAlbumDao(): PicAlbumDao
+    abstract fun picSectionDao(): PicSectionDao
 
     abstract fun picInfoDao(): PicInfoDao
 
