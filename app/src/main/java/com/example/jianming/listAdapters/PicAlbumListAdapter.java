@@ -130,6 +130,7 @@ public class PicAlbumListAdapter extends RecyclerView.Adapter<PicAlbumListAdapte
                 picAlbumData.setExist(0);
                 picAlbumDao.update(picAlbumData);
 
+                DeleteAlbumKt.postDeleteAlbum(viewHolder.serverIndex);
                 dialog.dismiss();
                 notifyDataSetChanged();
 //                renderNonExistItem(viewHolder);
