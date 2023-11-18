@@ -35,7 +35,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAdapter.ViewHolder> {
-    private final static String TAG = "PicAlbumListAdapter";
+    private final static String TAG = "PicSectionListAdapter";
     private List<PicSectionData> dataArray;
 
     private final Context context;
@@ -130,7 +130,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
                 picAlbumData.setExist(0);
                 picSectionDao.update(picAlbumData);
 
-                DeleteAlbumKt.postDeleteSection(viewHolder.serverIndex);
+                DeleteSectionKt.postDeleteSection(viewHolder.serverIndex);
                 dialog.dismiss();
                 notifyDataSetChanged();
 //                renderNonExistItem(viewHolder);
@@ -191,7 +191,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
                 this.downloadProcessBar.setIndeterminate(true);
 //                 ((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().add(position);
 
-                File file = FileUtil.getAlbumStorageDir(context, name);
+                File file = FileUtil.getSectionStorageDir(context, name);
                 if (file.mkdirs()) {
                     Log.i(TAG, file.getAbsolutePath() + " made");
                 }

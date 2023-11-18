@@ -44,7 +44,7 @@ class SectionImageListActivity : AppCompatActivity(){
     }
 
     private fun initSectionImageList() {
-        val albumIndex = this.intent.getLongExtra("serverIndex", 0)
+        val sectionIndex = this.intent.getLongExtra("serverIndex", 0)
 
         val db = Room.databaseBuilder(
             this,
@@ -52,7 +52,7 @@ class SectionImageListActivity : AppCompatActivity(){
         ).allowMainThreadQueries().build()
         val picInfoBeanList = db.picInfoDao().queryByAlbumInnerIndex(
             db.picSectionDao().getByServerIndex(
-                albumIndex
+                sectionIndex
             ).id
         )
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)

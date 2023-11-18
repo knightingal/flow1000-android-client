@@ -18,7 +18,7 @@ import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
-import com.example.jianming.myapplication.getAlbumConfig
+import com.example.jianming.myapplication.getSectionConfig
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.nanjing.knightingal.processerlib.RefreshListener
@@ -92,7 +92,7 @@ class DownloadService : Service() {
             picInfoBeanList.forEach { picInfoBean ->
                 sectionInfoBean.pics.add(picInfoBean.name)
                 val picName = picInfoBean.name
-                val albumConfig = getAlbumConfig(picAlbumBean.album)
+                val albumConfig = getSectionConfig(picAlbumBean.album)
 
                 var imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
                         "/linux1000/${albumConfig.baseUrl}/${sectionInfoBean.dirName}/${picName}"

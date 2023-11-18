@@ -34,7 +34,7 @@ import org.nanjing.knightingal.processerlib.RefreshListener
 class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
 
-    private val TAG = "PicAlbumListActivityMD"
+    private val TAG = "PicSectionListActivityMD"
     private lateinit var db: AppDataBase
 
     private lateinit var picSectionDao: PicSectionDao

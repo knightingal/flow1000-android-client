@@ -12,23 +12,18 @@ import java.io.File;
 public class FileUtil {
     private static final String TAG = "FileUtil";
 
-    public static File getAlbumStorageDir(Context context, String albumName) {
-
-        //File fileRoot = new File("/storage/sdcard1/Android/data/com.example.jianming.myapplication/files/Download/");
-        //File file = new File(fileRoot, albumName);
+    public static File getSectionStorageDir(Context context, String sectionName) {
         File file = new File(context.getExternalFilesDir(
-                Environment.DIRECTORY_DOWNLOADS), albumName);
-
-
+                Environment.DIRECTORY_DOWNLOADS), sectionName);
         if (file.mkdirs()) {
             Log.i(TAG, "Directory of " + file.getAbsolutePath() + " created");
         }
         return file;
     }
 
-    public static void removeDir(Context context, String albumName) {
+    public static void removeDir(Context context, String sectionName) {
         File file = new File(context.getExternalFilesDir(
-                Environment.DIRECTORY_DOWNLOADS), albumName
+                Environment.DIRECTORY_DOWNLOADS), sectionName
         );
         try {
             File[] files = file.listFiles();
@@ -41,11 +36,9 @@ public class FileUtil {
         }
     }
 
-    public static boolean checkDirExist(Context context, String albumName) {
-        //File fileRoot = new File("/storage/sdcard1/Android/data/com.example.jianming.myapplication/files/Download/");
-        //File file = new File(fileRoot, albumName);
+    public static boolean checkDirExist(Context context, String sectionName) {
         File file = new File(context.getExternalFilesDir(
-                Environment.DIRECTORY_DOWNLOADS), albumName);
+                Environment.DIRECTORY_DOWNLOADS), sectionName);
 
         return file.exists();
     }

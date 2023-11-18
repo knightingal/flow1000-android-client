@@ -2,9 +2,9 @@ package com.example.jianming.myapplication
 
 class SectionConfig(var name: String, var encryped: Boolean, var baseUrl: String,) ;
 
-val SECTION_CONFIG_MAP: Map<String, SectionConfig> = initAlbumConfig();
+val SECTION_CONFIG_MAP: Map<String, SectionConfig> = initSectionConfig();
 
-fun initAlbumConfig(): Map<String, SectionConfig> {
+fun initSectionConfig(): Map<String, SectionConfig> {
     return mapOf(
         "flow1000" to SectionConfig("flow1000", true, "encrypted"),
         "ship" to SectionConfig("ship", true, "encrypted"),
@@ -14,7 +14,7 @@ fun initAlbumConfig(): Map<String, SectionConfig> {
     );
 }
 
-fun getAlbumConfig(name: String?) : SectionConfig {
+fun getSectionConfig(name: String?) : SectionConfig {
 
     return SECTION_CONFIG_MAP.getOrDefault(name, SectionConfig("flow1000", true, "encrypted"))
 }
