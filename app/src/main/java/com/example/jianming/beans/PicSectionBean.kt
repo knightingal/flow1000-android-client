@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import com.fasterxml.jackson.annotation.JsonProperty
 
 @Entity
-data class PicAlbumBean (
+data class PicSectionBean (
     @JsonProperty("name")
     var name: String,
 

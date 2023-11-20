@@ -19,7 +19,7 @@ interface UpdataStampDao {
     fun update(updateStamp: UpdateStamp)
 
     @Insert
-    fun save(albumStamp: UpdateStamp)
+    fun save(sectionStamp: UpdateStamp)
 
     @Delete
     fun deleteAll(updateStampList: List<UpdateStamp>)

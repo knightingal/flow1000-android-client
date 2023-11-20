@@ -61,18 +61,18 @@ class DownloadService : Service() {
         picInfoDao = db.picInfoDao()
     }
 
-    fun startDownloadAlbum(index: Long, position: Int) {
+    fun startDownloadSection(index: Long, position: Int) {
         val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=$index"
 
         ConcurrencyJsonApiTask.startDownload(url) {body ->
-            val picAlbumBean = picSectionDao.getByInnerIndex(index)
+            val picSectionBean = picSectionDao.getByInnerIndex(index)
             val mapper = jacksonObjectMapper()
             db.runInTransaction() {
                 (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
                     val picInfoBean: PicInfoBean = PicInfoBean(
                         null,
                         pic,
-                        picAlbumBean.id,
+                        picSectionBean.id,
                         null,
                         0,
                         0
@@ -81,28 +81,28 @@ class DownloadService : Service() {
                 }
             }
 
-            val picInfoBeanList = picInfoDao.queryByAlbumInnerIndex(picAlbumBean.id)
+            val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
             processCounter[index] = Counter(picInfoBeanList.size)
 
             val sectionInfoBean = SectionInfoBean(
-                "${picAlbumBean.id}",
-                picAlbumBean.name,
+                "${picSectionBean.id}",
+                picSectionBean.name,
                 mutableListOf()
             )
             picInfoBeanList.forEach { picInfoBean ->
                 sectionInfoBean.pics.add(picInfoBean.name)
                 val picName = picInfoBean.name
-                val albumConfig = getSectionConfig(picAlbumBean.album)
+                val sectionConfig = getSectionConfig(picSectionBean.album)
 
                 var imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                        "/linux1000/${albumConfig.baseUrl}/${sectionInfoBean.dirName}/${picName}"
+                        "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${picName}"
 
-                if (albumConfig.encryped) {
+                if (sectionConfig.encryped) {
                     imgUrl += ".bin"
                 }
-                val directory = getAlbumStorageDir(applicationContext, sectionInfoBean.dirName)
+                val directory = getSectionStorageDir(applicationContext, sectionInfoBean.dirName)
                 val file = File(directory, picName)
-                ConcurrencyImageTask.downloadUrl(imgUrl, file, albumConfig.encryped) { bytes ->
+                ConcurrencyImageTask.downloadUrl(imgUrl, file, sectionConfig.encryped) { bytes ->
 
                     val currCount = processCounter[index]?.incProcess() as Int
                     val options = BitmapFactory.Options()
@@ -144,9 +144,9 @@ class DownloadService : Service() {
 
 }
 
-private fun getAlbumStorageDir(context: Context, albumName: String): File {
+private fun getSectionStorageDir(context: Context, sectionName: String): File {
     val externalFilesDirBase = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-    val file = File(externalFilesDirBase, albumName)
+    val file = File(externalFilesDirBase, sectionName)
     if (file.mkdirs()) {
         Log.i("KtDownloadService", "Directory of $file.absolutePath created")
     }

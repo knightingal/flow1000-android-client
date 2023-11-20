@@ -50,7 +50,7 @@ class SectionImageListActivity : AppCompatActivity(){
             this,
             AppDataBase::class.java, "database-flow1000"
         ).allowMainThreadQueries().build()
-        val picInfoBeanList = db.picInfoDao().queryByAlbumInnerIndex(
+        val picInfoBeanList = db.picInfoDao().queryBySectionInnerIndex(
             db.picSectionDao().getByServerIndex(
                 sectionIndex
             ).id

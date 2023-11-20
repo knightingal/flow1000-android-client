@@ -12,7 +12,7 @@ data class PicInfoBean (
     @PrimaryKey
     var index: Long? = null,
     var name: String,
-    var albumIndex: Long,
+    var sectionIndex: Long,
     var absolutePath: String? = null,
     var height: Int = 0,
     var width: Int = 0

@@ -30,7 +30,7 @@ public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
-    private PicSectionDao picAlbumBeanDao;
+    private PicSectionDao picSectionBeanDao;
 
     public void btnClicked(View v) {
         if (v.getId() == R.id.picIndexBtn) {
@@ -56,7 +56,7 @@ public class Main2Activity extends AppCompatActivity
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
 
 
-        picAlbumBeanDao = db.picSectionDao();
+        picSectionBeanDao = db.picSectionDao();
         ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main2);
@@ -89,12 +89,12 @@ public class Main2Activity extends AppCompatActivity
     }
 
     private void initDB() {
-        UpdateStamp albumStamp = this.db.updateStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN");
-        if (albumStamp == null) {
-            albumStamp = new UpdateStamp();
-            albumStamp.setTableName("PIC_ALBUM_BEAN");
-            albumStamp.setUpdateStamp("20000101000000");
-            this.db.updateStampDao().save(albumStamp);
+        UpdateStamp sectionStamp = this.db.updateStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN");
+        if (sectionStamp == null) {
+            sectionStamp = new UpdateStamp();
+            sectionStamp.setTableName("PIC_ALBUM_BEAN");
+            sectionStamp.setUpdateStamp("20000101000000");
+            this.db.updateStampDao().save(sectionStamp);
         }
     }
 
@@ -173,7 +173,7 @@ public class Main2Activity extends AppCompatActivity
 
     private void clearDB() {
         this.db.updateStampDao().deleteAll(null);
-        picAlbumBeanDao.deleteAll(null);
+        picSectionBeanDao.deleteAll(null);
         initDB();
     }
 

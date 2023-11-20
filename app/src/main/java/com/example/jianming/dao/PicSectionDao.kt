@@ -7,33 +7,33 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.beans.PicSectionBean;
 
 
 @Dao
 interface PicSectionDao {
 
-    @Query("select * from PicAlbumBean")
-    fun getAll(): List<PicAlbumBean>
+    @Query("select * from PicSectionBean")
+    fun getAll(): List<PicSectionBean>
 
     @Update
-    fun update( picAlbumData: PicAlbumBean)
+    fun update(picSectionData: PicSectionBean)
 
-    @Query("select * from PicAlbumBean where id = :index")
-    fun getByInnerIndex(index: Long): PicAlbumBean
+    @Query("select * from PicSectionBean where id = :index")
+    fun getByInnerIndex(index: Long): PicSectionBean
 
-    @Query("select * from PicAlbumBean where id = :serverIndex")
-    fun getByServerIndex(serverIndex: Long): PicAlbumBean
+    @Query("select * from PicSectionBean where id = :serverIndex")
+    fun getByServerIndex(serverIndex: Long): PicSectionBean
 
-    @Query("select * from PicAlbumBean where exist = 1")
-    fun getAllExist(): List<PicAlbumBean>
+    @Query("select * from PicSectionBean where exist = 1")
+    fun getAllExist(): List<PicSectionBean>
 
     @Insert
-    fun insert(picAlbumBean: PicAlbumBean)
+    fun insert(picSectionBean: PicSectionBean)
 
     @Delete
-    fun deleteAll(picAlbumBeanList: List<PicAlbumBean>)
+    fun deleteAll(picSectionBeanList: List<PicSectionBean>)
 
     @Delete
-    fun delete(picAlbumBean: PicAlbumBean)
+    fun delete(picSectionBean: PicSectionBean)
 }

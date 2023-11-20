@@ -2,7 +2,6 @@ package com.example.jianming.dao;
 
 
 import androidx.room.Dao;
-import androidx.room.Delete
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
@@ -17,11 +16,11 @@ interface PicInfoDao {
     @Insert
     fun insert(picInfoBean: PicInfoBean)
 
-    @Query("select * from PicInfoBean where albumIndex = :innerIndex")
-    fun queryByAlbumInnerIndex(innerIndex: Long):List<PicInfoBean>
+    @Query("select * from PicInfoBean where sectionIndex = :innerIndex")
+    fun queryBySectionInnerIndex(innerIndex: Long):List<PicInfoBean>
 
-    @Query("delete from PicInfoBean where albumIndex = :innerIndex")
-    fun deleteByAlbumInnerIndex(innerIndex: Long)
+    @Query("delete from PicInfoBean where sectionIndex = :innerIndex")
+    fun deleteBySectionInnerIndex(innerIndex: Long)
 
     @Update
     fun update(picInfoBean: PicInfoBean);

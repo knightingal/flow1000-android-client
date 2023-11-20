@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.example.jianming.util.AppDataBase;
 import com.example.jianming.util.FileUtil;
-import com.example.jianming.beans.PicAlbumBean;
+import com.example.jianming.beans.PicSectionBean;
 import com.example.jianming.beans.PicSectionData;
 import com.example.jianming.dao.PicSectionDao;
 import com.example.jianming.dao.PicInfoDao;
@@ -87,18 +87,18 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         dataArray.get(position).setPosition(position);
 
-        viewHolder.textView.setText(formatTitle(dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getName()));
-        if (dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getExist() == 1) {
+        viewHolder.textView.setText(formatTitle(dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getName()));
+        if (dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getExist() == 1) {
             renderExistItem(viewHolder);
         } else {
             renderNonExistItem(viewHolder);
         }
         if (((PicSectionListActivity) context).getDownLoadService() != null) {
-            long albumId = dataArray.get(position).getPicAlbumBean().getId();
+            long sectionId = dataArray.get(position).getPicSectionBean().getId();
             if (Objects.requireNonNull(((PicSectionListActivity) context).getDownLoadService())
-                    .getProcessCounter().containsKey(albumId)) {
+                    .getProcessCounter().containsKey(sectionId)) {
                 Counter counter = ((PicSectionListActivity) context).getDownLoadService()
-                        .getProcessCounter().get(albumId);
+                        .getProcessCounter().get(sectionId);
                 if (counter != null) {
                     viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
                     if (counter.getProcess() == 0 ) {
@@ -115,20 +115,20 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
                 viewHolder.downloadProcessBar.setVisibility(View.GONE);
             }
         }
-        viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getId();
+        viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getId();
         viewHolder.position = viewHolder.getAdapterPosition();
         viewHolder.deleteBtn.setOnClickListener(v -> {
-            Log.d(TAG, "you clicked " + PicSectionListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getName() + " delete_btn");
+            Log.d(TAG, "you clicked " + PicSectionListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getName() + " delete_btn");
             AlertDialog.Builder builder = new AlertDialog.Builder(PicSectionListAdapter.this.context);
             builder.setMessage("delete this dir?");
             builder.setTitle("");
             builder.setPositiveButton("yes", (dialog, which) -> {
-                FileUtil.removeDir(PicSectionListAdapter.this.context, PicSectionListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicAlbumBean().getName());
-                PicAlbumBean picAlbumData = dataArray.get(position).getPicAlbumBean();
+                FileUtil.removeDir(PicSectionListAdapter.this.context, PicSectionListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getName());
+                PicSectionBean picSectionData = dataArray.get(position).getPicSectionBean();
 
-                picInfoDao.deleteByAlbumInnerIndex(viewHolder.serverIndex);
-                picAlbumData.setExist(0);
-                picSectionDao.update(picAlbumData);
+                picInfoDao.deleteBySectionInnerIndex(viewHolder.serverIndex);
+                picSectionData.setExist(0);
+                picSectionDao.update(picSectionData);
 
                 DeleteSectionKt.postDeleteSection(viewHolder.serverIndex);
                 dialog.dismiss();
@@ -196,7 +196,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
                     Log.i(TAG, file.getAbsolutePath() + " made");
                 }
                 long innerIndex = dataArray.get(position)
-                        .getPicAlbumBean()
+                        .getPicSectionBean()
                         .getId();
                 ((PicSectionListActivity) context).asyncStartDownload((int) innerIndex, position);
             }
