@@ -61,6 +61,7 @@ localProperties.load(FileInputStream(localPropertiesFile))
 android {
     buildFeatures {
         buildConfig = true
+        viewBinding = true
     }
     signingConfigs {
         getByName("debug") {
@@ -148,6 +149,7 @@ task("releaseUpload") {
 dependencies {
 
     implementation("com.nostra13.universalimageloader:universal-image-loader:1.9.5")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
 
 
     val jacksonVersion = "2.15.2"
