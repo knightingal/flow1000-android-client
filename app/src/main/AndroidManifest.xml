@@ -23,9 +23,17 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
-            android:exported="false"
+            android:exported="true"
+            android:theme="@style/AppTheme"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" />
+             >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".SectionImageListActivity"
             android:label="@string/title_activity_list" />
@@ -44,11 +52,11 @@
             android:name=".Main2Activity"
             android:exported="true"
             android:label="@string/title_activity_main2">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
 
         <service
