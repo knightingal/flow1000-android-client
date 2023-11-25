@@ -13,6 +13,8 @@ class PageViewModel : ViewModel() {
         "Hello world from section: $it"
     }
 
+    val pendingText = "this is section pending"
+
     fun setIndex(index: Int) {
         _index.value = index
     }

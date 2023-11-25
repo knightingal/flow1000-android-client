@@ -8,7 +8,8 @@ import com.example.jianming.myapplication.R
 
 private val TAB_TITLES = arrayOf(
     R.string.tab_text_1,
-    R.string.tab_text_2
+    R.string.tab_text_2,
+    R.string.tab_pending,
 )
 
 /**
@@ -21,7 +22,11 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
     override fun getItem(position: Int): Fragment {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment.
-        return PlaceholderFragment.newInstance(position + 1)
+        if (position <= 1) {
+            return PlaceholderFragment.newInstance(position + 1)
+        } else {
+            return PendingFragment()
+        }
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
@@ -30,6 +35,6 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
 
     override fun getCount(): Int {
         // Show 2 total pages.
-        return 2
+        return 3
     }
 }
