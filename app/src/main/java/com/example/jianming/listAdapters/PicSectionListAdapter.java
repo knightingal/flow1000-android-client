@@ -93,26 +93,28 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         } else {
             renderNonExistItem(viewHolder);
         }
-        if (((PicSectionListActivity) context).getDownLoadService() != null) {
-            long sectionId = dataArray.get(position).getPicSectionBean().getId();
-            if (Objects.requireNonNull(((PicSectionListActivity) context).getDownLoadService())
-                    .getProcessCounter().containsKey(sectionId)) {
-                Counter counter = ((PicSectionListActivity) context).getDownLoadService()
-                        .getProcessCounter().get(sectionId);
-                if (counter != null) {
-                    viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
-                    if (counter.getProcess() == 0 ) {
-                        viewHolder.downloadProcessBar.setIndeterminate(true);
+        if (context instanceof PicSectionListActivity) {
+            if (((PicSectionListActivity) context).getDownLoadService() != null) {
+                long sectionId = dataArray.get(position).getPicSectionBean().getId();
+                if (Objects.requireNonNull(((PicSectionListActivity) context).getDownLoadService())
+                        .getProcessCounter().containsKey(sectionId)) {
+                    Counter counter = ((PicSectionListActivity) context).getDownLoadService()
+                            .getProcessCounter().get(sectionId);
+                    if (counter != null) {
+                        viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+                        if (counter.getProcess() == 0) {
+                            viewHolder.downloadProcessBar.setIndeterminate(true);
+                        } else {
+                            viewHolder.downloadProcessBar.setIndeterminate(false);
+                            viewHolder.downloadProcessBar.setProgress(counter.getProcess(), true);
+                            viewHolder.downloadProcessBar.setMax(counter.getMax());
+                        }
                     } else {
-                        viewHolder.downloadProcessBar.setIndeterminate(false);
-                        viewHolder.downloadProcessBar.setProgress(counter.getProcess(), true);
-                        viewHolder.downloadProcessBar.setMax(counter.getMax());
+                        viewHolder.downloadProcessBar.setVisibility(View.GONE);
                     }
                 } else {
                     viewHolder.downloadProcessBar.setVisibility(View.GONE);
                 }
-            } else {
-                viewHolder.downloadProcessBar.setVisibility(View.GONE);
             }
         }
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getId();
