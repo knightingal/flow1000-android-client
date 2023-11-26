@@ -122,15 +122,13 @@ class PendingFragment : Fragment(){
 
         override fun onServiceDisconnected(name: ComponentName) {
             Log.d(TAG, "onServiceDisconnected")
+            downLoadService?.setRefreshListener(null)
             downLoadService = null
             serviceBound = false
         }
     }
 
     private val refreshListener: RefreshListener = object : RefreshListener {
-
-
-
         override fun doRefreshProcess(position: Int, currCount: Int, max: Int) {
             val viewHolder =
                 pendingListView.findViewHolderForAdapterPosition(position) as PicSectionListAdapter.ViewHolder?
@@ -159,66 +157,5 @@ class PendingFragment : Fragment(){
             }
             picSectionListAdapter.notifyDataSetChanged()
         }
-
     }
-
-
-    private val refreshFrontPage: () -> Unit = {
-    }
-
-    private fun getDataSourceFromJsonFile(): List<PicSectionBean> {
-        return picSectionDao.getAll().toList()
-    }
-    private fun startDownloadPicIndex() {
-        val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
-        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
-        Log.d("startDownloadWebPage", stringUrl)
-        ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
-            val mapper = jacksonObjectMapper()
-            db.runInTransaction() {
-                updateStamp.updateStamp = TimeUtil.currentTimeFormat()
-                updataStampDao.update(updateStamp)
-                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
-                picSectionBeanList.forEach { picSectionDao.insert(it) }
-            }
-
-            refreshFrontPage.invoke()
-
-            val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
-            ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
-                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
-                if (picSectionBeanList.isNotEmpty()) {
-                    picSectionBeanList.forEach {
-                        picSectionDao.update(it)
-                        asyncStartDownload(it.id, picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
-                            item.picSectionBean.id == it.id
-                        }.findFirst().get()));
-                    }
-                }
-            }
-            val localUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
-            ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
-                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
-                if (picSectionBeanList.isNotEmpty()) {
-                    picSectionBeanList.forEach {
-                        val existSection = picSectionDao.getByInnerIndex(it.id)
-                        if (existSection.exist != 1) {
-                            picSectionDao.update(it)
-                            asyncStartDownload(
-                                it.id,
-                                picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
-                                    item.picSectionBean.id == it.id
-                                }.findFirst().get())
-                            );
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    fun asyncStartDownload(index: Long, position: Int) {
-        downLoadService?.startDownloadSection(index, position)
-    }
-
 }

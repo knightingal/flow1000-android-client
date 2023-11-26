@@ -43,7 +43,7 @@ class DownloadService : Service() {
 
     private var refreshListener: RefreshListener? = null
 
-    fun setRefreshListener(refreshListener: RefreshListener) {
+    fun setRefreshListener(refreshListener: RefreshListener?) {
         this.refreshListener = refreshListener
     }
 
