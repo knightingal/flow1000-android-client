@@ -151,9 +151,8 @@ class PendingFragment : Fragment(){
             }
         }
 
-        override fun doRefreshList() {
+        override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
             picSectionDataList.clear()
-            val picSectionBeanList = getDataSourceFromJsonFile()
             for (picSectionBean in picSectionBeanList) {
                 val picSectionData = PicSectionData(picSectionBean)
                 picSectionDataList.add(picSectionData)

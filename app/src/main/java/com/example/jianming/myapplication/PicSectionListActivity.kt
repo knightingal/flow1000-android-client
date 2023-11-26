@@ -212,7 +212,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         }
     }
 
-    override fun doRefreshList() {
+    override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
         TODO("Not yet implemented")
     }
 

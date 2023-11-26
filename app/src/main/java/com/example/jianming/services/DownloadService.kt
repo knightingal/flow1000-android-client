@@ -75,12 +75,13 @@ class DownloadService : Service() {
             val mapper = jacksonObjectMapper()
             db.runInTransaction() {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
-                updataStampDao.update(updateStamp)
                 val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
+                updataStampDao.update(updateStamp)
                 picSectionBeanList.forEach { picSectionDao.insert(it) }
             }
 
-            refreshListener?.doRefreshList()
+            val allPicSectionBeanList = picSectionDao.getAll().toList()
+            refreshListener?.doRefreshList(allPicSectionBeanList)
 
             val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
             ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
@@ -88,10 +89,8 @@ class DownloadService : Service() {
                 if (picSectionBeanList.isNotEmpty()) {
                     picSectionBeanList.forEach {
                         picSectionDao.update(it)
-                        // TODO: download pending section
-//                        startDownloadSection(it.id, picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
-//                            item.picSectionBean.id == it.id
-//                        }.findFirst().get()));
+                        val allIdList = allPicSectionBeanList.map{sectionBean -> sectionBean.id}.toList()
+                        startDownloadSection(it.id, allIdList.indexOf(it.id));
                     }
                 }
             }
@@ -103,13 +102,8 @@ class DownloadService : Service() {
                         val existSection = picSectionDao.getByInnerIndex(it.id)
                         if (existSection.exist != 1) {
                             picSectionDao.update(it)
-                            // TODO: download pending section
-//                            startDownloadSection(
-//                                it.id,
-//                                picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
-//                                    item.picSectionBean.id == it.id
-//                                }.findFirst().get())
-//                            );
+                            val allIdList = allPicSectionBeanList.map{sectionBean -> sectionBean.id}.toList()
+                            startDownloadSection(it.id, allIdList.indexOf(it.id));
                         }
                     }
                 }
