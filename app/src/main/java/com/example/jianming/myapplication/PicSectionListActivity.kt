@@ -20,6 +20,7 @@ import com.example.jianming.util.NetworkUtil
 import com.example.jianming.util.TimeUtil
 import com.example.jianming.beans.PicSectionBean
 import com.example.jianming.beans.PicSectionData
+import com.example.jianming.beans.UpdateStamp
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
@@ -120,13 +121,12 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     }
 
     private fun startDownloadPicIndex() {
-        val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
+        val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
         ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
             val mapper = jacksonObjectMapper()
             db.runInTransaction() {
-                val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
                 updataStampDao.update(updateStamp)
                 val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
@@ -193,7 +193,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun doRefreshView(position: Int, currCount: Int, max: Int) {
+    override fun doRefreshProcess(position: Int, currCount: Int, max: Int) {
         val viewHolder =
             listView.findViewHolderForAdapterPosition(position) as PicSectionListAdapter.ViewHolder?
         if (currCount == max) {
@@ -210,6 +210,10 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
                 Log.d(TAG, "current = $currCount max = $max")
             }
         }
+    }
+
+    override fun doRefreshList() {
+        TODO("Not yet implemented")
     }
 
 

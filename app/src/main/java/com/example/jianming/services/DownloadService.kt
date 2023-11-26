@@ -16,9 +16,13 @@ import com.example.jianming.Tasks.ConcurrencyJsonApiTask
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.beans.PicInfoBean
+import com.example.jianming.beans.PicSectionBean
+import com.example.jianming.beans.UpdateStamp
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
+import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.myapplication.getSectionConfig
+import com.example.jianming.util.TimeUtil
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.nanjing.knightingal.processerlib.RefreshListener
@@ -31,6 +35,7 @@ class DownloadService : Service() {
 
     private lateinit var db: AppDataBase
     private lateinit var picSectionDao : PicSectionDao
+    private lateinit var updataStampDao: UpdataStampDao
     private lateinit var picInfoDao : PicInfoDao
 
     val processCounter = hashMapOf<Long, Counter>()
@@ -59,6 +64,58 @@ class DownloadService : Service() {
         ).allowMainThreadQueries().build()
         picSectionDao = db.picSectionDao()
         picInfoDao = db.picInfoDao()
+        updataStampDao = db.updateStampDao()
+    }
+
+    public fun startDownloadSectionList() {
+        val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
+        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
+        Log.d("startDownloadWebPage", stringUrl)
+        ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
+            val mapper = jacksonObjectMapper()
+            db.runInTransaction() {
+                updateStamp.updateStamp = TimeUtil.currentTimeFormat()
+                updataStampDao.update(updateStamp)
+                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
+                picSectionBeanList.forEach { picSectionDao.insert(it) }
+            }
+
+            refreshListener?.doRefreshList()
+
+            val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
+            ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
+                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
+                if (picSectionBeanList.isNotEmpty()) {
+                    picSectionBeanList.forEach {
+                        picSectionDao.update(it)
+                        // TODO: download pending section
+//                        startDownloadSection(it.id, picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
+//                            item.picSectionBean.id == it.id
+//                        }.findFirst().get()));
+                    }
+                }
+            }
+            val localUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
+            ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
+                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
+                if (picSectionBeanList.isNotEmpty()) {
+                    picSectionBeanList.forEach {
+                        val existSection = picSectionDao.getByInnerIndex(it.id)
+                        if (existSection.exist != 1) {
+                            picSectionDao.update(it)
+                            // TODO: download pending section
+//                            startDownloadSection(
+//                                it.id,
+//                                picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
+//                                    item.picSectionBean.id == it.id
+//                                }.findFirst().get())
+//                            );
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     fun startDownloadSection(index: Long, position: Int) {
@@ -116,7 +173,7 @@ class DownloadService : Service() {
                     picInfoBean.height = height
                     picInfoBean.absolutePath = absolutePath
 
-                    refreshListener?.doRefreshView(position, currCount, picInfoBeanList.size)
+                    refreshListener?.doRefreshProcess(position, currCount, picInfoBeanList.size)
 
                     if (currCount == picInfoBeanList.size) {
                         db.runInTransaction() {
