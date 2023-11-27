@@ -26,7 +26,9 @@ import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
+import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
+import com.example.jianming.services.Counter
 import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.util.NetworkUtil
@@ -83,7 +85,7 @@ class PendingFragment : Fragment(){
 
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         pendingListView.layoutManager = mLayoutManager
-        picSectionListAdapter = PicSectionListAdapter(context)
+        picSectionListAdapter = PicSectionListAdapter(context, counterProvider)
         picSectionListAdapter.setDataArray(picSectionDataList)
         pendingListView.adapter = picSectionListAdapter
 
@@ -107,6 +109,10 @@ class PendingFragment : Fragment(){
 
     var downLoadService: DownloadService? = null
     var serviceBound = false
+
+    private val counterProvider: CounterProvider =
+        CounterProvider { sectionId -> downLoadService?.processCounter?.get(sectionId) }
+
     private val conn: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             Log.d(TAG, "onServiceConnected")

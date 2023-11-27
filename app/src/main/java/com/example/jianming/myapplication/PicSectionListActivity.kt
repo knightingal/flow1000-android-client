@@ -25,6 +25,8 @@ import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
+import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
+import com.example.jianming.services.Counter
 import com.example.jianming.services.DownloadService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -75,12 +77,15 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         listView.layoutManager = mLayoutManager
 
         picSectionListAdapter =
-            PicSectionListAdapter(this)
+            PicSectionListAdapter(this, counterProvider)
         picSectionListAdapter.setDataArray(picSectionDataList)
         listView.adapter = picSectionListAdapter
 
 
     }
+
+    val counterProvider: CounterProvider =
+        CounterProvider { sectionId -> downLoadService?.processCounter?.get(sectionId) }
 
     var downLoadService: DownloadService? = null
 

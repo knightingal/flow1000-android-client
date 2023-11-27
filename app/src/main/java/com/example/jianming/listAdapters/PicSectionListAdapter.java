@@ -35,6 +35,10 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAdapter.ViewHolder> {
+
+    public interface CounterProvider {
+        Counter getCounter(long sectionId);
+    }
     private final static String TAG = "PicSectionListAdapter";
     private List<PicSectionData> dataArray;
 
@@ -44,12 +48,15 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
 
     private final PicInfoDao picInfoDao;
 
-    public PicSectionListAdapter(Context context) {
+    private final CounterProvider counterProvider;
+
+    public PicSectionListAdapter(Context context, CounterProvider counterProvider) {
         this.context = context;
         AppDataBase db = Room.databaseBuilder(context,
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
         picSectionDao = db.picSectionDao();
         picInfoDao = db.picInfoDao();
+        this.counterProvider = counterProvider;
     }
 
     public void setDataArray(List<PicSectionData> dataArray) {
@@ -93,30 +100,44 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         } else {
             renderNonExistItem(viewHolder);
         }
-        if (context instanceof PicSectionListActivity) {
-            if (((PicSectionListActivity) context).getDownLoadService() != null) {
-                long sectionId = dataArray.get(position).getPicSectionBean().getId();
-                if (Objects.requireNonNull(((PicSectionListActivity) context).getDownLoadService())
-                        .getProcessCounter().containsKey(sectionId)) {
-                    Counter counter = ((PicSectionListActivity) context).getDownLoadService()
-                            .getProcessCounter().get(sectionId);
-                    if (counter != null) {
-                        viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
-                        if (counter.getProcess() == 0) {
-                            viewHolder.downloadProcessBar.setIndeterminate(true);
-                        } else {
-                            viewHolder.downloadProcessBar.setIndeterminate(false);
-                            viewHolder.downloadProcessBar.setProgress(counter.getProcess(), true);
-                            viewHolder.downloadProcessBar.setMax(counter.getMax());
-                        }
-                    } else {
-                        viewHolder.downloadProcessBar.setVisibility(View.GONE);
-                    }
-                } else {
-                    viewHolder.downloadProcessBar.setVisibility(View.GONE);
-                }
+//        if (context instanceof PicSectionListActivity) {
+//            if (((PicSectionListActivity) context).getDownLoadService() != null) {
+//                long sectionId = dataArray.get(position).getPicSectionBean().getId();
+//                if (Objects.requireNonNull(((PicSectionListActivity) context).getDownLoadService())
+//                        .getProcessCounter().containsKey(sectionId)) {
+//                    Counter counter = ((PicSectionListActivity) context).getDownLoadService()
+//                            .getProcessCounter().get(sectionId);
+//                    if (counter != null) {
+//                        viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+//                        if (counter.getProcess() == 0) {
+//                            viewHolder.downloadProcessBar.setIndeterminate(true);
+//                        } else {
+//                            viewHolder.downloadProcessBar.setIndeterminate(false);
+//                            viewHolder.downloadProcessBar.setProgress(counter.getProcess(), true);
+//                            viewHolder.downloadProcessBar.setMax(counter.getMax());
+//                        }
+//                    } else {
+//                        viewHolder.downloadProcessBar.setVisibility(View.GONE);
+//                    }
+//                } else {
+//                    viewHolder.downloadProcessBar.setVisibility(View.GONE);
+//                }
+//            }
+//        }
+        Counter counter = counterProvider.getCounter(dataArray.get(position).getPicSectionBean().getId());
+        if (counter != null) {
+            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+            if (counter.getProcess() == 0) {
+                viewHolder.downloadProcessBar.setIndeterminate(true);
+            } else {
+                viewHolder.downloadProcessBar.setIndeterminate(false);
+                viewHolder.downloadProcessBar.setProgress(counter.getProcess(), true);
+                viewHolder.downloadProcessBar.setMax(counter.getMax());
             }
+        } else {
+            viewHolder.downloadProcessBar.setVisibility(View.GONE);
         }
+
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getId();
         viewHolder.position = viewHolder.getAdapterPosition();
         viewHolder.deleteBtn.setOnClickListener(v -> {
