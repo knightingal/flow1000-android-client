@@ -1,7 +1,5 @@
 package com.example.jianming.myapplication.ui.main
 
-import SERVER_IP
-import SERVER_PORT
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -18,23 +16,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import com.example.jianming.Tasks.ConcurrencyJsonApiTask
 import com.example.jianming.beans.PicSectionBean
 import com.example.jianming.beans.PicSectionData
-import com.example.jianming.beans.UpdateStamp
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
 import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
-import com.example.jianming.services.Counter
 import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
-import com.example.jianming.util.NetworkUtil
-import com.example.jianming.util.TimeUtil
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.nanjing.knightingal.processerlib.RefreshListener
@@ -163,5 +154,11 @@ class PendingFragment : Fragment(){
             }
             picSectionListAdapter.notifyDataSetChanged()
         }
+
+        override fun notifyListReady() {
+            TODO("Not yet implemented")
+        }
+
+
     }
 }

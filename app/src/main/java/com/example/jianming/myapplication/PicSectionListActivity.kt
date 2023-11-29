@@ -221,6 +221,10 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         TODO("Not yet implemented")
     }
 
+    override fun notifyListReady() {
+        TODO("Not yet implemented")
+    }
+
 
     fun asyncStartDownload(index: Long, position: Int) {
         downLoadService?.startDownloadSection(index, position)

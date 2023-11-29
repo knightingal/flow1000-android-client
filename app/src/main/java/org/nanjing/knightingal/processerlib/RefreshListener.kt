@@ -7,4 +7,6 @@ interface RefreshListener {
     fun doRefreshProcess(position: Int, currCount: Int, max: Int)
 
     fun doRefreshList(picSectionBeanList: List<PicSectionBean>)
+
+    fun notifyListReady()
 }
