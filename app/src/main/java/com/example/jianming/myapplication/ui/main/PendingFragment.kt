@@ -156,7 +156,13 @@ class PendingFragment : Fragment(){
         }
 
         override fun notifyListReady() {
-            TODO("Not yet implemented")
+            val pendingSectionList = downLoadService!!.getPendingSectionList()
+            picSectionDataList.clear()
+            for (picSectionBean in pendingSectionList) {
+                val picSectionData = PicSectionData(picSectionBean)
+                picSectionDataList.add(picSectionData)
+            }
+            picSectionListAdapter.notifyDataSetChanged()
         }
 
 

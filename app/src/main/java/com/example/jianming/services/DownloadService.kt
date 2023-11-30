@@ -66,7 +66,7 @@ class DownloadService : Service() {
         picInfoDao = db.picInfoDao()
         updataStampDao = db.updateStampDao()
     }
-
+    private lateinit var allPicSectionBeanList:List<PicSectionBean>
     public fun startDownloadSectionList() {
         val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
@@ -80,8 +80,8 @@ class DownloadService : Service() {
                 picSectionBeanList.forEach { picSectionDao.insert(it) }
             }
 
-            val allPicSectionBeanList = picSectionDao.getAll().toList()
-            refreshListener?.doRefreshList(allPicSectionBeanList)
+            allPicSectionBeanList = picSectionDao.getAll().toList()
+//            refreshListener?.doRefreshList(allPicSectionBeanList)
 
             val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
             ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
@@ -108,11 +108,16 @@ class DownloadService : Service() {
                     }
                 }
             }
+            refreshListener?.notifyListReady()
         }
 
     }
 
+    private var pendingSectionBeanList: MutableList<PicSectionBean> = mutableListOf()
     fun startDownloadSection(index: Long, position: Int) {
+        pendingSectionBeanList.add(allPicSectionBeanList[position])
+        refreshListener?.notifyListReady()
+
         val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=$index"
 
         ConcurrencyJsonApiTask.startDownload(url) {body ->
@@ -184,6 +189,10 @@ class DownloadService : Service() {
                 }
             }
         }
+    }
+
+    fun getPendingSectionList(): List<PicSectionBean> {
+        return pendingSectionBeanList.toList()
     }
 
     inner class LocalBinder : Binder() {
