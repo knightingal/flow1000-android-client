@@ -126,7 +126,7 @@ class PendingFragment : Fragment(){
     }
 
     private val refreshListener: RefreshListener = object : RefreshListener {
-        override fun doRefreshProcess(position: Int, currCount: Int, max: Int) {
+        override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int) {
             val viewHolder =
                 pendingListView.findViewHolderForAdapterPosition(position) as PicSectionListAdapter.ViewHolder?
 

@@ -198,7 +198,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun doRefreshProcess(position: Int, currCount: Int, max: Int) {
+    override fun doRefreshProcess(sectionId: Long, position: Int, currCount: Int, max: Int) {
         val viewHolder =
             listView.findViewHolderForAdapterPosition(position) as PicSectionListAdapter.ViewHolder?
         if (currCount == max) {

@@ -4,7 +4,7 @@ import com.example.jianming.beans.PicSectionBean
 
 
 interface RefreshListener {
-    fun doRefreshProcess(position: Int, currCount: Int, max: Int)
+    fun doRefreshProcess(sectionId: Long, position: Int, currCount: Int, max: Int)
 
     fun doRefreshList(picSectionBeanList: List<PicSectionBean>)
 

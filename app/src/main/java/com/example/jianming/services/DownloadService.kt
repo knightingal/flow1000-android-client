@@ -172,7 +172,7 @@ class DownloadService : Service() {
                     picInfoBean.height = height
                     picInfoBean.absolutePath = absolutePath
 
-                    refreshListener?.doRefreshProcess(position, currCount, picInfoBeanList.size)
+                    refreshListener?.doRefreshProcess(picInfoBean.sectionIndex, position, currCount, picInfoBeanList.size)
 
                     if (currCount == picInfoBeanList.size) {
                         db.runInTransaction() {
