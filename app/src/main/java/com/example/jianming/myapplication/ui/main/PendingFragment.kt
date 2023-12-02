@@ -127,13 +127,19 @@ class PendingFragment : Fragment(){
 
     private val refreshListener: RefreshListener = object : RefreshListener {
         override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int) {
+
+            val pendingSectionList = downLoadService!!.getPendingSectionList()
+            val pendingSection = pendingSectionList.find { section -> section.id == sectionId }
+            val realPosition = pendingSectionList.indexOf(pendingSection)
+
+
             val viewHolder =
-                pendingListView.findViewHolderForAdapterPosition(position) as PicSectionListAdapter.ViewHolder?
+                pendingListView.findViewHolderForAdapterPosition(realPosition) as PicSectionListAdapter.ViewHolder?
 
             if (currCount == max) {
-                picSectionDataList[position].picSectionBean.exist = 1
-                picSectionDao.update(picSectionDataList[position].picSectionBean)
-                picSectionListAdapter.notifyDataSetChanged()
+//                picSectionDataList[realPosition].picSectionBean.exist = 1
+//                picSectionDao.update(picSectionDataList[realPosition].picSectionBean)
+//                picSectionListAdapter.notifyDataSetChanged()
             }
             if (viewHolder != null) {
                 MainScope().launch {

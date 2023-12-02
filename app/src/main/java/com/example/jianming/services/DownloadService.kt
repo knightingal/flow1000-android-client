@@ -180,7 +180,11 @@ class DownloadService : Service() {
                                 picInfoDao.update(pic)
                             }
                         }
+                        allPicSectionBeanList[position].exist = 1
+                        picSectionDao.update(allPicSectionBeanList[position])
+                        pendingSectionBeanList.remove(allPicSectionBeanList[position])
                         processCounter.remove(index)
+                        refreshListener?.notifyListReady()
                         val completeUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
                                 "/local1000/completeSection?id=" + index
                         ConcurrencyJsonApiTask.startPost(completeUrl, "") {}
