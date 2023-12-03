@@ -68,6 +68,10 @@ class DownloadService : Service() {
     }
     private lateinit var allPicSectionBeanList:List<PicSectionBean>
     public fun startDownloadSectionList() {
+        if (pendingSectionBeanList.isNotEmpty()) {
+            refreshListener?.notifyListReady()
+            return
+        }
         val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
