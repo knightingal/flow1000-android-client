@@ -176,7 +176,14 @@ class DownloadService : Service() {
                     picInfoBean.height = height
                     picInfoBean.absolutePath = absolutePath
 
-                    refreshListener?.doRefreshProcess(picInfoBean.sectionIndex, position, currCount, picInfoBeanList.size)
+                    if (getRefreshListener() != null) {
+                        getRefreshListener()?.doRefreshProcess(
+                            picInfoBean.sectionIndex,
+                            position,
+                            currCount,
+                            picInfoBeanList.size
+                        )
+                    }
 
                     if (currCount == picInfoBeanList.size) {
                         db.runInTransaction() {
@@ -188,7 +195,9 @@ class DownloadService : Service() {
                         picSectionDao.update(allPicSectionBeanList[position])
                         pendingSectionBeanList.remove(allPicSectionBeanList[position])
                         processCounter.remove(index)
-                        refreshListener?.notifyListReady()
+                        if (getRefreshListener() != null) {
+                            getRefreshListener()?.notifyListReady()
+                        }
                         val completeUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
                                 "/local1000/completeSection?id=" + index
                         ConcurrencyJsonApiTask.startPost(completeUrl, "") {}
@@ -197,6 +206,10 @@ class DownloadService : Service() {
                 }
             }
         }
+    }
+
+    private fun getRefreshListener(): RefreshListener? {
+        return refreshListener
     }
 
     fun getPendingSectionList(): List<PicSectionBean> {

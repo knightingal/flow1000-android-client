@@ -1,6 +1,8 @@
 package com.example.jianming.myapplication.ui.main
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +10,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.jianming.Tasks.SectionWorker
 import com.example.jianming.myapplication.R
 import com.example.jianming.myapplication.databinding.FragmentMainBinding
 
@@ -42,7 +47,37 @@ class PlaceholderFragment : Fragment() {
         pageViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
+        _binding!!.taskBtn.setOnClickListener {
+            Log.d("main", "click")
+            startWork()
+        }
         return root
+    }
+
+    private fun startWork() {
+        val context: Context = context as Context
+        val workRequest0 = OneTimeWorkRequestBuilder<SectionWorker>().build()
+        val workRequest1 = OneTimeWorkRequestBuilder<SectionWorker>().build()
+        val workRequest2 = OneTimeWorkRequestBuilder<SectionWorker>().build()
+        WorkManager.getInstance(context).enqueue(workRequest0)
+        WorkManager.getInstance(context).enqueue(workRequest1)
+        WorkManager.getInstance(context).enqueue(workRequest2)
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(workRequest0.id)
+            .observe(viewLifecycleOwner) {
+                workInfo ->
+                Log.d("main", "workInfoById0 status change to ${workInfo.state}")
+            }
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(workRequest1.id)
+            .observe(viewLifecycleOwner) {
+                    workInfo ->
+                Log.d("main", "workInfoById1 status change to ${workInfo.state}")
+            }
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(workRequest2.id)
+            .observe(viewLifecycleOwner) {
+                    workInfo ->
+                Log.d("main", "workInfoById2 status change to ${workInfo.state}")
+            }
     }
 
     companion object {

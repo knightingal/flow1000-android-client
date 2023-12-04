@@ -182,4 +182,10 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+
+    val workVersion = "2.8.0"
+    // (Java only)
+    implementation("androidx.work:work-runtime:$workVersion")
+    // Kotlin + coroutines
+    implementation("androidx.work:work-runtime-ktx:$workVersion")
 }
