@@ -11,10 +11,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.jianming.Tasks.SectionWorker
 import com.example.jianming.myapplication.R
 import com.example.jianming.myapplication.databinding.FragmentMainBinding
+import com.google.common.util.concurrent.FutureCallback
+import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.ListenableFuture
+import java.util.concurrent.Executors
 
 /**
  * A placeholder fragment containing a simple view.
@@ -62,6 +67,20 @@ class PlaceholderFragment : Fragment() {
         WorkManager.getInstance(context).enqueue(workRequest0)
         WorkManager.getInstance(context).enqueue(workRequest1)
         WorkManager.getInstance(context).enqueue(workRequest2)
+
+        val workInfoById: ListenableFuture<WorkInfo> = WorkManager.getInstance(context).getWorkInfoById(workRequest0.id)
+
+        Futures.addCallback(workInfoById, object : FutureCallback<WorkInfo> {
+            override fun onSuccess(result: WorkInfo?) {
+//                TODO("Not yet implemented")
+                Log.d("main", "call back")
+            }
+
+            override fun onFailure(t: Throwable) {
+//                TODO("Not yet implemented")
+            }
+
+        }, Executors.newSingleThreadExecutor())
 
         WorkManager.getInstance(context).getWorkInfoByIdLiveData(workRequest0.id)
             .observe(viewLifecycleOwner) {

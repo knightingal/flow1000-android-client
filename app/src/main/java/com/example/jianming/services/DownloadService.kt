@@ -11,8 +11,12 @@ import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import androidx.room.Room
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
+import com.example.jianming.Tasks.DownloadImageWorker
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.beans.PicInfoBean
@@ -118,91 +122,109 @@ class DownloadService : Service() {
     }
 
     private var pendingSectionBeanList: MutableList<PicSectionBean> = mutableListOf()
+
+    fun startDownloadSectionWorker(index: Long, url: String) {
+        val downloadImageRequest = OneTimeWorkRequestBuilder<DownloadImageWorker>()
+            .setInputData(workDataOf(
+                "imgUrl" to url,
+                "index" to index
+            )).build()
+        WorkManager.getInstance(this).enqueue(downloadImageRequest)
+    }
+
     fun startDownloadSection(index: Long, position: Int) {
         pendingSectionBeanList.add(allPicSectionBeanList[position])
         refreshListener?.notifyListReady()
 
         val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=$index"
+        startDownloadSectionWorker(index, url)
 
-        ConcurrencyJsonApiTask.startDownload(url) {body ->
-            val picSectionBean = picSectionDao.getByInnerIndex(index)
-            val mapper = jacksonObjectMapper()
-            db.runInTransaction() {
-                (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
-                    val picInfoBean: PicInfoBean = PicInfoBean(
-                        null,
-                        pic,
-                        picSectionBean.id,
-                        null,
-                        0,
-                        0
-                    )
-                    picInfoDao.insert(picInfoBean)
-                }
-            }
-
-            val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
-            processCounter[index] = Counter(picInfoBeanList.size)
-
-            val sectionInfoBean = SectionInfoBean(
-                "${picSectionBean.id}",
-                picSectionBean.name,
-                mutableListOf()
-            )
-            picInfoBeanList.forEach { picInfoBean ->
-                sectionInfoBean.pics.add(picInfoBean.name)
-                val picName = picInfoBean.name
-                val sectionConfig = getSectionConfig(picSectionBean.album)
-
-                var imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                        "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${picName}"
-
-                if (sectionConfig.encryped) {
-                    imgUrl += ".bin"
-                }
-                val directory = getSectionStorageDir(applicationContext, sectionInfoBean.dirName)
-                val file = File(directory, picName)
-                ConcurrencyImageTask.downloadUrl(imgUrl, file, sectionConfig.encryped) { bytes ->
-
-                    val currCount = processCounter[index]?.incProcess() as Int
-                    val options = BitmapFactory.Options()
-                    options.inJustDecodeBounds = true
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-                    val width = options.outWidth
-                    val height = options.outHeight
-                    val absolutePath = file.absolutePath
-
-                    picInfoBean.width = width
-                    picInfoBean.height = height
-                    picInfoBean.absolutePath = absolutePath
-
-                    if (getRefreshListener() != null) {
-                        getRefreshListener()?.doRefreshProcess(
-                            picInfoBean.sectionIndex,
-                            position,
-                            currCount,
-                            picInfoBeanList.size
+        if (false) {
+            ConcurrencyJsonApiTask.startDownload(url) { body ->
+                val picSectionBean = picSectionDao.getByInnerIndex(index)
+                val mapper = jacksonObjectMapper()
+                db.runInTransaction() {
+                    (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
+                        val picInfoBean: PicInfoBean = PicInfoBean(
+                            null,
+                            pic,
+                            picSectionBean.id,
+                            null,
+                            0,
+                            0
                         )
+                        picInfoDao.insert(picInfoBean)
                     }
+                }
 
-                    if (currCount == picInfoBeanList.size) {
-                        db.runInTransaction() {
-                            for (pic in picInfoBeanList) {
-                                picInfoDao.update(pic)
-                            }
-                        }
-                        allPicSectionBeanList[position].exist = 1
-                        picSectionDao.update(allPicSectionBeanList[position])
-                        pendingSectionBeanList.remove(allPicSectionBeanList[position])
-                        processCounter.remove(index)
+                val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
+                processCounter[index] = Counter(picInfoBeanList.size)
+
+                val sectionInfoBean = SectionInfoBean(
+                    "${picSectionBean.id}",
+                    picSectionBean.name,
+                    mutableListOf()
+                )
+                picInfoBeanList.forEach { picInfoBean ->
+                    sectionInfoBean.pics.add(picInfoBean.name)
+                    val picName = picInfoBean.name
+                    val sectionConfig = getSectionConfig(picSectionBean.album)
+
+                    var imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                            "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${picName}"
+
+                    if (sectionConfig.encryped) {
+                        imgUrl += ".bin"
+                    }
+                    val directory =
+                        getSectionStorageDir(applicationContext, sectionInfoBean.dirName)
+                    val file = File(directory, picName)
+                    ConcurrencyImageTask.downloadUrl(
+                        imgUrl,
+                        file,
+                        sectionConfig.encryped
+                    ) { bytes ->
+
+                        val currCount = processCounter[index]?.incProcess() as Int
+                        val options = BitmapFactory.Options()
+                        options.inJustDecodeBounds = true
+                        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                        val width = options.outWidth
+                        val height = options.outHeight
+                        val absolutePath = file.absolutePath
+
+                        picInfoBean.width = width
+                        picInfoBean.height = height
+                        picInfoBean.absolutePath = absolutePath
+
                         if (getRefreshListener() != null) {
-                            getRefreshListener()?.notifyListReady()
+                            getRefreshListener()?.doRefreshProcess(
+                                picInfoBean.sectionIndex,
+                                position,
+                                currCount,
+                                picInfoBeanList.size
+                            )
                         }
-                        val completeUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                                "/local1000/completeSection?id=" + index
-                        ConcurrencyJsonApiTask.startPost(completeUrl, "") {}
-                    }
 
+                        if (currCount == picInfoBeanList.size) {
+                            db.runInTransaction() {
+                                for (pic in picInfoBeanList) {
+                                    picInfoDao.update(pic)
+                                }
+                            }
+                            allPicSectionBeanList[position].exist = 1
+                            picSectionDao.update(allPicSectionBeanList[position])
+                            pendingSectionBeanList.remove(allPicSectionBeanList[position])
+                            processCounter.remove(index)
+                            if (getRefreshListener() != null) {
+                                getRefreshListener()?.notifyListReady()
+                            }
+                            val completeUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                                    "/local1000/completeSection?id=" + index
+                            ConcurrencyJsonApiTask.startPost(completeUrl, "") {}
+                        }
+
+                    }
                 }
             }
         }
