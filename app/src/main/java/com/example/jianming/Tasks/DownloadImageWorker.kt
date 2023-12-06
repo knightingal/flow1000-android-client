@@ -4,9 +4,11 @@ import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.example.jianming.Tasks.ConcurrencyJsonApiTask.makeRequest
+import androidx.work.workDataOf
+import com.example.jianming.Tasks.ConcurrencyImageTask.makeRequest
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.dao.PicInfoDao
@@ -32,29 +34,31 @@ class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
     }
     override suspend fun doWork(): Result {
         val imgUrl = inputData.getString("imgUrl") as String
+        val encrypted = inputData.getBoolean("encrypted", false)
         Log.d("DownloadImageWorker", "start work for:$imgUrl")
-        val sectionIndex = inputData.getLong("index", 0)
-        val body = makeRequest(imgUrl)
+        val body = makeRequest(imgUrl, encrypted)
+        val output: Data = workDataOf("imgContent" to body)
 
-        val picSectionBean = picSectionDao.getByInnerIndex(sectionIndex)
-        val mapper = jacksonObjectMapper()
-        db.runInTransaction() {
-            (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
-                val picInfoBean: PicInfoBean = PicInfoBean(
-                    null,
-                    pic,
-                    picSectionBean.id,
-                    null,
-                    0,
-                    0
-                )
-                picInfoDao.insert(picInfoBean)
-            }
-        }
-        Log.d("DownloadImageWorker", "work for:$imgUrl finish")
+//        val picSectionBean = picSectionDao.getByInnerIndex(sectionIndex)
+//        val mapper = jacksonObjectMapper()
+//        db.runInTransaction() {
+//            (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
+//                val picInfoBean: PicInfoBean = PicInfoBean(
+//                    null,
+//                    pic,
+//                    picSectionBean.id,
+//                    null,
+//                    0,
+//                    0
+//                )
+//                picInfoDao.insert(picInfoBean)
+//            }
+//        }
+//        Log.d("DownloadImageWorker", "work for:$imgUrl finish")
+//
+//        val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
 
-        val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
 
-        return Result.success()
+        return Result.success(output)
     }
 }

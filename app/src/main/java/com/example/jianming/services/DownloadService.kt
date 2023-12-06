@@ -31,6 +31,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.nanjing.knightingal.processerlib.RefreshListener
 import java.io.File
+import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicInteger
 
 class DownloadService : Service() {
@@ -123,13 +124,20 @@ class DownloadService : Service() {
 
     private var pendingSectionBeanList: MutableList<PicSectionBean> = mutableListOf()
 
-    fun startDownloadSectionWorker(index: Long, url: String) {
+    fun doDownloadImage(url: String, destFile: File) {
         val downloadImageRequest = OneTimeWorkRequestBuilder<DownloadImageWorker>()
             .setInputData(workDataOf(
                 "imgUrl" to url,
-                "index" to index
             )).build()
         WorkManager.getInstance(this).enqueue(downloadImageRequest)
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(downloadImageRequest.id).observeForever {into ->
+            if (into != null && into.state.isFinished) {
+                val imgContent = into.outputData.getByteArray("imgContent")
+                val fileOutputStream = FileOutputStream(destFile, true)
+                fileOutputStream.write(imgContent)
+                fileOutputStream.close()
+            }
+        }
     }
 
     fun startDownloadSection(index: Long, position: Int) {
@@ -137,9 +145,9 @@ class DownloadService : Service() {
         refreshListener?.notifyListReady()
 
         val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=$index"
-        startDownloadSectionWorker(index, url)
+//        startDownloadSectionWorker(index, url)
 
-        if (false) {
+        if (true) {
             ConcurrencyJsonApiTask.startDownload(url) { body ->
                 val picSectionBean = picSectionDao.getByInnerIndex(index)
                 val mapper = jacksonObjectMapper()
@@ -176,9 +184,12 @@ class DownloadService : Service() {
                     if (sectionConfig.encryped) {
                         imgUrl += ".bin"
                     }
+
                     val directory =
                         getSectionStorageDir(applicationContext, sectionInfoBean.dirName)
                     val file = File(directory, picName)
+                    doDownloadImage(imgUrl, file);
+
                     ConcurrencyImageTask.downloadUrl(
                         imgUrl,
                         file,
