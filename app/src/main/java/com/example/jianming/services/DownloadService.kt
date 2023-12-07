@@ -17,6 +17,7 @@ import androidx.work.workDataOf
 import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
 import com.example.jianming.Tasks.DownloadImageWorker
+import com.example.jianming.Tasks.DownloadSectionWorker
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.beans.PicInfoBean
@@ -140,14 +141,30 @@ class DownloadService : Service() {
         }
     }
 
+    fun doDownloadSection(sectionId: Long) {
+        val downloadSectionRequest = OneTimeWorkRequestBuilder<DownloadSectionWorker>()
+            .setInputData(workDataOf(
+                "sectionId" to sectionId
+            )).build()
+        WorkManager.getInstance(this).enqueue(downloadSectionRequest)
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(downloadSectionRequest.id)
+            .observeForever() { workInfo ->
+                    if (workInfo != null && workInfo.state.isFinished) {
+                        Log.d("DownloadService", "worker for $sectionId finish")
+                    }
+            }
+    }
+
     fun startDownloadSection(index: Long, position: Int) {
         pendingSectionBeanList.add(allPicSectionBeanList[position])
         refreshListener?.notifyListReady()
 
+        doDownloadSection(index)
+
         val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=$index"
 //        startDownloadSectionWorker(index, url)
 
-        if (true) {
+        if (false) {
             ConcurrencyJsonApiTask.startDownload(url) { body ->
                 val picSectionBean = picSectionDao.getByInnerIndex(index)
                 val mapper = jacksonObjectMapper()

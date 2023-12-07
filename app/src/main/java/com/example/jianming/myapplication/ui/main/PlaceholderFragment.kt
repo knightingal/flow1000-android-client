@@ -13,8 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.example.jianming.Tasks.SectionWorker
-import com.example.jianming.myapplication.R
+import com.example.jianming.Tasks.DownloadSectionWorker
 import com.example.jianming.myapplication.databinding.FragmentMainBinding
 import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures
@@ -61,9 +60,9 @@ class PlaceholderFragment : Fragment() {
 
     private fun startWork() {
         val context: Context = context as Context
-        val workRequest0 = OneTimeWorkRequestBuilder<SectionWorker>().build()
-        val workRequest1 = OneTimeWorkRequestBuilder<SectionWorker>().build()
-        val workRequest2 = OneTimeWorkRequestBuilder<SectionWorker>().build()
+        val workRequest0 = OneTimeWorkRequestBuilder<DownloadSectionWorker>().build()
+        val workRequest1 = OneTimeWorkRequestBuilder<DownloadSectionWorker>().build()
+        val workRequest2 = OneTimeWorkRequestBuilder<DownloadSectionWorker>().build()
         WorkManager.getInstance(context).enqueue(workRequest0)
         WorkManager.getInstance(context).enqueue(workRequest1)
         WorkManager.getInstance(context).enqueue(workRequest2)
