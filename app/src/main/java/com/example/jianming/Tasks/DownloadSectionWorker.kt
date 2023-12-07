@@ -34,7 +34,6 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
         picInfoDao = db.picInfoDao()
         updataStampDao = db.updateStampDao()
     }
-    @OptIn(InternalCoroutinesApi::class)
     override suspend fun doWork(): Result {
         Log.d("DownloadSectionWorker", "doWork")
         val sectionId = inputData.getLong("sectionId", 0)
@@ -43,26 +42,26 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
         val mapper = jacksonObjectMapper()
         val sectionInfoBean = mapper.readValue<SectionInfoBean>(body)
 
-        val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
-        synchronized(AppDataBase::class) {
-            db.runInTransaction() {
-                (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
-                    val picInfoBean: PicInfoBean = PicInfoBean(
-                        null,
-                        pic,
-                        picSectionBean.id,
-                        null,
-                        0,
-                        0
-                    )
-                    picInfoDao.insert(picInfoBean)
-                }
-            }
-        }
+//        val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
+//        synchronized(AppDataBase::class) {
+//            db.runInTransaction() {
+//                (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
+//                    val picInfoBean: PicInfoBean = PicInfoBean(
+//                        null,
+//                        pic,
+//                        picSectionBean.id,
+//                        null,
+//                        0,
+//                        0
+//                    )
+//                    picInfoDao.insert(picInfoBean)
+//                }
+//            }
+//        }
 
 
 
-        val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
+//        val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
         Thread.sleep(10 * 1000)
 
         return Result.success()
