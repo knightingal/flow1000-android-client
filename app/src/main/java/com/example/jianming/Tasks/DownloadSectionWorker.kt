@@ -13,6 +13,7 @@ import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.UpdataStampDao
+import com.example.jianming.myapplication.App
 import com.example.jianming.util.AppDataBase
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -23,9 +24,7 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams ) {
 
 
-    private var db: AppDataBase = Room.databaseBuilder(
-        applicationContext,
-        AppDataBase::class.java, "database-flow1000").allowMainThreadQueries().build()
+    private var db: AppDataBase = App.findDb()
     private var picSectionDao : PicSectionDao
     private var updataStampDao: UpdataStampDao
     private var picInfoDao : PicInfoDao
@@ -42,26 +41,26 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
         val mapper = jacksonObjectMapper()
         val sectionInfoBean = mapper.readValue<SectionInfoBean>(body)
 
-//        val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
+        val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
 //        synchronized(AppDataBase::class) {
-//            db.runInTransaction() {
-//                (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
-//                    val picInfoBean: PicInfoBean = PicInfoBean(
-//                        null,
-//                        pic,
-//                        picSectionBean.id,
-//                        null,
-//                        0,
-//                        0
-//                    )
-//                    picInfoDao.insert(picInfoBean)
-//                }
-//            }
+            db.runInTransaction() {
+                (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
+                    val picInfoBean: PicInfoBean = PicInfoBean(
+                        null,
+                        pic,
+                        picSectionBean.id,
+                        null,
+                        0,
+                        0
+                    )
+                    picInfoDao.insert(picInfoBean)
+                }
+            }
 //        }
 
 
 
-//        val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
+        val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
         Thread.sleep(10 * 1000)
 
         return Result.success()

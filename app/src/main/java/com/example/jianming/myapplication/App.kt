@@ -17,16 +17,21 @@ class App : Application() {
         Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this))
     }
 
-    lateinit var db: AppDataBase
+    companion object {
+        lateinit var db: AppDataBase
+        public fun findDb(): AppDataBase {
+            return db
+        }
+    }
 
     private fun initDB() {
         var sectionStamp: UpdateStamp? =
-            this.db.updateStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN")
+            db.updateStampDao().getUpdateStampByTableName("PIC_ALBUM_BEAN")
         if (sectionStamp == null) {
             sectionStamp = UpdateStamp()
             sectionStamp.tableName = "PIC_ALBUM_BEAN"
             sectionStamp.updateStamp = "20000101000000"
-            this.db.updateStampDao().save(sectionStamp)
+            db.updateStampDao().save(sectionStamp)
         }
     }
 }
