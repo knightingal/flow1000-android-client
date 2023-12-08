@@ -37,7 +37,7 @@ class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
         val encrypted = inputData.getBoolean("encrypted", false)
         Log.d("DownloadImageWorker", "start work for:$imgUrl")
         val body = makeRequest(imgUrl, encrypted)
-        val output: Data = workDataOf("imgContent" to body)
+//        val output: Data = workDataOf("imgContent" to body)
 
 //        val picSectionBean = picSectionDao.getByInnerIndex(sectionIndex)
 //        val mapper = jacksonObjectMapper()
@@ -59,6 +59,6 @@ class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
 //        val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
 
 
-        return Result.success(output)
+        return Result.success()
     }
 }

@@ -6,7 +6,11 @@ import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import androidx.work.CoroutineWorker
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask.makeRequest
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.beans.SectionInfoBean
@@ -14,11 +18,14 @@ import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.myapplication.App
+import com.example.jianming.myapplication.getSectionConfig
 import com.example.jianming.util.AppDataBase
+import com.example.jianming.util.FileUtil.getSectionStorageDir
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
+import java.io.File
 
 class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams ) {
@@ -42,26 +49,41 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
         val sectionInfoBean = mapper.readValue<SectionInfoBean>(body)
 
         val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
-//        synchronized(AppDataBase::class) {
-            db.runInTransaction() {
-                (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
-                    val picInfoBean: PicInfoBean = PicInfoBean(
-                        null,
-                        pic,
-                        picSectionBean.id,
-                        null,
-                        0,
-                        0
-                    )
-                    picInfoDao.insert(picInfoBean)
-                }
+        db.runInTransaction() {
+            sectionInfoBean.pics.forEach { pic ->
+                val picInfoBean: PicInfoBean = PicInfoBean(
+                    null,
+                    pic,
+                    picSectionBean.id,
+                    null,
+                    0,
+                    0
+                )
+                picInfoDao.insert(picInfoBean)
             }
+        }
+
+        val imgWorkerList = sectionInfoBean.pics.map { pic ->
+            val sectionConfig = getSectionConfig(picSectionBean.album)
+            val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                    "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) "$pic.bin" else pic}"
+
+            OneTimeWorkRequestBuilder<DownloadImageWorker>()
+                .addTag(imgUrl)
+                .setInputData(workDataOf("imgUrl" to imgUrl))
+                .build()
+        }
+        WorkManager.getInstance(applicationContext).enqueue(imgWorkerList)
+//        imgWorkerList.forEach { imgWorker ->
+//            WorkManager.getInstance(applicationContext).getWorkInfoByIdLiveData(imgWorker.id)
+//                .observeForever {workInfo ->
+//                    if (workInfo != null && workInfo.state.isFinished) {
+//                        Log.d("DownloadSectionWorker", " ${workInfo.tags.first()} downloadImg finished")
+//                    }
+//                }
 //        }
 
-
-
         val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
-        Thread.sleep(10 * 1000)
 
         return Result.success()
     }
