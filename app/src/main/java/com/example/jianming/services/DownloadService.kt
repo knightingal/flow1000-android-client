@@ -142,6 +142,10 @@ class DownloadService : Service() {
     }
 
     fun doDownloadSection(sectionId: Long) {
+        val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
+
+        val sectionConfig = getSectionConfig(picSectionBean.album)
+
         val downloadSectionRequest = OneTimeWorkRequestBuilder<DownloadSectionWorker>()
             .setInputData(workDataOf(
                 "sectionId" to sectionId
@@ -151,6 +155,29 @@ class DownloadService : Service() {
             .observeForever() { workInfo ->
                     if (workInfo != null && workInfo.state.isFinished) {
                         Log.d("DownloadService", "worker for $sectionId finish")
+                        val pics = workInfo.outputData.getStringArray("pics") as Array<String>
+                        val dirName = workInfo.outputData.getString("dirName") as String
+//                        Log.d("pics", pics.toString())
+
+                        val imgWorkerList = pics.map { pic ->
+
+                            val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                                    "/linux1000/${sectionConfig.baseUrl}/${dirName}/${if (sectionConfig.encryped) "$pic.bin" else pic}"
+
+                            OneTimeWorkRequestBuilder<DownloadImageWorker>()
+                                .addTag(imgUrl)
+                                .setInputData(workDataOf("imgUrl" to imgUrl))
+                                .build()
+                        }
+
+                        val beginWith = WorkManager.getInstance(this).beginWith(imgWorkerList)
+                        beginWith.workInfosLiveData.observeForever {
+                            itList ->
+                            itList.filter {it -> it.state.isFinished} .forEach { it ->
+                                Log.d("DownloadService", "${it.tags.first()} finished") }
+                        }
+                        beginWith.enqueue()
+
                     }
             }
     }

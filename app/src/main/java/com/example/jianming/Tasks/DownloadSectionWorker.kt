@@ -6,6 +6,7 @@ import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -63,17 +64,23 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
             }
         }
 
-        val imgWorkerList = sectionInfoBean.pics.map { pic ->
-            val sectionConfig = getSectionConfig(picSectionBean.album)
-            val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                    "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) "$pic.bin" else pic}"
+        val output: Data = workDataOf(
+            "pics" to sectionInfoBean.pics.toTypedArray(),
+            "dirName" to sectionInfoBean.dirName
+        )
 
-            OneTimeWorkRequestBuilder<DownloadImageWorker>()
-                .addTag(imgUrl)
-                .setInputData(workDataOf("imgUrl" to imgUrl))
-                .build()
-        }
-        WorkManager.getInstance(applicationContext).enqueue(imgWorkerList)
+        if (false) {
+            val imgWorkerList = sectionInfoBean.pics.map { pic ->
+                val sectionConfig = getSectionConfig(picSectionBean.album)
+                val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                        "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) "$pic.bin" else pic}"
+
+                OneTimeWorkRequestBuilder<DownloadImageWorker>()
+                    .addTag(imgUrl)
+                    .setInputData(workDataOf("imgUrl" to imgUrl))
+                    .build()
+            }
+            WorkManager.getInstance(applicationContext).enqueue(imgWorkerList)
 //        imgWorkerList.forEach { imgWorker ->
 //            WorkManager.getInstance(applicationContext).getWorkInfoByIdLiveData(imgWorker.id)
 //                .observeForever {workInfo ->
@@ -83,8 +90,9 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
 //                }
 //        }
 
-        val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
+            val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
+        }
 
-        return Result.success()
+        return Result.success(output)
     }
 }
