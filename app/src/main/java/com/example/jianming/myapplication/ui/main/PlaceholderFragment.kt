@@ -67,8 +67,8 @@ class PlaceholderFragment : Fragment() {
         })
         _binding!!.taskBtn.setOnClickListener {
             Log.d("main", "click")
-            startWork1(1L)
-            startWork1(2L)
+            startWork1(3L)
+            startWork1(4L)
         }
         return root
     }
@@ -104,6 +104,7 @@ class PlaceholderFragment : Fragment() {
                             .setInputData(workDataOf("imgUrl" to imgUrl,
                                 "picName" to pic,
                                 "dirName" to dirName,
+                                "encrypted" to sectionConfig.encryped,
                                 "index" to pics.indexOf(pic)))
                             .build()
                     }
