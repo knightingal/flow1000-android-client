@@ -16,6 +16,9 @@ interface PicInfoDao {
     @Insert
     fun insert(picInfoBean: PicInfoBean)
 
+    @Query("select * from PicInfoBean where `index` = :index")
+    fun query(index: Long): PicInfoBean
+
     @Query("select * from PicInfoBean where sectionIndex = :innerIndex")
     fun queryBySectionInnerIndex(innerIndex: Long):List<PicInfoBean>
 

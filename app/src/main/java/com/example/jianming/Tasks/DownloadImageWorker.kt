@@ -19,6 +19,8 @@ import com.example.jianming.util.AppDataBase
 import com.example.jianming.util.FileUtil.getSectionStorageDir
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
@@ -41,6 +43,7 @@ class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
         val picName = inputData.getString("picName") as String
         val dirName = inputData.getString("dirName") as String
         val encrypted = inputData.getBoolean("encrypted", false)
+        val picId = inputData.getLong("picId", 0)
         Log.d("DownloadImageWorker", "start work for:$imgUrl")
         val body = makeRequest(imgUrl, encrypted) as ByteArray
         val output: Data = workDataOf("imgUrl" to imgUrl,)
@@ -58,28 +61,11 @@ class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
         val width = options.outWidth
         val height = options.outHeight
         val absolutePath = dest.absolutePath
-
-//        Thread.sleep(index * 1000L)
-//        val picSectionBean = picSectionDao.getByInnerIndex(sectionIndex)
-//        val mapper = jacksonObjectMapper()
-//        db.runInTransaction() {
-//            (mapper.readValue(body) as SectionInfoBean).pics.forEach { pic ->
-//                val picInfoBean: PicInfoBean = PicInfoBean(
-//                    null,
-//                    pic,
-//                    picSectionBean.id,
-//                    null,
-//                    0,
-//                    0
-//                )
-//                picInfoDao.insert(picInfoBean)
-//            }
-//        }
-//        Log.d("DownloadImageWorker", "work for:$imgUrl finish")
-//
-//        val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
-
-
+        val picInfoBean = picInfoDao.query(picId)
+        picInfoBean.absolutePath = absolutePath
+        picInfoBean.width = width
+        picInfoBean.height = height
+        picInfoDao.update(picInfoBean)
         return Result.success(output)
     }
 }

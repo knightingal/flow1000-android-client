@@ -22,6 +22,11 @@ import com.example.jianming.Tasks.BaseWorker
 import com.example.jianming.Tasks.DownloadCompleteWorker
 import com.example.jianming.Tasks.DownloadImageWorker
 import com.example.jianming.Tasks.DownloadSectionWorker
+import com.example.jianming.Tasks.DownloadSectionWorker.Companion.PARAM_DIR_NAME_KEY
+import com.example.jianming.Tasks.DownloadSectionWorker.Companion.PARAM_PICS_KEY
+import com.example.jianming.Tasks.DownloadSectionWorker.Companion.PARAM_SECTION_BEAN_ID_KEY
+import com.example.jianming.Tasks.DownloadSectionWorker.Companion.PARAM_SECTION_ID_KEY
+import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.myapplication.App
 import com.example.jianming.myapplication.databinding.FragmentMainBinding
@@ -44,6 +49,7 @@ class PlaceholderFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var picSectionDao : PicSectionDao
+    private lateinit var picInfoDao : PicInfoDao
     private lateinit var db: AppDataBase
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +59,7 @@ class PlaceholderFragment : Fragment() {
         }
         db = App.findDb()
         picSectionDao = db.picSectionDao()
+        picInfoDao = db.picInfoDao()
     }
 
     override fun onCreateView(
@@ -72,7 +79,31 @@ class PlaceholderFragment : Fragment() {
             startWork1(3L)
             startWork1(4L)
         }
+        _binding!!.taskViewBtn.setOnClickListener {
+            viewTask()
+        }
         return root
+    }
+
+    private fun viewTask() {
+        val context = context as Context
+//        val works = WorkManager.getInstance(context).getWorkInfosByTagLiveData("sectionComplete").value
+//        if (works != null) {
+//            works.forEach {
+//                    workInfo ->
+//                Log.d("main", "${workInfo.state}");
+//            }
+//        }
+        val works = WorkManager.getInstance(context).getWorkInfosByTag("sectionComplete").get()
+        if (works != null) {
+            works.forEach {
+                workInfo ->
+                Log.d("main", "${workInfo.state}");
+
+            }
+        }
+
+
     }
 
     private fun startWork1(sectionId: Long) {
@@ -84,26 +115,31 @@ class PlaceholderFragment : Fragment() {
 
         val downloadSectionRequest = OneTimeWorkRequestBuilder<DownloadSectionWorker>()
             .setInputData(workDataOf(
-                "sectionId" to sectionId
+                PARAM_SECTION_ID_KEY to sectionId
             )).build()
         WorkManager.getInstance(context).enqueue(downloadSectionRequest)
         WorkManager.getInstance(context).getWorkInfoByIdLiveData(downloadSectionRequest.id)
             .observeForever() { workInfo ->
                 if (workInfo != null && workInfo.state.isFinished) {
                     Log.d("DownloadService", "worker for $sectionId finish")
-                    val pics = workInfo.outputData.getStringArray("pics") as Array<String>
-                    val dirName = workInfo.outputData.getString("dirName") as String
+//                    val pics = workInfo.outputData.getStringArray(PARAM_PICS_KEY) as Array<String>
+                    val dirName = workInfo.outputData.getString(PARAM_DIR_NAME_KEY) as String
+                    val sectionBeanId = workInfo.outputData.getLong(PARAM_SECTION_BEAN_ID_KEY, 0)
+                    val picInfoList =
+                        picInfoDao.queryBySectionInnerIndex(sectionBeanId)
 
-                    val imgWorkerList = pics.map { pic ->
+                    val imgWorkerList = picInfoList.map { pic ->
+                        val picName = pic.name
 
                         val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                                "/linux1000/${sectionConfig.baseUrl}/${dirName}/${if (sectionConfig.encryped) "$pic.bin" else pic}"
+                                "/linux1000/${sectionConfig.baseUrl}/${dirName}/${if (sectionConfig.encryped) "$picName.bin" else picName}"
 
                         OneTimeWorkRequestBuilder<DownloadImageWorker>()
                             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                             .addTag(imgUrl)
                             .setInputData(workDataOf("imgUrl" to imgUrl,
-                                "picName" to pic,
+                                "picId" to pic.index,
+                                "picName" to picName,
                                 "dirName" to dirName,
                                 "sectionBeanId" to picSectionBean.id,
                                 "encrypted" to sectionConfig.encryped,
@@ -119,6 +155,7 @@ class PlaceholderFragment : Fragment() {
                     }
 
                     val downloadCompleteWorker = OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
+                        .addTag("sectionComplete")
                         .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                         .setInputData(
                             workDataOf(

@@ -31,6 +31,13 @@ import java.io.File
 class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams ) {
 
+    companion object {
+        const val PARAM_SECTION_ID_KEY = "sectionId"
+        const val PARAM_PICS_KEY = "pics"
+        const val PARAM_DIR_NAME_KEY = "dirName"
+        const val PARAM_SECTION_BEAN_ID_KEY = "sectionBeanId"
+    }
+
 
     private var db: AppDataBase = App.findDb()
     private var picSectionDao : PicSectionDao
@@ -43,7 +50,7 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
     }
     override suspend fun doWork(): Result {
         Log.d("DownloadSectionWorker", "doWork")
-        val sectionId = inputData.getLong("sectionId", 0)
+        val sectionId = inputData.getLong(PARAM_SECTION_ID_KEY, 0)
         val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=$sectionId"
         val body = makeRequest(url)
         val mapper = jacksonObjectMapper()
@@ -65,8 +72,9 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
         }
 
         val output: Data = workDataOf(
-            "pics" to sectionInfoBean.pics.toTypedArray(),
-            "dirName" to sectionInfoBean.dirName
+            PARAM_PICS_KEY to sectionInfoBean.pics.toTypedArray(),
+            PARAM_SECTION_BEAN_ID_KEY to picSectionBean.id,
+            PARAM_DIR_NAME_KEY to sectionInfoBean.dirName,
         )
 
         if (false) {
