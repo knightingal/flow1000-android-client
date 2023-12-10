@@ -1,6 +1,7 @@
 package com.example.jianming.Tasks
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.room.Room
 import androidx.work.CoroutineWorker
@@ -39,11 +40,10 @@ class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
         val imgUrl = inputData.getString("imgUrl") as String
         val picName = inputData.getString("picName") as String
         val dirName = inputData.getString("dirName") as String
-        val index = inputData.getInt("index", 0)
         val encrypted = inputData.getBoolean("encrypted", false)
         Log.d("DownloadImageWorker", "start work for:$imgUrl")
-        val body = makeRequest(imgUrl, encrypted)
-        val output: Data = workDataOf("imgUrl" to imgUrl)
+        val body = makeRequest(imgUrl, encrypted) as ByteArray
+        val output: Data = workDataOf("imgUrl" to imgUrl,)
 
         val directory =
             getSectionStorageDir(applicationContext, dirName)
@@ -51,6 +51,14 @@ class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
         val fileOutputStream = FileOutputStream(dest, true)
         fileOutputStream.write(body)
         fileOutputStream.close()
+
+        val options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        BitmapFactory.decodeByteArray(body, 0, body.size, options)
+        val width = options.outWidth
+        val height = options.outHeight
+        val absolutePath = dest.absolutePath
+
 //        Thread.sleep(index * 1000L)
 //        val picSectionBean = picSectionDao.getByInnerIndex(sectionIndex)
 //        val mapper = jacksonObjectMapper()

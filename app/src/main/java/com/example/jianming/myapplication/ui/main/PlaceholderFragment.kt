@@ -12,12 +12,14 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.ArrayCreatingInputMerger
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.example.jianming.Tasks.BaseWorker
+import com.example.jianming.Tasks.DownloadCompleteWorker
 import com.example.jianming.Tasks.DownloadImageWorker
 import com.example.jianming.Tasks.DownloadSectionWorker
 import com.example.jianming.dao.PicSectionDao
@@ -91,7 +93,6 @@ class PlaceholderFragment : Fragment() {
                     Log.d("DownloadService", "worker for $sectionId finish")
                     val pics = workInfo.outputData.getStringArray("pics") as Array<String>
                     val dirName = workInfo.outputData.getString("dirName") as String
-//                        Log.d("pics", pics.toString())
 
                     val imgWorkerList = pics.map { pic ->
 
@@ -104,8 +105,9 @@ class PlaceholderFragment : Fragment() {
                             .setInputData(workDataOf("imgUrl" to imgUrl,
                                 "picName" to pic,
                                 "dirName" to dirName,
+                                "sectionBeanId" to picSectionBean.id,
                                 "encrypted" to sectionConfig.encryped,
-                                "index" to pics.indexOf(pic)))
+                            ))
                             .build()
                     }
 
@@ -114,13 +116,18 @@ class PlaceholderFragment : Fragment() {
                             itList ->
                         val finishCount = itList.count { it -> it.state.isFinished }
                         Log.d("work", "section $sectionId finish $finishCount")
-//                        itList.forEach { it ->
-//                            Log.d("work", "${it.outputData.getString("imgUrl")} status ${it.state}")
-
-//                        }
-
                     }
-                    beginWith.enqueue()
+
+                    val downloadCompleteWorker = OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
+                        .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                        .setInputData(
+                            workDataOf(
+                                "sectionId" to sectionId,
+                            )
+                        )
+                        .build()
+
+                    beginWith.then(downloadCompleteWorker).enqueue();
 
                 }
             }
