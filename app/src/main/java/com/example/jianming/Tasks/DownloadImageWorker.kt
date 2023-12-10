@@ -15,8 +15,11 @@ import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.services.Counter
 import com.example.jianming.util.AppDataBase
+import com.example.jianming.util.FileUtil.getSectionStorageDir
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import java.io.File
+import java.io.FileOutputStream
 
 class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams ) {
@@ -34,11 +37,21 @@ class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
     }
     override suspend fun doWork(): Result {
         val imgUrl = inputData.getString("imgUrl") as String
+        val picName = inputData.getString("picName") as String
+        val dirName = inputData.getString("dirName") as String
+        val index = inputData.getInt("index", 0)
         val encrypted = inputData.getBoolean("encrypted", false)
         Log.d("DownloadImageWorker", "start work for:$imgUrl")
         val body = makeRequest(imgUrl, encrypted)
-//        val output: Data = workDataOf("imgContent" to body)
+        val output: Data = workDataOf("imgUrl" to imgUrl)
 
+        val directory =
+            getSectionStorageDir(applicationContext, dirName)
+        val dest = File(directory, picName)
+        val fileOutputStream = FileOutputStream(dest, true)
+        fileOutputStream.write(body)
+        fileOutputStream.close()
+//        Thread.sleep(index * 1000L)
 //        val picSectionBean = picSectionDao.getByInnerIndex(sectionIndex)
 //        val mapper = jacksonObjectMapper()
 //        db.runInTransaction() {
@@ -59,6 +72,6 @@ class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
 //        val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
 
 
-        return Result.success()
+        return Result.success(output)
     }
 }

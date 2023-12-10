@@ -1,5 +1,7 @@
 package com.example.jianming.myapplication.ui.main
 
+import SERVER_IP
+import SERVER_PORT
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -11,10 +13,18 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.workDataOf
+import com.example.jianming.Tasks.BaseWorker
+import com.example.jianming.Tasks.DownloadImageWorker
 import com.example.jianming.Tasks.DownloadSectionWorker
+import com.example.jianming.dao.PicSectionDao
+import com.example.jianming.myapplication.App
 import com.example.jianming.myapplication.databinding.FragmentMainBinding
+import com.example.jianming.myapplication.getSectionConfig
+import com.example.jianming.util.AppDataBase
 import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -31,12 +41,16 @@ class PlaceholderFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private lateinit var picSectionDao : PicSectionDao
+    private lateinit var db: AppDataBase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pageViewModel = ViewModelProvider(this).get(PageViewModel::class.java).apply {
             setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1)
         }
+        db = App.findDb()
+        picSectionDao = db.picSectionDao()
     }
 
     override fun onCreateView(
@@ -53,49 +67,110 @@ class PlaceholderFragment : Fragment() {
         })
         _binding!!.taskBtn.setOnClickListener {
             Log.d("main", "click")
-            startWork()
+            startWork1(1L)
+            startWork1(2L)
         }
         return root
     }
 
+    private fun startWork1(sectionId: Long) {
+
+        val context = context as Context
+        val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
+
+        val sectionConfig = getSectionConfig(picSectionBean.album)
+
+        val downloadSectionRequest = OneTimeWorkRequestBuilder<DownloadSectionWorker>()
+            .setInputData(workDataOf(
+                "sectionId" to sectionId
+            )).build()
+        WorkManager.getInstance(context).enqueue(downloadSectionRequest)
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(downloadSectionRequest.id)
+            .observeForever() { workInfo ->
+                if (workInfo != null && workInfo.state.isFinished) {
+                    Log.d("DownloadService", "worker for $sectionId finish")
+                    val pics = workInfo.outputData.getStringArray("pics") as Array<String>
+                    val dirName = workInfo.outputData.getString("dirName") as String
+//                        Log.d("pics", pics.toString())
+
+                    val imgWorkerList = pics.map { pic ->
+
+                        val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                                "/linux1000/${sectionConfig.baseUrl}/${dirName}/${if (sectionConfig.encryped) "$pic.bin" else pic}"
+
+                        OneTimeWorkRequestBuilder<DownloadImageWorker>()
+                            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                            .addTag(imgUrl)
+                            .setInputData(workDataOf("imgUrl" to imgUrl,
+                                "picName" to pic,
+                                "dirName" to dirName,
+                                "index" to pics.indexOf(pic)))
+                            .build()
+                    }
+
+                    val beginWith = WorkManager.getInstance(context).beginWith(imgWorkerList)
+                    beginWith.workInfosLiveData.observeForever {
+                            itList ->
+                        val finishCount = itList.count { it -> it.state.isFinished }
+                        Log.d("work", "section $sectionId finish $finishCount")
+//                        itList.forEach { it ->
+//                            Log.d("work", "${it.outputData.getString("imgUrl")} status ${it.state}")
+
+//                        }
+
+                    }
+                    beginWith.enqueue()
+
+                }
+            }
+    }
+
     private fun startWork() {
         val context: Context = context as Context
-        val workRequest0 = OneTimeWorkRequestBuilder<DownloadSectionWorker>().build()
-        val workRequest1 = OneTimeWorkRequestBuilder<DownloadSectionWorker>().build()
-        val workRequest2 = OneTimeWorkRequestBuilder<DownloadSectionWorker>().build()
-        WorkManager.getInstance(context).enqueue(workRequest0)
-        WorkManager.getInstance(context).enqueue(workRequest1)
-        WorkManager.getInstance(context).enqueue(workRequest2)
-
-        val workInfoById: ListenableFuture<WorkInfo> = WorkManager.getInstance(context).getWorkInfoById(workRequest0.id)
-
-        Futures.addCallback(workInfoById, object : FutureCallback<WorkInfo> {
-            override fun onSuccess(result: WorkInfo?) {
-//                TODO("Not yet implemented")
-                Log.d("main", "call back")
+        val workRequest0 = OneTimeWorkRequestBuilder<BaseWorker>()
+            .addTag("task0")
+            .setInputData(workDataOf("sleepTime" to 10L))
+            .build()
+        val workRequest1 = OneTimeWorkRequestBuilder<BaseWorker>()
+            .addTag("task1")
+            .setInputData(workDataOf("sleepTime" to 20L))
+            .build()
+        val workRequest2 = OneTimeWorkRequestBuilder<BaseWorker>()
+            .addTag("task2")
+            .setInputData(workDataOf("sleepTime" to 30L))
+            .build()
+        val beginWith = WorkManager.getInstance(context)
+            .beginWith(listOf(workRequest0, workRequest1, workRequest2))
+        beginWith.workInfosLiveData.observeForever {
+            itList ->
+            itList.filter { it -> it.state.isFinished }.forEach { it ->
+                Log.d("work", "${it.tags.toList()[1]} fininshed")
             }
 
-            override fun onFailure(t: Throwable) {
-//                TODO("Not yet implemented")
-            }
 
-        }, Executors.newSingleThreadExecutor())
+        }
+        beginWith.enqueue()
 
-        WorkManager.getInstance(context).getWorkInfoByIdLiveData(workRequest0.id)
-            .observe(viewLifecycleOwner) {
-                workInfo ->
-                Log.d("main", "workInfoById0 status change to ${workInfo.state}")
-            }
-        WorkManager.getInstance(context).getWorkInfoByIdLiveData(workRequest1.id)
-            .observe(viewLifecycleOwner) {
-                    workInfo ->
-                Log.d("main", "workInfoById1 status change to ${workInfo.state}")
-            }
-        WorkManager.getInstance(context).getWorkInfoByIdLiveData(workRequest2.id)
-            .observe(viewLifecycleOwner) {
-                    workInfo ->
-                Log.d("main", "workInfoById2 status change to ${workInfo.state}")
-            }
+//        WorkManager.getInstance(context).enqueue(workRequest0)
+//        WorkManager.getInstance(context).enqueue(workRequest1)
+//        WorkManager.getInstance(context).enqueue(workRequest2)
+//
+//
+//        WorkManager.getInstance(context).getWorkInfoByIdLiveData(workRequest0.id)
+//            .observe(viewLifecycleOwner) {
+//                workInfo ->
+//                Log.d("main", "workInfoById0 status change to ${workInfo.state}")
+//            }
+//        WorkManager.getInstance(context).getWorkInfoByIdLiveData(workRequest1.id)
+//            .observe(viewLifecycleOwner) {
+//                    workInfo ->
+//                Log.d("main", "workInfoById1 status change to ${workInfo.state}")
+//            }
+//        WorkManager.getInstance(context).getWorkInfoByIdLiveData(workRequest2.id)
+//            .observe(viewLifecycleOwner) {
+//                    workInfo ->
+//                Log.d("main", "workInfoById2 status change to ${workInfo.state}")
+//            }
     }
 
     companion object {

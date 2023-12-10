@@ -186,12 +186,12 @@ class DownloadService : Service() {
         pendingSectionBeanList.add(allPicSectionBeanList[position])
         refreshListener?.notifyListReady()
 
+        if (false) {
         doDownloadSection(index)
 
         val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=$index"
 //        startDownloadSectionWorker(index, url)
 
-        if (false) {
             ConcurrencyJsonApiTask.startDownload(url) { body ->
                 val picSectionBean = picSectionDao.getByInnerIndex(index)
                 val mapper = jacksonObjectMapper()
