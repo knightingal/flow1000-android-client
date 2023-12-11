@@ -17,6 +17,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.WorkQuery
 import androidx.work.workDataOf
 import com.example.jianming.Tasks.BaseWorker
 import com.example.jianming.Tasks.DownloadCompleteWorker
@@ -87,23 +88,16 @@ class PlaceholderFragment : Fragment() {
 
     private fun viewTask() {
         val context = context as Context
-//        val works = WorkManager.getInstance(context).getWorkInfosByTagLiveData("sectionComplete").value
-//        if (works != null) {
-//            works.forEach {
-//                    workInfo ->
-//                Log.d("main", "${workInfo.state}");
-//            }
-//        }
         val works = WorkManager.getInstance(context).getWorkInfosByTag("sectionComplete").get()
-        if (works != null) {
-            works.forEach {
-                workInfo ->
-                Log.d("main", "${workInfo.state}");
-
-            }
+        works.forEach { it ->
+            Log.d("main", "${it.state}");
+            val sectionId = it.tags.filter { tag -> tag.startsWith("sectionId") }[0]
+            val imgWorks =
+                WorkManager.getInstance(context).getWorkInfosByTag("$sectionId:image").get()
+            val finishCount = imgWorks.count { it.state == WorkInfo.State.SUCCEEDED }
+            val totalCount = imgWorks.size
+            Log.d("main", "process for $sectionId: $finishCount / $totalCount");
         }
-
-
     }
 
     private fun startWork1(sectionId: Long) {
@@ -137,6 +131,7 @@ class PlaceholderFragment : Fragment() {
                         OneTimeWorkRequestBuilder<DownloadImageWorker>()
                             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                             .addTag(imgUrl)
+                            .addTag("sectionId:${sectionId}:image")
                             .setInputData(workDataOf("imgUrl" to imgUrl,
                                 "picId" to pic.index,
                                 "picName" to picName,
@@ -156,6 +151,7 @@ class PlaceholderFragment : Fragment() {
 
                     val downloadCompleteWorker = OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
                         .addTag("sectionComplete")
+                        .addTag("sectionId:${sectionId}")
                         .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                         .setInputData(
                             workDataOf(
