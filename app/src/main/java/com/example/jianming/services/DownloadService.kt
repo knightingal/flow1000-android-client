@@ -12,10 +12,13 @@ import android.os.IBinder
 import android.util.Log
 import androidx.room.Room
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
+import com.example.jianming.Tasks.DownloadCompleteWorker
 import com.example.jianming.Tasks.DownloadImageWorker
 import com.example.jianming.Tasks.DownloadSectionWorker
 import com.example.jianming.util.AppDataBase
@@ -74,10 +77,6 @@ class DownloadService : Service() {
     }
     private lateinit var allPicSectionBeanList:List<PicSectionBean>
     public fun startDownloadSectionList() {
-        if (pendingSectionBeanList.isNotEmpty()) {
-            refreshListener?.notifyListReady()
-            return
-        }
         val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
@@ -91,29 +90,39 @@ class DownloadService : Service() {
             }
 
             allPicSectionBeanList = picSectionDao.getAll().toList()
+            startWork(3L)
+            startWork(4L)
+            viewWork()
 //            refreshListener?.doRefreshList(allPicSectionBeanList)
 
-            val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
-            ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
-                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
-                if (picSectionBeanList.isNotEmpty()) {
-                    picSectionBeanList.forEach {
-                        picSectionDao.update(it)
-                        val allIdList = allPicSectionBeanList.map{sectionBean -> sectionBean.id}.toList()
-                        startDownloadSection(it.id, allIdList.indexOf(it.id));
+            if (false) {
+                val pendingUrl =
+                    "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
+                ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
+                    val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
+                    if (picSectionBeanList.isNotEmpty()) {
+                        picSectionBeanList.forEach {
+                            picSectionDao.update(it)
+                            val allIdList =
+                                allPicSectionBeanList.map { sectionBean -> sectionBean.id }.toList()
+                            startDownloadSection(it.id, allIdList.indexOf(it.id));
+                        }
                     }
                 }
-            }
-            val localUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
-            ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
-                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
-                if (picSectionBeanList.isNotEmpty()) {
-                    picSectionBeanList.forEach {
-                        val existSection = picSectionDao.getByInnerIndex(it.id)
-                        if (existSection.exist != 1) {
-                            picSectionDao.update(it)
-                            val allIdList = allPicSectionBeanList.map{sectionBean -> sectionBean.id}.toList()
-                            startDownloadSection(it.id, allIdList.indexOf(it.id));
+                val localUrl =
+                    "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
+                ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
+                    val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
+                    if (picSectionBeanList.isNotEmpty()) {
+                        picSectionBeanList.forEach {
+                            val existSection = picSectionDao.getByInnerIndex(it.id)
+                            if (existSection.exist != 1) {
+                                picSectionDao.update(it)
+                                val allIdList =
+                                    allPicSectionBeanList.map { sectionBean -> sectionBean.id }
+                                        .toList()
+                                startDownloadSection(it.id, allIdList.indexOf(it.id));
+                            }
                         }
                     }
                 }
@@ -299,6 +308,92 @@ class DownloadService : Service() {
         }
     }
 
+
+    private fun startWork(sectionId: Long) {
+
+        val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
+
+        val sectionConfig = getSectionConfig(picSectionBean.album)
+
+        val downloadSectionRequest = OneTimeWorkRequestBuilder<DownloadSectionWorker>()
+            .addTag("sectionStart")
+            .addTag("sectionId:${sectionId}")
+            .setInputData(workDataOf(
+                DownloadSectionWorker.PARAM_SECTION_ID_KEY to sectionId
+            )).build()
+        WorkManager.getInstance(this).enqueue(downloadSectionRequest)
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(downloadSectionRequest.id)
+            .observeForever() { workInfo ->
+                if (workInfo != null && workInfo.state.isFinished) {
+                    Log.d("DownloadService", "worker for $sectionId finish")
+//                    val pics = workInfo.outputData.getStringArray(PARAM_PICS_KEY) as Array<String>
+                    val dirName = workInfo.outputData.getString(DownloadSectionWorker.PARAM_DIR_NAME_KEY) as String
+                    val sectionBeanId = workInfo.outputData.getLong(DownloadSectionWorker.PARAM_SECTION_BEAN_ID_KEY, 0)
+                    val picInfoList =
+                        picInfoDao.queryBySectionInnerIndex(sectionBeanId)
+
+                    val imgWorkerList = picInfoList.map { pic ->
+                        val picName = pic.name
+
+                        val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                                "/linux1000/${sectionConfig.baseUrl}/${dirName}/${if (sectionConfig.encryped) "$picName.bin" else picName}"
+
+                        OneTimeWorkRequestBuilder<DownloadImageWorker>()
+                            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                            .addTag(imgUrl)
+                            .addTag("sectionId:${sectionId}:image")
+                            .setInputData(workDataOf("imgUrl" to imgUrl,
+                                "picId" to pic.index,
+                                "picName" to picName,
+                                "dirName" to dirName,
+                                "sectionBeanId" to picSectionBean.id,
+                                "encrypted" to sectionConfig.encryped,
+                            ))
+                            .build()
+                    }
+
+                    val beginWith = WorkManager.getInstance(this).beginWith(imgWorkerList)
+                    beginWith.workInfosLiveData.observeForever {
+                            itList ->
+                        val finishCount = itList.count { it -> it.state.isFinished }
+                        Log.d("work", "section $sectionId finish $finishCount")
+                    }
+
+                    val downloadCompleteWorker = OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
+                        .addTag("sectionComplete")
+                        .addTag("sectionId:${sectionId}")
+                        .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                        .setInputData(
+                            workDataOf(
+                                "sectionId" to sectionId,
+                            )
+                        )
+                        .build()
+
+                    beginWith.then(downloadCompleteWorker).enqueue();
+
+                }
+            }
+    }
+
+    private fun viewWork() {
+        val works = WorkManager.getInstance(this).getWorkInfosByTag("sectionStart").get()
+        pendingSectionBeanList = works.map { it ->
+            val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }.split(":")[1]
+            val picSectionBean = picSectionDao.getByInnerIndex(sectionId.toLong())
+            picSectionBean
+        }.toMutableList()
+        refreshListener?.notifyListReady()
+        works.forEach { it ->
+            Log.d("main", "${it.state}");
+            val sectionId = it.tags.filter { tag -> tag.startsWith("sectionId") }[0]
+            val imgWorks =
+                WorkManager.getInstance(this).getWorkInfosByTag("$sectionId:image").get()
+            val finishCount = imgWorks.count { it.state == WorkInfo.State.SUCCEEDED }
+            val totalCount = imgWorks.size
+            Log.d("main", "process for $sectionId: $finishCount / $totalCount");
+        }
+    }
 
 }
 
