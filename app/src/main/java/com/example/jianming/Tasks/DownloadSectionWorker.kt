@@ -36,6 +36,7 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
         const val PARAM_PICS_KEY = "pics"
         const val PARAM_DIR_NAME_KEY = "dirName"
         const val PARAM_SECTION_BEAN_ID_KEY = "sectionBeanId"
+        const val TOTAL_IMAGE_COUNT_KEY = "totalImageCountKey"
     }
 
 
@@ -75,6 +76,7 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
             PARAM_PICS_KEY to sectionInfoBean.pics.toTypedArray(),
             PARAM_SECTION_BEAN_ID_KEY to picSectionBean.id,
             PARAM_DIR_NAME_KEY to sectionInfoBean.dirName,
+            TOTAL_IMAGE_COUNT_KEY to sectionInfoBean.pics.size
         )
 
         if (false) {

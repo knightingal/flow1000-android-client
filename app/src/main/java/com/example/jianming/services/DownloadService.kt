@@ -163,7 +163,8 @@ class DownloadService : Service() {
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(downloadSectionRequest.id)
             .observeForever() { workInfo ->
                     if (workInfo != null && workInfo.state.isFinished) {
-                        Log.d("DownloadService", "worker for $sectionId finish")
+                        val totalImageCount = workInfo.outputData.getInt(DownloadSectionWorker.TOTAL_IMAGE_COUNT_KEY, 0)
+                        Log.d("DownloadService", "worker for $sectionId finish, totalCount: $totalImageCount")
                         val pics = workInfo.outputData.getStringArray("pics") as Array<String>
                         val dirName = workInfo.outputData.getString("dirName") as String
 //                        Log.d("pics", pics.toString())
@@ -325,7 +326,8 @@ class DownloadService : Service() {
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(downloadSectionRequest.id)
             .observeForever() { workInfo ->
                 if (workInfo != null && workInfo.state.isFinished) {
-                    Log.d("DownloadService", "worker for $sectionId finish")
+                    val totalImageCount = workInfo.outputData.getInt(DownloadSectionWorker.TOTAL_IMAGE_COUNT_KEY, 0)
+                    Log.d("DownloadService", "worker for $sectionId finish, totalCount=${totalImageCount}")
 //                    val pics = workInfo.outputData.getStringArray(PARAM_PICS_KEY) as Array<String>
                     val dirName = workInfo.outputData.getString(DownloadSectionWorker.PARAM_DIR_NAME_KEY) as String
                     val sectionBeanId = workInfo.outputData.getLong(DownloadSectionWorker.PARAM_SECTION_BEAN_ID_KEY, 0)
@@ -357,6 +359,7 @@ class DownloadService : Service() {
                             itList ->
                         val finishCount = itList.count { it -> it.state.isFinished }
                         Log.d("work", "section $sectionId finish $finishCount")
+                        refreshListener?.doRefreshProcess(sectionId, 0, finishCount, totalImageCount)
                     }
 
                     val downloadCompleteWorker = OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
