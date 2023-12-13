@@ -382,6 +382,7 @@ class DownloadService : Service() {
                     val downloadCompleteWorker = OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
                         .addTag("sectionComplete")
                         .addTag("sectionId:${sectionId}")
+                        .addTag("complete:${sectionId}")
                         .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                         .setInputData(
                             workDataOf(
@@ -399,11 +400,12 @@ class DownloadService : Service() {
     private fun viewWork() {
         val works = WorkManager.getInstance(this).getWorkInfosByTag("sectionStart").get()
         pendingSectionBeanList = works.filter {
-            val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }
+            val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }.split(":")[1]
 
             val workQuery = WorkQuery.Builder
                 .fromStates(listOf(WorkInfo.State.SUCCEEDED))
-                .addUniqueWorkNames(listOf( sectionId)).build()
+                .addTags(listOf("complete:$sectionId"))
+                .build()
             val workInfos = WorkManager.getInstance(this).getWorkInfos(workQuery).get()
             workInfos.size == 0
         }.map { it ->
