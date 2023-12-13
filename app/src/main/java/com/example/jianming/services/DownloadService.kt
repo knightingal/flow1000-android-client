@@ -11,10 +11,12 @@ import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import androidx.room.Room
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.WorkQuery
 import androidx.work.workDataOf
 import com.example.jianming.Tasks.ConcurrencyImageTask
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
@@ -92,6 +94,8 @@ class DownloadService : Service() {
             allPicSectionBeanList = picSectionDao.getAll().toList()
             startWork(3L)
             startWork(4L)
+            startWork(30L)
+            startWork(31L)
             viewWork()
 //            refreshListener?.doRefreshList(allPicSectionBeanList)
 
@@ -354,12 +358,25 @@ class DownloadService : Service() {
                             .build()
                     }
 
-                    val beginWith = WorkManager.getInstance(this).beginWith(imgWorkerList)
+                    val beginWith = WorkManager.getInstance(this).beginUniqueWork(
+                        "sectionId:$sectionId",
+                        ExistingWorkPolicy.REPLACE,
+                        imgWorkerList
+                    )
                     beginWith.workInfosLiveData.observeForever {
                             itList ->
                         val finishCount = itList.count { it -> it.state.isFinished }
                         Log.d("work", "section $sectionId finish $finishCount")
-                        refreshListener?.doRefreshProcess(sectionId, 0, finishCount, totalImageCount)
+                        if (finishCount < totalImageCount) {
+                            refreshListener?.doRefreshProcess(
+                                sectionId,
+                                0,
+                                finishCount,
+                                totalImageCount
+                            )
+                        } else {
+                            viewWork()
+                        }
                     }
 
                     val downloadCompleteWorker = OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
@@ -381,7 +398,15 @@ class DownloadService : Service() {
 
     private fun viewWork() {
         val works = WorkManager.getInstance(this).getWorkInfosByTag("sectionStart").get()
-        pendingSectionBeanList = works.map { it ->
+        pendingSectionBeanList = works.filter {
+            val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }
+
+            val workQuery = WorkQuery.Builder
+                .fromStates(listOf(WorkInfo.State.SUCCEEDED))
+                .addUniqueWorkNames(listOf( sectionId)).build()
+            val workInfos = WorkManager.getInstance(this).getWorkInfos(workQuery).get()
+            workInfos.size == 0
+        }.map { it ->
             val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }.split(":")[1]
             val picSectionBean = picSectionDao.getByInnerIndex(sectionId.toLong())
             picSectionBean
