@@ -14,6 +14,7 @@ import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
+import com.example.jianming.myapplication.App
 import com.example.jianming.services.Counter
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.util.FileUtil.getSectionStorageDir
@@ -29,10 +30,7 @@ class DownloadImageWorker(context: Context, workerParams: WorkerParameters) :
 
     private val picSectionDao : PicSectionDao
     private val picInfoDao : PicInfoDao
-    private val db: AppDataBase = Room.databaseBuilder(
-        applicationContext,
-        AppDataBase::class.java, "database-flow1000"
-    ).allowMainThreadQueries().build()
+    private val db: AppDataBase = App.findDb()
 
     init {
         picSectionDao = db.picSectionDao()
