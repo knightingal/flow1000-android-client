@@ -177,11 +177,6 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     @SuppressLint("NotifyDataSetChanged")
     private val refreshFrontPage: () -> Unit = {
         picSectionDataList.clear()
-        val picSectionBeanList = getDataSourceFromJsonFile()
-        for (picSectionBean in picSectionBeanList) {
-            val picSectionData = PicSectionData(picSectionBean)
-            picSectionDataList.add(picSectionData)
-        }
         picSectionListAdapter.notifyDataSetChanged()
 
     }
@@ -217,7 +212,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         }
     }
 
-    override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
+    override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
         TODO("Not yet implemented")
     }
 

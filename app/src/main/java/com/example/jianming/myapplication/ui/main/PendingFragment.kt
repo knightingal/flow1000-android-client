@@ -129,7 +129,7 @@ class PendingFragment : Fragment(){
         override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int) {
 
             val pendingSectionList = downLoadService!!.getPendingSectionList()
-            val pendingSection = pendingSectionList.find { section -> section.id == sectionId }
+            val pendingSection = pendingSectionList.find { section -> section.picSectionBean.id == sectionId }
             val realPosition = pendingSectionList.indexOf(pendingSection)
 
 
@@ -152,22 +152,25 @@ class PendingFragment : Fragment(){
             }
         }
 
-        override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
-            picSectionDataList.clear()
-            for (picSectionBean in picSectionBeanList) {
-                val picSectionData = PicSectionData(picSectionBean)
-                picSectionDataList.add(picSectionData)
-            }
+        override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
+//            picSectionDataList.clear()
+//            for (picSectionBean in picSectionBeanList) {
+//                val picSectionData = PicSectionData(picSectionBean)
+//                picSectionDataList.add(picSectionData)
+//            }
+
+            picSectionListAdapter.setDataArray(picSectionBeanList)
             picSectionListAdapter.notifyDataSetChanged()
         }
 
         override fun notifyListReady() {
             val pendingSectionList = downLoadService!!.getPendingSectionList()
-            picSectionDataList.clear()
-            for (picSectionBean in pendingSectionList) {
-                val picSectionData = PicSectionData(picSectionBean)
-                picSectionDataList.add(picSectionData)
-            }
+            picSectionListAdapter.setDataArray(pendingSectionList)
+//            picSectionDataList.clear()
+//            for (picSectionBean in pendingSectionList) {
+//                val picSectionData = PicSectionData(picSectionBean)
+//                picSectionDataList.add(picSectionData)
+//            }
             picSectionListAdapter.notifyDataSetChanged()
         }
 

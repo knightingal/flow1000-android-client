@@ -27,6 +27,7 @@ import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.beans.PicSectionBean
+import com.example.jianming.beans.PicSectionData
 import com.example.jianming.beans.UpdateStamp
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
@@ -136,7 +137,7 @@ class DownloadService : Service() {
 
     }
 
-    private var pendingSectionBeanList: MutableList<PicSectionBean> = mutableListOf()
+    private var pendingSectionBeanList: MutableList<PicSectionData> = mutableListOf()
 
     fun doDownloadImage(url: String, destFile: File) {
         val downloadImageRequest = OneTimeWorkRequestBuilder<DownloadImageWorker>()
@@ -197,7 +198,7 @@ class DownloadService : Service() {
     }
 
     fun startDownloadSection(index: Long, position: Int) {
-        pendingSectionBeanList.add(allPicSectionBeanList[position])
+//        pendingSectionBeanList.add(allPicSectionBeanList[position])
         refreshListener?.notifyListReady()
 
         if (false) {
@@ -283,7 +284,7 @@ class DownloadService : Service() {
                             }
                             allPicSectionBeanList[position].exist = 1
                             picSectionDao.update(allPicSectionBeanList[position])
-                            pendingSectionBeanList.remove(allPicSectionBeanList[position])
+//                            pendingSectionBeanList.remove(allPicSectionBeanList[position])
                             processCounter.remove(index)
                             if (getRefreshListener() != null) {
                                 getRefreshListener()?.notifyListReady()
@@ -303,7 +304,7 @@ class DownloadService : Service() {
         return refreshListener
     }
 
-    fun getPendingSectionList(): List<PicSectionBean> {
+    fun getPendingSectionList(): List<PicSectionData> {
         return pendingSectionBeanList.toList()
     }
 
@@ -411,18 +412,23 @@ class DownloadService : Service() {
         }.map { it ->
             val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }.split(":")[1]
             val picSectionBean = picSectionDao.getByInnerIndex(sectionId.toLong())
-            picSectionBean
-        }.toMutableList()
-        refreshListener?.notifyListReady()
-        works.forEach { it ->
-            Log.d("main", "${it.state}");
-            val sectionId = it.tags.filter { tag -> tag.startsWith("sectionId") }[0]
             val imgWorks =
-                WorkManager.getInstance(this).getWorkInfosByTag("$sectionId:image").get()
+                WorkManager.getInstance(this).getWorkInfosByTag("sectionId:$sectionId:image").get()
             val finishCount = imgWorks.count { it.state == WorkInfo.State.SUCCEEDED }
             val totalCount = imgWorks.size
             Log.d("main", "process for $sectionId: $finishCount / $totalCount");
-        }
+            PicSectionData(picSectionBean, totalCount).apply { this.process = finishCount }
+        }.toMutableList()
+        refreshListener?.notifyListReady()
+//        works.forEach { it ->
+//            Log.d("main", "${it.state}");
+//            val sectionId = it.tags.filter { tag -> tag.startsWith("sectionId") }[0]
+//            val imgWorks =
+//                WorkManager.getInstance(this).getWorkInfosByTag("$sectionId:image").get()
+//            val finishCount = imgWorks.count { it.state == WorkInfo.State.SUCCEEDED }
+//            val totalCount = imgWorks.size
+//            Log.d("main", "process for $sectionId: $finishCount / $totalCount");
+//        }
     }
 
 }
