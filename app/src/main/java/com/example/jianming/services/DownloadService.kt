@@ -321,13 +321,22 @@ class DownloadService : Service() {
 
         val sectionConfig = getSectionConfig(picSectionBean.album)
 
+        val workQuery: WorkQuery = WorkQuery.fromUniqueWorkNames("downloadTaskHeader:${sectionId}")
+        val existHeaderWorker = WorkManager.getInstance(this).getWorkInfos(workQuery).get()
+        if (existHeaderWorker.size > 0) {
+            Log.i("DownloadService", "downloadTaskHeader:${sectionId} exist, skip to create worker")
+            return
+        }
         val downloadSectionRequest = OneTimeWorkRequestBuilder<DownloadSectionWorker>()
             .addTag("sectionStart")
             .addTag("sectionId:${sectionId}")
             .setInputData(workDataOf(
                 DownloadSectionWorker.PARAM_SECTION_ID_KEY to sectionId
             )).build()
-        WorkManager.getInstance(this).enqueue(downloadSectionRequest)
+        WorkManager.getInstance(this).enqueueUniqueWork("downloadTaskHeader:${sectionId}",
+            ExistingWorkPolicy.KEEP,
+            downloadSectionRequest
+        )
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(downloadSectionRequest.id)
             .observeForever() { workInfo ->
                 if (workInfo != null && workInfo.state.isFinished) {
