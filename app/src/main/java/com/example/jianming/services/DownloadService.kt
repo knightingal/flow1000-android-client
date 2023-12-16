@@ -84,11 +84,46 @@ class DownloadService : Service() {
             }
 
             allPicSectionBeanList = picSectionDao.getAll().toList()
-            startWork(3L)
-            startWork(4L)
-            startWork(30L)
-            startWork(31L)
-            viewWork()
+//            startWork(3L)
+//            startWork(4L)
+//            startWork(30L)
+//            startWork(31L)
+//            viewWork()
+
+            if (true) {
+                val pendingUrl =
+                    "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
+                ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
+                    val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
+                    if (picSectionBeanList.isNotEmpty()) {
+                        picSectionBeanList.forEach {
+                            picSectionDao.update(it)
+//                            val allIdList =
+//                                allPicSectionBeanList.map { sectionBean -> sectionBean.id }.toList()
+                            startWork(it.id );
+                        }
+                    }
+                    viewWork()
+                }
+                val localUrl =
+                    "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
+                ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
+                    val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
+                    if (picSectionBeanList.isNotEmpty()) {
+                        picSectionBeanList.forEach {
+                            val existSection = picSectionDao.getByInnerIndex(it.id)
+                            if (existSection.exist != 1) {
+                                picSectionDao.update(it)
+//                                val allIdList =
+//                                    allPicSectionBeanList.map { sectionBean -> sectionBean.id }
+//                                        .toList()
+                                startWork(it.id);
+                            }
+                        }
+                        viewWork()
+                    }
+                }
+            }
 
             refreshListener?.notifyListReady()
         }
