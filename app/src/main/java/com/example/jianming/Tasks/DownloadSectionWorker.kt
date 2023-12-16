@@ -79,30 +79,6 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
             TOTAL_IMAGE_COUNT_KEY to sectionInfoBean.pics.size
         )
 
-        if (false) {
-            val imgWorkerList = sectionInfoBean.pics.map { pic ->
-                val sectionConfig = getSectionConfig(picSectionBean.album)
-                val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                        "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) "$pic.bin" else pic}"
-
-                OneTimeWorkRequestBuilder<DownloadImageWorker>()
-                    .addTag(imgUrl)
-                    .setInputData(workDataOf("imgUrl" to imgUrl))
-                    .build()
-            }
-            WorkManager.getInstance(applicationContext).enqueue(imgWorkerList)
-//        imgWorkerList.forEach { imgWorker ->
-//            WorkManager.getInstance(applicationContext).getWorkInfoByIdLiveData(imgWorker.id)
-//                .observeForever {workInfo ->
-//                    if (workInfo != null && workInfo.state.isFinished) {
-//                        Log.d("DownloadSectionWorker", " ${workInfo.tags.first()} downloadImg finished")
-//                    }
-//                }
-//        }
-
-            val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(picSectionBean.id)
-        }
-
         return Result.success(output)
     }
 }
