@@ -7,8 +7,10 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import androidx.lifecycle.Observer
 import androidx.room.Room
 import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
@@ -19,6 +21,7 @@ import com.example.jianming.Tasks.ConcurrencyJsonApiTask
 import com.example.jianming.Tasks.DownloadCompleteWorker
 import com.example.jianming.Tasks.DownloadImageWorker
 import com.example.jianming.Tasks.DownloadSectionWorker
+import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.PicSectionBean
 import com.example.jianming.beans.PicSectionData
@@ -84,13 +87,13 @@ class DownloadService : Service() {
             }
 
             allPicSectionBeanList = picSectionDao.getAll().toList()
-//            startWork(3L)
-//            startWork(4L)
-//            startWork(30L)
-//            startWork(31L)
-//            viewWork()
+            startWork(3L)
+            startWork(4L)
+            startWork(30L)
+            startWork(31L)
+            viewWork()
 
-            if (true) {
+            if (false) {
                 val pendingUrl =
                     "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
                 ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
@@ -151,99 +154,133 @@ class DownloadService : Service() {
     }
 
 
-    private fun startWork(sectionId: Long) {
-
-        val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
-
-        val sectionConfig = getSectionConfig(picSectionBean.album)
+    private fun createHeaderWorker(sectionId: Long): OneTimeWorkRequest? {
 
         val workQuery: WorkQuery = WorkQuery.fromUniqueWorkNames("downloadTaskHeader:${sectionId}")
         val existHeaderWorker = WorkManager.getInstance(this).getWorkInfos(workQuery).get()
         if (existHeaderWorker.size > 0) {
             Log.i("DownloadService", "downloadTaskHeader:${sectionId} exist, skip to create worker")
-            return
+            return null
         }
-        val downloadSectionRequest = OneTimeWorkRequestBuilder<DownloadSectionWorker>()
+        return OneTimeWorkRequestBuilder<DownloadSectionWorker>()
             .addTag("sectionStart")
             .addTag("sectionId:${sectionId}")
-            .setInputData(workDataOf(
-                DownloadSectionWorker.PARAM_SECTION_ID_KEY to sectionId
-            )).build()
+            .setInputData(
+                workDataOf(
+                    DownloadSectionWorker.PARAM_SECTION_ID_KEY to sectionId
+                )
+            ).build()
+    }
+
+    private fun createImageWorker(picInfoList:List<PicInfoBean>, sectionId: Long, dirName: String): List<OneTimeWorkRequest> {
+        val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
+        val sectionConfig = getSectionConfig(picSectionBean.album)
+        val imgWorkerList = picInfoList.map { pic ->
+            val picName = pic.name
+
+            val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                    "/linux1000/${sectionConfig.baseUrl}/${dirName}/${if (sectionConfig.encryped) "$picName.bin" else picName}"
+
+            OneTimeWorkRequestBuilder<DownloadImageWorker>()
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .addTag(imgUrl)
+                .addTag("sectionId:${sectionId}:image")
+                .setInputData(workDataOf("imgUrl" to imgUrl,
+                    "picId" to pic.index,
+                    "picName" to picName,
+                    "dirName" to dirName,
+                    "sectionBeanId" to picSectionBean.id,
+                    "encrypted" to sectionConfig.encryped,
+                ))
+                .build()
+        }
+        return imgWorkerList
+    }
+
+    private fun createDownloadCompleteWorker(sectionId: Long): OneTimeWorkRequest {
+        return OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
+            .addTag("sectionComplete")
+            .addTag("sectionId:${sectionId}")
+            .addTag("complete:${sectionId}")
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .setInputData(
+                workDataOf(
+                    "sectionId" to sectionId,
+                )
+            )
+            .build()
+    }
+
+    private fun genHeaderObserver(sectionId: Long): Observer<WorkInfo> {
+        val observer = Observer<WorkInfo> { value ->
+            headerWorkerObserver(value, sectionId)
+        }
+        return observer
+    }
+
+    private fun genImageObserver(sectionId: Long): Observer<List<WorkInfo>> {
+        val observer = Observer<List<WorkInfo>> {itList->
+            val finishCount:Int = itList.count { it.state.isFinished  }
+            val totalImageCount = itList.size
+
+            processCounter[sectionId]?.setProcess(finishCount)
+            Log.d("work", "section $sectionId finish $finishCount")
+            if (finishCount < totalImageCount) {
+                refreshListener?.doRefreshProcess(
+                    sectionId,
+                    0,
+                    finishCount,
+                    totalImageCount
+                )
+            } else {
+                processCounter.remove(sectionId)
+                viewWork()
+            }
+        }
+        return observer
+    }
+
+    private fun headerWorkerObserver(workInfo: WorkInfo, sectionId: Long) {
+        if (workInfo.state.isFinished) {
+            val totalImageCount = workInfo.outputData.getInt(DownloadSectionWorker.TOTAL_IMAGE_COUNT_KEY, 0)
+            Log.d("DownloadService", "worker for $sectionId finish, totalCount=${totalImageCount}")
+            val dirName = workInfo.outputData.getString(DownloadSectionWorker.PARAM_DIR_NAME_KEY) as String
+            val sectionBeanId = workInfo.outputData.getLong(DownloadSectionWorker.PARAM_SECTION_BEAN_ID_KEY, 0)
+            val picInfoList = picInfoDao.queryBySectionInnerIndex(sectionBeanId)
+
+            val beginWith = WorkManager.getInstance(this).beginUniqueWork(
+                "sectionId:$sectionId",
+                ExistingWorkPolicy.REPLACE,
+                createImageWorker(picInfoList, sectionId, dirName)
+            )
+            processCounter[sectionId] = Counter(totalImageCount)
+            beginWith.workInfosLiveData.observeForever(genImageObserver(sectionId))
+            val thenContinuation = beginWith.then(createDownloadCompleteWorker(sectionId))
+            thenContinuation.workInfosLiveData.observeForever { it ->
+                if (it.none { predicate -> predicate.tags.contains(DownloadCompleteWorker::class.java.name) && predicate.state.isFinished }) {
+                    return@observeForever
+                }
+                startWork(100L)
+                viewWork()
+            }
+            thenContinuation.enqueue();
+        }
+    }
+
+
+
+    private fun startWork(sectionId: Long) {
+
+        val downloadSectionRequest = createHeaderWorker(sectionId) ?:
+            return
+
         WorkManager.getInstance(this).enqueueUniqueWork("downloadTaskHeader:${sectionId}",
             ExistingWorkPolicy.KEEP,
             downloadSectionRequest
         )
+
         WorkManager.getInstance(this).getWorkInfoByIdLiveData(downloadSectionRequest.id)
-            .observeForever() { workInfo ->
-                if (workInfo != null && workInfo.state.isFinished) {
-                    val totalImageCount = workInfo.outputData.getInt(DownloadSectionWorker.TOTAL_IMAGE_COUNT_KEY, 0)
-                    Log.d("DownloadService", "worker for $sectionId finish, totalCount=${totalImageCount}")
-                    val dirName = workInfo.outputData.getString(DownloadSectionWorker.PARAM_DIR_NAME_KEY) as String
-                    val sectionBeanId = workInfo.outputData.getLong(DownloadSectionWorker.PARAM_SECTION_BEAN_ID_KEY, 0)
-                    val picInfoList =
-                        picInfoDao.queryBySectionInnerIndex(sectionBeanId)
-
-                    val imgWorkerList = picInfoList.map { pic ->
-                        val picName = pic.name
-
-                        val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                                "/linux1000/${sectionConfig.baseUrl}/${dirName}/${if (sectionConfig.encryped) "$picName.bin" else picName}"
-
-                        OneTimeWorkRequestBuilder<DownloadImageWorker>()
-                            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                            .addTag(imgUrl)
-                            .addTag("sectionId:${sectionId}:image")
-                            .setInputData(workDataOf("imgUrl" to imgUrl,
-                                "picId" to pic.index,
-                                "picName" to picName,
-                                "dirName" to dirName,
-                                "sectionBeanId" to picSectionBean.id,
-                                "encrypted" to sectionConfig.encryped,
-                            ))
-                            .build()
-                    }
-
-                    val beginWith = WorkManager.getInstance(this).beginUniqueWork(
-                        "sectionId:$sectionId",
-                        ExistingWorkPolicy.REPLACE,
-                        imgWorkerList
-                    )
-                    processCounter[sectionId] = Counter(totalImageCount)
-                    beginWith.workInfosLiveData.observeForever {
-                            itList ->
-                        val finishCount = itList.count { it.state.isFinished }
-
-                        processCounter[sectionId]?.setProcess(finishCount)
-                        Log.d("work", "section $sectionId finish $finishCount")
-                        if (finishCount < totalImageCount) {
-                            refreshListener?.doRefreshProcess(
-                                sectionId,
-                                0,
-                                finishCount,
-                                totalImageCount
-                            )
-                        } else {
-                            processCounter.remove(sectionId)
-                            viewWork()
-                        }
-                    }
-
-                    val downloadCompleteWorker = OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
-                        .addTag("sectionComplete")
-                        .addTag("sectionId:${sectionId}")
-                        .addTag("complete:${sectionId}")
-                        .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                        .setInputData(
-                            workDataOf(
-                                "sectionId" to sectionId,
-                            )
-                        )
-                        .build()
-
-                    beginWith.then(downloadCompleteWorker).enqueue();
-
-                }
-            }
+            .observeForever(genHeaderObserver(sectionId))
     }
 
     private fun viewWork() {
@@ -271,6 +308,8 @@ class DownloadService : Service() {
     }
 
 }
+
+
 
 
 class Counter(val max: Int, ) {
