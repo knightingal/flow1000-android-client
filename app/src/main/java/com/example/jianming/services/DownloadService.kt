@@ -17,6 +17,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import androidx.work.workDataOf
+import com.example.jianming.Tasks.BatchDownloadImageWorker
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
 import com.example.jianming.Tasks.DownloadCompleteWorker
 import com.example.jianming.Tasks.DownloadImageWorker
@@ -88,9 +89,9 @@ class DownloadService : Service() {
 
             allPicSectionBeanList = picSectionDao.getAll().toList()
             startWork(3L)
-            startWork(4L)
-            startWork(30L)
-            startWork(31L)
+//            startWork(4L)
+//            startWork(30L)
+//            startWork(31L)
             viewWork()
 
             if (false) {
@@ -151,6 +152,12 @@ class DownloadService : Service() {
         fun getService(): DownloadService {
             return this@DownloadService
         }
+    }
+
+    private fun createBatchDownloadImageWorker(sectionId: Long): OneTimeWorkRequest {
+        return OneTimeWorkRequestBuilder<BatchDownloadImageWorker>()
+            .setInputData(workDataOf("sectionId" to sectionId))
+            .build()
     }
 
 
@@ -274,13 +281,23 @@ class DownloadService : Service() {
         val downloadSectionRequest = createHeaderWorker(sectionId) ?:
             return
 
-        WorkManager.getInstance(this).enqueueUniqueWork("downloadTaskHeader:${sectionId}",
+        val then = WorkManager.getInstance(this).beginUniqueWork(
+            "downloadTaskHeader:${sectionId}",
             ExistingWorkPolicy.KEEP,
             downloadSectionRequest
-        )
+        ).then(createBatchDownloadImageWorker(sectionId))
+            .then(createDownloadCompleteWorker(sectionId))
+        then.workInfosLiveData.observeForever {
+            if (it.none { predicate -> predicate.tags.contains(DownloadCompleteWorker::class.java.name) && predicate.state.isFinished }) {
+                return@observeForever
+            }
+            startWork(100L)
+            viewWork()
+        }
+        then.enqueue()
 
-        WorkManager.getInstance(this).getWorkInfoByIdLiveData(downloadSectionRequest.id)
-            .observeForever(genHeaderObserver(sectionId))
+//        WorkManager.getInstance(this).getWorkInfoByIdLiveData(downloadSectionRequest.id)
+//            .observeForever(genHeaderObserver(sectionId))
     }
 
     private fun viewWork() {
