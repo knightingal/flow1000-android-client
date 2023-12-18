@@ -34,6 +34,9 @@ import com.example.jianming.myapplication.getSectionConfig
 import com.example.jianming.util.TimeUtil
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import org.nanjing.knightingal.processerlib.RefreshListener
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
@@ -95,52 +98,63 @@ class DownloadService : Service() {
             }
 
             allPicSectionBeanList = picSectionDao.getAll().toList()
-            workerQueue.put(allPicSectionBeanList[4])
-            workerQueue.put(allPicSectionBeanList[5])
-            workerQueue.put(allPicSectionBeanList[6])
-            workerQueue.put(allPicSectionBeanList[7])
-            workerQueue.put(allPicSectionBeanList[8])
-            workerQueue.put(allPicSectionBeanList[9])
-            workerQueue.poll()?.let { startWork(it.id) }
-            workerQueue.poll()?.let { startWork(it.id) }
+//            workerQueue.put(allPicSectionBeanList[4])
+//            workerQueue.put(allPicSectionBeanList[5])
+//            workerQueue.put(allPicSectionBeanList[6])
+//            workerQueue.put(allPicSectionBeanList[7])
+//            workerQueue.put(allPicSectionBeanList[8])
+//            workerQueue.put(allPicSectionBeanList[9])
+//            workerQueue.poll()?.let { startWork(it.id) }
+//            workerQueue.poll()?.let { startWork(it.id) }
 //            startWork(4L)
 //            startWork(30L)
 //            startWork(31L)
-            viewWork()
+//            viewWork()
 
-            if (false) {
+            if (true) {
                 val pendingUrl =
                     "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
-                ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
+                val pendingJob = ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
                     val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
-                    if (picSectionBeanList.isNotEmpty()) {
-                        picSectionBeanList.forEach {
-                            picSectionDao.update(it)
-//                            val allIdList =
-//                                allPicSectionBeanList.map { sectionBean -> sectionBean.id }.toList()
-                            startWork(it.id );
-                        }
-                    }
-                    viewWork()
+                    workerQueue.addAll(picSectionBeanList)
+//                    if (picSectionBeanList.isNotEmpty()) {
+//                        picSectionBeanList.forEach {
+//                            picSectionDao.update(it)
+////                            val allIdList =
+////                                allPicSectionBeanList.map { sectionBean -> sectionBean.id }.toList()
+////                            startWork(it.id );
+//                        }
+//                    }
+//                    viewWork()
                 }
                 val localUrl =
                     "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
-                ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
+                val localJob = ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
                     val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
-                    if (picSectionBeanList.isNotEmpty()) {
-                        picSectionBeanList.forEach {
-                            val existSection = picSectionDao.getByInnerIndex(it.id)
-                            if (existSection.exist != 1) {
-                                picSectionDao.update(it)
-//                                val allIdList =
-//                                    allPicSectionBeanList.map { sectionBean -> sectionBean.id }
-//                                        .toList()
-                                startWork(it.id);
-                            }
-                        }
-                        viewWork()
-                    }
+                    workerQueue.addAll(picSectionBeanList)
+//                    if (picSectionBeanList.isNotEmpty()) {
+//                        picSectionBeanList.forEach {
+//                            val existSection = picSectionDao.getByInnerIndex(it.id)
+//                            if (existSection.exist != 1) {
+//                                picSectionDao.update(it)
+////                                val allIdList =
+////                                    allPicSectionBeanList.map { sectionBean -> sectionBean.id }
+////                                        .toList()
+////                                startWork(it.id);
+//                            }
+//                        }
+////                        viewWork()
+//                    }
                 }
+                MainScope().launch {
+                    listOf(pendingJob, localJob).joinAll()
+                    workerQueue.poll()?.let { startWork(it.id) }
+                    workerQueue.poll()?.let { startWork(it.id) }
+                    viewWork()
+//                    workerQueue.poll()?.let { startWork(it.id) }
+//                    workerQueue.poll()?.let { startWork(it.id) }
+                }
+
             }
 
             refreshListener?.notifyListReady()
