@@ -35,6 +35,9 @@ import com.example.jianming.util.TimeUtil
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.nanjing.knightingal.processerlib.RefreshListener
+import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.BlockingQueue
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 
 class DownloadService : Service() {
@@ -74,6 +77,10 @@ class DownloadService : Service() {
         updateStampDao = db.updateStampDao()
     }
     private lateinit var allPicSectionBeanList:List<PicSectionBean>
+
+    private val workerQueue: BlockingQueue<PicSectionBean> = LinkedBlockingQueue()
+
+
     fun startDownloadSectionList() {
         val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
@@ -88,7 +95,14 @@ class DownloadService : Service() {
             }
 
             allPicSectionBeanList = picSectionDao.getAll().toList()
-            startWork(3L)
+            workerQueue.put(allPicSectionBeanList[4])
+            workerQueue.put(allPicSectionBeanList[5])
+            workerQueue.put(allPicSectionBeanList[6])
+            workerQueue.put(allPicSectionBeanList[7])
+            workerQueue.put(allPicSectionBeanList[8])
+            workerQueue.put(allPicSectionBeanList[9])
+            workerQueue.poll()?.let { startWork(it.id) }
+            workerQueue.poll()?.let { startWork(it.id) }
 //            startWork(4L)
 //            startWork(30L)
 //            startWork(31L)
@@ -267,7 +281,7 @@ class DownloadService : Service() {
                 if (it.none { predicate -> predicate.tags.contains(DownloadCompleteWorker::class.java.name) && predicate.state.isFinished }) {
                     return@observeForever
                 }
-                startWork(100L)
+                workerQueue.poll()?.let { startWork(it.id) }
                 viewWork()
             }
             thenContinuation.enqueue();
@@ -299,7 +313,7 @@ class DownloadService : Service() {
             if (it.none { predicate -> predicate.tags.contains(DownloadCompleteWorker::class.java.name) && predicate.state.isFinished }) {
                 return@observeForever
             }
-            startWork(100L)
+            workerQueue.poll()?.let { startWork(it.id) }
             viewWork()
         }
         then.enqueue()
