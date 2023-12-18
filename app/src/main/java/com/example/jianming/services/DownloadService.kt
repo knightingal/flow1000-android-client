@@ -280,14 +280,22 @@ class DownloadService : Service() {
 
         val downloadSectionRequest = createHeaderWorker(sectionId) ?:
             return
-
+        val batchDownloadImageWorker = createBatchDownloadImageWorker(sectionId)
         val then = WorkManager.getInstance(this).beginUniqueWork(
             "downloadTaskHeader:${sectionId}",
             ExistingWorkPolicy.KEEP,
             downloadSectionRequest
-        ).then(createBatchDownloadImageWorker(sectionId))
+        ).then(batchDownloadImageWorker)
             .then(createDownloadCompleteWorker(sectionId))
+
         then.workInfosLiveData.observeForever {
+            val batchDownloadImageWorkerStatus = it.find { predicate -> predicate.id == batchDownloadImageWorker.id }
+            if (batchDownloadImageWorkerStatus?.state == WorkInfo.State.RUNNING) {
+                val progress = batchDownloadImageWorkerStatus.progress.getInt("progress", 0)
+                val total = batchDownloadImageWorkerStatus.progress.getInt("total", 0)
+                refreshListener?.doRefreshProcess(sectionId, 0, progress, total)
+            }
+
             if (it.none { predicate -> predicate.tags.contains(DownloadCompleteWorker::class.java.name) && predicate.state.isFinished }) {
                 return@observeForever
             }

@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.util.concurrent.atomic.AtomicInteger
 
 class BatchDownloadImageWorker(context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams ) {
@@ -52,7 +53,9 @@ class BatchDownloadImageWorker(context: Context, workerParams: WorkerParameters)
 
         val jobList = mutableListOf<Job>()
         val picInfoBeanList = picInfoDao.queryBySectionInnerIndex(sectionId)
+        setProgress(workDataOf("progress" to 0, "total" to picInfoBeanList.size))
         Log.d("BatchDownloadImageWorker", "start to download section: $sectionId")
+        val progress = AtomicInteger(0)
         picInfoBeanList.forEach { picInfoBean ->
             val picName = picInfoBean.name
             val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
@@ -68,6 +71,8 @@ class BatchDownloadImageWorker(context: Context, workerParams: WorkerParameters)
                 val fileOutputStream = FileOutputStream(dest, true)
                 fileOutputStream.write(body)
                 fileOutputStream.close()
+                val currentProgress = progress.incrementAndGet()
+                setProgress(workDataOf("progress" to currentProgress, "total" to picInfoBeanList.size))
                 Log.d("BatchDownloadImageWorker", "finish download $imgUrl")
             }
             jobList.add(job)
