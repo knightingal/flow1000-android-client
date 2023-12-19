@@ -79,8 +79,9 @@ class BatchDownloadImageWorker(context: Context, workerParams: WorkerParameters)
         }
         jobList.joinAll()
 
+//        setProgress(workDataOf("progress" to picInfoBeanList.size, "total" to picInfoBeanList.size))
         Log.d("BatchDownloadImageWorker", "finish download section: $sectionId")
-        return Result.success()
+        return Result.success(workDataOf("total" to picInfoBeanList.size))
 //        val imgUrl = inputData.getString("imgUrl") as String
 //        val picId = inputData.getLong("picId", 0)
 //        Log.d("DownloadImageWorker", "start work for:$imgUrl")

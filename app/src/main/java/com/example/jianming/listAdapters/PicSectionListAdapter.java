@@ -124,13 +124,18 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
 //                }
 //            }
 //        }
-        int curr = dataArray.get(position).getProcess();
-        int total = dataArray.get(position).getTotalCount();
-        viewHolder.downloadProcessBar.setIndeterminate(false);
-        viewHolder.downloadProcessBar.setProgress(curr, false);
-        viewHolder.downloadProcessBar.setMax(total);
-        if (total != 0 && curr != 0) {
-            viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+
+        Counter counter = counterProvider.getCounter(dataArray.get(position).getPicSectionBean().getId());
+        if (counter != null) {
+
+            viewHolder.downloadProcessBar.setIndeterminate(false);
+            viewHolder.downloadProcessBar.setProgress(counter.getProcess(), false);
+            viewHolder.downloadProcessBar.setMax(counter.getMax());
+            if (counter.getMax() != 0 && counter.getProcess() != 0) {
+                viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.downloadProcessBar.setVisibility(View.GONE);
+            }
         } else {
             viewHolder.downloadProcessBar.setVisibility(View.GONE);
         }
