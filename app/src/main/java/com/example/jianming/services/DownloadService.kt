@@ -184,6 +184,7 @@ class DownloadService : Service() {
 
     private fun createBatchDownloadImageWorker(sectionId: Long): OneTimeWorkRequest {
         return OneTimeWorkRequestBuilder<BatchDownloadImageWorker>()
+            .addTag("batchDownloadImage:$sectionId")
             .setInputData(workDataOf("sectionId" to sectionId))
             .build()
     }
@@ -351,11 +352,15 @@ class DownloadService : Service() {
             val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }.split(":")[1]
             val picSectionBean = picSectionDao.getByInnerIndex(sectionId.toLong())
             val imgWorks =
-                WorkManager.getInstance(this).getWorkInfosByTag("sectionId:$sectionId:image").get()
-            val finishCount = imgWorks.count { it.state == WorkInfo.State.SUCCEEDED }
-            val totalCount = imgWorks.size
-            Log.d("main", "process for $sectionId: $finishCount / $totalCount");
-            PicSectionData(picSectionBean, totalCount).apply { this.process = finishCount }
+                WorkManager.getInstance(this).getWorkInfosByTag("batchDownloadImage:$sectionId").get()
+            var progress = 0
+            var total = 0
+            if (imgWorks.size != 0) {
+                progress = imgWorks[0].progress.getInt("progress", 0)
+                total = imgWorks[0].progress.getInt("total", 0)
+            }
+            Log.d("main", "process for $sectionId: $progress / $total");
+            PicSectionData(picSectionBean, total).apply { this.process = progress }
         }.toMutableList()
         refreshListener?.notifyListReady()
     }

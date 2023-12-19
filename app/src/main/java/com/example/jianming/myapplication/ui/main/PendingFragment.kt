@@ -24,6 +24,7 @@ import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
 import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
+import com.example.jianming.services.Counter
 import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
 import kotlinx.coroutines.MainScope
@@ -101,8 +102,13 @@ class PendingFragment : Fragment(){
     var downLoadService: DownloadService? = null
     var serviceBound = false
 
-    private val counterProvider: CounterProvider =
-        CounterProvider { sectionId -> downLoadService?.processCounter?.get(sectionId) }
+    private val counterProvider: CounterProvider = object : CounterProvider {
+        override fun getCounter(sectionId: Long): Counter? {
+            return downLoadService?.processCounter?.get(sectionId)
+        }
+
+    }
+//        CounterProvider { sectionId -> downLoadService?.processCounter?.get(sectionId) }
 
     private val conn: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
