@@ -343,14 +343,19 @@ class DownloadService : Service() {
             workInfos.size == 0
         }.forEach { it ->
             val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }.split(":")[1]
-            val picSectionBean = picSectionDao.getByInnerIndex(sectionId.toLong())
             val imgWorks =
                 WorkManager.getInstance(this).getWorkInfosByTag("batchDownloadImage:$sectionId").get()
             var progress = 0
             var total = 0
             if (imgWorks.size != 0) {
-                progress = imgWorks[0].progress.getInt("progress", 0)
-                total = imgWorks[0].progress.getInt("total", 0)
+                val imgWork = imgWorks[0]
+                if (imgWork.state.isFinished) {
+                    progress = imgWork.outputData.getInt("total", 0)
+                    total = progress
+                } else {
+                    progress = imgWork.progress.getInt("progress", 0)
+                    total = imgWork.progress.getInt("total", 0)
+                }
             }
             Log.d("main", "process for $sectionId: $progress / $total");
             if (processCounter[sectionId.toLong()] == null && total != 0) {

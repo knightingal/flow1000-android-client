@@ -149,10 +149,8 @@ class PendingFragment : Fragment(){
             }
             if (viewHolder != null) {
                 MainScope().launch {
-                    viewHolder.downloadProcessBar.visibility = View.VISIBLE
-                    viewHolder.downloadProcessBar.isIndeterminate = false
-                    viewHolder.downloadProcessBar.setProgressCompat(currCount, false)
-                    viewHolder.downloadProcessBar.max = max
+                    viewHolder.process.visibility = View.VISIBLE
+                    viewHolder.process.text = "$currCount/$max"
                     Log.d(TAG, "current = $currCount max = $max")
                 }
             }

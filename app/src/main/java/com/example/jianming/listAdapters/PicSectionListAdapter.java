@@ -24,7 +24,6 @@ import com.example.jianming.myapplication.PicSectionListActivity;
 import com.example.jianming.myapplication.R;
 import com.example.jianming.myapplication.SectionImageListActivity;
 import com.example.jianming.services.Counter;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 
 import java.io.File;
@@ -32,7 +31,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAdapter.ViewHolder> {
 
@@ -77,7 +75,6 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
     private void renderExistItem(final ViewHolder viewHolder) {
         viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer));
         viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer));
-        viewHolder.downloadProcessBar.setVisibility(View.GONE);
         viewHolder.deleteBtn.setVisibility(View.VISIBLE);
         viewHolder.exist = true;
     }
@@ -86,7 +83,6 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurfaceVariant));
         viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_surfaceVariant));
         viewHolder.deleteBtn.setVisibility(View.GONE);
-        viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
         viewHolder.exist = false;
     }
 
@@ -128,16 +124,10 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         Counter counter = counterProvider.getCounter(dataArray.get(position).getPicSectionBean().getId());
         if (counter != null) {
 
-            viewHolder.downloadProcessBar.setIndeterminate(false);
-            viewHolder.downloadProcessBar.setProgress(counter.getProcess(), false);
-            viewHolder.downloadProcessBar.setMax(counter.getMax());
-            if (counter.getMax() != 0 && counter.getProcess() != 0) {
-                viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.downloadProcessBar.setVisibility(View.GONE);
-            }
+            viewHolder.process.setText("" + counter.getProcess() + "/" + counter.getMax());
+            viewHolder.process.setVisibility(View.VISIBLE);
         } else {
-            viewHolder.downloadProcessBar.setVisibility(View.GONE);
+            viewHolder.process.setVisibility(View.GONE);
         }
 
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getId();
@@ -177,6 +167,8 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         private final ImageView deleteBtn;
         private final TextView textView;
 
+        public final TextView process;
+
         private final View itemView;
 
         public long serverIndex;
@@ -185,14 +177,13 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
 
         private boolean exist = false;
 
-        public CircularProgressIndicator downloadProcessBar;
 
         private ViewHolder(View itemView) {
 
             super(itemView);
             this.textView = itemView.findViewById(R.id.pic_text_view);
             this.deleteBtn = itemView.findViewById(R.id.btn_delete);
-            this.downloadProcessBar = itemView.findViewById(R.id.download_process);
+            this.process = itemView.findViewById(R.id.process);
             this.itemView = itemView;
 
             itemView.setOnClickListener(this);
@@ -212,8 +203,6 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
                 intent.putExtra("serverIndex", serverIndex);
                 context.startActivity(intent);
             } else {
-                this.downloadProcessBar.setVisibility(View.VISIBLE);
-                this.downloadProcessBar.setIndeterminate(true);
 //                 ((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().add(position);
 
                 File file = FileUtil.getSectionStorageDir(context, name);

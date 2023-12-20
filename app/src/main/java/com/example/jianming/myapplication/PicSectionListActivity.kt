@@ -203,10 +203,6 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         }
         if (viewHolder != null) {
             MainScope().launch {
-                viewHolder.downloadProcessBar.visibility = View.VISIBLE
-                viewHolder.downloadProcessBar.isIndeterminate = false
-                viewHolder.downloadProcessBar.setProgressCompat(currCount, false)
-                viewHolder.downloadProcessBar.max = max
                 Log.d(TAG, "current = $currCount max = $max")
             }
         }

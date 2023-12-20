@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,20 +15,19 @@
         android:id="@+id/pic_text_view"
         android:layout_centerVertical="true"
         android:singleLine="true"
-        android:text="text"
+        tools:text="text"
         />
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/download_process"
+    <TextView
+        android:id="@+id/process"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="center"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
-        android:indeterminate="false"
-        app:indicatorSize="16dp"
-        android:max="100"
-        android:progress="0" />
+        android:layout_alignParentEnd="true"
+        tools:text="30/30"
+        tools:ignore="RelativeOverlap" />
+
 
     <ImageView
         android:id="@+id/btn_delete"
