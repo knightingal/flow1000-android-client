@@ -3,6 +3,7 @@ package com.example.jianming.services
 import SERVER_IP
 import SERVER_PORT
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
@@ -20,9 +21,7 @@ import androidx.work.workDataOf
 import com.example.jianming.Tasks.BatchDownloadImageWorker
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
 import com.example.jianming.Tasks.DownloadCompleteWorker
-import com.example.jianming.Tasks.DownloadImageWorker
 import com.example.jianming.Tasks.DownloadSectionWorker
-import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.PicSectionBean
 import com.example.jianming.beans.PicSectionData
@@ -30,7 +29,6 @@ import com.example.jianming.beans.UpdateStamp
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
-import com.example.jianming.myapplication.getSectionConfig
 import com.example.jianming.util.TimeUtil
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -38,12 +36,16 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.nanjing.knightingal.processerlib.RefreshListener
-import java.util.concurrent.ArrayBlockingQueue
+import java.util.UUID
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
 
 class DownloadService : Service() {
+    companion object {
+        private val processCounter = hashMapOf<Long, Counter>()
+        private var refreshListener: RefreshListener? = null
+    }
 
     private val binder: IBinder = LocalBinder();
 
@@ -52,16 +54,18 @@ class DownloadService : Service() {
     private lateinit var updateStampDao: UpdataStampDao
     private lateinit var picInfoDao : PicInfoDao
 
-    val processCounter = hashMapOf<Long, Counter>()
 
-    private var refreshListener: RefreshListener? = null
 
     fun setRefreshListener(refreshListener: RefreshListener?) {
-        this.refreshListener = refreshListener
+        DownloadService.refreshListener = refreshListener
+    }
+
+    fun getProcessCounter():HashMap<Long, Counter> {
+        return processCounter
     }
 
     fun removeRefreshListener() {
-        this.refreshListener = null
+        refreshListener = null
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -129,9 +133,9 @@ class DownloadService : Service() {
                 MainScope().launch {
                     listOf(pendingJob, localJob).joinAll()
                     pendingSectionBeanList.sortBy { it.picSectionBean.id }
-                    workerQueue.poll()?.let { startWork(it.id) }
-                    workerQueue.poll()?.let { startWork(it.id) }
-                    viewWork()
+                    workerQueue.poll()?.let { startWork(it.id, applicationContext) }
+                    workerQueue.poll()?.let { startWork(it.id, applicationContext) }
+                    viewWork(applicationContext)
 //                    workerQueue.poll()?.let { startWork(it.id) }
 //                    workerQueue.poll()?.let { startWork(it.id) }
                 }
@@ -171,10 +175,10 @@ class DownloadService : Service() {
     }
 
 
-    private fun createHeaderWorker(sectionId: Long): OneTimeWorkRequest? {
+    private fun createHeaderWorker(sectionId: Long, context: Context): OneTimeWorkRequest? {
 
         val workQuery: WorkQuery = WorkQuery.fromUniqueWorkNames("downloadTaskHeader:${sectionId}")
-        val existHeaderWorker = WorkManager.getInstance(this).getWorkInfos(workQuery).get()
+        val existHeaderWorker = WorkManager.getInstance(context).getWorkInfos(workQuery).get()
         if (existHeaderWorker.size > 0) {
             Log.i("DownloadService", "downloadTaskHeader:${sectionId} exist, skip to create worker")
             return null
@@ -189,30 +193,6 @@ class DownloadService : Service() {
             ).build()
     }
 
-    private fun createImageWorker(picInfoList:List<PicInfoBean>, sectionId: Long, dirName: String): List<OneTimeWorkRequest> {
-        val picSectionBean = picSectionDao.getByInnerIndex(sectionId)
-        val sectionConfig = getSectionConfig(picSectionBean.album)
-        val imgWorkerList = picInfoList.map { pic ->
-            val picName = pic.name
-
-            val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                    "/linux1000/${sectionConfig.baseUrl}/${dirName}/${if (sectionConfig.encryped) "$picName.bin" else picName}"
-
-            OneTimeWorkRequestBuilder<DownloadImageWorker>()
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .addTag(imgUrl)
-                .addTag("sectionId:${sectionId}:image")
-                .setInputData(workDataOf("imgUrl" to imgUrl,
-                    "picId" to pic.index,
-                    "picName" to picName,
-                    "dirName" to dirName,
-                    "sectionBeanId" to picSectionBean.id,
-                    "encrypted" to sectionConfig.encryped,
-                ))
-                .build()
-        }
-        return imgWorkerList
-    }
 
     private fun createDownloadCompleteWorker(sectionId: Long): OneTimeWorkRequest {
         return OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
@@ -228,110 +208,61 @@ class DownloadService : Service() {
             .build()
     }
 
-    private fun genHeaderObserver(sectionId: Long): Observer<WorkInfo> {
-        val observer = Observer<WorkInfo> { value ->
-            headerWorkerObserver(value, sectionId)
-        }
-        return observer
-    }
 
-    private fun genImageObserver(sectionId: Long): Observer<List<WorkInfo>> {
-        val observer = Observer<List<WorkInfo>> {itList->
-            val finishCount:Int = itList.count { it.state.isFinished  }
-            val totalImageCount = itList.size
 
-            processCounter[sectionId]?.setProcess(finishCount)
-            Log.d("work", "section $sectionId finish $finishCount")
-            if (finishCount < totalImageCount) {
-                refreshListener?.doRefreshProcess(
-                    sectionId,
-                    0,
-                    finishCount,
-                    totalImageCount
-                )
-            } else {
-                processCounter.remove(sectionId)
-                viewWork()
-            }
-        }
-        return observer
-    }
-
-    private fun headerWorkerObserver(workInfo: WorkInfo, sectionId: Long) {
-        if (workInfo.state.isFinished) {
-            val totalImageCount = workInfo.outputData.getInt(DownloadSectionWorker.TOTAL_IMAGE_COUNT_KEY, 0)
-            Log.d("DownloadService", "worker for $sectionId finish, totalCount=${totalImageCount}")
-            val dirName = workInfo.outputData.getString(DownloadSectionWorker.PARAM_DIR_NAME_KEY) as String
-            val sectionBeanId = workInfo.outputData.getLong(DownloadSectionWorker.PARAM_SECTION_BEAN_ID_KEY, 0)
-            val picInfoList = picInfoDao.queryBySectionInnerIndex(sectionBeanId)
-
-            val beginWith = WorkManager.getInstance(this).beginUniqueWork(
-                "sectionId:$sectionId",
-                ExistingWorkPolicy.REPLACE,
-                createImageWorker(picInfoList, sectionId, dirName)
-            )
-            processCounter[sectionId] = Counter(totalImageCount)
-            beginWith.workInfosLiveData.observeForever(genImageObserver(sectionId))
-            val thenContinuation = beginWith.then(createDownloadCompleteWorker(sectionId))
-            thenContinuation.workInfosLiveData.observeForever { it ->
-                if (it.none { predicate -> predicate.tags.contains(DownloadCompleteWorker::class.java.name) && predicate.state.isFinished }) {
-                    return@observeForever
+    private fun genObserver(sectionId: Long, workerId: UUID): Observer<List<WorkInfo>> {
+        val observer = object: Observer<List<WorkInfo>>  {
+            override fun onChanged(value: List<WorkInfo>) {
+                val batchDownloadImageWorkerStatus = value.find { predicate -> predicate.id == workerId }
+                if (batchDownloadImageWorkerStatus?.state == WorkInfo.State.RUNNING ) {
+                    val progress = batchDownloadImageWorkerStatus.progress.getInt("progress", 0)
+                    val total = batchDownloadImageWorkerStatus.progress.getInt("total", 0)
+                    if (processCounter[sectionId] == null && total != 0) {
+                        processCounter[sectionId] = Counter(total)
+                    }
+                    processCounter[sectionId]?.setProcess(progress)
+                    refreshListener?.doRefreshProcess(sectionId, 0, progress, total)
                 }
-                workerQueue.poll()?.let { startWork(it.id) }
-                viewWork()
+                if (batchDownloadImageWorkerStatus?.state == WorkInfo.State.SUCCEEDED) {
+                    val total = batchDownloadImageWorkerStatus.outputData.getInt("total", 0)
+                    if (processCounter[sectionId] == null && total != 0) {
+                        processCounter[sectionId] = Counter(total)
+                    }
+                    processCounter[sectionId]?.setProcess(total)
+                    refreshListener?.doRefreshProcess(sectionId, 0, total, total)
+                }
+
+                if (value.none { predicate -> predicate.tags.contains(DownloadCompleteWorker::class.java.name) && predicate.state.isFinished }) {
+                    return
+                }
+                workerQueue.poll()?.let { startWork(it.id, applicationContext) }
+                viewWork(applicationContext)
             }
-            thenContinuation.enqueue();
         }
+        return observer
     }
 
+    private fun startWork(sectionId: Long, context: Context) {
 
-
-    private fun startWork(sectionId: Long) {
-
-        val downloadSectionRequest = createHeaderWorker(sectionId) ?:
+        val downloadSectionRequest = createHeaderWorker(sectionId, context) ?:
             return
         val batchDownloadImageWorker = createBatchDownloadImageWorker(sectionId)
-        val then = WorkManager.getInstance(this).beginUniqueWork(
+        val then = WorkManager.getInstance(context).beginUniqueWork(
             "downloadTaskHeader:${sectionId}",
             ExistingWorkPolicy.KEEP,
             downloadSectionRequest
         ).then(batchDownloadImageWorker)
             .then(createDownloadCompleteWorker(sectionId))
 
-        then.workInfosLiveData.observeForever {
-            val batchDownloadImageWorkerStatus = it.find { predicate -> predicate.id == batchDownloadImageWorker.id }
-            if (batchDownloadImageWorkerStatus?.state == WorkInfo.State.RUNNING ) {
-                val progress = batchDownloadImageWorkerStatus.progress.getInt("progress", 0)
-                val total = batchDownloadImageWorkerStatus.progress.getInt("total", 0)
-                if (processCounter[sectionId] == null && total != 0) {
-                    processCounter[sectionId] = Counter(total)
-                }
-                processCounter[sectionId]?.setProcess(progress)
-                refreshListener?.doRefreshProcess(sectionId, 0, progress, total)
-            }
-            if (batchDownloadImageWorkerStatus?.state == WorkInfo.State.SUCCEEDED) {
-                val total = batchDownloadImageWorkerStatus.outputData.getInt("total", 0)
-                if (processCounter[sectionId] == null && total != 0) {
-                    processCounter[sectionId] = Counter(total)
-                }
-                processCounter[sectionId]?.setProcess(total)
-                refreshListener?.doRefreshProcess(sectionId, 0, total, total)
-            }
-
-            if (it.none { predicate -> predicate.tags.contains(DownloadCompleteWorker::class.java.name) && predicate.state.isFinished }) {
-                return@observeForever
-            }
-            workerQueue.poll()?.let { startWork(it.id) }
-            viewWork()
-        }
+        then.workInfosLiveData.observeForever(genObserver(sectionId, batchDownloadImageWorker.id))
         then.enqueue()
 
 //        WorkManager.getInstance(this).getWorkInfoByIdLiveData(downloadSectionRequest.id)
 //            .observeForever(genHeaderObserver(sectionId))
     }
 
-    private fun viewWork() {
-        val works = WorkManager.getInstance(this).getWorkInfosByTag("sectionStart").get()
+    private fun viewWork(context: Context) {
+        val works = WorkManager.getInstance(context).getWorkInfosByTag("sectionStart").get()
         works.filter {
             val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }.split(":")[1]
 
@@ -339,12 +270,12 @@ class DownloadService : Service() {
                 .fromStates(listOf(WorkInfo.State.SUCCEEDED))
                 .addTags(listOf("complete:$sectionId"))
                 .build()
-            val workInfos = WorkManager.getInstance(this).getWorkInfos(workQuery).get()
+            val workInfos = WorkManager.getInstance(context).getWorkInfos(workQuery).get()
             workInfos.size == 0
         }.forEach { it ->
             val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }.split(":")[1]
             val imgWorks =
-                WorkManager.getInstance(this).getWorkInfosByTag("batchDownloadImage:$sectionId").get()
+                WorkManager.getInstance(context).getWorkInfosByTag("batchDownloadImage:$sectionId").get()
             var progress = 0
             var total = 0
             if (imgWorks.size != 0) {

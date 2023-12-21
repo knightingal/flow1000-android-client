@@ -104,7 +104,7 @@ class PendingFragment : Fragment(){
 
     private val counterProvider: CounterProvider = object : CounterProvider {
         override fun getCounter(sectionId: Long): Counter? {
-            return downLoadService?.processCounter?.get(sectionId)
+            return downLoadService?.getProcessCounter()?.get(sectionId)
         }
 
     }
@@ -118,6 +118,7 @@ class PendingFragment : Fragment(){
             downLoadService?.setRefreshListener(
                 refreshListener
             )
+
 
             // startDownloadPicIndex()
             downLoadService?.startDownloadSectionList();

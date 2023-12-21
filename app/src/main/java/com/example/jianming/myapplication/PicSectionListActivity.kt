@@ -85,7 +85,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     }
 
     val counterProvider: CounterProvider =
-        CounterProvider { sectionId -> downLoadService?.processCounter?.get(sectionId) }
+        CounterProvider { sectionId -> downLoadService?.getProcessCounter()?.get(sectionId) }
 
     var downLoadService: DownloadService? = null
 
