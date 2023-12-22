@@ -141,7 +141,10 @@ class DownloadService : Service() {
 
                 val workQuery = WorkQuery.Builder
                     .fromStates(listOf(WorkInfo.State.RUNNING, WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED))
-                    .addTags(listOf("com.example.jianming.Tasks.BatchDownloadImageWorker"))
+                    .addTags(listOf(
+                        "com.example.jianming.Tasks.BatchDownloadImageWorker",
+                        "com.example.jianming.Tasks.DownloadSectionWorker",
+                    ))
                     .build()
 
                 val workInfoList = WorkManager.getInstance(applicationContext)
