@@ -218,7 +218,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
 
     fun asyncStartDownload(index: Long, position: Int) {
-        downLoadService?.startDownloadSection(index, position)
+//        downLoadService?.startDownloadSection(index, position)
     }
 
 }

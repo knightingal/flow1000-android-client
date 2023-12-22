@@ -1,5 +1,6 @@
 package com.example.jianming.myapplication.ui.main
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -16,7 +17,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import com.example.jianming.beans.PicSectionBean
 import com.example.jianming.beans.PicSectionData
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
@@ -24,14 +24,13 @@ import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
 import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
-import com.example.jianming.services.Counter
 import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.nanjing.knightingal.processerlib.RefreshListener
 
-private val TAG = "PendingFragment";
+private const val TAG = "PendingFragment";
 
 
 class PendingFragment : Fragment(){
@@ -42,13 +41,13 @@ class PendingFragment : Fragment(){
 
     private lateinit var picInfoDao: PicInfoDao
 
-    private lateinit var updataStampDao: UpdataStampDao
+    private lateinit var updateStampDao: UpdataStampDao
     private lateinit var db: AppDataBase
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pageViewModel = ViewModelProvider(this).get(PageViewModel::class.java)
+        pageViewModel = ViewModelProvider(this)[PageViewModel::class.java]
 
         db = Room.databaseBuilder(
             (context as Context).applicationContext,
@@ -57,7 +56,7 @@ class PendingFragment : Fragment(){
 
         picSectionDao = db.picSectionDao()
         picInfoDao = db.picInfoDao()
-        updataStampDao = db.updateStampDao()
+        updateStampDao = db.updateStampDao()
     }
 
     private lateinit var picSectionListAdapter: PicSectionListAdapter
@@ -102,15 +101,11 @@ class PendingFragment : Fragment(){
     var downLoadService: DownloadService? = null
     var serviceBound = false
 
-    private val counterProvider: CounterProvider = object : CounterProvider {
-        override fun getCounter(sectionId: Long): Counter? {
-            return downLoadService?.getProcessCounter()?.get(sectionId)
-        }
-
-    }
-//        CounterProvider { sectionId -> downLoadService?.processCounter?.get(sectionId) }
+    private val counterProvider: CounterProvider =
+        CounterProvider { sectionId -> downLoadService?.getProcessCounter()?.get(sectionId) }
 
     private val conn: ServiceConnection = object : ServiceConnection {
+        @SuppressLint("NotifyDataSetChanged")
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             Log.d(TAG, "onServiceConnected")
             serviceBound = true
@@ -118,6 +113,9 @@ class PendingFragment : Fragment(){
             downLoadService?.setRefreshListener(
                 refreshListener
             )
+            val picSectionBeanList = downLoadService?.getPendingSectionList()
+            picSectionListAdapter.setDataArray(picSectionBeanList)
+            picSectionListAdapter.notifyDataSetChanged()
 
 
             // startDownloadPicIndex()
@@ -133,6 +131,7 @@ class PendingFragment : Fragment(){
     }
 
     private val refreshListener: RefreshListener = object : RefreshListener {
+        @SuppressLint("SetTextI18n")
         override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int) {
 
             val pendingSectionList = downLoadService!!.getPendingSectionList()
@@ -143,11 +142,6 @@ class PendingFragment : Fragment(){
             val viewHolder =
                 pendingListView.findViewHolderForAdapterPosition(realPosition) as PicSectionListAdapter.ViewHolder?
 
-            if (currCount == max) {
-//                picSectionDataList[realPosition].picSectionBean.exist = 1
-//                picSectionDao.update(picSectionDataList[realPosition].picSectionBean)
-//                picSectionListAdapter.notifyDataSetChanged()
-            }
             if (viewHolder != null) {
                 MainScope().launch {
                     viewHolder.process.visibility = View.VISIBLE
@@ -157,25 +151,17 @@ class PendingFragment : Fragment(){
             }
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
-//            picSectionDataList.clear()
-//            for (picSectionBean in picSectionBeanList) {
-//                val picSectionData = PicSectionData(picSectionBean)
-//                picSectionDataList.add(picSectionData)
-//            }
 
             picSectionListAdapter.setDataArray(picSectionBeanList)
             picSectionListAdapter.notifyDataSetChanged()
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         override fun notifyListReady() {
             val pendingSectionList = downLoadService!!.getPendingSectionList()
             picSectionListAdapter.setDataArray(pendingSectionList)
-//            picSectionDataList.clear()
-//            for (picSectionBean in pendingSectionList) {
-//                val picSectionData = PicSectionData(picSectionBean)
-//                picSectionDataList.add(picSectionData)
-//            }
             picSectionListAdapter.notifyDataSetChanged()
         }
 
