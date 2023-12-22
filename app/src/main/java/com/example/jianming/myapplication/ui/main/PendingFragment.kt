@@ -85,7 +85,7 @@ class PendingFragment : Fragment(){
 
     override fun onPause() {
         super.onPause()
-        downLoadService?.removeRefreshListener()
+        downLoadService?.removeRefreshListener(refreshListener)
         downLoadService = null
         context?.unbindService(conn)
     }

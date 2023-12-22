@@ -115,7 +115,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
     override fun onPause() {
         super.onPause()
-        downLoadService?.removeRefreshListener()
+        downLoadService?.removeRefreshListener(this)
         downLoadService = null
         unbindService(conn)
     }

@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class DownloadService : Service() {
     companion object {
         private val processCounter = hashMapOf<Long, Counter>()
-        private var refreshListener: RefreshListener? = null
+        private var refreshListener: MutableSet<RefreshListener> = mutableSetOf()
         private var pendingSectionBeanList: MutableList<PicSectionData> = mutableListOf()
         private val workerQueue: BlockingQueue<PicSectionBean> = LinkedBlockingQueue()
         private val existSectionId: MutableSet<Long> = mutableSetOf()
@@ -60,15 +60,17 @@ class DownloadService : Service() {
 
 
     fun setRefreshListener(refreshListener: RefreshListener?) {
-        DownloadService.refreshListener = refreshListener
+        if (refreshListener != null) {
+            DownloadService.refreshListener.add(refreshListener)
+        }
     }
 
     fun getProcessCounter():HashMap<Long, Counter> {
         return processCounter
     }
 
-    fun removeRefreshListener() {
-        refreshListener = null
+    fun removeRefreshListener(refreshListener: RefreshListener) {
+        DownloadService.refreshListener.remove(refreshListener)
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -138,18 +140,22 @@ class DownloadService : Service() {
                 pendingSectionBeanList.sortBy { it.picSectionBean.id }
 
                 val workQuery = WorkQuery.Builder
-                    .fromStates(listOf(WorkInfo.State.RUNNING))
+                    .fromStates(listOf(WorkInfo.State.RUNNING, WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED))
                     .addTags(listOf("com.example.jianming.Tasks.BatchDownloadImageWorker"))
                     .build()
 
                 val workInfoList = WorkManager.getInstance(applicationContext)
                     .getWorkInfos(workQuery).get()
-                for (i in 1 .. 2-workInfoList.size) {
+                var i = 0
+                while (i < 2-workInfoList.size) {
                     workerQueue.poll()?.let { startWork(it.id, applicationContext) }
+                    i++
                 }
                 viewWork(applicationContext)
             }
-            refreshListener?.notifyListReady()
+            refreshListener.forEach {
+                it.notifyListReady()
+            }
         }
     }
 
@@ -217,7 +223,7 @@ class DownloadService : Service() {
                         processCounter[sectionId] = Counter(total)
                     }
                     processCounter[sectionId]?.setProcess(progress)
-                    refreshListener?.doRefreshProcess(sectionId, 0, progress, total)
+                    refreshListener.forEach { it.doRefreshProcess(sectionId, 0, progress, total) }
                 }
                 if (batchDownloadImageWorkerStatus?.state == WorkInfo.State.SUCCEEDED) {
                     val total = batchDownloadImageWorkerStatus.outputData.getInt("total", 0)
@@ -225,7 +231,7 @@ class DownloadService : Service() {
                         processCounter[sectionId] = Counter(total)
                     }
                     processCounter[sectionId]?.setProcess(total)
-                    refreshListener?.doRefreshProcess(sectionId, 0, total, total)
+                    refreshListener.forEach {it.doRefreshProcess(sectionId, 0, total, total)}
                 }
 
                 if (value.none { predicate -> predicate.tags.contains(DownloadCompleteWorker::class.java.name) && predicate.state.isFinished }) {
@@ -288,7 +294,7 @@ class DownloadService : Service() {
             }
             processCounter[sectionId.toLong()]?.setProcess(progress)
         }
-        refreshListener?.notifyListReady()
+        refreshListener.forEach{it.notifyListReady()}
     }
 
 }
