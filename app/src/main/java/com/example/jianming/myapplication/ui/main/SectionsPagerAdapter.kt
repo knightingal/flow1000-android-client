@@ -22,10 +22,12 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
     override fun getItem(position: Int): Fragment {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment.
-        if (position <= 1) {
-            return PlaceholderFragment.newInstance(position + 1)
+        return if (position == 1) {
+            PlaceholderFragment.newInstance(position + 1)
+        } else if (position == 2){
+            PendingFragment()
         } else {
-            return PendingFragment()
+            SectionListFragment()
         }
     }
 

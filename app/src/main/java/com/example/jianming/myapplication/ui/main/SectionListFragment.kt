@@ -22,7 +22,6 @@ import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
-import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
 import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
@@ -30,12 +29,11 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.nanjing.knightingal.processerlib.RefreshListener
 
-
-
-class PendingFragment : Fragment(){
+class SectionListFragment : Fragment(){
     companion object {
-        private const val TAG = "PendingFragment";
+        private const val TAG = "SectionListFragment"
     }
+
     private lateinit var pageViewModel: PageViewModel
     private var _binding: FragmentPendingBinding? = null
 
@@ -63,7 +61,7 @@ class PendingFragment : Fragment(){
 
     private lateinit var picSectionListAdapter: PicSectionListAdapter
 
-    private var picSectionDataList: MutableList<PicSectionData> = mutableListOf();
+    private var picSectionDataList: MutableList<PicSectionData> = mutableListOf()
 
     private lateinit var pendingListView: RecyclerView
     override fun onCreateView(
@@ -103,8 +101,10 @@ class PendingFragment : Fragment(){
     var downLoadService: DownloadService? = null
     var serviceBound = false
 
-    private val counterProvider: CounterProvider =
-        CounterProvider { sectionId -> downLoadService?.getProcessCounter()?.get(sectionId) }
+    private val counterProvider: PicSectionListAdapter.CounterProvider =
+        PicSectionListAdapter.CounterProvider { sectionId ->
+            downLoadService?.getProcessCounter()?.get(sectionId)
+        }
 
     private val conn: ServiceConnection = object : ServiceConnection {
         @SuppressLint("NotifyDataSetChanged")
@@ -115,13 +115,13 @@ class PendingFragment : Fragment(){
             downLoadService?.setRefreshListener(
                 refreshListener
             )
-            val picSectionBeanList = downLoadService?.getPendingSectionList()
+            val picSectionBeanList = downLoadService?.getAllSectionList()
             picSectionListAdapter.setDataArray(picSectionBeanList)
             picSectionListAdapter.notifyDataSetChanged()
 
 
             // startDownloadPicIndex()
-            downLoadService?.startDownloadSectionList();
+            downLoadService?.startDownloadSectionList()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
@@ -136,7 +136,7 @@ class PendingFragment : Fragment(){
         @SuppressLint("SetTextI18n")
         override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int) {
 
-            val pendingSectionList = downLoadService!!.getPendingSectionList()
+            val pendingSectionList = downLoadService!!.getAllSectionList()
             val pendingSection = pendingSectionList.find { section -> section.picSectionBean.id == sectionId }
             val realPosition = pendingSectionList.indexOf(pendingSection)
 
@@ -162,7 +162,7 @@ class PendingFragment : Fragment(){
 
         @SuppressLint("NotifyDataSetChanged")
         override fun notifyListReady() {
-            val pendingSectionList = downLoadService!!.getPendingSectionList()
+            val pendingSectionList = downLoadService!!.getAllSectionList()
             picSectionListAdapter.setDataArray(pendingSectionList)
             picSectionListAdapter.notifyDataSetChanged()
         }

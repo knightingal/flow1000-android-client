@@ -88,7 +88,7 @@ class DownloadService : Service() {
         picInfoDao = db.picInfoDao()
         updateStampDao = db.updateStampDao()
     }
-    private lateinit var allPicSectionBeanList:List<PicSectionBean>
+    private var allPicSectionBeanList:List<PicSectionData> = listOf()
 
     private fun checkSectionWorkerExist(sectionId: Long): Boolean {
         if (existSectionId.contains(sectionId)) {
@@ -111,7 +111,7 @@ class DownloadService : Service() {
                 picSectionBeanList.forEach { picSectionDao.insert(it) }
             }
 
-            allPicSectionBeanList = picSectionDao.getAll().toList()
+            allPicSectionBeanList = picSectionDao.getAll().toList().map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
 
             val pendingUrl =
                 "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
@@ -164,6 +164,10 @@ class DownloadService : Service() {
 
     fun getPendingSectionList(): List<PicSectionData> {
         return pendingSectionBeanList.toList()
+    }
+
+    fun getAllSectionList(): List<PicSectionData> {
+        return allPicSectionBeanList
     }
 
     inner class LocalBinder : Binder() {
