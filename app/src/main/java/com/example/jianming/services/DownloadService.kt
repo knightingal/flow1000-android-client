@@ -184,14 +184,14 @@ class DownloadService : Service() {
     }
 
 
-    private fun createHeaderWorker(sectionId: Long, context: Context): OneTimeWorkRequest? {
+    private fun createHeaderWorker(sectionId: Long, context: Context): OneTimeWorkRequest {
 
-        val workQuery: WorkQuery = WorkQuery.fromUniqueWorkNames("downloadTaskHeader:${sectionId}")
-        val existHeaderWorker = WorkManager.getInstance(context).getWorkInfos(workQuery).get()
-        if (existHeaderWorker.size > 0) {
-            Log.i("DownloadService", "downloadTaskHeader:${sectionId} exist, skip to create worker")
-            return null
-        }
+//        val workQuery: WorkQuery = WorkQuery.fromUniqueWorkNames("downloadTaskHeader:${sectionId}")
+//        val existHeaderWorker = WorkManager.getInstance(context).getWorkInfos(workQuery).get()
+//        if (existHeaderWorker.size > 0) {
+//            Log.i("DownloadService", "downloadTaskHeader:${sectionId} exist, skip to create worker")
+//            return null
+//        }
         return OneTimeWorkRequestBuilder<DownloadSectionWorker>()
             .addTag("sectionStart")
             .addTag("sectionId:${sectionId}")
@@ -253,8 +253,7 @@ class DownloadService : Service() {
 
     private fun startWork(sectionId: Long, context: Context) {
 
-        val downloadSectionRequest = createHeaderWorker(sectionId, context) ?:
-            return
+        val downloadSectionRequest = createHeaderWorker(sectionId, context)
         val batchDownloadImageWorker = createBatchDownloadImageWorker(sectionId)
         val then = WorkManager.getInstance(context).beginUniqueWork(
             "downloadTaskHeader:${sectionId}",
