@@ -23,7 +23,8 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment.
         return if (position == 1) {
-            PlaceholderFragment.newInstance(position + 1)
+//            PlaceholderFragment.newInstance(position + 1)
+            ExistSectionListFragment()
         } else if (position == 2){
             PendingFragment()
         } else {

@@ -96,32 +96,10 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         } else {
             renderNonExistItem(viewHolder);
         }
-//        if (context instanceof PicSectionListActivity) {
-//            if (((PicSectionListActivity) context).getDownLoadService() != null) {
-//                long sectionId = dataArray.get(position).getPicSectionBean().getId();
-//                if (Objects.requireNonNull(((PicSectionListActivity) context).getDownLoadService())
-//                        .getProcessCounter().containsKey(sectionId)) {
-//                    Counter counter = ((PicSectionListActivity) context).getDownLoadService()
-//                            .getProcessCounter().get(sectionId);
-//                    if (counter != null) {
-//                        viewHolder.downloadProcessBar.setVisibility(View.VISIBLE);
-//                        if (counter.getProcess() == 0) {
-//                            viewHolder.downloadProcessBar.setIndeterminate(true);
-//                        } else {
-//                            viewHolder.downloadProcessBar.setIndeterminate(false);
-//                            viewHolder.downloadProcessBar.setProgress(counter.getProcess(), true);
-//                            viewHolder.downloadProcessBar.setMax(counter.getMax());
-//                        }
-//                    } else {
-//                        viewHolder.downloadProcessBar.setVisibility(View.GONE);
-//                    }
-//                } else {
-//                    viewHolder.downloadProcessBar.setVisibility(View.GONE);
-//                }
-//            }
-//        }
-
-        Counter counter = counterProvider.getCounter(dataArray.get(position).getPicSectionBean().getId());
+        Counter counter = null;
+        if (counterProvider != null) {
+            counter = counterProvider.getCounter(dataArray.get(position).getPicSectionBean().getId());
+        }
         if (counter != null) {
 
             viewHolder.process.setText("" + counter.getProcess() + "/" + counter.getMax());
@@ -148,7 +126,6 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
                 DeleteSectionKt.postDeleteSection(viewHolder.serverIndex);
                 dialog.dismiss();
                 notifyDataSetChanged();
-//                renderNonExistItem(viewHolder);
             });
             builder.setNegativeButton("no", (dialog, which) -> dialog.dismiss());
             builder.create().show();
