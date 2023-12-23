@@ -71,6 +71,16 @@ class BatchDownloadImageWorker(context: Context, workerParams: WorkerParameters)
                 val fileOutputStream = FileOutputStream(dest, true)
                 fileOutputStream.write(body)
                 fileOutputStream.close()
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = true
+                BitmapFactory.decodeByteArray(body, 0, body.size, options)
+                val width = options.outWidth
+                val height = options.outHeight
+                val absolutePath = dest.absolutePath
+                picInfoBean.height = height
+                picInfoBean.width = width
+                picInfoBean.absolutePath = absolutePath
+                picInfoDao.update(picInfoBean)
                 val currentProgress = progress.incrementAndGet()
                 setProgress(workDataOf("progress" to currentProgress, "total" to picInfoBeanList.size))
                 Log.d("BatchDownloadImageWorker", "finish download $imgUrl")
