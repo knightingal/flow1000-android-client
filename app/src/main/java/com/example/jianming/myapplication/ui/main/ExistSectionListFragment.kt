@@ -73,12 +73,10 @@ class ExistSectionListFragment : Fragment(){
         val root = binding.root
         pendingListView = binding.listViewPending
         pendingListView.setHasFixedSize(true)
-        picSectionDataList = picSectionDao.getAllExist().map { bean -> PicSectionData(bean, 0) }
 
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         pendingListView.layoutManager = mLayoutManager
         picSectionListAdapter = PicSectionListAdapter(context, null)
-        picSectionListAdapter.setDataArray(picSectionDataList)
         pendingListView.adapter = picSectionListAdapter
 
         return root
@@ -93,6 +91,9 @@ class ExistSectionListFragment : Fragment(){
 
     override fun onStart() {
         super.onStart()
+        picSectionDataList = picSectionDao.getAllExist().map { bean -> PicSectionData(bean, 0) }
+        picSectionListAdapter.setDataArray(picSectionDataList)
+        picSectionListAdapter.notifyDataSetChanged()
 //        context?.bindService(
 //            Intent(context, DownloadService::class.java), conn,
 //            AppCompatActivity.BIND_AUTO_CREATE
