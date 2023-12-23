@@ -20,10 +20,13 @@ import com.example.jianming.util.NetworkUtil
 import com.example.jianming.util.TimeUtil
 import com.example.jianming.beans.PicSectionBean
 import com.example.jianming.beans.PicSectionData
+import com.example.jianming.beans.UpdateStamp
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
+import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
+import com.example.jianming.services.Counter
 import com.example.jianming.services.DownloadService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -74,12 +77,15 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         listView.layoutManager = mLayoutManager
 
         picSectionListAdapter =
-            PicSectionListAdapter(this)
+            PicSectionListAdapter(this, counterProvider)
         picSectionListAdapter.setDataArray(picSectionDataList)
         listView.adapter = picSectionListAdapter
 
 
     }
+
+    val counterProvider: CounterProvider =
+        CounterProvider { sectionId -> downLoadService?.getProcessCounter()?.get(sectionId) }
 
     var downLoadService: DownloadService? = null
 
@@ -109,7 +115,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
     override fun onPause() {
         super.onPause()
-        downLoadService?.removeRefreshListener()
+        downLoadService?.removeRefreshListener(this)
         downLoadService = null
         unbindService(conn)
     }
@@ -120,13 +126,12 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     }
 
     private fun startDownloadPicIndex() {
-        val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
+        val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
         ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
             val mapper = jacksonObjectMapper()
             db.runInTransaction() {
-                val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN")
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
                 updataStampDao.update(updateStamp)
                 val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
@@ -172,11 +177,6 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     @SuppressLint("NotifyDataSetChanged")
     private val refreshFrontPage: () -> Unit = {
         picSectionDataList.clear()
-        val picSectionBeanList = getDataSourceFromJsonFile()
-        for (picSectionBean in picSectionBeanList) {
-            val picSectionData = PicSectionData(picSectionBean)
-            picSectionDataList.add(picSectionData)
-        }
         picSectionListAdapter.notifyDataSetChanged()
 
     }
@@ -193,7 +193,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun doRefreshView(position: Int, currCount: Int, max: Int) {
+    override fun doRefreshProcess(sectionId: Long, position: Int, currCount: Int, max: Int) {
         val viewHolder =
             listView.findViewHolderForAdapterPosition(position) as PicSectionListAdapter.ViewHolder?
         if (currCount == max) {
@@ -203,18 +203,22 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         }
         if (viewHolder != null) {
             MainScope().launch {
-                viewHolder.downloadProcessBar.visibility = View.VISIBLE
-                viewHolder.downloadProcessBar.isIndeterminate = false
-                viewHolder.downloadProcessBar.setProgressCompat(currCount, false)
-                viewHolder.downloadProcessBar.max = max
                 Log.d(TAG, "current = $currCount max = $max")
             }
         }
     }
 
+    override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun notifyListReady() {
+        TODO("Not yet implemented")
+    }
+
 
     fun asyncStartDownload(index: Long, position: Int) {
-        downLoadService?.startDownloadSection(index, position)
+//        downLoadService?.startDownloadSection(index, position)
     }
 
 }

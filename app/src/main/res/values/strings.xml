@@ -39,5 +39,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_pic_section_list_activity_md">PicSectionListActivityMD</string>
+    <string name="tab_text_1">All</string>
+    <string name="tab_text_2">Exist</string>
+    <string name="tab_pending">Pending</string>
 
 </resources>

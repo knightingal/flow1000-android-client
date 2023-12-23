@@ -13,7 +13,7 @@ import com.example.jianming.beans.UpdateStamp;
 @Dao
 interface UpdataStampDao {
     @Query("select * from UpdateStamp where table_name = :tableName")
-    fun getUpdateStampByTableName(tableName: String):UpdateStamp
+    fun getUpdateStampByTableName(tableName: String):UpdateStamp?
 
     @Update
     fun update(updateStamp: UpdateStamp)

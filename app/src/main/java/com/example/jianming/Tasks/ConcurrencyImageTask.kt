@@ -51,4 +51,29 @@ object ConcurrencyImageTask {
         }
 
     }
+
+    public suspend fun makeRequest(src: String, encrypted: Boolean): ByteArray? {
+        return withContext(Dispatchers.IO) {
+            Log.d(TAG, "start download $src")
+            val request = Request.Builder().url(src).build()
+            var bytes: ByteArray?
+            while (true) {
+                try {
+                    bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
+                    val options: BitmapFactory.Options = BitmapFactory.Options()
+                    options.inJustDecodeBounds = true
+                    if (encrypted) {
+                        bytes = Decryptor.decrypt(bytes)
+                    }
+                    break
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    Log.e(TAG, "download $src error")
+                }
+            }
+            bytes
+
+        }
+
+    }
 }
