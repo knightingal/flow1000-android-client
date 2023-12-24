@@ -98,6 +98,28 @@ class DownloadService : Service() {
         return picSectionBean.exist == 1
     }
 
+    fun fetchAllSectionList() {
+        val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
+        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
+        Log.d("startDownloadWebPage", stringUrl)
+        ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
+            val mapper = jacksonObjectMapper()
+            db.runInTransaction() {
+                updateStamp.updateStamp = TimeUtil.currentTimeFormat()
+                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
+                updateStampDao.update(updateStamp)
+                picSectionBeanList.forEach { picSectionDao.insert(it) }
+            }
+
+            allPicSectionBeanList = picSectionDao.getAll().toList()
+                .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
+            refreshListener.forEach {
+                it.notifyListReady()
+            }
+        }
+
+    }
+
     fun startDownloadSectionList() {
         val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"

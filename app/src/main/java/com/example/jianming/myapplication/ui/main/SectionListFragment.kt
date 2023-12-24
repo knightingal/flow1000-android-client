@@ -119,9 +119,7 @@ class SectionListFragment : Fragment(){
             picSectionListAdapter.setDataArray(picSectionBeanList)
             picSectionListAdapter.notifyDataSetChanged()
 
-
-            // startDownloadPicIndex()
-            downLoadService?.startDownloadSectionList()
+            downLoadService?.fetchAllSectionList()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
