@@ -31,7 +31,7 @@ import org.nanjing.knightingal.processerlib.RefreshListener
 
 class ExistSectionListFragment : Fragment(){
     companion object {
-        private const val TAG = "SectionListFragment"
+        private const val TAG = "ExistSectionListFragment"
     }
 
     private lateinit var pageViewModel: PageViewModel
@@ -82,22 +82,12 @@ class ExistSectionListFragment : Fragment(){
         return root
     }
 
-    override fun onPause() {
-        super.onPause()
-//        downLoadService?.removeRefreshListener(refreshListener)
-//        downLoadService = null
-//        context?.unbindService(conn)
-    }
 
     override fun onStart() {
         super.onStart()
         picSectionDataList = picSectionDao.getAllExist().map { bean -> PicSectionData(bean, 0) }
         picSectionListAdapter.setDataArray(picSectionDataList)
         picSectionListAdapter.notifyDataSetChanged()
-//        context?.bindService(
-//            Intent(context, DownloadService::class.java), conn,
-//            AppCompatActivity.BIND_AUTO_CREATE
-//        )
     }
 
 
