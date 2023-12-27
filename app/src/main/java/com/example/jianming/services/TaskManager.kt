@@ -14,6 +14,9 @@ import androidx.work.workDataOf
 import com.example.jianming.Tasks.BatchDownloadImageWorker
 import com.example.jianming.Tasks.DownloadCompleteWorker
 import com.example.jianming.Tasks.DownloadSectionWorker
+import com.example.jianming.beans.PicSectionBean
+import com.example.jianming.beans.PicSectionData
+import com.example.jianming.myapplication.App
 import java.util.UUID
 
 class TaskManager {
@@ -63,13 +66,21 @@ class TaskManager {
         }
 
         fun initForObserver(context: Context) {
+            val existPending = App.findDb().picSectionDao().getByClientStatus(PicSectionBean.ClientStatus.PENDING)
+
+            DownloadService.pendingSectionBeanList.addAll(
+                existPending.map { bean -> PicSectionData(bean, 0) }
+            )
+            DownloadService.workerQueue.addAll(existPending)
+            DownloadService.existSectionId.addAll(existPending.map { it.id })
+
             var workQuery = WorkQuery.Builder
                 .fromStates(listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING,
                     WorkInfo.State.BLOCKED))
                 .addTags(listOf(BatchDownloadImageWorker::class.java.name,))
                 .build()
-            WorkManager.getInstance(context).getWorkInfosLiveData(workQuery).observeForever {workInfoList ->
-                workInfoList.forEach { predicate ->
+            WorkManager.getInstance(context).getWorkInfos(workQuery).get().forEach { workInfo ->
+                WorkManager.getInstance(context).getWorkInfoByIdLiveData(workInfo.id).observeForever { predicate ->
                     val progress: Int
                     val total: Int
                     val sectionId: Long
@@ -87,10 +98,9 @@ class TaskManager {
                     }
                     processCounter[sectionId]?.setProcess(progress)
                     DownloadService.refreshListener.forEach { it.doRefreshProcess(sectionId, 0, progress, total) }
+
                 }
             }
-
-
 
             workQuery = WorkQuery.Builder
                 .fromStates(listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING, WorkInfo.State.BLOCKED
@@ -100,8 +110,22 @@ class TaskManager {
 
             WorkManager.getInstance(context).getWorkInfos(workQuery).get().forEach { workInfo ->
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(workInfo.id).observeForever {
-                    if (it.state.isFinished) {
+                    if (it != null && it.state.isFinished) {
                         Log.d("TaskManager", "task finished")
+                        while (true) {
+                            val nextSection = DownloadService.workerQueue.poll()
+                            if (nextSection == null) {
+                                break
+                            }
+                            val nextSectionId = nextSection.id
+                            val existWorker = WorkManager.getInstance(applicationContext).getWorkInfosByTag("sectionId:$nextSectionId").get()
+                            if (existWorker.size != 0) {
+                                continue
+                            }
+                            startWork(nextSectionId, applicationContext)
+                            break
+                        }
+                        viewWork(applicationContext)
                     }
                 }
 
@@ -130,7 +154,19 @@ class TaskManager {
             }
 
             if (haveDownloadCompleteWorkerFinish(value)) {
-                DownloadService.workerQueue.poll()?.let { startWork(it.id, applicationContext) }
+                while (true) {
+                    val nextSection = DownloadService.workerQueue.poll()
+                    if (nextSection == null) {
+                        break
+                    }
+                    val nextSectionId = nextSection.id
+                    val existWorker = WorkManager.getInstance(applicationContext).getWorkInfosByTag("sectionId:$nextSectionId").get()
+                    if (existWorker.size != 0) {
+                        continue
+                    }
+                    startWork(nextSectionId, applicationContext)
+                    break
+                }
                 viewWork(applicationContext)
             }
         }
@@ -181,7 +217,7 @@ class TaskManager {
                 downloadSectionRequest
             ).then(batchDownloadImageWorker)
                 .then(createDownloadCompleteWorker(sectionId))
-//            then.workInfosLiveData.observeForever(genObserver(sectionId, batchDownloadImageWorker.id))
+            then.workInfosLiveData.observeForever(genObserver(sectionId, batchDownloadImageWorker.id))
             then.enqueue()
         }
 

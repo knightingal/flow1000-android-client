@@ -28,6 +28,9 @@ interface PicSectionDao {
     @Query("select * from PicSectionBean where exist = 1")
     fun getAllExist(): List<PicSectionBean>
 
+    @Query("select * from PicSectionBean where clientStatus = :status")
+    fun getByClientStatus(status: PicSectionBean.ClientStatus): List<PicSectionBean>
+
     @Insert
     fun insert(picSectionBean: PicSectionBean)
 

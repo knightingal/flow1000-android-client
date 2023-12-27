@@ -44,9 +44,9 @@ import java.util.concurrent.atomic.AtomicInteger
 class DownloadService : Service() {
     companion object {
         var refreshListener: MutableSet<RefreshListener> = mutableSetOf()
-        private var pendingSectionBeanList: MutableList<PicSectionData> = mutableListOf()
+        var pendingSectionBeanList: MutableList<PicSectionData> = mutableListOf()
         val workerQueue: BlockingQueue<PicSectionBean> = LinkedBlockingQueue()
-        private val existSectionId: MutableSet<Long> = mutableSetOf()
+        val existSectionId: MutableSet<Long> = mutableSetOf()
     }
 
     private val binder: IBinder = LocalBinder();
@@ -120,6 +120,13 @@ class DownloadService : Service() {
     }
 
     fun startDownloadSectionList() {
+        val existPending = picSectionDao.getByClientStatus(PicSectionBean.ClientStatus.PENDING)
+        pendingSectionBeanList.addAll(
+            existPending.map { bean -> PicSectionData(bean, 0) }
+        )
+        workerQueue.addAll(existPending)
+        existSectionId.addAll(existPending.map { it.id })
+
         val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)

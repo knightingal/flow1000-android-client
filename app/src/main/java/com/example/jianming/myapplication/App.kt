@@ -10,13 +10,13 @@ import com.example.jianming.util.CrashHandler
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        TaskManager.applicationContext = applicationContext
-        TaskManager.initForObserver(applicationContext)
         db = databaseBuilder(
             applicationContext,
             AppDataBase::class.java, "database-flow1000"
         ).allowMainThreadQueries().build()
         initDB()
+        TaskManager.applicationContext = applicationContext
+        TaskManager.initForObserver(applicationContext)
         Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this))
     }
 
