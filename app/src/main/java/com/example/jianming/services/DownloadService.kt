@@ -239,7 +239,12 @@ class DownloadService : Service() {
             .build()
     }
 
-
+    private fun haveDownloadCompleteWorkerFinish(value: List<WorkInfo>): Boolean {
+        return value.any { predicate ->
+            predicate.tags.contains(DownloadCompleteWorker::class.java.name)
+                    && predicate.state.isFinished
+        }
+    }
 
     private fun genObserver(sectionId: Long, workerId: UUID): Observer<List<WorkInfo>> {
         val observer = object: Observer<List<WorkInfo>>  {
@@ -263,11 +268,10 @@ class DownloadService : Service() {
                     refreshListener.forEach {it.doRefreshProcess(sectionId, 0, total, total)}
                 }
 
-                if (value.none { predicate -> predicate.tags.contains(DownloadCompleteWorker::class.java.name) && predicate.state.isFinished }) {
-                    return
+                if (haveDownloadCompleteWorkerFinish(value)) {
+                    workerQueue.poll()?.let { startWork(it.id, applicationContext) }
+                    viewWork(applicationContext)
                 }
-                workerQueue.poll()?.let { startWork(it.id, applicationContext) }
-                viewWork(applicationContext)
             }
         }
         return observer
