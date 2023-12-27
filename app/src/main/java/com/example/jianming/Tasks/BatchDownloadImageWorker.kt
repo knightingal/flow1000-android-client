@@ -82,7 +82,10 @@ class BatchDownloadImageWorker(context: Context, workerParams: WorkerParameters)
                 picInfoBean.absolutePath = absolutePath
                 picInfoDao.update(picInfoBean)
                 val currentProgress = progress.incrementAndGet()
-                setProgress(workDataOf("progress" to currentProgress, "total" to picInfoBeanList.size))
+                setProgress(workDataOf(
+                    "progress" to currentProgress,
+                    "total" to picInfoBeanList.size,
+                    "sectionId" to sectionId))
                 Log.d("BatchDownloadImageWorker", "finish download $imgUrl")
             }
             jobList.add(job)
@@ -91,7 +94,7 @@ class BatchDownloadImageWorker(context: Context, workerParams: WorkerParameters)
 
 //        setProgress(workDataOf("progress" to picInfoBeanList.size, "total" to picInfoBeanList.size))
         Log.d("BatchDownloadImageWorker", "finish download section: $sectionId")
-        return Result.success(workDataOf("total" to picInfoBeanList.size))
+        return Result.success(workDataOf("total" to picInfoBeanList.size, "sectionId" to sectionId))
 //        val imgUrl = inputData.getString("imgUrl") as String
 //        val picId = inputData.getLong("picId", 0)
 //        Log.d("DownloadImageWorker", "start work for:$imgUrl")

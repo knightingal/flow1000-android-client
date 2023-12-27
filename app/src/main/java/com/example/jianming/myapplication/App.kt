@@ -11,6 +11,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         TaskManager.applicationContext = applicationContext
+        TaskManager.initForObserver(applicationContext)
         db = databaseBuilder(
             applicationContext,
             AppDataBase::class.java, "database-flow1000"
