@@ -3,12 +3,14 @@ package com.example.jianming.myapplication
 import android.app.Application
 import androidx.room.Room.databaseBuilder
 import com.example.jianming.beans.UpdateStamp
+import com.example.jianming.services.TaskManager
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.util.CrashHandler
 
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
+        TaskManager.applicationContext = applicationContext
         db = databaseBuilder(
             applicationContext,
             AppDataBase::class.java, "database-flow1000"
