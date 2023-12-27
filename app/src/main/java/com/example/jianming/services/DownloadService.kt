@@ -160,6 +160,17 @@ class DownloadService : Service() {
                 listOf(pendingJob, localJob).joinAll()
                 pendingSectionBeanList.sortBy { it.picSectionBean.id }
 
+                launch {
+                    db.runInTransaction() {
+                        pendingSectionBeanList.forEach {
+                            picSectionDao.updateClientStatusByServerIndex(
+                                it.picSectionBean.id,
+                                PicSectionBean.ClientStatus.PENDING
+                            )
+                        }
+                    }
+                }
+
                 val workQuery = WorkQuery.Builder
                     .fromStates(listOf(WorkInfo.State.RUNNING, WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED))
                     .addTags(listOf(

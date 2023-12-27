@@ -64,7 +64,8 @@ class TaskManager {
 
         fun initForObserver(context: Context) {
             var workQuery = WorkQuery.Builder
-                .fromStates(listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING, WorkInfo.State.BLOCKED))
+                .fromStates(listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING,
+                    WorkInfo.State.BLOCKED))
                 .addTags(listOf(BatchDownloadImageWorker::class.java.name,))
                 .build()
             WorkManager.getInstance(context).getWorkInfosLiveData(workQuery).observeForever {workInfoList ->

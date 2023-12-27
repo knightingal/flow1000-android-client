@@ -36,4 +36,7 @@ interface PicSectionDao {
 
     @Delete
     fun delete(picSectionBean: PicSectionBean)
+
+    @Query("Update PicSectionBean set clientStatus=:status where id=:serverIndex")
+    fun updateClientStatusByServerIndex(serverIndex: Long, status: PicSectionBean.ClientStatus)
 }
