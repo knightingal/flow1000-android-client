@@ -22,7 +22,7 @@ class App : Application() {
 
     companion object {
         lateinit var db: AppDataBase
-        public fun findDb(): AppDataBase {
+        fun findDb(): AppDataBase {
             return db
         }
     }
