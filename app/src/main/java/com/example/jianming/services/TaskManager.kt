@@ -80,7 +80,7 @@ class TaskManager {
             var workQuery = WorkQuery.Builder
                 .fromStates(listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING,
                     WorkInfo.State.BLOCKED))
-                .addTags(listOf(BatchDownloadImageWorker::class.java.name,))
+                .addTags(listOf(BatchDownloadImageWorker::class.java.name))
                 .build()
             WorkManager.getInstance(context).getWorkInfos(workQuery).get().forEach { workInfo ->
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(workInfo.id).observeForever { predicate ->
@@ -108,7 +108,7 @@ class TaskManager {
             workQuery = WorkQuery.Builder
                 .fromStates(listOf(WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING, WorkInfo.State.BLOCKED
                     ))
-                .addTags(listOf(DownloadCompleteWorker::class.java.name,))
+                .addTags(listOf(DownloadCompleteWorker::class.java.name))
                 .build()
 
             WorkManager.getInstance(context).getWorkInfos(workQuery).get().forEach { workInfo ->
@@ -116,16 +116,17 @@ class TaskManager {
                     if (it != null && it.state.isFinished) {
                         Log.d("TaskManager", "task finished")
                         val total = it.outputData.getInt("total", 0)
-                        val progress = total
                         val sectionId = it.outputData.getLong("sectionId", 0)
 
-                        processCounter[sectionId]?.setProcess(progress)
-                        DownloadService.refreshListener.forEach { listener -> listener.doRefreshProcess(sectionId, 0, progress, total) }
+                        processCounter[sectionId]?.setProcess(total)
+                        DownloadService.refreshListener.forEach { listener -> listener.doRefreshProcess(
+                            sectionId,
+                            0,
+                            total,
+                            total
+                        ) }
                         while (true) {
-                            val nextSection = DownloadService.workerQueue.poll()
-                            if (nextSection == null) {
-                                break
-                            }
+                            val nextSection = DownloadService.workerQueue.poll() ?: break
                             val nextSectionId = nextSection.id
                             val existWorker = WorkManager.getInstance(applicationContext).getWorkInfosByTag("sectionId:$nextSectionId").get()
                             if (existWorker.size != 0) {
@@ -164,10 +165,7 @@ class TaskManager {
 
             if (haveDownloadCompleteWorkerFinish(value)) {
                 while (true) {
-                    val nextSection = DownloadService.workerQueue.poll()
-                    if (nextSection == null) {
-                        break
-                    }
+                    val nextSection = DownloadService.workerQueue.poll() ?: break
                     val nextSectionId = nextSection.id
                     val existWorker = WorkManager.getInstance(applicationContext).getWorkInfosByTag("sectionId:$nextSectionId").get()
                     if (existWorker.size != 0) {
