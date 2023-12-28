@@ -120,12 +120,6 @@ class DownloadService : Service() {
     }
 
     fun startDownloadSectionList() {
-        val existPending = picSectionDao.getByClientStatus(PicSectionBean.ClientStatus.PENDING)
-        pendingSectionBeanList.addAll(
-            existPending.map { bean -> PicSectionData(bean, 0) }
-        )
-        workerQueue.addAll(existPending)
-        existSectionId.addAll(existPending.map { it.id })
 
         val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
@@ -181,15 +175,16 @@ class DownloadService : Service() {
                 val workQuery = WorkQuery.Builder
                     .fromStates(listOf(WorkInfo.State.RUNNING, WorkInfo.State.BLOCKED, WorkInfo.State.ENQUEUED))
                     .addTags(listOf(
-                        "com.example.jianming.Tasks.BatchDownloadImageWorker",
-                        "com.example.jianming.Tasks.DownloadSectionWorker",
+                        "sectionTag"
                     ))
                     .build()
 
                 val workInfoList = WorkManager.getInstance(applicationContext)
                     .getWorkInfos(workQuery).get()
+                val currentSectionCount = workInfoList.size
+                Log.i("DownloadService", "current section count $currentSectionCount")
                 var i = 0
-                while (i < 2-workInfoList.size) {
+                while (i < 2 - currentSectionCount) {
                     workerQueue.poll()?.let { TaskManager.startWork(it.id, applicationContext) }
                     i++
                 }

@@ -28,6 +28,7 @@ class TaskManager {
         private fun createBatchDownloadImageWorker(sectionId: Long): OneTimeWorkRequest {
             return OneTimeWorkRequestBuilder<BatchDownloadImageWorker>()
                 .addTag("batchDownloadImage:$sectionId")
+                .addTag("sectionTag")
                 .setInputData(workDataOf("sectionId" to sectionId))
                 .build()
         }
@@ -36,6 +37,7 @@ class TaskManager {
 
             return OneTimeWorkRequestBuilder<DownloadSectionWorker>()
                 .addTag("sectionStart")
+                .addTag("sectionTag")
                 .addTag("sectionId:${sectionId}")
                 .setInputData(
                     workDataOf(
@@ -47,6 +49,7 @@ class TaskManager {
         private fun createDownloadCompleteWorker(sectionId: Long): OneTimeWorkRequest {
             return OneTimeWorkRequestBuilder<DownloadCompleteWorker>()
                 .addTag("sectionComplete")
+                .addTag("sectionTag")
                 .addTag("sectionId:${sectionId}")
                 .addTag("complete:${sectionId}")
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
@@ -89,9 +92,9 @@ class TaskManager {
                         total = predicate.progress.getInt("total", 0)
                         sectionId = predicate.progress.getLong("sectionId", 0)
                     } else {
-                        total = predicate.progress.getInt("total", 0)
+                        total = predicate.outputData.getInt("total", 0)
                         progress = total
-                        sectionId = predicate.progress.getLong("sectionId", 0)
+                        sectionId = predicate.outputData.getLong("sectionId", 0)
                     }
                     if (processCounter[sectionId] == null && total != 0) {
                         processCounter[sectionId] = Counter(total)
@@ -112,6 +115,12 @@ class TaskManager {
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(workInfo.id).observeForever {
                     if (it != null && it.state.isFinished) {
                         Log.d("TaskManager", "task finished")
+                        val total = it.outputData.getInt("total", 0)
+                        val progress = total
+                        val sectionId = it.outputData.getLong("sectionId", 0)
+
+                        processCounter[sectionId]?.setProcess(progress)
+                        DownloadService.refreshListener.forEach { listener -> listener.doRefreshProcess(sectionId, 0, progress, total) }
                         while (true) {
                             val nextSection = DownloadService.workerQueue.poll()
                             if (nextSection == null) {
