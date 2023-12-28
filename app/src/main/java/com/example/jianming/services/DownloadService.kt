@@ -3,25 +3,15 @@ package com.example.jianming.services
 import SERVER_IP
 import SERVER_PORT
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import androidx.lifecycle.Observer
 import androidx.room.Room
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
-import androidx.work.workDataOf
-import com.example.jianming.Tasks.BatchDownloadImageWorker
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
-import com.example.jianming.Tasks.DownloadCompleteWorker
-import com.example.jianming.Tasks.DownloadSectionWorker
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.PicSectionBean
 import com.example.jianming.beans.PicSectionData
@@ -36,7 +26,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.nanjing.knightingal.processerlib.RefreshListener
-import java.util.UUID
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
@@ -49,7 +38,7 @@ class DownloadService : Service() {
         val existSectionId: MutableSet<Long> = mutableSetOf()
     }
 
-    private val binder: IBinder = LocalBinder();
+    private val binder: IBinder = LocalBinder()
 
     private lateinit var db: AppDataBase
     private lateinit var picSectionDao : PicSectionDao
@@ -103,7 +92,7 @@ class DownloadService : Service() {
         Log.d("startDownloadWebPage", stringUrl)
         ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
             val mapper = jacksonObjectMapper()
-            db.runInTransaction() {
+            db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
                 val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
                 updateStampDao.update(updateStamp)
@@ -126,7 +115,7 @@ class DownloadService : Service() {
         Log.d("startDownloadWebPage", stringUrl)
         ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
             val mapper = jacksonObjectMapper()
-            db.runInTransaction() {
+            db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
                 val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
                 updateStampDao.update(updateStamp)
@@ -162,7 +151,7 @@ class DownloadService : Service() {
                 pendingSectionBeanList.sortBy { it.picSectionBean.id }
 
                 launch {
-                    db.runInTransaction() {
+                    db.runInTransaction {
                         pendingSectionBeanList.forEach {
                             picSectionDao.updateClientStatusByServerIndex(
                                 it.picSectionBean.id,

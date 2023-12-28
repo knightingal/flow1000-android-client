@@ -187,9 +187,9 @@ class TaskManager {
                     .fromStates(listOf(WorkInfo.State.SUCCEEDED))
                     .addTags(listOf("complete:$sectionId"))
                     .build()
-                val workInfos = WorkManager.getInstance(context).getWorkInfos(workQuery).get()
-                workInfos.size == 0
-            }.forEach { it ->
+                val workInfoList = WorkManager.getInstance(context).getWorkInfos(workQuery).get()
+                workInfoList.size == 0
+            }.forEach {
                 val sectionId = it.tags.first { tag -> tag.startsWith("sectionId") }.split(":")[1]
                 val imgWorks =
                     WorkManager.getInstance(context).getWorkInfosByTag("batchDownloadImage:$sectionId").get()
@@ -205,7 +205,7 @@ class TaskManager {
                         total = imgWork.progress.getInt("total", 0)
                     }
                 }
-                Log.d("main", "process for $sectionId: $progress / $total");
+                Log.d("main", "process for $sectionId: $progress / $total")
                 if (processCounter[sectionId.toLong()] == null && total != 0) {
                     processCounter[sectionId.toLong()] = Counter(total)
                 }
