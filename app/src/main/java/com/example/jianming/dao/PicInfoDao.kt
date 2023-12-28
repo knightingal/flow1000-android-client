@@ -1,12 +1,12 @@
-package com.example.jianming.dao;
+package com.example.jianming.dao
 
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.Query;
-import androidx.room.Update;
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 
-import com.example.jianming.beans.PicInfoBean;
+import com.example.jianming.beans.PicInfoBean
 
 
 
@@ -26,5 +26,5 @@ interface PicInfoDao {
     fun deleteBySectionInnerIndex(innerIndex: Long)
 
     @Update
-    fun update(picInfoBean: PicInfoBean);
+    fun update(picInfoBean: PicInfoBean)
 }

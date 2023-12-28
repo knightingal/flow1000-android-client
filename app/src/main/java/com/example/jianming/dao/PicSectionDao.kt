@@ -1,13 +1,13 @@
-package com.example.jianming.dao;
+package com.example.jianming.dao
 
 
-import androidx.room.Dao;
-import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.Query;
-import androidx.room.Update;
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 
-import com.example.jianming.beans.PicSectionBean;
+import com.example.jianming.beans.PicSectionBean
 
 
 @Dao

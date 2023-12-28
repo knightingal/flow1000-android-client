@@ -3,6 +3,7 @@ package com.example.jianming.listAdapters;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -62,6 +63,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
     }
 
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
