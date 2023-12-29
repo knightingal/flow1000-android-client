@@ -19,28 +19,24 @@ object ConcurrencyJsonApiTask {
         }
     }
 
-    fun startPost(url: String, body: String, callBack: (body: String) -> Unit): Unit {
+    fun startPost(url: String, body: String, callBack: (body: String) -> Unit) {
         MainScope().launch {
-            val body = makePost(url, body)
-            callBack(body)
+            callBack(makePost(url, body))
         }
     }
 
     private suspend fun makePost(url: String, body: String): String {
         return withContext(Dispatchers.IO) {
             val requestBody = body.toRequestBody("application/json; charset=utf-8".toMediaType())
-            var request = Request.Builder().url(url).method("POST", requestBody).build()
-
-            var body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
-
-            body
+            val request = Request.Builder().url(url).method("POST", requestBody).build()
+            NetworkUtil.okHttpClient.newCall(request).execute().body.string()
         }
     }
     suspend fun makeRequest(url: String): String {
         return withContext(Dispatchers.IO) {
-            var request = Request.Builder().url(url).build()
+            val request = Request.Builder().url(url).build()
 
-            var body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
+            val body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
 
             body
         }
