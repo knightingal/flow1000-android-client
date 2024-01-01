@@ -191,7 +191,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
                 long innerIndex = dataArray.get(position)
                         .getPicSectionBean()
                         .getId();
-                ((PicSectionListActivity) context).asyncStartDownload((int) innerIndex, position);
+//                ((PicSectionListActivity) context).asyncStartDownload((int) innerIndex, position);
             }
         }
 
