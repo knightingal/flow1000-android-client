@@ -38,6 +38,11 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
     public interface CounterProvider {
         Counter getCounter(long sectionId);
     }
+
+    public interface ItemClickListener {
+        void onItemClick(long sectionId);
+    }
+
     private final static String TAG = "PicSectionListAdapter";
     private List<PicSectionData> dataArray;
 
@@ -49,13 +54,16 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
 
     private final CounterProvider counterProvider;
 
-    public PicSectionListAdapter(Context context, CounterProvider counterProvider) {
+    private final ItemClickListener itemClickListener;
+
+    public PicSectionListAdapter(Context context, CounterProvider counterProvider, ItemClickListener itemClickListener) {
         this.context = context;
         AppDataBase db = Room.databaseBuilder(context,
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
         picSectionDao = db.picSectionDao();
         picInfoDao = db.picInfoDao();
         this.counterProvider = counterProvider;
+        this.itemClickListener = itemClickListener;
     }
 
     public void setDataArray(List<PicSectionData> dataArray) {
@@ -170,8 +178,13 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
 
         @Override
         public void onClick(View v) {
-            final String name = this.textView.getText().toString();
             Long serverIndex = this.serverIndex;
+            if (itemClickListener != null) {
+                itemClickListener.onItemClick(serverIndex);
+            }
+
+
+            final String name = this.textView.getText().toString();
 
             if (this.exist) {
                 Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);

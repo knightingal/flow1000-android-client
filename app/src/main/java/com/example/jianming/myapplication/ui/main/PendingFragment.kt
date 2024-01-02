@@ -23,6 +23,7 @@ import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
 import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
+import com.example.jianming.listAdapters.PicSectionListAdapter.ItemClickListener
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
 import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
@@ -78,7 +79,11 @@ class PendingFragment : Fragment(){
 
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         pendingListView.layoutManager = mLayoutManager
-        picSectionListAdapter = PicSectionListAdapter(context, counterProvider)
+        val itemClickListener = ItemClickListener {
+            TODO("Not yet implemented")
+        }
+
+        picSectionListAdapter = PicSectionListAdapter(context, counterProvider, itemClickListener)
         picSectionListAdapter.setDataArray(picSectionDataList)
         pendingListView.adapter = picSectionListAdapter
 

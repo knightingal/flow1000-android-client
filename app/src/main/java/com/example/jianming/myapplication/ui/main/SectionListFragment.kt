@@ -76,7 +76,10 @@ class SectionListFragment : Fragment(){
 
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         pendingListView.layoutManager = mLayoutManager
-        picSectionListAdapter = PicSectionListAdapter(context, counterProvider)
+        val itemClickListener = PicSectionListAdapter.ItemClickListener {
+            TODO("Not yet implemented")
+        }
+        picSectionListAdapter = PicSectionListAdapter(context, counterProvider, itemClickListener)
         picSectionListAdapter.setDataArray(picSectionDataList)
         pendingListView.adapter = picSectionListAdapter
 
