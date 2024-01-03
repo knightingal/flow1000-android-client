@@ -23,7 +23,6 @@ import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
 import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
-import com.example.jianming.listAdapters.PicSectionListAdapter.ItemClickListener
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
 import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
@@ -35,7 +34,7 @@ import org.nanjing.knightingal.processerlib.RefreshListener
 
 class PendingFragment : Fragment(){
     companion object {
-        private const val TAG = "PendingFragment";
+        private const val TAG = "PendingFragment"
     }
     private lateinit var pageViewModel: PageViewModel
     private var _binding: FragmentPendingBinding? = null
@@ -64,7 +63,7 @@ class PendingFragment : Fragment(){
 
     private lateinit var picSectionListAdapter: PicSectionListAdapter
 
-    private var picSectionDataList: MutableList<PicSectionData> = mutableListOf();
+    private var picSectionDataList: MutableList<PicSectionData> = mutableListOf()
 
     private lateinit var pendingListView: RecyclerView
     override fun onCreateView(
@@ -121,9 +120,7 @@ class PendingFragment : Fragment(){
             picSectionListAdapter.setDataArray(picSectionBeanList)
             picSectionListAdapter.notifyDataSetChanged()
 
-
-            // startDownloadPicIndex()
-            downLoadService?.startDownloadSectionList();
+            downLoadService?.startDownloadSectionList()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
