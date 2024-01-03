@@ -19,6 +19,7 @@ import com.example.jianming.beans.UpdateStamp
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
+import com.example.jianming.myapplication.SectionImageListActivity
 import com.example.jianming.util.TimeUtil
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -199,6 +200,15 @@ class DownloadService : Service() {
         }
     }
 
+    fun startDownloadBySectionId(sectionId: Long) {
+        if (workerQueue.size != 0) {
+            val sectionBean = picSectionDao.getByInnerIndex(sectionId)
+            workerQueue.put(sectionBean)
+        } else {
+            TaskManager.startWork(sectionId, applicationContext)
+            TaskManager.viewWork(applicationContext)
+        }
+    }
 
 }
 

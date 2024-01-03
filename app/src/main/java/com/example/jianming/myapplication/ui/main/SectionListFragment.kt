@@ -22,6 +22,7 @@ import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
+import com.example.jianming.myapplication.SectionImageListActivity
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
 import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
@@ -77,10 +78,18 @@ class SectionListFragment : Fragment(){
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         pendingListView.layoutManager = mLayoutManager
         val itemClickListener = PicSectionListAdapter.ItemClickListener {
-            TODO("Not yet implemented")
+            if (it.picSectionBean.exist == 1) {
+                val intent = Intent(context, SectionImageListActivity::class.java)
+                    .putExtra("name", it.picSectionBean.name)
+                    .putExtra("serverIndex", it.picSectionBean.id)
+                startActivity(intent)
+            } else {
+                downLoadService?.startDownloadBySectionId(it.picSectionBean.id)
+            }
         }
-        picSectionListAdapter = PicSectionListAdapter(context, counterProvider, itemClickListener)
+        picSectionListAdapter = PicSectionListAdapter(context, counterProvider)
         picSectionListAdapter.setDataArray(picSectionDataList)
+        picSectionListAdapter.setItemClickListener(itemClickListener)
         pendingListView.adapter = picSectionListAdapter
 
         return root

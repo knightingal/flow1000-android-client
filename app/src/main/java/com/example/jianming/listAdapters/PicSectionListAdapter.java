@@ -40,7 +40,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
     }
 
     public interface ItemClickListener {
-        void onItemClick(long sectionId);
+        void onItemClick(PicSectionData picSectionData);
     }
 
     private final static String TAG = "PicSectionListAdapter";
@@ -54,16 +54,19 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
 
     private final CounterProvider counterProvider;
 
-    private final ItemClickListener itemClickListener;
 
-    public PicSectionListAdapter(Context context, CounterProvider counterProvider, ItemClickListener itemClickListener) {
+    private ItemClickListener itemClickListener = null;
+
+    public void setItemClickListener(ItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+    public PicSectionListAdapter(Context context, CounterProvider counterProvider ) {
         this.context = context;
         AppDataBase db = Room.databaseBuilder(context,
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
         picSectionDao = db.picSectionDao();
         picInfoDao = db.picInfoDao();
         this.counterProvider = counterProvider;
-        this.itemClickListener = itemClickListener;
     }
 
     public void setDataArray(List<PicSectionData> dataArray) {
@@ -178,33 +181,8 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
 
         @Override
         public void onClick(View v) {
-            Long serverIndex = this.serverIndex;
             if (itemClickListener != null) {
-                itemClickListener.onItemClick(serverIndex);
-            }
-
-
-            final String name = this.textView.getText().toString();
-
-            if (this.exist) {
-                Log.i(TAG, "you click " + serverIndex + "th item, name = " + name);
-
-                Intent intent = new Intent()
-                        .setClassName(context, SectionImageListActivity.class.getName());
-                intent.putExtra("name", name);
-                intent.putExtra("serverIndex", serverIndex);
-                context.startActivity(intent);
-            } else {
-//                 ((PicAlbumListActivity)context).getDownLoadService().getProcessingIndex().add(position);
-
-                File file = FileUtil.getSectionStorageDir(context, name);
-                if (file.mkdirs()) {
-                    Log.i(TAG, file.getAbsolutePath() + " made");
-                }
-                long innerIndex = dataArray.get(position)
-                        .getPicSectionBean()
-                        .getId();
-//                ((PicSectionListActivity) context).asyncStartDownload((int) innerIndex, position);
+                itemClickListener.onItemClick(dataArray.get(position));
             }
         }
 
