@@ -79,11 +79,8 @@ class PendingFragment : Fragment(){
 
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         pendingListView.layoutManager = mLayoutManager
-        val itemClickListener = ItemClickListener {
-            TODO("Not yet implemented")
-        }
 
-        picSectionListAdapter = PicSectionListAdapter(context, counterProvider, itemClickListener)
+        picSectionListAdapter = PicSectionListAdapter(context, counterProvider)
         picSectionListAdapter.setDataArray(picSectionDataList)
         pendingListView.adapter = picSectionListAdapter
 
