@@ -20,10 +20,7 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
     FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment.
         return if (position == 1) {
-//            PlaceholderFragment.newInstance(position + 1)
             ExistSectionListFragment()
         } else if (position == 2){
             PendingFragment()
@@ -32,12 +29,11 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
         }
     }
 
-    override fun getPageTitle(position: Int): CharSequence? {
+    override fun getPageTitle(position: Int): CharSequence {
         return context.resources.getString(TAB_TITLES[position])
     }
 
     override fun getCount(): Int {
-        // Show 2 total pages.
         return 3
     }
 }

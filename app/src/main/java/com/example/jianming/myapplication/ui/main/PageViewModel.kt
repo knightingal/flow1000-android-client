@@ -3,7 +3,6 @@ package com.example.jianming.myapplication.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 
 class PageViewModel : ViewModel() {
@@ -13,9 +12,4 @@ class PageViewModel : ViewModel() {
         "Hello world from section: $it"
     }
 
-    val pendingText = "this is section pending"
-
-    fun setIndex(index: Int) {
-        _index.value = index
-    }
 }

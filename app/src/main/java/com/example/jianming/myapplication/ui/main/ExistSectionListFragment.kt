@@ -1,17 +1,12 @@
 package com.example.jianming.myapplication.ui.main
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,16 +20,9 @@ import com.example.jianming.listAdapters.PicSectionListAdapter
 import com.example.jianming.listAdapters.PicSectionListAdapter.ItemClickListener
 import com.example.jianming.myapplication.SectionImageListActivity
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
-import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import org.nanjing.knightingal.processerlib.RefreshListener
 
 class ExistSectionListFragment : Fragment(){
-    companion object {
-        private const val TAG = "ExistSectionListFragment"
-    }
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: FragmentPendingBinding? = null
@@ -94,6 +82,7 @@ class ExistSectionListFragment : Fragment(){
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onStart() {
         super.onStart()
         picSectionDataList = picSectionDao.getAllExist().map { bean -> PicSectionData(bean, 0) }
