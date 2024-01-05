@@ -19,15 +19,12 @@ private val TAB_TITLES = arrayOf(
 class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
     FragmentPagerAdapter(fm) {
 
-    override fun getItem(position: Int): Fragment {
-        return if (position == 1) {
-            ExistSectionListFragment()
-        } else if (position == 2){
-            PendingFragment()
-        } else {
-            SectionListFragment()
+    override fun getItem(position: Int): Fragment =
+        when (position) {
+            1 -> ExistSectionListFragment()
+            2 -> PendingFragment()
+            else -> SectionListFragment()
         }
-    }
 
     override fun getPageTitle(position: Int): CharSequence {
         return context.resources.getString(TAB_TITLES[position])
