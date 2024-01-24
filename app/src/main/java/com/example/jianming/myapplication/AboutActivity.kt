@@ -13,7 +13,6 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
@@ -107,7 +106,7 @@ class AboutActivity : AppCompatActivity() {
 
     private fun openAPKFile() {
         val mimeDefault = "application/vnd.android.package-archive"
-        Log.d("file", "file path: ${apkFile.toString()}")
+        Log.d("file", "file path: $apkFile")
         try {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

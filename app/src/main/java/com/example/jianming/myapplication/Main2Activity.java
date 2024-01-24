@@ -69,13 +69,8 @@ public class Main2Activity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show());
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -122,11 +117,6 @@ public class Main2Activity extends AppCompatActivity
     }
 
 
-    private boolean mBound = false;
-
-
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -135,7 +125,7 @@ public class Main2Activity extends AppCompatActivity
     @Override
     public void onBackPressed() {
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -157,14 +147,12 @@ public class Main2Activity extends AppCompatActivity
 //            startActivity(new Intent(this, TimestampActivity.class));
         } else if (id == R.id.QR_code) {
             //QrcodeActivity
-//            startActivity(new Intent(this, CapActivity.class));
-//            startActivityForResult(new Intent(this, CapActivity.class), I_CAP_ACTIVITY);
         } else if (id == R.id.about) {
             startActivity(new Intent(this, AboutActivity.class));
         }
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
