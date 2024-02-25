@@ -59,7 +59,7 @@ class BatchDownloadImageWorker(context: Context, workerParams: WorkerParameters)
         picInfoBeanList.forEach { picInfoBean ->
             val picName = picInfoBean.name
             val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                    "/linux1000/${sectionConfig.baseUrl}/${dirName}/${if (sectionConfig.encryped) "$picName.bin" else picName}"
+                    "/linux1000/${sectionConfig.baseUrl}/${dirName}/${if (sectionConfig.encryped) picName else picName}"
 
             val job = MainScope().launch {
                 Log.d("BatchDownloadImageWorker", "start to download $imgUrl")
