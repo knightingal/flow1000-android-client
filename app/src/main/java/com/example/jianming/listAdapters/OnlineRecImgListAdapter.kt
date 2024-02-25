@@ -5,7 +5,6 @@ import SERVER_PORT
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,17 +16,13 @@ import com.example.jianming.SectionDetail
 import com.example.jianming.myapplication.R
 import com.example.jianming.myapplication.SectionConfig
 import com.example.jianming.myapplication.SectionImageListActivity
-import com.example.jianming.myapplication.getSectionConfig
 import com.example.jianming.util.Decryptor
 import com.example.jianming.util.NetworkUtil
-import com.google.common.io.Files
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Request
-import java.io.File
-import java.io.IOException
 
 class OnlineRecImgListAdapter(private val context: SectionImageListActivity, public var sectionDetail: SectionDetail?) : RecyclerView.Adapter<OnlineRecImgListAdapter.ImgViewHolder>() {
 
