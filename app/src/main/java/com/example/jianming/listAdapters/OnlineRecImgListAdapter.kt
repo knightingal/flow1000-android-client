@@ -88,11 +88,6 @@ class OnlineRecImgListAdapter(private val context: SectionImageListActivity, pub
     }
     class ImgViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgView: ImageView = itemView.findViewById(R.id.img)
-
-        var imgName: String?
-        init {
-            imgName = null
-        }
-
+        var imgName: String? = null
     }
 }
