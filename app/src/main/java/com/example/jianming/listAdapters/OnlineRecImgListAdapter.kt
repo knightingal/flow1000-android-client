@@ -5,6 +5,7 @@ import SERVER_PORT
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,7 +61,7 @@ class OnlineRecImgListAdapter(private val context: SectionImageListActivity, pub
         holder.imgView.layoutParams = lp
 
         val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                "/linux1000/${sectionConfig.baseUrl}/${sectionDetail!!.dirName}/${sectionDetail!!.pics[position].name}}"
+                "/linux1000/${sectionConfig.baseUrl}/${sectionDetail!!.dirName}/${sectionDetail!!.pics[position].name}"
 
         MainScope().launch {
             withContext(Dispatchers.IO) {
