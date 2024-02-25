@@ -1,5 +1,7 @@
 package com.example.jianming.myapplication
 
+import SERVER_IP
+import SERVER_PORT
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,8 +11,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import com.example.jianming.SectionDetail
+import com.example.jianming.beans.SectionInfoBean
+import com.example.jianming.listAdapters.OnlineRecImgListAdapter
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.listAdapters.RecImgListAdapter
+import com.example.jianming.util.NetworkUtil
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Request
 
 class SectionImageListActivity : AppCompatActivity(){
 
@@ -45,19 +58,47 @@ class SectionImageListActivity : AppCompatActivity(){
 
     private fun initSectionImageList() {
         val sectionIndex = this.intent.getLongExtra("serverIndex", 0)
+        val exist = this.intent.getIntExtra("exist", 0)
+        if (exist == 1) {
+            val db = Room.databaseBuilder(
+                this,
+                AppDataBase::class.java, "database-flow1000"
+            ).allowMainThreadQueries().build()
+            val picInfoBeanList = db.picInfoDao().queryBySectionInnerIndex(
+                db.picSectionDao().getByServerIndex(
+                    sectionIndex
+                ).id
+            )
+            val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
+            recyclerView.layoutManager = mLayoutManager
+            recyclerView.adapter = RecImgListAdapter(this, picInfoBeanList)
+        } else {
+            val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this@SectionImageListActivity)
+            recyclerView.layoutManager = mLayoutManager
+            recyclerView.adapter = OnlineRecImgListAdapter(this, null)
 
-        val db = Room.databaseBuilder(
-            this,
-            AppDataBase::class.java, "database-flow1000"
-        ).allowMainThreadQueries().build()
-        val picInfoBeanList = db.picInfoDao().queryBySectionInnerIndex(
-            db.picSectionDao().getByServerIndex(
-                sectionIndex
-            ).id
-        )
-        val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = mLayoutManager
-        recyclerView.adapter = RecImgListAdapter(this, picInfoBeanList)
+            val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=$sectionIndex"
+            MainScope().launch {
+                withContext(Dispatchers.IO) {
+                    val request = Request.Builder().url(url).build()
+                    val body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
+                    val mapper = jacksonObjectMapper()
+                    try {
+                        val sectionDetail = mapper.readValue<SectionDetail>(body)
+                        withContext(Dispatchers.Main) {
+
+                            val sectionConfig = getSectionConfig(sectionDetail.album)
+                            (recyclerView.adapter as OnlineRecImgListAdapter).sectionDetail = sectionDetail
+                            (recyclerView.adapter as OnlineRecImgListAdapter).sectionConfig = sectionConfig
+                            (recyclerView.adapter as OnlineRecImgListAdapter).notifyDataSetChanged()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+
     }
 
     fun startPicContentActivity(imgs: Array<String?>?, position: Int) {
