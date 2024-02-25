@@ -25,13 +25,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 
-class OnlineRecImgListAdapter(private val context: SectionImageListActivity, public var sectionDetail: SectionDetail?) : RecyclerView.Adapter<OnlineRecImgListAdapter.ImgViewHolder>() {
+class OnlineRecImgListAdapter(context: SectionImageListActivity, var sectionDetail: SectionDetail?) : RecyclerView.Adapter<OnlineRecImgListAdapter.ImgViewHolder>() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     private val screamWidth : Int = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
         .currentWindowMetrics.bounds.width()
 
-    public lateinit var sectionConfig:SectionConfig;
+    lateinit var sectionConfig:SectionConfig;
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImgViewHolder {
@@ -84,7 +84,6 @@ class OnlineRecImgListAdapter(private val context: SectionImageListActivity, pub
                 }
             }
         }
-
     }
     class ImgViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgView: ImageView = itemView.findViewById(R.id.img)
