@@ -18,7 +18,7 @@ import com.google.common.io.Files
 import java.io.File
 import java.io.IOException
 
-class RecImgListAdapter(private val context: SectionImageListActivity, private val dataArray: List<PicInfoBean>) : RecyclerView.Adapter<ImgViewHolder>() {
+class RecImgListAdapter(private val context: SectionImageListActivity, private val dataArray: List<PicInfoBean>) : RecyclerView.Adapter<RecImgListAdapter.ImgViewHolder>() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     private val screamWidth : Int = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
@@ -73,12 +73,11 @@ class RecImgListAdapter(private val context: SectionImageListActivity, private v
         }
 
     }
-}
+    class ImgViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val img: ImageView
+        init {
+            img = itemView.findViewById(R.id.img)
+        }
 
-class ImgViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    val img: ImageView
-    init {
-        img = itemView.findViewById(R.id.img)
     }
-
 }

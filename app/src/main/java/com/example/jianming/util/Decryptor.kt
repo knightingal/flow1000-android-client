@@ -12,7 +12,7 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 object Decryptor {
-    fun decrypt(encrypted: ByteArray?): ByteArray? {
+    fun decrypt(encrypted: ByteArray?): ByteArray {
         val iv = "2017041621251234".toByteArray()
         val key = BuildConfig.password.toByteArray()
         try {
@@ -22,17 +22,23 @@ object Decryptor {
             return cipher.doFinal(encrypted)
         } catch (e: NoSuchAlgorithmException) {
             e.printStackTrace()
+            throw e
         } catch (e: NoSuchPaddingException) {
             e.printStackTrace()
+            throw e
         } catch (e: InvalidKeyException) {
             e.printStackTrace()
+            throw e
         } catch (e: BadPaddingException) {
             e.printStackTrace()
+            throw e
         } catch (e: IllegalBlockSizeException) {
             e.printStackTrace()
+            throw e
         } catch (e: InvalidAlgorithmParameterException) {
             e.printStackTrace()
+            throw e
         }
-        return null
+//        return null
     }
 }
