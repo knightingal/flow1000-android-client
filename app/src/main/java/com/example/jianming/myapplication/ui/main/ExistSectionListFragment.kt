@@ -69,6 +69,7 @@ class ExistSectionListFragment : Fragment(){
         val itemClickListener = ItemClickListener {
             if (it.picSectionBean.exist == 1) {
                 val intent = Intent(context, SectionImageListActivity::class.java)
+                    .putExtra("exist", 1)
                     .putExtra("name", it.picSectionBean.name)
                     .putExtra("serverIndex", it.picSectionBean.id)
                 startActivity(intent)
