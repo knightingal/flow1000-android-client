@@ -174,7 +174,15 @@ class DownloadService : Service() {
                 Log.i("DownloadService", "current section count $currentSectionCount")
                 var i = 0
                 while (i < 2 - currentSectionCount) {
-                    workerQueue.poll()?.let { TaskManager.startWork(it.id, applicationContext) }
+                    while (true) {
+                        val worker = workerQueue.poll()
+                        if (checkWorkerExist(worker)) {
+                            TaskManager.startWork(worker!!.id, applicationContext)
+                            break
+                        } else if (worker == null) {
+                            break
+                        }
+                    }
                     i++
                 }
                 TaskManager.viewWork(applicationContext)
@@ -183,6 +191,12 @@ class DownloadService : Service() {
                 it.notifyListReady()
             }
         }
+    }
+
+    private fun checkWorkerExist(worker: PicSectionBean?): Boolean {
+        val workManager = WorkManager.getInstance(TaskManager.applicationContext)
+        return worker != null
+                && workManager.getWorkInfosByTag("sectionId:${worker.id}").get().size == 0
     }
 
     fun getPendingSectionList(): List<PicSectionData> {
