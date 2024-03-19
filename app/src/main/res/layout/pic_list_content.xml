@@ -9,36 +9,49 @@
     android:paddingTop="16dp"
     android:clickable="true"
     android:id="@+id/pic_list_content">
-    <TextView
-        android:layout_width="wrap_content"
+    <com.google.android.flexbox.FlexboxLayout
         android:layout_height="wrap_content"
-        android:id="@+id/pic_text_view"
-        android:layout_centerVertical="true"
-        android:singleLine="true"
-        tools:text="text"
-        />
+        android:layout_width="match_parent"
+        app:flexWrap="nowrap"
+        app:alignContent="center"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:id="@+id/pic_text_view"
+            android:gravity="center_vertical"
+            app:layout_flexShrink="1"
+            android:singleLine="true"
+            tools:text="very very very very very very very very very very long text "
+            />
 
-    <TextView
-        android:id="@+id/process"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"
-        android:layout_alignParentEnd="true"
-        tools:text="30/30"
-        tools:ignore="RelativeOverlap" />
+        <TextView
+            android:id="@+id/process"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:gravity="center"
+            android:layout_marginEnd="16dp"
+            android:layout_alignParentEnd="true"
+            android:singleLine="true"
+            app:layout_flexShrink="0"
+            tools:text="30/30"
+            tools:ignore="RelativeOverlap" />
 
 
-    <ImageView
-        android:id="@+id/btn_delete"
-        android:src="@drawable/delete"
-        android:layout_gravity="center"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_width="24dp"
-        android:visibility="gone"
-        android:layout_height="24dp"
-        />
+        <ImageView
+            android:id="@+id/btn_delete"
+            android:src="@drawable/delete"
+            android:layout_gravity="center"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_width="24dp"
+            android:visibility="gone"
+            app:layout_flexShrink="0"
+            android:layout_height="24dp"
+            tools:visibility="visible"
+            />
+
+    </com.google.android.flexbox.FlexboxLayout>
 
 
 </RelativeLayout>
