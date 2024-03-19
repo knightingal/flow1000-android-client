@@ -192,4 +192,6 @@ dependencies {
     implementation("androidx.work:work-runtime:$workVersion")
     // Kotlin + coroutines
     implementation("androidx.work:work-runtime-ktx:$workVersion")
+    // flex layout
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
 }
