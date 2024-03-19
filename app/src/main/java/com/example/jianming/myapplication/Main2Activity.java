@@ -21,8 +21,6 @@ import android.widget.Toast;
 
 
 import com.example.jianming.beans.UpdateStamp;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 
 
@@ -57,8 +55,6 @@ public class Main2Activity extends AppCompatActivity
 
 
         picSectionBeanDao = db.picSectionDao();
-        ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(this);
-        ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main2);
         toolbar = findViewById(R.id.toolbar);
         fab = findViewById(R.id.fab);

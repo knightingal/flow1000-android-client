@@ -1,10 +1,8 @@
 package org.nanking.knightingal.kslideviewlib
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -12,8 +10,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.example.jianming.myapplication.R
 
-import com.nostra13.universalimageloader.core.ImageLoader
-import java.io.File
 
 class YImageSlider : ViewGroup {
     companion object {

@@ -3,11 +3,9 @@ package com.example.jianming.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 import org.nanking.knightingal.kslideviewlib.YImageSlider;
 
