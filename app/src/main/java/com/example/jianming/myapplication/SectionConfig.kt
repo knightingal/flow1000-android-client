@@ -13,6 +13,7 @@ fun initSectionConfig(): Map<String, SectionConfig> {
         "1804" to SectionConfig("1804", false, "1804"),
         "1805" to SectionConfig("1805", false, "1805"),
         "1806" to SectionConfig("1806", false, "1806"),
+        "1807" to SectionConfig("1807", false, "1807"),
     );
 }
 
