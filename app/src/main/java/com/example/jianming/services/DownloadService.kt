@@ -135,19 +135,8 @@ class DownloadService : Service() {
                 workerQueue.addAll(picSectionBeanList)
                 pendingSectionBeanList.addAll(picSectionBeanList.map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } })
             }
-            val localUrl =
-                "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
-            val localJob = ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
-                var picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
-                picSectionBeanList = picSectionBeanList.filter {
-                    !checkSectionWorkerExist(it.id)
-                }
-                existSectionId.addAll(picSectionBeanList.map { it.id })
-                workerQueue.addAll(picSectionBeanList)
-                pendingSectionBeanList.addAll(picSectionBeanList.map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } })
-            }
             MainScope().launch {
-                listOf(pendingJob, localJob).joinAll()
+                listOf(pendingJob, ).joinAll()
                 pendingSectionBeanList.sortBy { it.picSectionBean.id }
 
                 launch {
