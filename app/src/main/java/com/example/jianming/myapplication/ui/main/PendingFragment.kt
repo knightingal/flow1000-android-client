@@ -106,6 +106,7 @@ class PendingFragment : Fragment(){
 
     private val counterProvider: CounterProvider =
         CounterProvider { sectionId -> downLoadService?.getProcessCounter()?.get(sectionId) }
+    val autoStart = false;
 
     private val conn: ServiceConnection = object : ServiceConnection {
         @SuppressLint("NotifyDataSetChanged")
@@ -120,7 +121,9 @@ class PendingFragment : Fragment(){
             picSectionListAdapter.setDataArray(picSectionBeanList)
             picSectionListAdapter.notifyDataSetChanged()
 
-            downLoadService?.startDownloadSectionList()
+            if (autoStart) {
+                downLoadService?.startDownloadSectionList()
+            }
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
