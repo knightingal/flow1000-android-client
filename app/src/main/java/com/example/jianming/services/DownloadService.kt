@@ -19,16 +19,19 @@ import com.example.jianming.beans.UpdateStamp
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
+import com.example.jianming.util.NetworkUtil
 import com.example.jianming.util.TimeUtil
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import okhttp3.Request
 import org.nanjing.knightingal.processerlib.RefreshListener
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.concurrent.thread
 
 class DownloadService : Service() {
     companion object {
@@ -109,10 +112,43 @@ class DownloadService : Service() {
     }
 
     fun startDownloadSectionList() {
+        thread {
+            val mapper = jacksonObjectMapper()
+            val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
+            val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
+            Log.d("startDownloadWebPage", stringUrl)
 
-        val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
-        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
-        Log.d("startDownloadWebPage", stringUrl)
+            var request = Request.Builder().url(stringUrl).build()
+
+            var body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
+
+            db.runInTransaction {
+                updateStamp.updateStamp = TimeUtil.currentTimeFormat()
+                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(body)
+                updateStampDao.update(updateStamp)
+                picSectionBeanList.forEach { picSectionDao.insert(it) }
+            }
+            allPicSectionBeanList = picSectionDao.getAll().toList().map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
+            val pendingUrl =
+                "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
+            request = Request.Builder().url(pendingUrl).build()
+
+            body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
+            var picSectionBeanList: List<PicSectionBean> = mapper.readValue(body)
+            val pendingSectionBeanList = mutableListOf<PicSectionData>()
+            pendingSectionBeanList.addAll(picSectionBeanList.map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } })
+            pendingSectionBeanList.sortBy { it.picSectionBean.id }
+            db.runInTransaction {
+                pendingSectionBeanList.forEach {
+                    picSectionDao.updateClientStatusByServerIndex(
+                        it.picSectionBean.id,
+                        PicSectionBean.ClientStatus.PENDING
+                    )
+                }
+            }
+
+        }
+
         ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
             val mapper = jacksonObjectMapper()
             db.runInTransaction {
