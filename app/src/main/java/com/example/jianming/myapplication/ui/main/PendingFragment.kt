@@ -106,7 +106,7 @@ class PendingFragment : Fragment(){
 
     private val counterProvider: CounterProvider =
         CounterProvider { sectionId -> downLoadService?.getProcessCounter()?.get(sectionId) }
-    val autoStart = false;
+    val autoStart = true;
 
     private val conn: ServiceConnection = object : ServiceConnection {
         @SuppressLint("NotifyDataSetChanged")

@@ -90,7 +90,7 @@ class DownloadService : Service() {
         val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
-        ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
+        ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
             val mapper = jacksonObjectMapper()
             db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
@@ -113,7 +113,7 @@ class DownloadService : Service() {
         val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
-        ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
+        ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
             val mapper = jacksonObjectMapper()
             db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
@@ -126,14 +126,22 @@ class DownloadService : Service() {
 
             val pendingUrl =
                 "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
-            val pendingJob = ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
+            val pendingJob = ConcurrencyJsonApiTask.startGet(pendingUrl) { pendingBody ->
                 var picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
-                picSectionBeanList = picSectionBeanList.filter {
-                    !checkSectionWorkerExist(it.id)
-                }
-                existSectionId.addAll(picSectionBeanList.map { it.id })
-                workerQueue.addAll(picSectionBeanList)
+                val pendingSectionBeanList = mutableListOf<PicSectionData>()
                 pendingSectionBeanList.addAll(picSectionBeanList.map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } })
+                pendingSectionBeanList.sortBy { it.picSectionBean.id }
+                db.runInTransaction {
+                    pendingSectionBeanList.forEach {
+                        picSectionDao.updateClientStatusByServerIndex(
+                            it.picSectionBean.id,
+                            PicSectionBean.ClientStatus.PENDING
+                        )
+                    }
+                }
+
+
+
             }
             MainScope().launch {
                 listOf(pendingJob, ).joinAll()
