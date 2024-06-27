@@ -15,6 +15,7 @@ import com.example.jianming.Tasks.ConcurrencyJsonApiTask
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.PicSectionBean
 import com.example.jianming.beans.PicSectionData
+import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.beans.UpdateStamp
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
@@ -151,8 +152,21 @@ class DownloadService : Service() {
                     )
                 }
             }
-            threadPool.execute {
+            pendingSectionBeanList.forEach { pendingSectionBean->
+                threadPool.execute {
+                    val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=${pendingSectionBean.picSectionBean.id}"
+                    val request = Request.Builder().url(url).build()
+                    val body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
 
+                    val sectionInfoBean = mapper.readValue<SectionInfoBean>(body)
+                    sectionInfoBean.pics.forEach { pic ->
+                        threadPool.execute {
+
+                        }
+
+                    }
+
+                }
             }
 
         }.start()
