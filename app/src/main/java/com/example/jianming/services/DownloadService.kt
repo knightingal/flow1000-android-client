@@ -28,8 +28,11 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import okhttp3.Request
 import org.nanjing.knightingal.processerlib.RefreshListener
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 
@@ -39,6 +42,8 @@ class DownloadService : Service() {
         var pendingSectionBeanList: MutableList<PicSectionData> = mutableListOf()
         val workerQueue: BlockingQueue<PicSectionBean> = LinkedBlockingQueue()
         val existSectionId: MutableSet<Long> = mutableSetOf()
+        val threadPool: ThreadPoolExecutor = ThreadPoolExecutor(2, 2, 30, TimeUnit.SECONDS,
+            ArrayBlockingQueue(0))
     }
 
     private val binder: IBinder = LocalBinder()
@@ -134,7 +139,7 @@ class DownloadService : Service() {
             request = Request.Builder().url(pendingUrl).build()
 
             body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
-            var picSectionBeanList: List<PicSectionBean> = mapper.readValue(body)
+            val picSectionBeanList: List<PicSectionBean> = mapper.readValue(body)
             val pendingSectionBeanList = mutableListOf<PicSectionData>()
             pendingSectionBeanList.addAll(picSectionBeanList.map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } })
             pendingSectionBeanList.sortBy { it.picSectionBean.id }
@@ -146,8 +151,11 @@ class DownloadService : Service() {
                     )
                 }
             }
+            threadPool.execute {
 
-        }
+            }
+
+        }.start()
 
         ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
             val mapper = jacksonObjectMapper()
