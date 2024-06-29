@@ -16,7 +16,7 @@ class App : Application() {
         ).allowMainThreadQueries().build()
         initDB()
         TaskManager.applicationContext = applicationContext
-        TaskManager.initForObserver(applicationContext)
+//        TaskManager.initForObserver(applicationContext)
         Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this))
     }
 
