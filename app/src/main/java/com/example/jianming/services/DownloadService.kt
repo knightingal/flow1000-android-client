@@ -4,6 +4,7 @@ import SERVER_IP
 import SERVER_PORT
 import android.app.Service
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
@@ -20,6 +21,9 @@ import com.example.jianming.beans.UpdateStamp
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
+import com.example.jianming.myapplication.getSectionConfig
+import com.example.jianming.util.Decryptor
+import com.example.jianming.util.FileUtil.getSectionStorageDir
 import com.example.jianming.util.NetworkUtil
 import com.example.jianming.util.TimeUtil
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -29,6 +33,8 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import okhttp3.Request
 import org.nanjing.knightingal.processerlib.RefreshListener
+import java.io.File
+import java.io.FileOutputStream
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
@@ -43,7 +49,9 @@ class DownloadService : Service() {
         var pendingSectionBeanList: MutableList<PicSectionData> = mutableListOf()
         val workerQueue: BlockingQueue<PicSectionBean> = LinkedBlockingQueue()
         val existSectionId: MutableSet<Long> = mutableSetOf()
-        val threadPool: ThreadPoolExecutor = ThreadPoolExecutor(2, 2, 30, TimeUnit.SECONDS,
+        val sectionThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(2, 2, 30, TimeUnit.SECONDS,
+            ArrayBlockingQueue(0))
+        val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(10, 10, 30, TimeUnit.SECONDS,
             ArrayBlockingQueue(0))
     }
 
@@ -153,15 +161,38 @@ class DownloadService : Service() {
                 }
             }
             pendingSectionBeanList.forEach { pendingSectionBean->
-                threadPool.execute {
+                val sectionConfig = getSectionConfig(pendingSectionBean.picSectionBean.album)
+                sectionThreadPool.execute {
                     val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=${pendingSectionBean.picSectionBean.id}"
                     val request = Request.Builder().url(url).build()
                     val body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
 
                     val sectionInfoBean = mapper.readValue<SectionInfoBean>(body)
                     sectionInfoBean.pics.forEach { pic ->
-                        threadPool.execute {
-
+                        val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
+                                "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) pic else pic}"
+                        imageThreadPool.execute {
+                            val request = Request.Builder().url(imgUrl).build()
+                            var bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
+                            val options: BitmapFactory.Options = BitmapFactory.Options()
+                            options.inJustDecodeBounds = true
+                            if (sectionConfig.encryped) {
+                                bytes = Decryptor.decrypt(bytes)
+                            }
+                            val directory =
+                                getSectionStorageDir(applicationContext, sectionInfoBean.dirName)
+                            val dest = File(directory, pic)
+                            val fileOutputStream = FileOutputStream(dest, true)
+                            fileOutputStream.write(bytes)
+                            fileOutputStream.close()
+                            BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                            val width = options.outWidth
+                            val height = options.outHeight
+                            val absolutePath = dest.absolutePath
+//                                picInfoBean.height = height
+//                                picInfoBean.width = width
+//                                picInfoBean.absolutePath = absolutePath
+//                                picInfoDao.update(picInfoBean)
                         }
 
                     }
