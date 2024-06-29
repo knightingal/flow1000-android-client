@@ -13,6 +13,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkQuery
 import com.example.jianming.Tasks.ConcurrencyJsonApiTask
+import com.example.jianming.beans.PicInfoBean
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.beans.PicSectionBean
 import com.example.jianming.beans.PicSectionData
@@ -145,10 +146,9 @@ class DownloadService : Service() {
             allPicSectionBeanList = picSectionDao.getAll().toList().map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
             val pendingUrl =
                 "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
-            request = Request.Builder().url(pendingUrl).build()
 
-            body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
-            val picSectionBeanList: List<PicSectionBean> = mapper.readValue(body)
+            val picIndexResp = NetworkUtil.okHttpClient.newCall(Request.Builder().url(pendingUrl).build()).execute().body.string()
+            val picSectionBeanList: List<PicSectionBean> = mapper.readValue(picIndexResp)
             val pendingSectionBeanList = mutableListOf<PicSectionData>()
             pendingSectionBeanList.addAll(picSectionBeanList.map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } })
             pendingSectionBeanList.sortBy { it.picSectionBean.id }
@@ -162,20 +162,17 @@ class DownloadService : Service() {
             }
             pendingSectionBeanList.forEach { pendingSectionBean->
                 val sectionConfig = getSectionConfig(pendingSectionBean.picSectionBean.album)
-                val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picContentAjax?id=${pendingSectionBean.picSectionBean.id}"
+                val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=${pendingSectionBean.picSectionBean.id}"
                 sectionThreadPool.execute {
                     Log.d("DownloadService", "download section $url")
-                    val request = Request.Builder().url(url).build()
-                    val body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
-
-                    val sectionInfoBean = mapper.readValue<SectionInfoBean>(body)
+                    val picContentResp = NetworkUtil.okHttpClient.newCall(Request.Builder().url(url).build()).execute().body.string()
+                    val sectionInfoBean = mapper.readValue<SectionInfoBean>(picContentResp)
                     sectionInfoBean.pics.forEach { pic ->
                         val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                                "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) pic else pic}"
+                                "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) pic.name else pic.name}"
                         imageThreadPool.execute {
                             Log.d("DownloadService", "download image $imgUrl")
-                            val request = Request.Builder().url(imgUrl).build()
-                            var bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
+                            var bytes = NetworkUtil.okHttpClient.newCall(Request.Builder().url(imgUrl).build()).execute().body.bytes()
                             val options: BitmapFactory.Options = BitmapFactory.Options()
                             options.inJustDecodeBounds = true
                             if (sectionConfig.encryped) {
@@ -183,7 +180,7 @@ class DownloadService : Service() {
                             }
                             val directory =
                                 getSectionStorageDir(applicationContext, sectionInfoBean.dirName)
-                            val dest = File(directory, pic)
+                            val dest = File(directory, pic.name)
                             val fileOutputStream = FileOutputStream(dest, true)
                             fileOutputStream.write(bytes)
                             fileOutputStream.close()
@@ -191,10 +188,15 @@ class DownloadService : Service() {
                             val width = options.outWidth
                             val height = options.outHeight
                             val absolutePath = dest.absolutePath
-//                                picInfoBean.height = height
-//                                picInfoBean.width = width
-//                                picInfoBean.absolutePath = absolutePath
-//                                picInfoDao.update(picInfoBean)
+                            val picInfoBean: PicInfoBean = PicInfoBean(
+                                pic.id,
+                                pic.name,
+                                pendingSectionBean.picSectionBean.id,
+                                absolutePath,
+                                height,
+                                width,
+                            )
+                            picInfoDao.insert(picInfoBean)
                         }
 
                     }
@@ -202,7 +204,7 @@ class DownloadService : Service() {
                 }
             }
 
-        }.start()
+        }
 
 //        ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
 //            val mapper = jacksonObjectMapper()
