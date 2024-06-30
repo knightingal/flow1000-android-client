@@ -38,6 +38,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -164,9 +165,11 @@ class DownloadService : Service() {
                 val sectionConfig = getSectionConfig(pendingSectionBean.picSectionBean.album)
                 val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=${pendingSectionBean.picSectionBean.id}"
                 sectionThreadPool.execute {
+                    picInfoDao.deleteBySectionInnerIndex(pendingSectionBean.picSectionBean.id)
                     Log.d("DownloadService", "download section $url")
                     val picContentResp = NetworkUtil.okHttpClient.newCall(Request.Builder().url(url).build()).execute().body.string()
                     val sectionInfoBean = mapper.readValue<SectionInfoBean>(picContentResp)
+                    val latch = CountDownLatch(sectionInfoBean.pics.size)
                     sectionInfoBean.pics.forEach { pic ->
                         val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
                                 "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) pic.name else pic.name}"
@@ -197,9 +200,15 @@ class DownloadService : Service() {
                                 width,
                             )
                             picInfoDao.insert(picInfoBean)
+                            latch.countDown()
                         }
 
                     }
+                    latch.await()
+                    picSectionDao.updateClientStatusByServerIndex(
+                        pendingSectionBean.picSectionBean.id,
+                        PicSectionBean.ClientStatus.LOCAL
+                    )
 
                 }
             }
