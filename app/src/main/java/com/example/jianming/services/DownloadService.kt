@@ -55,6 +55,7 @@ class DownloadService : Service() {
             LinkedBlockingQueue())
         val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(10, 10, 30, TimeUnit.SECONDS,
             LinkedBlockingQueue())
+
     }
 
     private val binder: IBinder = LocalBinder()
@@ -165,6 +166,12 @@ class DownloadService : Service() {
                 val sectionConfig = getSectionConfig(pendingSectionBean.picSectionBean.album)
                 val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=${pendingSectionBean.picSectionBean.id}"
                 sectionThreadPool.execute {
+                    synchronized(existSectionId) {
+                        if (existSectionId.contains(pendingSectionBean.picSectionBean.id)) {
+                            return@execute
+                        }
+                        existSectionId.add(pendingSectionBean.picSectionBean.id)
+                    }
                     picInfoDao.deleteBySectionInnerIndex(pendingSectionBean.picSectionBean.id)
                     Log.d("DownloadService", "download section $url")
                     val picContentResp = NetworkUtil.okHttpClient.newCall(Request.Builder().url(url).build()).execute().body.string()
@@ -209,6 +216,9 @@ class DownloadService : Service() {
                         pendingSectionBean.picSectionBean.id,
                         PicSectionBean.ClientStatus.LOCAL
                     )
+                    synchronized(existSectionId) {
+                        existSectionId.remove(pendingSectionBean.picSectionBean.id)
+                    }
 
                 }
             }
