@@ -23,6 +23,7 @@ import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.myapplication.getSectionConfig
+import com.example.jianming.services.TaskManager.Companion.processCounter
 import com.example.jianming.util.Decryptor
 import com.example.jianming.util.FileUtil.getSectionStorageDir
 import com.example.jianming.util.NetworkUtil
@@ -207,6 +208,16 @@ class DownloadService : Service() {
                                 width,
                             )
                             picInfoDao.insert(picInfoBean)
+                            synchronized(processCounter) {
+                                if (processCounter[pendingSectionBean.picSectionBean.id] == null) {
+                                    processCounter[pendingSectionBean.picSectionBean.id] = Counter(sectionInfoBean.pics.size)
+                                }
+                                processCounter[pendingSectionBean.picSectionBean.id]?.setProcess(
+                                    processCounter[pendingSectionBean.picSectionBean.id]?.getProcess()
+                                        ?.plus(1) ?: 0
+                                )
+                                refreshListener.forEach { it.doRefreshProcess(pendingSectionBean.picSectionBean.id, 0, processCounter[pendingSectionBean.picSectionBean.id]?.getProcess() as Int, sectionInfoBean.pics.size) }
+                            }
                             latch.countDown()
                         }
 
