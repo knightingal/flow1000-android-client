@@ -147,11 +147,14 @@ class PendingFragment : Fragment(){
                 pendingListView.findViewHolderForAdapterPosition(realPosition) as PicSectionListAdapter.ViewHolder?
 
             if (viewHolder != null) {
+                Log.d(TAG, "update process for $sectionId")
                 MainScope().launch {
                     viewHolder.process.visibility = View.VISIBLE
                     viewHolder.process.text = "$currCount/$max"
                     Log.d(TAG, "current = $currCount max = $max")
                 }
+            } else {
+                Log.e(TAG, "not found process for $sectionId")
             }
         }
 

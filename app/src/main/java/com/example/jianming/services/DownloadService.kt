@@ -152,7 +152,7 @@ class DownloadService : Service() {
 
             val picIndexResp = NetworkUtil.okHttpClient.newCall(Request.Builder().url(pendingUrl).build()).execute().body.string()
             val picSectionBeanList: List<PicSectionBean> = mapper.readValue(picIndexResp)
-            val pendingSectionBeanList = mutableListOf<PicSectionData>()
+            pendingSectionBeanList = mutableListOf<PicSectionData>()
             pendingSectionBeanList.addAll(picSectionBeanList.map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } })
             pendingSectionBeanList.sortBy { it.picSectionBean.id }
             db.runInTransaction {
@@ -161,6 +161,11 @@ class DownloadService : Service() {
                         it.picSectionBean.id,
                         PicSectionBean.ClientStatus.PENDING
                     )
+                }
+            }
+            MainScope().launch {
+                refreshListener.forEach {
+                    it.notifyListReady()
                 }
             }
             pendingSectionBeanList.forEach { pendingSectionBean->
@@ -212,15 +217,12 @@ class DownloadService : Service() {
                                 if (processCounter[pendingSectionBean.picSectionBean.id] == null) {
                                     processCounter[pendingSectionBean.picSectionBean.id] = Counter(sectionInfoBean.pics.size)
                                 }
-                                processCounter[pendingSectionBean.picSectionBean.id]?.setProcess(
-                                    processCounter[pendingSectionBean.picSectionBean.id]?.getProcess()
-                                        ?.plus(1) ?: 0
-                                )
-                                refreshListener.forEach { it.doRefreshProcess(pendingSectionBean.picSectionBean.id, 0, processCounter[pendingSectionBean.picSectionBean.id]?.getProcess() as Int, sectionInfoBean.pics.size) }
+                                val currProcess:Int = processCounter[pendingSectionBean.picSectionBean.id]!!.getProcess()
+                                processCounter[pendingSectionBean.picSectionBean.id]?.setProcess(currProcess + 1)
+                                refreshListener.forEach { it.doRefreshProcess(pendingSectionBean.picSectionBean.id, 0, processCounter[pendingSectionBean.picSectionBean.id]!!.getProcess(), sectionInfoBean.pics.size) }
                             }
                             latch.countDown()
                         }
-
                     }
                     latch.await()
                     picSectionDao.updateClientStatusByServerIndex(
