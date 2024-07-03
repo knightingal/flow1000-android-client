@@ -151,8 +151,16 @@ class DownloadService : Service() {
                 "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
 
             val picIndexResp = NetworkUtil.okHttpClient.newCall(Request.Builder().url(pendingUrl).build()).execute().body.string()
-            val picSectionBeanList: List<PicSectionBean> = mapper.readValue(picIndexResp)
+            var picSectionBeanList: List<PicSectionBean> = mapper.readValue(picIndexResp)
             pendingSectionBeanList = mutableListOf<PicSectionData>()
+
+            db.runInTransaction {
+                picSectionBeanList = picSectionBeanList.filter {
+                    val byServerIndex = picSectionDao.getByServerIndex(it.id)
+                    byServerIndex.clientStatus != PicSectionBean.ClientStatus.LOCAL
+                }
+            }
+
             pendingSectionBeanList.addAll(picSectionBeanList.map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } })
             pendingSectionBeanList.sortBy { it.picSectionBean.id }
             db.runInTransaction {
@@ -169,6 +177,9 @@ class DownloadService : Service() {
                 }
             }
             pendingSectionBeanList.forEach { pendingSectionBean->
+                if (picSectionDao.getByServerIndex(pendingSectionBean.picSectionBean.id).clientStatus == PicSectionBean.ClientStatus.LOCAL) {
+                    return@forEach
+                }
                 val sectionConfig = getSectionConfig(pendingSectionBean.picSectionBean.album)
                 val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=${pendingSectionBean.picSectionBean.id}"
                 sectionThreadPool.execute {
