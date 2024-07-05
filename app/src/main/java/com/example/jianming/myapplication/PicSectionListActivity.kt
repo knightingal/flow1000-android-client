@@ -9,7 +9,6 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +25,6 @@ import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
 import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
-import com.example.jianming.services.Counter
 import com.example.jianming.services.DownloadService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -129,7 +127,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
-        ConcurrencyJsonApiTask.startDownload(stringUrl) { allBody ->
+        ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
             val mapper = jacksonObjectMapper()
             db.runInTransaction() {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
@@ -141,7 +139,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
             refreshFrontPage.invoke()
 
             val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
-            ConcurrencyJsonApiTask.startDownload(pendingUrl) { pendingBody ->
+            ConcurrencyJsonApiTask.startGet(pendingUrl) { pendingBody ->
                 val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
                 if (picSectionBeanList.isNotEmpty()) {
                     picSectionBeanList.forEach {
@@ -153,7 +151,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
                 }
             }
             val localUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
-            ConcurrencyJsonApiTask.startDownload(localUrl) { pendingBody ->
+            ConcurrencyJsonApiTask.startGet(localUrl) { pendingBody ->
                 val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
                 if (picSectionBeanList.isNotEmpty()) {
                     picSectionBeanList.forEach {

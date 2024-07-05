@@ -12,10 +12,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 object ConcurrencyJsonApiTask {
 
-    fun startDownload(url: String, callBack: (body: String) -> Unit): Job {
+    fun startGet(url: String, callBack: (body: String) -> Unit): Job {
         return MainScope().launch {
-            val body = makeRequest(url)
-            callBack(body)
+            callBack(makeRequest(url))
         }
     }
 

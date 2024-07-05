@@ -20,7 +20,9 @@ package com.example.jianming.beans
  * @since v1.0
  */
 data class SectionInfoBean (
-        var picpage: String,
-        var dirName: String,
-        var pics: MutableList<String>
+    var picPage: Long,
+    var dirName: String,
+    var pics: MutableList<ImgDetail>,
+    var album: String,
+    var id: Long,
 )

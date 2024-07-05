@@ -1,17 +1,23 @@
 package com.example.jianming.myapplication.ui.main
 
 import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import com.example.jianming.beans.PicSectionBean
 import com.example.jianming.beans.PicSectionData
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
@@ -20,10 +26,18 @@ import com.example.jianming.listAdapters.PicSectionListAdapter
 import com.example.jianming.listAdapters.PicSectionListAdapter.ItemClickListener
 import com.example.jianming.myapplication.SectionImageListActivity
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
+import com.example.jianming.myapplication.ui.main.PendingFragment.Companion
+import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import org.nanjing.knightingal.processerlib.RefreshListener
 
 class ExistSectionListFragment : Fragment(){
 
+    companion object {
+        private const val TAG = "ExistSectionListFragment"
+    }
     private lateinit var pageViewModel: PageViewModel
     private var _binding: FragmentPendingBinding? = null
 
@@ -67,7 +81,7 @@ class ExistSectionListFragment : Fragment(){
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         pendingListView.layoutManager = mLayoutManager
         val itemClickListener = ItemClickListener {
-            if (it.picSectionBean.exist == 1) {
+            if (it.picSectionBean.clientStatus == PicSectionBean.ClientStatus.LOCAL) {
                 val intent = Intent(context, SectionImageListActivity::class.java)
                     .putExtra("exist", 1)
                     .putExtra("name", it.picSectionBean.name)
@@ -82,14 +96,63 @@ class ExistSectionListFragment : Fragment(){
         return root
     }
 
+    private var serviceBound = false
+
+    private var downLoadService: DownloadService? = null
+
+    private val conn: ServiceConnection = object : ServiceConnection {
+        @SuppressLint("NotifyDataSetChanged")
+        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+            Log.d(TAG, "onServiceConnected")
+            serviceBound = true
+            downLoadService = (binder as DownloadService.LocalBinder).getService()
+            downLoadService?.setRefreshListener(
+                refreshListener
+            )
+            val picSectionBeanList = downLoadService?.getPendingSectionList()
+            picSectionListAdapter.setDataArray(picSectionBeanList)
+            picSectionListAdapter.notifyDataSetChanged()
+
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            Log.d(TAG, "onServiceDisconnected")
+            downLoadService?.setRefreshListener(null)
+            downLoadService = null
+            serviceBound = false
+        }
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onStart() {
         super.onStart()
-        picSectionDataList = picSectionDao.getAllExist().map { bean -> PicSectionData(bean, 0) }
+
+        super.onStart()
+        context?.bindService(
+            Intent(context, DownloadService::class.java), conn,
+            AppCompatActivity.BIND_AUTO_CREATE
+        )
+
+        picSectionDataList = picSectionDao.getByClientStatus(PicSectionBean.ClientStatus.LOCAL).map { bean -> PicSectionData(bean, 0) }
         picSectionListAdapter.setDataArray(picSectionDataList)
         picSectionListAdapter.notifyDataSetChanged()
     }
 
 
+    private val refreshListener: RefreshListener = object : RefreshListener {
+        @SuppressLint("SetTextI18n")
+        override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int) {
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        override fun notifyListReady() {
+            picSectionDataList = picSectionDao.getByClientStatus(PicSectionBean.ClientStatus.LOCAL).map { bean -> PicSectionData(bean, 0) }
+            picSectionListAdapter.setDataArray(picSectionDataList)
+            picSectionListAdapter.notifyDataSetChanged()
+        }
+    }
 }

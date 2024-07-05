@@ -1,6 +1,7 @@
 package com.example.jianming.myapplication
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -24,6 +25,21 @@ class MainActivity : AppCompatActivity() {
         viewPager.adapter = sectionsPagerAdapter
         val tabs: TabLayout = binding.tabs
         tabs.setupWithViewPager(viewPager)
+        val listner = object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                Log.e("onTabSelected","Not yet implemented")
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                Log.e("onTabUnselected","Not yet implemented")
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                Log.e("onTabReselected","Not yet implemented")
+            }
+
+        }
+        tabs.addOnTabSelectedListener(listner)
         val fab: FloatingActionButton = binding.fab
 
         fab.setOnClickListener { view ->

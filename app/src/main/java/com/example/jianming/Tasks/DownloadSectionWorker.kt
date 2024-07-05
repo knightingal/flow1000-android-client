@@ -62,7 +62,7 @@ class DownloadSectionWorker(context: Context, workerParams: WorkerParameters) :
             sectionInfoBean.pics.forEach { pic ->
                 val picInfoBean: PicInfoBean = PicInfoBean(
                     null,
-                    pic,
+                    pic.name,
                     picSectionBean.id,
                     null,
                     0,
