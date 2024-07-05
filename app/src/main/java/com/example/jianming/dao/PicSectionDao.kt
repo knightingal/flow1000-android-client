@@ -25,7 +25,7 @@ interface PicSectionDao {
     @Query("select * from PicSectionBean where id = :serverIndex")
     fun getByServerIndex(serverIndex: Long): PicSectionBean
 
-    @Query("select * from PicSectionBean where exist = 1")
+    @Query("select * from PicSectionBean where clientStatus = 'LOCAL'")
     fun getAllExist(): List<PicSectionBean>
 
     @Query("select * from PicSectionBean where clientStatus = :status")
