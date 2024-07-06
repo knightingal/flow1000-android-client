@@ -16,6 +16,10 @@ object ProcessCounter {
         }
     }
 
+    public fun getCounter(id: Long): Counter? {
+        return counter[id]
+    }
+
     public fun remove(id: Long) {
         counter.remove(id)
     }

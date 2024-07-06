@@ -1,7 +1,6 @@
 package com.example.jianming.listAdapters;
 
 import android.content.Context;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -15,15 +14,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jianming.services.ProcessCounter;
 import com.example.jianming.util.AppDataBase;
 import com.example.jianming.util.FileUtil;
 import com.example.jianming.beans.PicSectionBean;
 import com.example.jianming.beans.PicSectionData;
 import com.example.jianming.dao.PicSectionDao;
 import com.example.jianming.dao.PicInfoDao;
-import com.example.jianming.myapplication.PicSectionListActivity;
 import com.example.jianming.myapplication.R;
-import com.example.jianming.myapplication.SectionImageListActivity;
 import com.example.jianming.services.Counter;
 
 
@@ -109,12 +107,8 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         } else {
             renderNonExistItem(viewHolder);
         }
-        Counter counter = null;
-        if (counterProvider != null) {
-            counter = counterProvider.getCounter(dataArray.get(position).getPicSectionBean().getId());
-        }
+        Counter counter = ProcessCounter.INSTANCE.getCounter(dataArray.get(position).getPicSectionBean().getId());
         if (counter != null) {
-
             viewHolder.process.setText("" + counter.getProcess() + "/" + counter.getMax());
             viewHolder.process.setVisibility(View.VISIBLE);
         } else {
@@ -201,7 +195,6 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
                 return sourceTitle.substring(14);
             }
             return sourceTitle;
-
         }
         return sourceTitle;
     }
