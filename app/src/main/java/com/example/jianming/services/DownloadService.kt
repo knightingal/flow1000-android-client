@@ -177,28 +177,26 @@ class DownloadService : Service() {
                 }
             }
             pendingSectionBeanList.forEach { pendingSectionBean->
-                if (picSectionDao.getByServerIndex(pendingSectionBean.picSectionBean.id).clientStatus == PicSectionBean.ClientStatus.LOCAL) {
+                val clientStatus = picSectionDao.getByServerIndex(pendingSectionBean.picSectionBean.id).clientStatus
+                if (clientStatus == PicSectionBean.ClientStatus.LOCAL) {
                     return@forEach
                 }
                 val sectionConfig = getSectionConfig(pendingSectionBean.picSectionBean.album)
                 val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=${pendingSectionBean.picSectionBean.id}"
                 sectionThreadPool.execute {
-                    synchronized(existSectionId) {
-                        if (existSectionId.contains(pendingSectionBean.picSectionBean.id)) {
-                            return@execute
-                        }
-                        existSectionId.add(pendingSectionBean.picSectionBean.id)
-                    }
-                    picInfoDao.deleteBySectionInnerIndex(pendingSectionBean.picSectionBean.id)
-                    Log.d("DownloadService", "download section $url")
                     val picContentResp = NetworkUtil.okHttpClient.newCall(Request.Builder().url(url).build()).execute().body.string()
                     val sectionInfoBean = mapper.readValue<SectionInfoBean>(picContentResp)
+                    if (ProcessCounter.initCounter(pendingSectionBean.picSectionBean.id, sectionInfoBean.pics.size) != null) {
+                        return@execute
+                    }
+                    Log.d("DownloadService", "download section $url")
+                    picInfoDao.deleteBySectionInnerIndex(pendingSectionBean.picSectionBean.id)
                     val latch = CountDownLatch(sectionInfoBean.pics.size)
                     sectionInfoBean.pics.forEach { pic ->
                         val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
                                 "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) pic.name else pic.name}"
                         imageThreadPool.execute {
-                            Log.d("DownloadService", "download image $imgUrl")
+//                            Log.d("DownloadService", "download image $imgUrl")
                             var bytes = NetworkUtil.okHttpClient.newCall(Request.Builder().url(imgUrl).build()).execute().body.bytes()
                             val options: BitmapFactory.Options = BitmapFactory.Options()
                             options.inJustDecodeBounds = true
@@ -224,26 +222,20 @@ class DownloadService : Service() {
                                 width,
                             )
                             picInfoDao.insert(picInfoBean)
-                            synchronized(processCounter) {
-                                if (processCounter[pendingSectionBean.picSectionBean.id] == null) {
-                                    processCounter[pendingSectionBean.picSectionBean.id] = Counter(sectionInfoBean.pics.size)
-                                }
-                                val currProcess:Int = processCounter[pendingSectionBean.picSectionBean.id]!!.getProcess()
-                                processCounter[pendingSectionBean.picSectionBean.id]?.setProcess(currProcess + 1)
-                                refreshListener.forEach { it.doRefreshProcess(pendingSectionBean.picSectionBean.id, 0, processCounter[pendingSectionBean.picSectionBean.id]!!.getProcess(), sectionInfoBean.pics.size) }
+                            val currCounter = ProcessCounter.addCounter(pendingSectionBean.picSectionBean.id)
+                            if (currCounter != null) {
+                                refreshListener.forEach { it.doRefreshProcess(pendingSectionBean.picSectionBean.id, 0, currCounter.getProcess(), currCounter.max) }
                             }
                             latch.countDown()
                         }
                     }
                     latch.await()
+                    refreshListener.forEach { it.doRefreshProcess(pendingSectionBean.picSectionBean.id, 0, sectionInfoBean.pics.size, sectionInfoBean.pics.size) }
                     picSectionDao.updateClientStatusByServerIndex(
                         pendingSectionBean.picSectionBean.id,
                         PicSectionBean.ClientStatus.LOCAL
                     )
-                    synchronized(existSectionId) {
-                        existSectionId.remove(pendingSectionBean.picSectionBean.id)
-                    }
-
+                    ProcessCounter.remove(pendingSectionBean.picSectionBean.id)
                 }
             }
 
@@ -364,6 +356,10 @@ class Counter(val max: Int) {
 
     fun setProcess(value: Int) {
         process.set(value)
+    }
+
+    fun add() {
+        process.incrementAndGet()
     }
 
     fun getProcess() = process.get()

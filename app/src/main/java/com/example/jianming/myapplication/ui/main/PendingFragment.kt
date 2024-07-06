@@ -153,8 +153,6 @@ class PendingFragment : Fragment(){
                     viewHolder.process.text = "$currCount/$max"
                     Log.d(TAG, "current = $currCount max = $max")
                 }
-            } else {
-                Log.e(TAG, "not found process for $sectionId")
             }
         }
 
