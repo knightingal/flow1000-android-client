@@ -105,8 +105,6 @@ class PendingFragment : Fragment(){
     var downLoadService: DownloadService? = null
     var serviceBound = false
 
-    private val counterProvider: CounterProvider =
-        CounterProvider { sectionId -> downLoadService?.getProcessCounter()?.get(sectionId) }
     val autoStart = true;
 
     private val conn: ServiceConnection = object : ServiceConnection {

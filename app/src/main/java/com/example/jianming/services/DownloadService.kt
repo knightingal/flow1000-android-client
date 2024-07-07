@@ -23,7 +23,6 @@ import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.myapplication.getSectionConfig
-import com.example.jianming.services.TaskManager.Companion.processCounter
 import com.example.jianming.util.Decryptor
 import com.example.jianming.util.FileUtil.getSectionStorageDir
 import com.example.jianming.util.NetworkUtil
@@ -74,9 +73,6 @@ class DownloadService : Service() {
         }
     }
 
-    fun getProcessCounter():HashMap<Long, Counter> {
-        return TaskManager.processCounter
-    }
 
     fun removeRefreshListener(refreshListener: RefreshListener) {
         DownloadService.refreshListener.remove(refreshListener)
@@ -318,12 +314,6 @@ class DownloadService : Service() {
 //        }
     }
 
-    private fun checkWorkerExist(worker: PicSectionBean?): Boolean {
-        val workManager = WorkManager.getInstance(TaskManager.applicationContext)
-        return worker != null
-                && workManager.getWorkInfosByTag("sectionId:${worker.id}").get().size == 0
-    }
-
     fun getPendingSectionList(): List<PicSectionData> {
         return pendingSectionBeanList.toList()
     }
@@ -335,16 +325,6 @@ class DownloadService : Service() {
     inner class LocalBinder : Binder() {
         fun getService(): DownloadService {
             return this@DownloadService
-        }
-    }
-
-    fun startDownloadBySectionId(sectionId: Long) {
-        if (workerQueue.size != 0) {
-            val sectionBean = picSectionDao.getByInnerIndex(sectionId)
-            workerQueue.put(sectionBean)
-        } else {
-            TaskManager.startWork(sectionId, applicationContext)
-            TaskManager.viewWork(applicationContext)
         }
     }
 

@@ -114,11 +114,6 @@ class SectionListFragment : Fragment(){
     var downLoadService: DownloadService? = null
     var serviceBound = false
 
-    private val counterProvider: PicSectionListAdapter.CounterProvider =
-        PicSectionListAdapter.CounterProvider { sectionId ->
-            downLoadService?.getProcessCounter()?.get(sectionId)
-        }
-
     private val conn: ServiceConnection = object : ServiceConnection {
         @SuppressLint("NotifyDataSetChanged")
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
