@@ -188,10 +188,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
     val workVersion = "2.8.1"
-    // (Java only)
-    implementation("androidx.work:work-runtime:$workVersion")
-    // Kotlin + coroutines
-    implementation("androidx.work:work-runtime-ktx:$workVersion")
     // flex layout
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 }
