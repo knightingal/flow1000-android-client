@@ -106,7 +106,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         } else {
             renderNonExistItem(viewHolder);
         }
-        Counter counter = ProcessCounter.INSTANCE.getCounter(dataArray.get(position).getPicSectionBean().getId());
+        ProcessCounter.Counter counter = ProcessCounter.INSTANCE.getCounter(dataArray.get(position).getPicSectionBean().getId());
         if (counter != null) {
             if (displayProcessCount || clientStatus != PicSectionBean.ClientStatus.LOCAL) {
                 viewHolder.process.setText("" + counter.getProcess() + "/" + counter.getMax());

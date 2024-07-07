@@ -331,16 +331,3 @@ class DownloadService : Service() {
 }
 
 
-class Counter(val max: Int) {
-    private val process: AtomicInteger = AtomicInteger(0)
-
-    fun setProcess(value: Int) {
-        process.set(value)
-    }
-
-    fun add() {
-        process.incrementAndGet()
-    }
-
-    fun getProcess() = process.get()
-}

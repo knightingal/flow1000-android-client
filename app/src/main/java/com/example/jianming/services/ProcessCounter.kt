@@ -1,6 +1,7 @@
 package com.example.jianming.services
 
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 
 object ProcessCounter {
     private val counter:ConcurrentHashMap<Long, Counter> = ConcurrentHashMap<Long, Counter>()
@@ -30,5 +31,19 @@ object ProcessCounter {
         if (counter1 != null) {
             finishedCounter[id] = counter1
         }
+    }
+
+    class Counter(val max: Int) {
+        private val process: AtomicInteger = AtomicInteger(0)
+
+        fun setProcess(value: Int) {
+            process.set(value)
+        }
+
+        fun add() {
+            process.incrementAndGet()
+        }
+
+        fun getProcess() = process.get()
     }
 }
