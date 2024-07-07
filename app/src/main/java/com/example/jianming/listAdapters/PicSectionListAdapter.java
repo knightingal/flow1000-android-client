@@ -84,14 +84,12 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer));
         viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer));
         viewHolder.deleteBtn.setVisibility(View.VISIBLE);
-        viewHolder.exist = true;
     }
 
     private void renderNonExistItem(final ViewHolder viewHolder) {
         viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurfaceVariant));
         viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_surfaceVariant));
         viewHolder.deleteBtn.setVisibility(View.GONE);
-        viewHolder.exist = false;
     }
 
     @Override
@@ -161,9 +159,6 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         public long serverIndex;
 
         public int position;
-
-        private boolean exist = false;
-
 
         private ViewHolder(View itemView) {
 
