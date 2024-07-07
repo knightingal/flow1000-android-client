@@ -50,21 +50,23 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
 
     private final PicInfoDao picInfoDao;
 
-    private final CounterProvider counterProvider;
+    private boolean displayProcessCount = false;
 
+    public void setDisplayProcessCount(boolean displayProcessCount) {
+        this.displayProcessCount = displayProcessCount;
+    }
 
     private ItemClickListener itemClickListener = null;
 
     public void setItemClickListener(ItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
-    public PicSectionListAdapter(Context context, CounterProvider counterProvider ) {
+    public PicSectionListAdapter(Context context) {
         this.context = context;
         AppDataBase db = Room.databaseBuilder(context,
                 AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
         picSectionDao = db.picSectionDao();
         picInfoDao = db.picInfoDao();
-        this.counterProvider = counterProvider;
     }
 
     public void setDataArray(List<PicSectionData> dataArray) {
@@ -102,15 +104,21 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         dataArray.get(position).setPosition(position);
 
         viewHolder.textView.setText(formatTitle(dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getName()));
-        if (dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getClientStatus() == PicSectionBean.ClientStatus.LOCAL) {
+        PicSectionBean.ClientStatus clientStatus = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getClientStatus();
+        if (clientStatus == PicSectionBean.ClientStatus.LOCAL
+                && !displayProcessCount) {
             renderExistItem(viewHolder);
         } else {
             renderNonExistItem(viewHolder);
         }
         Counter counter = ProcessCounter.INSTANCE.getCounter(dataArray.get(position).getPicSectionBean().getId());
         if (counter != null) {
-            viewHolder.process.setText("" + counter.getProcess() + "/" + counter.getMax());
-            viewHolder.process.setVisibility(View.VISIBLE);
+            if (displayProcessCount || clientStatus != PicSectionBean.ClientStatus.LOCAL) {
+                viewHolder.process.setText("" + counter.getProcess() + "/" + counter.getMax());
+                viewHolder.process.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.process.setVisibility(View.GONE);
+            }
         } else {
             viewHolder.process.setVisibility(View.GONE);
         }

@@ -89,7 +89,7 @@ class ExistSectionListFragment : Fragment(){
                 startActivity(intent)
             }
         }
-        picSectionListAdapter = PicSectionListAdapter(context, null)
+        picSectionListAdapter = PicSectionListAdapter(context)
         picSectionListAdapter.setItemClickListener(itemClickListener)
         pendingListView.adapter = picSectionListAdapter
 

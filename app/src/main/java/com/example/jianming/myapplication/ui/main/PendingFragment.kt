@@ -79,8 +79,9 @@ class PendingFragment : Fragment(){
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         pendingListView.layoutManager = mLayoutManager
 
-        picSectionListAdapter = PicSectionListAdapter(context, counterProvider)
+        picSectionListAdapter = PicSectionListAdapter(context)
         picSectionListAdapter.setDataArray(picSectionDataList)
+        picSectionListAdapter.setDisplayProcessCount(true)
         pendingListView.adapter = picSectionListAdapter
 
         return root

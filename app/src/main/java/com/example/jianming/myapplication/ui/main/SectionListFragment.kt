@@ -88,7 +88,7 @@ class SectionListFragment : Fragment(){
 //                downLoadService?.startDownloadBySectionId(it.picSectionBean.id)
             }
         }
-        picSectionListAdapter = PicSectionListAdapter(context, counterProvider)
+        picSectionListAdapter = PicSectionListAdapter(context)
         picSectionListAdapter.setDataArray(picSectionDataList)
         picSectionListAdapter.setItemClickListener(itemClickListener)
         pendingListView.adapter = picSectionListAdapter

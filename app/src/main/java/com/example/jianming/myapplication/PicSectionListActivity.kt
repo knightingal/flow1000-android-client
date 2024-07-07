@@ -74,8 +74,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
         listView.layoutManager = mLayoutManager
 
-        picSectionListAdapter =
-            PicSectionListAdapter(this, counterProvider)
+        picSectionListAdapter = PicSectionListAdapter(this)
         picSectionListAdapter.setDataArray(picSectionDataList)
         listView.adapter = picSectionListAdapter
 
