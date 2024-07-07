@@ -102,7 +102,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         dataArray.get(position).setPosition(position);
 
         viewHolder.textView.setText(formatTitle(dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getName()));
-        if (dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getExist() == 1) {
+        if (dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getClientStatus() == PicSectionBean.ClientStatus.LOCAL) {
             renderExistItem(viewHolder);
         } else {
             renderNonExistItem(viewHolder);
