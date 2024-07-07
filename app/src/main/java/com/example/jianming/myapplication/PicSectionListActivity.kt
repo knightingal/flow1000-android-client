@@ -24,7 +24,6 @@ import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
-import com.example.jianming.listAdapters.PicSectionListAdapter.CounterProvider
 import com.example.jianming.services.DownloadService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue

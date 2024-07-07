@@ -18,7 +18,6 @@ import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.myapplication.App
 import com.example.jianming.myapplication.getSectionConfig
-import com.example.jianming.services.Counter
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.util.FileUtil.getSectionStorageDir
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

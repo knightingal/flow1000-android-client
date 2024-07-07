@@ -22,10 +22,8 @@ import com.example.jianming.beans.PicSectionData;
 import com.example.jianming.dao.PicSectionDao;
 import com.example.jianming.dao.PicInfoDao;
 import com.example.jianming.myapplication.R;
-import com.example.jianming.services.Counter;
 
 
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -33,9 +31,6 @@ import java.util.Locale;
 
 public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAdapter.ViewHolder> {
 
-    public interface CounterProvider {
-        Counter getCounter(long sectionId);
-    }
 
     public interface ItemClickListener {
         void onItemClick(PicSectionData picSectionData);
