@@ -33,8 +33,9 @@ import org.nanjing.knightingal.processerlib.RefreshListener
 
 class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
-
-    private val TAG = "PicSectionListActivityMD"
+    companion object {
+        private const val TAG = "PicSectionListActivityMD"
+    }
     private lateinit var db: AppDataBase
 
     private lateinit var picSectionDao: PicSectionDao
@@ -48,7 +49,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
     private lateinit var listView: RecyclerView
 
-    private var picSectionDataList: MutableList<PicSectionData> = mutableListOf();
+    private var picSectionDataList: MutableList<PicSectionData> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,7 +124,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         Log.d("startDownloadWebPage", stringUrl)
         ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
             val mapper = jacksonObjectMapper()
-            db.runInTransaction() {
+            db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
                 updataStampDao.update(updateStamp)
                 val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
@@ -138,9 +139,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
                 if (picSectionBeanList.isNotEmpty()) {
                     picSectionBeanList.forEach {
                         picSectionDao.update(it)
-                        asyncStartDownload(it.id, picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
-                            item.picSectionBean.id == it.id
-                        }.findFirst().get()));
+                        asyncStartDownload()
                     }
                 }
             }
@@ -152,12 +151,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
                         val existSection = picSectionDao.getByInnerIndex(it.id)
                         if (existSection.exist != 1) {
                             picSectionDao.update(it)
-                            asyncStartDownload(
-                                it.id,
-                                picSectionDataList.indexOf(picSectionDataList.stream().filter { item ->
-                                    item.picSectionBean.id == it.id
-                                }.findFirst().get())
-                            );
+                            asyncStartDownload()
                         }
                     }
                 }
@@ -174,14 +168,6 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     }
 
     private var isNotExistItemShown = true
-
-    private fun getDataSourceFromJsonFile(): List<PicSectionBean> {
-        return if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this)) {
-            picSectionDao.getAll().toList()
-        } else {
-            picSectionDao.getAllExist().toList()
-        }
-    }
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -209,8 +195,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     }
 
 
-    fun asyncStartDownload(index: Long, position: Int) {
-//        downLoadService?.startDownloadSection(index, position)
+    private fun asyncStartDownload() {
     }
 
 }
