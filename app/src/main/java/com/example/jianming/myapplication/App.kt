@@ -19,9 +19,6 @@ class App : Application() {
 
     companion object {
         lateinit var db: AppDataBase
-        fun findDb(): AppDataBase {
-            return db
-        }
     }
 
     private fun initDB() {

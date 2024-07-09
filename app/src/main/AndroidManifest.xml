@@ -41,22 +41,9 @@
             android:label="@string/title_activity_xrx"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
         <activity
-            android:name=".Local1KActivity"
-            android:label="@string/title_activity_file_training" />
-        <activity
             android:name=".AboutActivity"
             android:exported="true"
             android:label="@string/title_activity_setting"></activity>
-        <activity
-            android:name=".Main2Activity"
-            android:exported="true"
-            android:label="@string/title_activity_main2">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-        </activity>
 
         <service
             android:name="com.example.jianming.services.DownloadService"
