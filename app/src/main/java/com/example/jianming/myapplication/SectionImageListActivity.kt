@@ -2,6 +2,7 @@ package com.example.jianming.myapplication
 
 import SERVER_IP
 import SERVER_PORT
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -12,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.jianming.SectionDetail
-import com.example.jianming.beans.SectionInfoBean
 import com.example.jianming.listAdapters.OnlineRecImgListAdapter
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.listAdapters.RecImgListAdapter
@@ -56,6 +56,7 @@ class SectionImageListActivity : AppCompatActivity(){
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun initSectionImageList() {
         val sectionIndex = this.intent.getLongExtra("serverIndex", 0)
         val exist = this.intent.getIntExtra("exist", 0)

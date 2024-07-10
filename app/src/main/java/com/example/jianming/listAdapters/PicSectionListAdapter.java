@@ -1,5 +1,6 @@
 package com.example.jianming.listAdapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -92,6 +93,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         viewHolder.deleteBtn.setVisibility(View.GONE);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         dataArray.get(position).setPosition(position);
