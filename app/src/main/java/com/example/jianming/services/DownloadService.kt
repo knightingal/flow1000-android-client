@@ -173,50 +173,53 @@ class DownloadService : Service() {
         }
     }
 
-    private fun processImgItem(pic: ImgDetail, pendingSectionData: PicSectionData, sectionInfoBean: SectionInfoBean, sectionConfig: SectionConfig, latch: CountDownLatch) {
+    private fun processImgItem(pic: ImgDetail, sectionInfoBean: SectionInfoBean, sectionConfig: SectionConfig, latch: CountDownLatch) {
         val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
                 "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) pic.name else pic.name}"
         imageThreadPool.execute {
-            var bytes = NetworkUtil.okHttpClient.newCall(Request.Builder().url(imgUrl).build())
-                .execute().body.bytes()
-            val options: BitmapFactory.Options = BitmapFactory.Options()
-            options.inJustDecodeBounds = true
-            if (sectionConfig.encryped) {
-                bytes = Decryptor.decrypt(bytes)
-            }
-            val directory =
-                getSectionStorageDir(applicationContext, sectionInfoBean.dirName)
-            val dest = File(directory, pic.name)
-            val fileOutputStream = FileOutputStream(dest, false)
-            fileOutputStream.write(bytes)
-            fileOutputStream.close()
-            BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
-            val width = options.outWidth
-            val height = options.outHeight
-            val absolutePath = dest.absolutePath
-            val picInfoBean = PicInfoBean(
-                pic.id,
-                pic.name,
-                pendingSectionData.picSectionBean.id,
-                absolutePath,
-                height,
-                width,
-            )
-            picInfoDao.insert(picInfoBean)
-            val currCounter = ProcessCounter.addCounter(pendingSectionData.picSectionBean.id)
-            if (currCounter != null) {
-                refreshListener.forEach {
-                    it.doRefreshProcess(
-                        pendingSectionData.picSectionBean.id,
-                        0,
-                        currCounter.getProcess(),
-                        currCounter.max
-                    )
-                }
-            }
-            latch.countDown()
+            imgExecuting(imgUrl, pic, sectionInfoBean.id, sectionInfoBean.dirName, sectionConfig.encryped, latch)
         }
+    }
 
+    private fun imgExecuting(imgUrl: String, pic: ImgDetail, sectionId: Long, dirName: String, encrypted: Boolean, latch: CountDownLatch) {
+        var bytes = NetworkUtil.okHttpClient.newCall(Request.Builder().url(imgUrl).build())
+            .execute().body.bytes()
+        val options: BitmapFactory.Options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        if (encrypted) {
+            bytes = Decryptor.decrypt(bytes)
+        }
+        val directory =
+            getSectionStorageDir(applicationContext, dirName)
+        val dest = File(directory, pic.name)
+        val fileOutputStream = FileOutputStream(dest, false)
+        fileOutputStream.write(bytes)
+        fileOutputStream.close()
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+        val width = options.outWidth
+        val height = options.outHeight
+        val absolutePath = dest.absolutePath
+        val picInfoBean = PicInfoBean(
+            pic.id,
+            pic.name,
+            sectionId,
+            absolutePath,
+            height,
+            width,
+        )
+        picInfoDao.insert(picInfoBean)
+        val currCounter = ProcessCounter.addCounter(sectionId)
+        if (currCounter != null) {
+            refreshListener.forEach {
+                it.doRefreshProcess(
+                    sectionId,
+                    0,
+                    currCounter.getProcess(),
+                    currCounter.max
+                )
+            }
+        }
+        latch.countDown()
     }
 
     private fun sectionExecuting(pendingSectionData: PicSectionData) {
@@ -232,7 +235,7 @@ class DownloadService : Service() {
         picInfoDao.deleteBySectionInnerIndex(pendingSectionData.picSectionBean.id)
         val latch = CountDownLatch(sectionInfoBean.pics.size)
         sectionInfoBean.pics.forEach {
-            processImgItem(it, pendingSectionData, sectionInfoBean, sectionConfig, latch)
+            processImgItem(it, sectionInfoBean, sectionConfig, latch)
         }
         latch.await()
         refreshListener.forEach { it.doRefreshProcess(pendingSectionData.picSectionBean.id, 0, sectionInfoBean.pics.size, sectionInfoBean.pics.size) }
