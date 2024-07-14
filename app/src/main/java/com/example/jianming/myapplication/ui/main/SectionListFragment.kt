@@ -136,23 +136,8 @@ class SectionListFragment : Fragment(){
 
     private val refreshListener: RefreshListener = object : RefreshListener {
         @SuppressLint("SetTextI18n")
-        override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int) {
+        override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int, finish: Boolean) {
 
-            val pendingSectionList = downLoadService!!.getAllSectionList()
-            val pendingSection = pendingSectionList.find { section -> section.picSectionBean.id == sectionId }
-            val realPosition = pendingSectionList.indexOf(pendingSection)
-
-
-            val viewHolder =
-                pendingListView.findViewHolderForAdapterPosition(realPosition) as PicSectionListAdapter.ViewHolder?
-
-            if (viewHolder != null) {
-                MainScope().launch {
-                    viewHolder.process.visibility = View.VISIBLE
-                    viewHolder.process.text = "$currCount/$max"
-                    Log.d(TAG, "current = $currCount max = $max")
-                }
-            }
         }
 
         @SuppressLint("NotifyDataSetChanged")

@@ -134,22 +134,24 @@ class PendingFragment : Fragment(){
 
     private val refreshListener: RefreshListener = object : RefreshListener {
         @SuppressLint("SetTextI18n")
-        override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int) {
+        override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int, finish: Boolean) {
 
             val pendingSectionList = downLoadService!!.getPendingSectionList()
             val pendingSection = pendingSectionList.find { section -> section.picSectionBean.id == sectionId }
             val realPosition = pendingSectionList.indexOf(pendingSection)
 
 
-            val viewHolder =
-                pendingListView.findViewHolderForAdapterPosition(realPosition) as PicSectionListAdapter.ViewHolder?
+            MainScope().launch {
+                val viewHolder =
+                    pendingListView.findViewHolderForAdapterPosition(realPosition) as PicSectionListAdapter.ViewHolder?
 
-            if (viewHolder != null) {
-                Log.d(TAG, "update process for $sectionId")
-                MainScope().launch {
-                    viewHolder.process.visibility = View.VISIBLE
-                    viewHolder.process.text = "$currCount/$max"
-                    Log.d(TAG, "current = $currCount max = $max")
+                if (viewHolder != null) {
+                    if (finish) {
+                        Log.d(TAG, "update process finish for $sectionId")
+                        picSectionListAdapter.renderProcessFinish(viewHolder, realPosition)
+                    } else {
+                        picSectionListAdapter.renderProcessCounter(viewHolder, realPosition)
+                    }
                 }
             }
         }

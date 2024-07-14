@@ -19,17 +19,21 @@ object ProcessCounter {
     }
 
     fun getCounter(id: Long): Counter? {
-        val counter1 = counter[id]
-        if (counter1 != null) {
-            return counter1
+        synchronized(ProcessCounter) {
+            val counter1 = counter[id]
+            if (counter1 != null) {
+                return counter1
+            }
+            return finishedCounter[id]
         }
-        return finishedCounter[id]
     }
 
     fun remove(id: Long) {
-        val counter1 = counter.remove(id)
-        if (counter1 != null) {
-            finishedCounter[id] = counter1
+        synchronized(ProcessCounter) {
+            val counter1 = counter.remove(id)
+            if (counter1 != null) {
+                finishedCounter[id] = counter1
+            }
         }
     }
 

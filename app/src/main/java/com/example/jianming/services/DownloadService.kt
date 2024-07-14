@@ -215,7 +215,7 @@ class DownloadService : Service() {
                     sectionId,
                     0,
                     currCounter.getProcess(),
-                    currCounter.max
+                    currCounter.max, false
                 )
             }
         }
@@ -238,7 +238,7 @@ class DownloadService : Service() {
             processImgItem(it, sectionInfoBean, sectionConfig, latch)
         }
         latch.await()
-        refreshListener.forEach { it.doRefreshProcess(pendingSectionData.picSectionBean.id, 0, sectionInfoBean.pics.size, sectionInfoBean.pics.size) }
+        refreshListener.forEach { it.doRefreshProcess(pendingSectionData.picSectionBean.id, 0, sectionInfoBean.pics.size, sectionInfoBean.pics.size, true) }
         picSectionDao.updateClientStatusByServerIndex(
             pendingSectionData.picSectionBean.id,
             PicSectionBean.ClientStatus.LOCAL
