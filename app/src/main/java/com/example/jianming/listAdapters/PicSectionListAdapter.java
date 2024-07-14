@@ -93,6 +93,38 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         viewHolder.deleteBtn.setVisibility(View.GONE);
     }
 
+    public void renderProcessCounter(final ViewHolder viewHolder, final int position) {
+        ProcessCounter.Counter counter = ProcessCounter.INSTANCE.getCounter(dataArray.get(position).getPicSectionBean().getId());
+        PicSectionBean.ClientStatus clientStatus = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getClientStatus();
+        if (counter != null) {
+            if (true) {
+                viewHolder.process.setText("" + counter.getProcess() + "/" + counter.getMax());
+                viewHolder.process.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.process.setVisibility(View.GONE);
+            }
+        } else {
+            viewHolder.process.setVisibility(View.GONE);
+        }
+    }
+
+    public void renderProcessFinish(final ViewHolder viewHolder, final int position) {
+        ProcessCounter.Counter counter = ProcessCounter.INSTANCE.getCounter(dataArray.get(position).getPicSectionBean().getId());
+        PicSectionBean.ClientStatus clientStatus = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getClientStatus();
+        if (counter != null) {
+            if (true) {
+                Log.d(TAG, "set " + dataArray.get(position).getPicSectionBean().getName() + " finish");
+                viewHolder.process.setText("" + counter.getMax() + "/" + counter.getMax());
+                viewHolder.process.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.process.setVisibility(View.GONE);
+            }
+        } else {
+            viewHolder.process.setVisibility(View.GONE);
+        }
+
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
@@ -106,17 +138,7 @@ public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAd
         } else {
             renderNonExistItem(viewHolder);
         }
-        ProcessCounter.Counter counter = ProcessCounter.INSTANCE.getCounter(dataArray.get(position).getPicSectionBean().getId());
-        if (counter != null) {
-            if (displayProcessCount || clientStatus != PicSectionBean.ClientStatus.LOCAL) {
-                viewHolder.process.setText("" + counter.getProcess() + "/" + counter.getMax());
-                viewHolder.process.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.process.setVisibility(View.GONE);
-            }
-        } else {
-            viewHolder.process.setVisibility(View.GONE);
-        }
+        renderProcessCounter(viewHolder, position);
 
         viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getId();
         viewHolder.position = viewHolder.getAdapterPosition();
