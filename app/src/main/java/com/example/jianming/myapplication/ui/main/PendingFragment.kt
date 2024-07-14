@@ -134,7 +134,7 @@ class PendingFragment : Fragment(){
 
     private val refreshListener: RefreshListener = object : RefreshListener {
         @SuppressLint("SetTextI18n")
-        override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int, finish: Boolean) {
+        override fun doRefreshProcess(sectionId:Long, finish: Boolean) {
 
             val pendingSectionList = downLoadService!!.getPendingSectionList()
             val pendingSection = pendingSectionList.find { section -> section.picSectionBean.id == sectionId }
@@ -147,7 +147,6 @@ class PendingFragment : Fragment(){
 
                 if (viewHolder != null) {
                     if (finish) {
-                        Log.d(TAG, "update process finish for $sectionId")
                         picSectionListAdapter.renderProcessFinish(viewHolder, realPosition)
                     } else {
                         picSectionListAdapter.renderProcessCounter(viewHolder, realPosition)

@@ -141,7 +141,7 @@ class ExistSectionListFragment : Fragment(){
 
     private val refreshListener: RefreshListener = object : RefreshListener {
         @SuppressLint("SetTextI18n")
-        override fun doRefreshProcess(sectionId:Long, position: Int, currCount: Int, max: Int, finish: Boolean) {
+        override fun doRefreshProcess(sectionId:Long,  finish: Boolean) {
         }
 
         @SuppressLint("NotifyDataSetChanged")

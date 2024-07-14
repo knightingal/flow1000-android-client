@@ -171,19 +171,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun doRefreshProcess(sectionId: Long, position: Int, currCount: Int, max: Int, finish: Boolean) {
-        val viewHolder =
-            listView.findViewHolderForAdapterPosition(position) as PicSectionListAdapter.ViewHolder?
-        if (currCount == max) {
-            picSectionDataList[position].picSectionBean.exist = 1
-            picSectionDao.update(picSectionDataList[position].picSectionBean)
-            picSectionListAdapter.notifyDataSetChanged()
-        }
-        if (viewHolder != null) {
-            MainScope().launch {
-                Log.d(TAG, "current = $currCount max = $max")
-            }
-        }
+    override fun doRefreshProcess(sectionId: Long, finish: Boolean) {
     }
 
     override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
