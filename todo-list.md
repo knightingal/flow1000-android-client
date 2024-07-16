@@ -1,5 +1,6 @@
-* Remove floating button
+* ~~Remove floating button~~
 
-* Add about page
+* ~~Add about page~~
 
 * Add package update feature
+* Make download service concurrent
