@@ -96,10 +96,8 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "password", "\"${localProperties["password"] as String}\"")
         }
         release {
-            buildConfigField("String", "password", "\"${localProperties["password"] as String}\"")
             isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
