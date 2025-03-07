@@ -92,6 +92,11 @@ android {
         versionName = "${releaseTime()}-${commitNum()}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            // Filter for architectures supported by Flutter
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
+        }
     }
 
     buildTypes {
@@ -188,4 +193,5 @@ dependencies {
     val workVersion = "2.8.1"
     // flex layout
     implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation(project(":flutter"))
 }
