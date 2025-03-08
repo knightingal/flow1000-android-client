@@ -6,6 +6,12 @@ pluginManagement {
         maven{
             url=uri ("https://maven.aliyun.com/repository/central")
         }
+        maven{
+            url=uri ("https://maven.aliyun.com/repository/gradle-plugin")
+        }
+        maven{
+            url=uri ("https://storage.googleapis.com/download.flutter.io")
+        }
         google()
         mavenCentral()
         gradlePluginPortal()
@@ -19,6 +25,12 @@ dependencyResolutionManagement {
         }
         maven{
             url=uri ("https://maven.aliyun.com/repository/central")
+        }
+        maven{
+            url=uri ("https://maven.aliyun.com/repository/gradle-plugin")
+        }
+        maven{
+            url=uri ("https://storage.googleapis.com/download.flutter.io")
         }
         google()
         mavenCentral()
