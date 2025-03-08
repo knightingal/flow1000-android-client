@@ -14,7 +14,7 @@ import javax.crypto.spec.SecretKeySpec
 object Decryptor {
     fun decrypt(encrypted: ByteArray?): ByteArray {
         val iv = "2017041621251234".toByteArray()
-        val key = BuildConfig.password.toByteArray()
+        val key = BuildConfig.PASSWORD.toByteArray()
         try {
             val cipher = Cipher.getInstance("AES/CFB/NoPadding")
             val secretKey = SecretKeySpec(key, "AES")

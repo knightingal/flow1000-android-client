@@ -101,6 +101,7 @@ android {
 
     buildTypes {
         debug {
+            buildConfigField("String", "PASSWORD", "\""+keystoreProperties["imgPassword"] as String+"\"")
         }
         release {
             isMinifyEnabled = false
@@ -109,6 +110,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "PASSWORD", "\""+keystoreProperties["imgPassword"] as String+"\"")
         }
     }
 
