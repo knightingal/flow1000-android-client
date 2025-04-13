@@ -10,7 +10,7 @@ import androidx.viewpager.widget.ViewPager
 import androidx.appcompat.app.AppCompatActivity
 import com.example.jianming.myapplication.ui.main.SectionsPagerAdapter
 import com.example.jianming.myapplication.databinding.ActivityMainBinding
-import io.flutter.embedding.android.FlutterActivity
+//import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : AppCompatActivity() {
 
