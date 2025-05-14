@@ -2,9 +2,11 @@ package com.example.jianming.beans
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class PicSectionBean (
     @JsonProperty("name")
     var name: String,
