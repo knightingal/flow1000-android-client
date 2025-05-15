@@ -15,10 +15,13 @@
  */
 package com.example.jianming.beans
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+
 /**
  * @author Knightingal
  * @since v1.0
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class SectionInfoBean (
     var picPage: Long,
     var dirName: String,
