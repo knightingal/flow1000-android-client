@@ -57,9 +57,7 @@ var keystorePropertiesFile = rootProject.file("keystore.properties")
 var keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
-var localPropertiesFile = rootProject.file("local.properties")
-var localProperties = Properties()
-localProperties.load(FileInputStream(localPropertiesFile))
+
 
 android {
     buildFeatures {
