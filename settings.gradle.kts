@@ -42,6 +42,6 @@ include(":app" )
 // Include the host app project. Assumed existing content.
 // Replace "flutter_module" with whatever package_name you supplied when you ran:
 // `$ flutter create -t module [package_name]
-//val filePath = settingsDir.toString() + "/flutter_module/.android/include_flutter.groovy"
-//apply(from = File(filePath))
+val filePath = settingsDir.toString() + "/../flutter_module/.android/include_flutter.groovy"
+apply(from = File(filePath))
  
