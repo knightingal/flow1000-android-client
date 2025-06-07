@@ -193,5 +193,8 @@ dependencies {
     val workVersion = "2.8.1"
     // flex layout
     implementation("com.google.android.flexbox:flexbox:3.0.0")
-//    implementation(project(":flutter"))
+
+//    debugImplementation("com.example.flutter_module:flutter_debug:1.0")
+//    releaseImplementation("com.example.flutter_module:flutter_release:1.0")
+    implementation(project(":flutter"))
 }
