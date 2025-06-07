@@ -1,6 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Open the database and store the reference.
+  final database = openDatabase(
+    // Set the path to the database. Note: Using the `join` function from the
+    // `path` package is best practice to ensure the path is correctly
+    // constructed for each platform.
+    join(await getDatabasesPath(), 'database-flow1000'),
+    // When the database is first created, create a table to store dogs.
+    // Set the version. This executes the onCreate function and provides a
+    // path to perform database upgrades and downgrades.
+  );
+
+  final db = await database;
+  db.insert("UpdateStamp", {
+    "table_name": "test table",
+    "update_stamp": "2001-01-01",
+  });
+
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
