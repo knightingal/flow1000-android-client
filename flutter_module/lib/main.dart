@@ -1,25 +1,31 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_module/db.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // Open the database and store the reference.
-  final database = openDatabase(
-    // Set the path to the database. Note: Using the `join` function from the
-    // `path` package is best practice to ensure the path is correctly
-    // constructed for each platform.
-    join(await getDatabasesPath(), 'database-flow1000'),
-    // When the database is first created, create a table to store dogs.
-    // Set the version. This executes the onCreate function and provides a
-    // path to perform database upgrades and downgrades.
-  );
+final DB db = DB();
 
-  final db = await database;
-  db.insert("UpdateStamp", {
-    "table_name": "test table",
-    "update_stamp": "2001-01-01",
-  });
+void main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // // Open the database and store the reference.
+  // final database = openDatabase(
+  //   // Set the path to the database. Note: Using the `join` function from the
+  //   // `path` package is best practice to ensure the path is correctly
+  //   // constructed for each platform.
+  //   join(await getDatabasesPath(), 'database-flow1000'),
+  //   // When the database is first created, create a table to store dogs.
+  //   // Set the version. This executes the onCreate function and provides a
+  //   // path to perform database upgrades and downgrades.
+  // );
+
+  // final db = await database;
+  // db.insert("UpdateStamp", {
+  //   "table_name": "test table",
+  //   "update_stamp": "2001-01-01",
+  // });
+  db.init();
 
   runApp(const MyApp());
 }
@@ -70,6 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
+    db.queryDb().then((rows) {
+      log(rows[0]["name"].toString());
+    });
+
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
