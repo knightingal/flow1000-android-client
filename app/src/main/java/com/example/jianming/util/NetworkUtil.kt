@@ -2,7 +2,7 @@ package com.example.jianming.util
 
 import android.content.Context
 import android.net.ConnectivityManager
-import okhttp3.OkHttpClient
+//import okhttp3.OkHttpClient
 
 object NetworkUtil {
     fun isNetworkAvailable(context: Context): Boolean {
@@ -11,5 +11,5 @@ object NetworkUtil {
         return currentNetWork != null
     }
 
-    val okHttpClient = OkHttpClient()
+//    val okHttpClient = OkHttpClient()
 }

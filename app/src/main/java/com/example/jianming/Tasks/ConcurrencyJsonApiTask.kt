@@ -1,14 +1,18 @@
 package com.example.jianming.Tasks
 
-import com.example.jianming.util.NetworkUtil
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
+//import okhttp3.MediaType.Companion.toMediaType
+//import okhttp3.Request
+//import okhttp3.RequestBody.Companion.toRequestBody
 
 object ConcurrencyJsonApiTask {
 
@@ -26,18 +30,22 @@ object ConcurrencyJsonApiTask {
 
     private suspend fun makePost(url: String, body: String): String {
         return withContext(Dispatchers.IO) {
-            val requestBody = body.toRequestBody("application/json; charset=utf-8".toMediaType())
-            val request = Request.Builder().url(url).method("POST", requestBody).build()
-            NetworkUtil.okHttpClient.newCall(request).execute().body.string()
+            ""
+//            val requestBody = body.toRequestBody("application/json; charset=utf-8".toMediaType())
+//            val request = Request.Builder().url(url).method("POST", requestBody).build()
+//            NetworkUtil.okHttpClient.newCall(request).execute().body.string()
         }
     }
     suspend fun makeRequest(url: String): String {
         return withContext(Dispatchers.IO) {
-            val request = Request.Builder().url(url).build()
-
-            val body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
-
-            body
+            val client = HttpClient(CIO)
+            val response: HttpResponse = client.get(url)
+            response.body()
+//            val request = Request.Builder().url(url).build()
+//
+//            val body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
+//
+//            body
         }
     }
 

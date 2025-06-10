@@ -23,7 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Request
+//import okhttp3.Request
 
 class OnlineRecImgListAdapter(context: SectionImageListActivity, var sectionDetail: SectionDetail?) : RecyclerView.Adapter<OnlineRecImgListAdapter.ImgViewHolder>() {
 
@@ -65,23 +65,23 @@ class OnlineRecImgListAdapter(context: SectionImageListActivity, var sectionDeta
 
         MainScope().launch {
             withContext(Dispatchers.IO) {
-                val request = Request.Builder().url(imgUrl).build()
-                var content = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
-                if (sectionConfig.encryped) {
-                    content = Decryptor.decrypt(content)
-                }
-                if (holder.imgName.equals(imgName)) {
-                    withContext(Dispatchers.Main) {
-
-                        holder.imgView.setImageBitmap(
-                            BitmapFactory.decodeByteArray(
-                                content,
-                                0,
-                                content.size
-                            )
-                        )
-                    }
-                }
+//                val request = Request.Builder().url(imgUrl).build()
+//                var content = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
+//                if (sectionConfig.encryped) {
+//                    content = Decryptor.decrypt(content)
+//                }
+//                if (holder.imgName.equals(imgName)) {
+//                    withContext(Dispatchers.Main) {
+//
+//                        holder.imgView.setImageBitmap(
+//                            BitmapFactory.decodeByteArray(
+//                                content,
+//                                0,
+//                                content.size
+//                            )
+//                        )
+//                    }
+//                }
             }
         }
     }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Request
+//import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -27,26 +27,27 @@ object ConcurrencyImageTask {
     private suspend fun makeRequest(src: String, dest: File, encrypted: Boolean): ByteArray? {
         return withContext(Dispatchers.IO) {
             Log.d(TAG, "start download $src")
-            val request = Request.Builder().url(src).build()
-            var bytes: ByteArray?
-            while (true) {
-                try {
-                    bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
-                    val options: BitmapFactory.Options = BitmapFactory.Options()
-                    options.inJustDecodeBounds = true
-                    if (encrypted) {
-                        bytes = Decryptor.decrypt(bytes)
-                    }
-                    val fileOutputStream = FileOutputStream(dest, true)
-                    fileOutputStream.write(bytes)
-                    fileOutputStream.close()
-                    break
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    Log.e(TAG, "download $src error")
-                }
-            }
-            bytes
+            null
+//            val request = Request.Builder().url(src).build()
+//            var bytes: ByteArray?
+//            while (true) {
+//                try {
+//                    bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
+//                    val options: BitmapFactory.Options = BitmapFactory.Options()
+//                    options.inJustDecodeBounds = true
+//                    if (encrypted) {
+//                        bytes = Decryptor.decrypt(bytes)
+//                    }
+//                    val fileOutputStream = FileOutputStream(dest, true)
+//                    fileOutputStream.write(bytes)
+//                    fileOutputStream.close()
+//                    break
+//                } catch (e: IOException) {
+//                    e.printStackTrace()
+//                    Log.e(TAG, "download $src error")
+//                }
+//            }
+//            bytes
 
         }
 
@@ -55,23 +56,24 @@ object ConcurrencyImageTask {
     public suspend fun makeRequest(src: String, encrypted: Boolean): ByteArray? {
         return withContext(Dispatchers.IO) {
             Log.d(TAG, "start download $src")
-            val request = Request.Builder().url(src).build()
-            var bytes: ByteArray?
-            while (true) {
-                try {
-                    bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
-                    val options: BitmapFactory.Options = BitmapFactory.Options()
-                    options.inJustDecodeBounds = true
-                    if (encrypted) {
-                        bytes = Decryptor.decrypt(bytes)
-                    }
-                    break
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    Log.e(TAG, "download $src error")
-                }
-            }
-            bytes
+            null
+//            val request = Request.Builder().url(src).build()
+//            var bytes: ByteArray?
+//            while (true) {
+//                try {
+//                    bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
+//                    val options: BitmapFactory.Options = BitmapFactory.Options()
+//                    options.inJustDecodeBounds = true
+//                    if (encrypted) {
+//                        bytes = Decryptor.decrypt(bytes)
+//                    }
+//                    break
+//                } catch (e: IOException) {
+//                    e.printStackTrace()
+//                    Log.e(TAG, "download $src error")
+//                }
+//            }
+//            bytes
 
         }
 
