@@ -175,6 +175,9 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+    val ktorVersion="3.1.3"
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
     val roomVersion = "2.5.1"
     implementation("androidx.room:room-runtime:$roomVersion")
