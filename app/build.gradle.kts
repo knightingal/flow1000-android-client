@@ -155,18 +155,16 @@ task("releaseUpload") {
 
 dependencies {
 
-//    implementation("com.nostra13.universalimageloader:universal-image-loader:1.9.5")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
-
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
 
     val jacksonVersion = "2.15.4"
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation( "com.google.code.gson:gson:2.10.1")
+    implementation( "com.google.code.gson:gson:2.11.0")
 
-    implementation("com.google.guava:guava:32.0.1-android")
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.guava:guava:33.0.0-android")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
@@ -187,15 +185,11 @@ dependencies {
     testImplementation("androidx.room:room-testing:$roomVersion")
     implementation("androidx.room:room-paging:$roomVersion")
 
-
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
-    val workVersion = "2.8.1"
     // flex layout
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 
-//    debugImplementation("com.example.flutter_module:flutter_debug:1.0")
-//    releaseImplementation("com.example.flutter_module:flutter_release:1.0")
     implementation(project(":flutter"))
 }
