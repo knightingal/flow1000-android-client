@@ -162,8 +162,6 @@ dependencies {
     val jacksonVersion = "2.15.4"
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
-
     implementation( "com.google.code.gson:gson:2.10.1")
 
     implementation("com.google.guava:guava:32.0.1-android")
