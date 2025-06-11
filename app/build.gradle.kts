@@ -80,7 +80,7 @@ android {
         }
     }
     namespace = "com.example.jianming.myapplication"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.flow1000client"
