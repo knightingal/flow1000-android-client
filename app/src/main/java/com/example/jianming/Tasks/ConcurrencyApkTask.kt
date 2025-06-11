@@ -1,14 +1,14 @@
 package com.example.jianming.Tasks
 
-import android.graphics.BitmapFactory
 import android.util.Log
-import com.example.jianming.util.Decryptor
-import com.example.jianming.util.NetworkUtil
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-//import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -26,21 +26,22 @@ object ConcurrencyApkTask {
 
     suspend fun makeRequest(src: String, dest: File): ByteArray? {
         return withContext(Dispatchers.IO) {
-//            Log.d(TAG, "start download $src")
-//            val request = Request.Builder().url(src).build()
-//            var bytes: ByteArray?
-//            while (true) {
-//                try {
-//                    bytes = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
-//                    val fileOutputStream = FileOutputStream(dest, false)
-//                    fileOutputStream.write(bytes)
-//                    fileOutputStream.close()
-//                    break
-//                } catch (e: IOException) {
-//                    e.printStackTrace()
-//                    Log.e(TAG, "download $src error")
-//                }
-//            }
+            Log.d(TAG, "start download $src")
+            val client = HttpClient(CIO)
+
+            var bytes: ByteArray?
+            while (true) {
+                try {
+                    bytes = client.get(src).body()
+                    val fileOutputStream = FileOutputStream(dest, false)
+                    fileOutputStream.write(bytes)
+                    fileOutputStream.close()
+                    break
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    Log.e(TAG, "download $src error")
+                }
+            }
             null
 
         }

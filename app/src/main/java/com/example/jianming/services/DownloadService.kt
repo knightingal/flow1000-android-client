@@ -142,28 +142,31 @@ class DownloadService : Service() {
             allPicSectionBeanList = picSectionDao.getAll().toList().map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
             val pendingUrl =
                 "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
+            val picIndexResp: String = runBlocking {
+                val response: HttpResponse = client.get(pendingUrl)
+                response.body()
+            }
 
-//            val picIndexResp = NetworkUtil.okHttpClient.newCall(Request.Builder().url(pendingUrl).build()).execute().body.string()
-//            var picSectionBeanList: List<PicSectionBean> = mapper.readValue(picIndexResp)
-//            pendingSectionBeanList = mutableListOf()
+            var picSectionBeanList: List<PicSectionBean> = mapper.readValue(picIndexResp)
+            pendingSectionBeanList = mutableListOf()
 
-//            db.runInTransaction {
-//                picSectionBeanList = picSectionBeanList.filter {
-//                    val byServerIndex = picSectionDao.getByServerIndex(it.id)
-//                    byServerIndex.clientStatus != PicSectionBean.ClientStatus.LOCAL
-//                }
-//            }
-//
-//            pendingSectionBeanList.addAll(picSectionBeanList.map { PicSectionData(it, 0).apply { this.process = 0 } })
-//            pendingSectionBeanList.sortBy { it.picSectionBean.id }
-//            db.runInTransaction {
-//                pendingSectionBeanList.forEach {
-//                    picSectionDao.updateClientStatusByServerIndex(
-//                        it.picSectionBean.id,
-//                        PicSectionBean.ClientStatus.PENDING
-//                    )
-//                }
-//            }
+            db.runInTransaction {
+                picSectionBeanList = picSectionBeanList.filter {
+                    val byServerIndex = picSectionDao.getByServerIndex(it.id)
+                    byServerIndex.clientStatus != PicSectionBean.ClientStatus.LOCAL
+                }
+            }
+
+            pendingSectionBeanList.addAll(picSectionBeanList.map { PicSectionData(it, 0).apply { this.process = 0 } })
+            pendingSectionBeanList.sortBy { it.picSectionBean.id }
+            db.runInTransaction {
+                pendingSectionBeanList.forEach {
+                    picSectionDao.updateClientStatusByServerIndex(
+                        it.picSectionBean.id,
+                        PicSectionBean.ClientStatus.PENDING
+                    )
+                }
+            }
             MainScope().launch {
                 refreshListener.forEach {
                     it.notifyListReady()

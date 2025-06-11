@@ -41,11 +41,6 @@ object ConcurrencyJsonApiTask {
             val client = HttpClient(CIO)
             val response: HttpResponse = client.get(url)
             response.body()
-//            val request = Request.Builder().url(url).build()
-//
-//            val body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
-//
-//            body
         }
     }
 

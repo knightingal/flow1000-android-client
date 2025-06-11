@@ -5,7 +5,6 @@ import SERVER_PORT
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +17,17 @@ import com.example.jianming.myapplication.R
 import com.example.jianming.myapplication.SectionConfig
 import com.example.jianming.myapplication.SectionImageListActivity
 import com.example.jianming.util.Decryptor
-import com.example.jianming.util.NetworkUtil
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsBytes
+
 //import okhttp3.Request
 
 class OnlineRecImgListAdapter(context: SectionImageListActivity, var sectionDetail: SectionDetail?) : RecyclerView.Adapter<OnlineRecImgListAdapter.ImgViewHolder>() {
@@ -65,23 +70,25 @@ class OnlineRecImgListAdapter(context: SectionImageListActivity, var sectionDeta
 
         MainScope().launch {
             withContext(Dispatchers.IO) {
-//                val request = Request.Builder().url(imgUrl).build()
-//                var content = NetworkUtil.okHttpClient.newCall(request).execute().body.bytes()
-//                if (sectionConfig.encryped) {
-//                    content = Decryptor.decrypt(content)
-//                }
-//                if (holder.imgName.equals(imgName)) {
-//                    withContext(Dispatchers.Main) {
-//
-//                        holder.imgView.setImageBitmap(
-//                            BitmapFactory.decodeByteArray(
-//                                content,
-//                                0,
-//                                content.size
-//                            )
-//                        )
-//                    }
-//                }
+                val client = HttpClient(CIO)
+                val response: HttpResponse = client.get(imgUrl)
+                var content: ByteArray = response.body()
+
+                if (sectionConfig.encryped) {
+                    content = Decryptor.decrypt(content)
+                }
+                if (holder.imgName.equals(imgName)) {
+                    withContext(Dispatchers.Main) {
+
+                        holder.imgView.setImageBitmap(
+                            BitmapFactory.decodeByteArray(
+                                content,
+                                0,
+                                content.size
+                            )
+                        )
+                    }
+                }
             }
         }
     }

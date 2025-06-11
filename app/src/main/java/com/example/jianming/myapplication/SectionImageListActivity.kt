@@ -16,14 +16,17 @@ import com.example.jianming.SectionDetail
 import com.example.jianming.listAdapters.OnlineRecImgListAdapter
 import com.example.jianming.util.AppDataBase
 import com.example.jianming.listAdapters.RecImgListAdapter
-import com.example.jianming.util.NetworkUtil
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-//import okhttp3.Request
 
 class SectionImageListActivity : AppCompatActivity(){
 
@@ -81,21 +84,22 @@ class SectionImageListActivity : AppCompatActivity(){
             val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=$sectionIndex"
             MainScope().launch {
                 withContext(Dispatchers.IO) {
-//                    val request = Request.Builder().url(url).build()
-//                    val body = NetworkUtil.okHttpClient.newCall(request).execute().body.string()
-//                    val mapper = jacksonObjectMapper()
-//                    try {
-//                        val sectionDetail = mapper.readValue<SectionDetail>(body)
-//                        withContext(Dispatchers.Main) {
-//
-//                            val sectionConfig = getSectionConfig(sectionDetail.album)
-//                            (recyclerView.adapter as OnlineRecImgListAdapter).sectionDetail = sectionDetail
-//                            (recyclerView.adapter as OnlineRecImgListAdapter).sectionConfig = sectionConfig
-//                            (recyclerView.adapter as OnlineRecImgListAdapter).notifyDataSetChanged()
-//                        }
-//                    } catch (e: Exception) {
-//                        e.printStackTrace()
-//                    }
+                    val client = HttpClient(CIO)
+                    val response: HttpResponse = client.get(url)
+                    val body: String = response.body()
+                    val mapper = jacksonObjectMapper()
+                    try {
+                        val sectionDetail = mapper.readValue<SectionDetail>(body)
+                        withContext(Dispatchers.Main) {
+
+                            val sectionConfig = getSectionConfig(sectionDetail.album)
+                            (recyclerView.adapter as OnlineRecImgListAdapter).sectionDetail = sectionDetail
+                            (recyclerView.adapter as OnlineRecImgListAdapter).sectionConfig = sectionConfig
+                            (recyclerView.adapter as OnlineRecImgListAdapter).notifyDataSetChanged()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }
