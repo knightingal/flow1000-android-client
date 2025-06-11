@@ -42,8 +42,7 @@ object ConcurrencyApkTask {
                     Log.e(TAG, "download $src error")
                 }
             }
-            null
-
+            bytes
         }
 
     }
