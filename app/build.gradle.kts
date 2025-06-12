@@ -174,6 +174,7 @@ dependencies {
     val ktorVersion="3.1.3"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
 
     val roomVersion = "2.5.1"
     implementation("androidx.room:room-runtime:$roomVersion")
