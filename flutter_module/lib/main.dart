@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    db.queryDb().then((rows) {
+    db.queryPicInfoBySectionId(5).then((rows) {
       log(rows[0]["name"].toString());
     });
 
