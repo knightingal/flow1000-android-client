@@ -8,7 +8,8 @@ class DB {
   void init() {
     WidgetsFlutterBinding.ensureInitialized();
     database = getDatabasesPath().then(
-      (basePath) => openDatabase(join(basePath, 'database-flow1000')),
+      (basePath) =>
+          openDatabase(join(basePath, 'database-flow1000'), readOnly: true),
     );
   }
 
@@ -27,7 +28,7 @@ class DB {
     return database.then((db) {
       return db.query(
         "PicInfoBean",
-        columns: ["id", "name"],
+        columns: ["index", "name"],
         where: "sectionIndex=?",
         whereArgs: [sectionId],
       );
