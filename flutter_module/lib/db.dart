@@ -22,4 +22,15 @@ class DB {
       );
     });
   }
+
+  Future<List<Map<String, Object?>>> queryPicInfoBySectionId(int sectionId) {
+    return database.then((db) {
+      return db.query(
+        "PicInfoBean",
+        columns: ["id", "name"],
+        where: "sectionIndex=?",
+        whereArgs: [sectionId],
+      );
+    });
+  }
 }
