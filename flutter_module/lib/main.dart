@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     log("queryPicInfoBySectionId");
-    platform.invokeMethod<int>("aboutPage").then((pageId) {
+    platform.invokeMethod<int>("getSectionId").then((pageId) {
       log("pageId:$pageId");
       db.queryPicInfoBySectionId(pageId!).then((rows) {
         log(rows[0]["name"].toString());
@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  static const platform = MethodChannel('flutter/startWeb');
+  static const platform = MethodChannel('flutter/flow1000');
 
   @override
   Widget build(BuildContext context) {

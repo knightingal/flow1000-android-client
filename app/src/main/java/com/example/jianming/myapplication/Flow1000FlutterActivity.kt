@@ -7,7 +7,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class Flow1000FlutterActivity : FlutterActivity() {
-    private val CHANNEL = "flutter/startWeb"
+    private val CHANNEL = "flutter/flow1000"
 
     companion object {
         fun createDefaultIntent(launchContext: Context): Intent {
@@ -24,7 +24,7 @@ class Flow1000FlutterActivity : FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
                 call, result ->
 
-            if (call.method == "aboutPage") {
+            if (call.method == "getSectionId") {
                 result.success(5)
 
             }
