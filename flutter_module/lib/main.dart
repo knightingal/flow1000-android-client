@@ -3,8 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_module/db.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 
 final DB db = DB();
 
@@ -74,7 +72,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   String displayText = "hello";
 
   void _incrementCounter() {
