@@ -49,8 +49,7 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { _ ->
 //            startActivity(Intent(this, AboutActivity::class.java))
             startActivity(
-                FlutterActivity.withNewEngine().initialRoute("/sectionContent/5")
-                    .build(this)
+                Flow1000FlutterActivity.createDefaultIntent(this)
             )
         }
     }

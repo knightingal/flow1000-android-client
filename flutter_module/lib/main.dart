@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_module/db.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -78,18 +79,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     log("queryPicInfoBySectionId");
-    db.queryPicInfoBySectionId(5).then((rows) {
-      log(rows[0]["name"].toString());
-      setState(() {
-        displayText = rows[0]["name"].toString();
+    platform.invokeMethod<int>("aboutPage").then((pageId) {
+      log("pageId:$pageId");
+      db.queryPicInfoBySectionId(pageId!).then((rows) {
+        log(rows[0]["name"].toString());
+        setState(() {
+          displayText = rows[0]["name"].toString();
+        });
       });
     });
   }
 
+  static const platform = MethodChannel('flutter/startWeb');
+
   @override
   Widget build(BuildContext context) {
-    ModalRoute route = ModalRoute.of(context)!;
-
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
