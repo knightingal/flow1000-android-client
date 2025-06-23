@@ -24,11 +24,24 @@ class DB {
     });
   }
 
+  Future<List<Map<String, Object?>>> querySectionInfoBySectionId(
+    int sectionId,
+  ) {
+    return database.then((db) {
+      return db.query(
+        "PicSectionBean",
+        columns: ["index", "name"],
+        where: "sectionIndex=?",
+        whereArgs: [sectionId],
+      );
+    });
+  }
+
   Future<List<Map<String, Object?>>> queryPicInfoBySectionId(int sectionId) {
     return database.then((db) {
       return db.query(
         "PicInfoBean",
-        columns: ["index", "name"],
+        columns: ["index", "name", "width", "height"],
         where: "sectionIndex=?",
         whereArgs: [sectionId],
       );

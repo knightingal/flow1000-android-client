@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_module/main.dart';
 import 'package:flutter_module/scroll.dart';
 
 import 'struct/album_info.dart';
@@ -18,8 +19,13 @@ class AlbumContentPage extends StatefulWidget {
 class AlbumContentPageState extends State<AlbumContentPage> {
   late double width;
   Future<SectionDetail> fetchAlbumIndex() async {
-    // TODO: fullfill SectionDetail
-    return SectionDetail.fromJson(Map.of({}));
+    List<Map<String, Object?>> imgRow = await db.queryPicInfoBySectionId(
+      widget.albumIndex,
+    );
+    List<Map<String, Object?>> sectionRow = await db
+        .querySectionInfoBySectionId(widget.albumIndex);
+
+    return SectionDetail.fromJson(sectionRow[0], imgRow);
   }
 
   SectionDetail? albumInfoList;

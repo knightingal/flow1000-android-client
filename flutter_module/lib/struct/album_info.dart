@@ -10,7 +10,6 @@ Map<String, String> albumMap = {
 
 class SectionDetail {
   final String dirName;
-  final int picPage;
   final List<ImgDetail> pics;
   final String album;
   final String title;
@@ -18,23 +17,22 @@ class SectionDetail {
 
   SectionDetail({
     required this.dirName,
-    required this.picPage,
     required this.pics,
     required this.album,
     required this.title,
     required this.timeStampe,
   });
 
-  factory SectionDetail.fromJson(Map<String, dynamic> json) {
-    final String dirName = json["dirName"];
+  factory SectionDetail.fromJson(
+    Map<String, dynamic> json,
+    List<Map<String, dynamic>> picJson,
+  ) {
+    final String dirName = json["name"];
     return SectionDetail(
       dirName: dirName,
-      picPage: json["picPage"],
-      pics: (json["pics"] as List<dynamic>)
-          .map((e) => ImgDetail.fromJson(e))
-          .toList(),
+      pics: picJson.map((e) => ImgDetail.fromJson(e)).toList(),
       album: json["album"],
-      title: json["title"],
+      title: json["name"],
       timeStampe: json["mtime"],
     );
   }
