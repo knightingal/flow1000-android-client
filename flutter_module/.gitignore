@@ -1,5 +1,4 @@
 .DS_Store
-.dart_tool/
 
 .pub/
 
@@ -37,7 +36,6 @@ Icon?
 .tags*
 
 build/
-.android/
 .ios/
 .flutter-plugins
 .flutter-plugins-dependencies
