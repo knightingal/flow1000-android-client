@@ -46,6 +46,10 @@ final _router = GoRouter(
         );
       },
     ),
+    GoRoute(
+      path: '/about_page',
+      builder: (context, state) => const AboutPage(),
+    ),
   ],
 );
 
@@ -100,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // });
   }
 
+  // ignore: unused_field
   static const platform = MethodChannel('flutter/flow1000');
 
   @override
@@ -149,6 +154,18 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class AboutPage extends StatelessWidget {
+  const AboutPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('About Page')),
+      body: const Center(child: Text('This is the About Page!')),
     );
   }
 }
