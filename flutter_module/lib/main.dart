@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_module/db.dart';
+import 'package:go_router/go_router.dart';
 
 final DB db = DB();
 
@@ -29,32 +30,42 @@ void main() async {
   runApp(const MyApp());
 }
 
+final _router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => MyHomePage(title: 'Flutter Demo Home Page'),
+    ),
+    GoRoute(
+      path: '/section_page/:sectionId',
+      builder: (context, state) {
+        var sectionId = state.pathParameters["sectionId"];
+        return MyHomePage(
+          title: 'Flutter Demo Home Page',
+          sectionId: int.parse(sectionId!),
+        );
+      },
+    ),
+  ],
+);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: _router,
+
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or press Run > Flutter Hot Reload in a Flutter IDE). Notice that the
-        // counter didn't reset back to zero; the application is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      theme: ThemeData(primarySwatch: Colors.blue),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key, required this.title, this.sectionId});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -67,6 +78,8 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
+  final int? sectionId;
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -76,15 +89,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     log("queryPicInfoBySectionId");
-    platform.invokeMethod<int>("getSectionId").then((pageId) {
-      log("pageId:$pageId");
-      db.queryPicInfoBySectionId(pageId!).then((rows) {
-        log(rows[0]["name"].toString());
-        setState(() {
-          displayText = rows[0]["name"].toString();
-        });
+    // platform.invokeMethod<int>("getSectionId").then((pageId) {
+    //   log("pageId:$pageId");
+    db.queryPicInfoBySectionId(widget.sectionId!).then((rows) {
+      log(rows[0]["name"].toString());
+      setState(() {
+        displayText = rows[0]["name"].toString();
       });
     });
+    // });
   }
 
   static const platform = MethodChannel('flutter/flow1000');

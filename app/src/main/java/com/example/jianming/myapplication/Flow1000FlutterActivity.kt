@@ -6,12 +6,14 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
+private const val CHANNEL = "flutter/flow1000"
 class Flow1000FlutterActivity : FlutterActivity() {
-    private val CHANNEL = "flutter/flow1000"
 
     companion object {
         fun createDefaultIntent(launchContext: Context): Intent {
-            return Flow1000FlutterActivity.withNewEngine().build(launchContext)
+            return Flow1000FlutterActivity.withNewEngine()
+                .initialRoute("/section_page/5")
+                .build(launchContext)
         }
 
         private fun withNewEngine(): NewEngineIntentBuilder {
