@@ -1,223 +1,224 @@
-package com.example.jianming.listAdapters;
+package com.example.jianming.listAdapters
 
-import android.annotation.SuppressLint;
-import android.content.Context;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.DialogInterface
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room.databaseBuilder
+import com.example.jianming.beans.PicSectionBean.ClientStatus
+import com.example.jianming.beans.PicSectionData
+import com.example.jianming.dao.PicInfoDao
+import com.example.jianming.dao.PicSectionDao
+import com.example.jianming.myapplication.R
+import com.example.jianming.services.ProcessCounter.getCounter
+import com.example.jianming.util.AppDataBase
+import com.example.jianming.util.FileUtil.removeDir
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.example.jianming.services.ProcessCounter;
-import com.example.jianming.util.AppDataBase;
-import com.example.jianming.util.FileUtil;
-import com.example.jianming.beans.PicSectionBean;
-import com.example.jianming.beans.PicSectionData;
-import com.example.jianming.dao.PicSectionDao;
-import com.example.jianming.dao.PicInfoDao;
-import com.example.jianming.myapplication.R;
-
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Locale;
-
-public class PicSectionListAdapter extends RecyclerView.Adapter<PicSectionListAdapter.ViewHolder> {
-
-
-    public interface ItemClickListener {
-        void onItemClick(PicSectionData picSectionData);
+class PicSectionListAdapter(private val context: Context) :
+    RecyclerView.Adapter<PicSectionListAdapter.ViewHolder>() {
+    interface ItemClickListener {
+        fun onItemClick(picSectionData: PicSectionData?)
     }
 
-    private final static String TAG = "PicSectionListAdapter";
-    private List<PicSectionData> dataArray;
+    private var dataArray: List<PicSectionData>? = null
 
-    private final Context context;
+    private val picSectionDao: PicSectionDao
 
-    private final PicSectionDao picSectionDao;
+    private val picInfoDao: PicInfoDao
 
-    private final PicInfoDao picInfoDao;
+    private var displayProcessCount = false
 
-    private boolean displayProcessCount = false;
-
-    public void setDisplayProcessCount(boolean displayProcessCount) {
-        this.displayProcessCount = displayProcessCount;
+    fun setDisplayProcessCount(displayProcessCount: Boolean) {
+        this.displayProcessCount = displayProcessCount
     }
 
-    private ItemClickListener itemClickListener = null;
+    private var itemClickListener: ItemClickListener? = null
 
-    public void setItemClickListener(ItemClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
-    }
-    public PicSectionListAdapter(Context context) {
-        this.context = context;
-        AppDataBase db = Room.databaseBuilder(context,
-                AppDataBase.class, "database-flow1000").allowMainThreadQueries().build();
-        picSectionDao = db.picSectionDao();
-        picInfoDao = db.picInfoDao();
+    fun setItemClickListener(itemClickListener: ItemClickListener?) {
+        this.itemClickListener = itemClickListener
     }
 
-    public void setDataArray(List<PicSectionData> dataArray) {
-        this.dataArray = dataArray;
+    init {
+        val db = databaseBuilder(
+            context,
+            AppDataBase::class.java, "database-flow1000"
+        ).allowMainThreadQueries().build()
+        picSectionDao = db.picSectionDao()
+        picInfoDao = db.picInfoDao()
+    }
+
+    fun setDataArray(dataArray: List<PicSectionData>?) {
+        this.dataArray = dataArray
     }
 
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.pic_list_content, parent, false);
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val v = LayoutInflater.from(parent.context)
+            .inflate(R.layout.pic_list_content, parent, false)
 
-        ViewHolder vh = new ViewHolder(v);
-        v.setTag(vh);
-        return vh;
+        val vh: ViewHolder = ViewHolder(v)
+        v.tag = vh
+        return vh
     }
 
-    private void renderExistItem(final ViewHolder viewHolder) {
-        viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer));
-        viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer));
-        viewHolder.deleteBtn.setVisibility(View.VISIBLE);
+    private fun renderExistItem(viewHolder: ViewHolder) {
+        viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer))
+        viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer))
+        viewHolder.deleteBtn.visibility = View.VISIBLE
     }
 
-    private void renderNonExistItem(final ViewHolder viewHolder) {
-        viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurfaceVariant));
-        viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_surfaceVariant));
-        viewHolder.deleteBtn.setVisibility(View.GONE);
+    private fun renderNonExistItem(viewHolder: ViewHolder) {
+        viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurfaceVariant))
+        viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_surfaceVariant))
+        viewHolder.deleteBtn.visibility = View.GONE
     }
 
-    public void renderProcessCounter(final ViewHolder viewHolder, final int position) {
-        ProcessCounter.Counter counter = ProcessCounter.INSTANCE.getCounter(dataArray.get(position).getPicSectionBean().getId());
-        PicSectionBean.ClientStatus clientStatus = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getClientStatus();
+    fun renderProcessCounter(viewHolder: ViewHolder, position: Int) {
+        val counter = getCounter(
+            dataArray!![position].picSectionBean.id
+        )
+        val clientStatus = dataArray!![viewHolder.adapterPosition].picSectionBean.clientStatus
         if (counter != null) {
             if (true) {
-                viewHolder.process.setText("" + counter.getProcess() + "/" + counter.getMax());
-                viewHolder.process.setVisibility(View.VISIBLE);
+                viewHolder.process.text = "" + counter.getProcess() + "/" + counter.max
+                viewHolder.process.visibility = View.VISIBLE
             } else {
-                viewHolder.process.setVisibility(View.GONE);
+                viewHolder.process.visibility = View.GONE
             }
         } else {
-            viewHolder.process.setVisibility(View.GONE);
+            viewHolder.process.visibility = View.GONE
         }
     }
 
-    public void renderProcessFinish(final ViewHolder viewHolder, final int position) {
-        ProcessCounter.Counter counter = ProcessCounter.INSTANCE.getCounter(dataArray.get(position).getPicSectionBean().getId());
-        PicSectionBean.ClientStatus clientStatus = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getClientStatus();
+    fun renderProcessFinish(viewHolder: ViewHolder, position: Int) {
+        val counter = getCounter(
+            dataArray!![position].picSectionBean.id
+        )
+        val clientStatus = dataArray!![viewHolder.adapterPosition].picSectionBean.clientStatus
         if (counter != null) {
             if (true) {
-                Log.d(TAG, "set " + dataArray.get(position).getPicSectionBean().getName() + " finish");
-                viewHolder.process.setText("" + counter.getMax() + "/" + counter.getMax());
-                viewHolder.process.setVisibility(View.VISIBLE);
+                Log.d(TAG, "set " + dataArray!![position].picSectionBean.name + " finish")
+                viewHolder.process.text = "" + counter.max + "/" + counter.max
+                viewHolder.process.visibility = View.VISIBLE
             } else {
-                viewHolder.process.setVisibility(View.GONE);
+                viewHolder.process.visibility = View.GONE
             }
         } else {
-            viewHolder.process.setVisibility(View.GONE);
+            viewHolder.process.visibility = View.GONE
         }
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
-        dataArray.get(position).setPosition(position);
+    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        dataArray!![position].position = position
 
-        viewHolder.textView.setText(formatTitle(dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getName()));
-        PicSectionBean.ClientStatus clientStatus = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getClientStatus();
-        if (clientStatus == PicSectionBean.ClientStatus.LOCAL
-                && !displayProcessCount) {
-            renderExistItem(viewHolder);
+        viewHolder.textView.text =
+            formatTitle(dataArray!![viewHolder.adapterPosition].picSectionBean.name)
+        val clientStatus = dataArray!![viewHolder.adapterPosition].picSectionBean.clientStatus
+        if (clientStatus == ClientStatus.LOCAL
+            && !displayProcessCount
+        ) {
+            renderExistItem(viewHolder)
         } else {
-            renderNonExistItem(viewHolder);
+            renderNonExistItem(viewHolder)
         }
-        renderProcessCounter(viewHolder, position);
+        renderProcessCounter(viewHolder, position)
 
-        viewHolder.serverIndex = dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getId();
-        viewHolder.position = viewHolder.getAdapterPosition();
-        viewHolder.deleteBtn.setOnClickListener(v -> {
-            Log.d(TAG, "you clicked " + PicSectionListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getName() + " delete_btn");
-            AlertDialog.Builder builder = new AlertDialog.Builder(PicSectionListAdapter.this.context);
-            builder.setMessage("delete this dir?");
-            builder.setTitle("");
-            builder.setPositiveButton("yes", (dialog, which) -> {
-                FileUtil.removeDir(PicSectionListAdapter.this.context, PicSectionListAdapter.this.dataArray.get(viewHolder.getAdapterPosition()).getPicSectionBean().getName());
-                PicSectionBean picSectionData = dataArray.get(position).getPicSectionBean();
+        viewHolder.serverIndex = dataArray!![viewHolder.adapterPosition].picSectionBean.id
+        viewHolder.position = viewHolder.adapterPosition
+        viewHolder.deleteBtn.setOnClickListener { v: View? ->
+            Log.d(
+                TAG,
+                "you clicked " + dataArray!![viewHolder.adapterPosition].picSectionBean.name + " delete_btn"
+            )
+            val builder =
+                AlertDialog.Builder(this@PicSectionListAdapter.context)
+            builder.setMessage("delete this dir?")
+            builder.setTitle("")
+            builder.setPositiveButton("yes") { dialog: DialogInterface, which: Int ->
+                removeDir(
+                    this@PicSectionListAdapter.context,
+                    dataArray!![viewHolder.adapterPosition].picSectionBean.name
+                )
+                val picSectionData = dataArray!![position].picSectionBean
 
-                picInfoDao.deleteBySectionInnerIndex(viewHolder.serverIndex);
-                picSectionData.setExist(0);
-                picSectionDao.update(picSectionData);
+                picInfoDao.deleteBySectionInnerIndex(viewHolder.serverIndex)
+                picSectionData.exist = 0
+                picSectionDao.update(picSectionData)
 
-                DeleteSectionKt.postDeleteSection(viewHolder.serverIndex);
-                dialog.dismiss();
-                notifyDataSetChanged();
-            });
-            builder.setNegativeButton("no", (dialog, which) -> dialog.dismiss());
-            builder.create().show();
-        });
+                postDeleteSection(viewHolder.serverIndex)
+                dialog.dismiss()
+                notifyDataSetChanged()
+            }
+            builder.setNegativeButton(
+                "no"
+            ) { dialog: DialogInterface, which: Int -> dialog.dismiss() }
+            builder.create().show()
+        }
     }
 
 
-
-    @Override
-    public int getItemCount() {
-        return this.dataArray.size();
+    override fun getItemCount(): Int {
+        return dataArray!!.size
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final ImageView deleteBtn;
-        private final TextView textView;
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
+        val deleteBtn: ImageView =
+            itemView.findViewById(R.id.btn_delete)
 
-        public final TextView process;
+        val textView: TextView =
+            itemView.findViewById(R.id.pic_text_view)
 
-        private final View itemView;
+        val process: TextView =
+            itemView.findViewById(R.id.process)
 
-        public long serverIndex;
+        private val itemView: View = itemView
 
-        public int position;
+        var serverIndex: Long = 0
 
-        private ViewHolder(View itemView) {
+        var position: Int = 0
 
-            super(itemView);
-            this.textView = itemView.findViewById(R.id.pic_text_view);
-            this.deleteBtn = itemView.findViewById(R.id.btn_delete);
-            this.process = itemView.findViewById(R.id.process);
-            this.itemView = itemView;
+        init {
 
-            itemView.setOnClickListener(this);
+            itemView.setOnClickListener(this)
         }
 
-        @Override
-        public void onClick(View v) {
+        override fun onClick(v: View) {
             if (itemClickListener != null) {
-                itemClickListener.onItemClick(dataArray.get(position));
+                itemClickListener!!.onItemClick(dataArray!![position])
             }
         }
-
     }
 
-    private static String formatTitle(String sourceTitle) {
-        if (sourceTitle.length() > 14) {
-            String timeStamp = sourceTitle.substring(0, 14);
-            boolean isTimeStamp = true;
-            try {
-                new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINESE).parse(timeStamp);
-            } catch (ParseException e) {
-                isTimeStamp = false;
+    companion object {
+        private const val TAG = "PicSectionListAdapter"
+        private fun formatTitle(sourceTitle: String): String {
+            if (sourceTitle.length > 14) {
+                val timeStamp = sourceTitle.substring(0, 14)
+                var isTimeStamp = true
+                try {
+                    SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINESE).parse(timeStamp)
+                } catch (e: ParseException) {
+                    isTimeStamp = false
+                }
+                if (isTimeStamp) {
+                    return sourceTitle.substring(14)
+                }
+                return sourceTitle
             }
-            if (isTimeStamp) {
-                return sourceTitle.substring(14);
-            }
-            return sourceTitle;
+            return sourceTitle
         }
-        return sourceTitle;
     }
 }
