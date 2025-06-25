@@ -1,94 +1,77 @@
-package com.example.jianming.myapplication;
+package com.example.jianming.myapplication
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import org.nanking.knightingal.kslideviewlib.YImageSlider
+import org.nanking.knightingal.kslideviewlib.YImageSlider.ImgChangeListener
 
-import androidx.annotation.NonNull;
+class PicContentActivity : Activity(), ImgChangeListener {
+    var mImageSlider: YImageSlider? = null
 
+    private var imgArray: Array<String>? = null
 
-import org.nanking.knightingal.kslideviewlib.YImageSlider;
-
-
-public class PicContentActivity extends Activity implements YImageSlider.ImgChangeListener {
-
-    private static final String TAG = "PicContentActivity";
-
-//    @BindView(R.id.image)
-    public YImageSlider mImageSlider;
-
-    private String[] imgArray;
-
-    private int position;
+    private var position = 0
 
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
+    override fun onResume() {
+        super.onResume()
     }
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_pic_content)
+        val imageSlider = findViewById<YImageSlider>(R.id.image)
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pic_content);
-        mImageSlider = findViewById(R.id.image);
-
-//        ButterKnife.bind(this);
-
-        mImageSlider.setImgChangeListener(this);
-        imgArray = getIntent().getStringArrayExtra("imgArray");
-        position = getIntent().getIntExtra("position", 0);
-        if (imgArray != null && imgArray.length != 0) {
-            index = position;
+        imageSlider.imgChangeListener = this
+        imgArray = intent.getStringArrayExtra("imgArray")
+        position = intent.getIntExtra("position", 0)
+        if (imgArray != null && imgArray!!.size != 0) {
+            index = position
         }
-        mImageSlider.setHideLeftSrc(index);
-        mImageSlider.setContentSrc(index);
-        mImageSlider.setHideRightSrc(index);
+        imageSlider.setHideLeftSrc(index)
+        imageSlider.setContentSrc(index)
+        imageSlider.setHideRightSrc(index)
+        mImageSlider = imageSlider
     }
 
-    private String getImgByIndex(int index) {
-        return imgArray[index % imgArray.length];
+    private fun getImgByIndex(index: Int): String {
+        return imgArray!![index % imgArray!!.size]
     }
 
-    int index = 0;
+    var index: Int = 0
 
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra("position", index);
-        setResult(RESULT_OK, intent);
-        super.onBackPressed();
+    override fun onBackPressed() {
+        val intent = Intent()
+        intent.putExtra("position", index)
+        setResult(RESULT_OK, intent)
+        super.onBackPressed()
     }
 
-    @NonNull
-    @Override
-    public String onGetBackImg(@NonNull YImageSlider yImageSlider) {
-        index = (index + imgArray.length) % imgArray.length;
-        index--;
-        return getImgSrcByIndex(index - 1);
+    override fun onGetBackImg(yImageSlider: YImageSlider): String {
+        index = (index + imgArray!!.size) % imgArray!!.size
+        index--
+        return getImgSrcByIndex(index - 1)
     }
 
-    @NonNull
-    @Override
-    public String onGetNextImg(@NonNull YImageSlider yImageSlider) {
-        index = index % imgArray.length;
-        index++;
-        return getImgSrcByIndex(index + 1);
+    override fun onGetNextImg(yImageSlider: YImageSlider): String {
+        index = index % imgArray!!.size
+        index++
+        return getImgSrcByIndex(index + 1)
     }
 
-    @NonNull
-    @Override
-    public String getImgSrcByIndex(int index, @NonNull YImageSlider yImageSlider) {
-        return getImgByIndex((index + imgArray.length) % imgArray.length);
+    override fun getImgSrcByIndex(index: Int, yImageSlider: YImageSlider): String {
+        return getImgByIndex((index + imgArray!!.size) % imgArray!!.size)
     }
 
 
-    public String getImgSrcByIndex(int index) {
-        return getImgByIndex((index + imgArray.length) % imgArray.length);
+    fun getImgSrcByIndex(index: Int): String {
+        return getImgByIndex((index + imgArray!!.size) % imgArray!!.size)
+    }
+
+    companion object {
+        private const val TAG = "PicContentActivity"
     }
 }
