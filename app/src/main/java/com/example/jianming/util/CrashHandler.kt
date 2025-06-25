@@ -1,94 +1,87 @@
-package com.example.jianming.util;
+package com.example.jianming.util
 
-import android.os.Environment;
-import android.text.TextUtils;
+import android.os.Environment
+import android.text.TextUtils
+import com.example.jianming.myapplication.App
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.PrintWriter
+import java.io.StringWriter
+import java.io.Writer
 
-import com.example.jianming.myapplication.App;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-
-public class CrashHandler implements Thread.UncaughtExceptionHandler {
-    private App app;
-
-    public CrashHandler(App app) {
-        this.app = app;
+class CrashHandler(private val app: App) : Thread.UncaughtExceptionHandler {
+    override fun uncaughtException(thread: Thread, e: Throwable) {
+        val stackTraceInfo = getStackTraceInfo(e)
     }
 
-    @Override
-    public void uncaughtException(Thread thread, Throwable e) {
-        String stackTraceInfo = getStackTraceInfo(e);
-    }
-
-    private String getStackTraceInfo(final Throwable throwable) {
-        PrintWriter pw = null;
-        Writer writer = new StringWriter();
+    private fun getStackTraceInfo(throwable: Throwable): String {
+        var pw: PrintWriter? = null
+        val writer: Writer = StringWriter()
         try {
-            pw = new PrintWriter(writer);
-            throwable.printStackTrace(pw);
-        } catch (Exception e) {
-            return "";
+            pw = PrintWriter(writer)
+            throwable.printStackTrace(pw)
+        } catch (e: Exception) {
+            return ""
         } finally {
-            if (pw != null) {
-                pw.close();
-            }
+            pw?.close()
         }
-        return writer.toString();
+        return writer.toString()
     }
 
 
-    private void saveThrowableMessage(String errorMessage) {
+    private fun saveThrowableMessage(errorMessage: String) {
         if (TextUtils.isEmpty(errorMessage)) {
-            return;
+            return
         }
 
-        File file = new File(app.getExternalFilesDir(
-                Environment.DIRECTORY_DOWNLOADS), "crash");
+        val file = File(
+            app.getExternalFilesDir(
+                Environment.DIRECTORY_DOWNLOADS
+            ), "crash"
+        )
         if (!file.exists()) {
-            boolean mkdirs = file.mkdirs();
+            val mkdirs = file.mkdirs()
             if (mkdirs) {
-                writeStringToFile(errorMessage, file);
+                writeStringToFile(errorMessage, file)
             }
         } else {
-            writeStringToFile(errorMessage, file);
+            writeStringToFile(errorMessage, file)
         }
     }
 
-    private void writeStringToFile(final String errorMessage, final File file) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                FileOutputStream outputStream = null;
-                try {
-                    ByteArrayInputStream inputStream = new ByteArrayInputStream(errorMessage.getBytes());
-                    outputStream = new FileOutputStream(new File(file, System.currentTimeMillis() + ".txt"));
-                    int len = 0;
-                    byte[] bytes = new byte[1024];
-                    while ((len = inputStream.read(bytes)) != -1) {
-                        outputStream.write(bytes, 0, len);
-                    }
-                    outputStream.flush();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (outputStream != null) {
-                        try {
-                            outputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+    private fun writeStringToFile(errorMessage: String, file: File) {
+        Thread {
+            var outputStream: FileOutputStream? = null
+            try {
+                val inputStream = ByteArrayInputStream(errorMessage.toByteArray())
+                outputStream = FileOutputStream(
+                    File(
+                        file,
+                        System.currentTimeMillis().toString() + ".txt"
+                    )
+                )
+                var len = 0
+                val bytes = ByteArray(1024)
+                while ((inputStream.read(bytes).also { len = it }) != -1) {
+                    outputStream.write(bytes, 0, len)
+                }
+                outputStream.flush()
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } finally {
+                if (outputStream != null) {
+                    try {
+                        outputStream.close()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
                     }
                 }
             }
-        }).start();
-
+        }.start()
     }
 }
