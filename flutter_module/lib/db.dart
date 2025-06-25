@@ -30,8 +30,8 @@ class DB {
     return database.then((db) {
       return db.query(
         "PicSectionBean",
-        columns: ["index", "name"],
-        where: "sectionIndex=?",
+        columns: ["id", "name", "album", "mtime"],
+        where: "id=?",
         whereArgs: [sectionId],
       );
     });

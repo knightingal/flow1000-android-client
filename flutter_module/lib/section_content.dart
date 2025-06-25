@@ -5,18 +5,18 @@ import 'package:flutter_module/scroll.dart';
 import 'struct/album_info.dart';
 import 'struct/slot.dart';
 
-class AlbumContentPage extends StatefulWidget {
-  const AlbumContentPage({super.key, required this.albumIndex});
+class SectionContentPage extends StatefulWidget {
+  const SectionContentPage({super.key, required this.albumIndex});
 
   final int albumIndex;
 
   @override
   State<StatefulWidget> createState() {
-    return AlbumContentPageState();
+    return SectionContentPageState();
   }
 }
 
-class AlbumContentPageState extends State<AlbumContentPage> {
+class SectionContentPageState extends State<SectionContentPage> {
   late double width;
   Future<SectionDetail> fetchAlbumIndex() async {
     List<Map<String, Object?>> imgRow = await db.queryPicInfoBySectionId(

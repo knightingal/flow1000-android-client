@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_module/album_content.dart';
 import 'package:flutter_module/db.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,10 +41,7 @@ final _router = GoRouter(
       path: '/section_page/:sectionId',
       builder: (context, state) {
         var sectionId = state.pathParameters["sectionId"];
-        return MyHomePage(
-          title: 'Flutter Demo Home Page',
-          sectionId: int.parse(sectionId!),
-        );
+        return SectionContentPage(albumIndex: int.parse(sectionId!));
       },
     ),
     GoRoute(
