@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_module/album_content.dart';
+import 'package:flutter_module/section_content.dart';
 import 'package:flutter_module/db.dart';
 import 'package:go_router/go_router.dart';
 
