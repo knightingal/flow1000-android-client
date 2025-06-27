@@ -1,6 +1,10 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_module/main.dart';
 import 'package:flutter_module/scroll.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'struct/album_info.dart';
 import 'struct/slot.dart';
@@ -34,6 +38,23 @@ class SectionContentPageState extends State<SectionContentPage> {
   @override
   void initState() {
     super.initState();
+
+    getExternalStorageDirectory()
+        .then((dir) {
+          return Directory("${dir!.path}${Platform.pathSeparator}Download");
+        })
+        .then((Directory? dir) {
+          if (dir != null) {
+            // Ensure the directory exists
+            dir.list().listen((FileSystemEntity entity) {
+              log(entity.path);
+            });
+            return dir;
+          } else {
+            throw Exception("Downloads directory not found");
+          }
+        });
+
     fetchAlbumIndex().then((albumInfoList) {
       for (int i = 0; i < albumInfoList.pics.length; i++) {
         ImgDetail albumInfo = albumInfoList.pics[i];
