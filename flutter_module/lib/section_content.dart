@@ -39,25 +39,57 @@ class SectionContentPageState extends State<SectionContentPage> {
   void initState() {
     super.initState();
 
-    getExternalStorageDirectory()
-        .then((dir) {
-          return Directory("${dir!.path}${Platform.pathSeparator}Download");
-        })
-        .then((Directory? dir) {
-          if (dir != null) {
-            // Ensure the directory exists
-            dir.list().listen((FileSystemEntity entity) {
-              log(entity.path);
-            });
-            return dir;
-          } else {
-            throw Exception("Downloads directory not found");
-          }
-        });
+    // getExternalStorageDirectory()
+    //     .then((dir) {
+    //       return Directory("${dir!.path}${Platform.pathSeparator}Download");
+    //     })
+    //     .then((Directory? dir) {
+    //       if (dir != null) {
+    //         // Ensure the directory exists
+    //         dir.list().listen((FileSystemEntity entity) {
+    //           log(entity.path);
+    //         });
+    //         return dir;
+    //       } else {
+    //         throw Exception("Downloads directory not found");
+    //       }
+    //     });
 
-    fetchAlbumIndex().then((albumInfoList) {
-      for (int i = 0; i < albumInfoList.pics.length; i++) {
-        ImgDetail albumInfo = albumInfoList.pics[i];
+    // fetchAlbumIndex().then((albumInfoList) {
+    //   for (int i = 0; i < albumInfoList.pics.length; i++) {
+    //     ImgDetail albumInfo = albumInfoList.pics[i];
+    //     double coverHeight;
+    //     double coverWidth;
+    //     if (slotGroup.slots.length == 1 && width > albumInfo.width) {
+    //       coverWidth = albumInfo.width.toDouble();
+    //       coverHeight = albumInfo.height.toDouble();
+    //     } else {
+    //       coverWidth = width / slotGroup.slots.length;
+    //       coverHeight = albumInfo.height * (coverWidth / albumInfo.width);
+    //     }
+
+    //     albumInfo.realHeight = coverHeight;
+    //     albumInfo.realWidth = coverWidth;
+
+    //     slotGroup.insertSlotItem(SlotItem(i, albumInfo.realHeight));
+    //   }
+    //   setState(() {
+    //     this.albumInfoList = albumInfoList;
+    //   });
+    // });
+    Future<SectionDetail> futureAlbumInfoList = fetchAlbumIndex();
+    Future<Directory?> futureDirectory = getExternalStorageDirectory();
+
+    Future.wait([futureAlbumInfoList, futureDirectory]).then((onValue) {
+      SectionDetail sectionDetail = onValue[0] as SectionDetail;
+
+      sectionDetail.rootPath = onValue[1] is Directory
+          ? "${(onValue[1] as Directory).path}${Platform.pathSeparator}Download"
+          : "unknown";
+
+      Directory? directory = onValue[1] as Directory?;
+      for (int i = 0; i < sectionDetail.pics.length; i++) {
+        ImgDetail albumInfo = sectionDetail.pics[i];
         double coverHeight;
         double coverWidth;
         if (slotGroup.slots.length == 1 && width > albumInfo.width) {
@@ -76,6 +108,8 @@ class SectionContentPageState extends State<SectionContentPage> {
       setState(() {
         this.albumInfoList = albumInfoList;
       });
+
+      return null;
     });
   }
 

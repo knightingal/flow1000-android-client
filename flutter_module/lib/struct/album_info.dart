@@ -14,6 +14,7 @@ class SectionDetail {
   final String album;
   final String title;
   final String timeStampe;
+  late String rootPath;
 
   SectionDetail({
     required this.dirName,
