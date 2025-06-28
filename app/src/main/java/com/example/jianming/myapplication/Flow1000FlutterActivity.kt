@@ -10,9 +10,9 @@ private const val CHANNEL = "flutter/flow1000"
 class Flow1000FlutterActivity : FlutterActivity() {
 
     companion object {
-        fun createDefaultIntent(launchContext: Context): Intent {
+        fun createDefaultIntent(launchContext: Context, sectionId: Long?): Intent {
             return Flow1000FlutterActivity.withNewEngine()
-                .initialRoute("/section_page/5")
+                .initialRoute("/section_page/${sectionId ?: 5}")
                 .build(launchContext)
         }
 
