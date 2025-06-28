@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -83,11 +82,11 @@ class SectionContentPageState extends State<SectionContentPage> {
     Future.wait([futureAlbumInfoList, futureDirectory]).then((onValue) {
       SectionDetail sectionDetail = onValue[0] as SectionDetail;
 
-      sectionDetail.rootPath = onValue[1] is Directory
-          ? "${(onValue[1] as Directory).path}${Platform.pathSeparator}Download"
+      Directory? directory = onValue[1] as Directory?;
+      sectionDetail.rootPath = directory is Directory
+          ? "${directory.path}${Platform.pathSeparator}Download"
           : "unknown";
 
-      Directory? directory = onValue[1] as Directory?;
       for (int i = 0; i < sectionDetail.pics.length; i++) {
         ImgDetail albumInfo = sectionDetail.pics[i];
         double coverHeight;
@@ -106,7 +105,7 @@ class SectionContentPageState extends State<SectionContentPage> {
         slotGroup.insertSlotItem(SlotItem(i, albumInfo.realHeight));
       }
       setState(() {
-        this.albumInfoList = albumInfoList;
+        albumInfoList = sectionDetail;
       });
 
       return null;
@@ -181,9 +180,9 @@ class SectionContentPageState extends State<SectionContentPage> {
       body = CustomScrollViewWrap(
         slots: slotGroup,
         builder: (BuildContext context, int index) {
-          return Image.network(
+          return Image.file(
+            File(albumInfoList!.pics[index].toUrl(albumInfoList!)),
             key: Key("content-$index"),
-            albumInfoList!.pics[index].toUrl(albumInfoList!),
             width: albumInfoList!.pics[index].realWidth,
             height: albumInfoList!.pics[index].realHeight,
           );

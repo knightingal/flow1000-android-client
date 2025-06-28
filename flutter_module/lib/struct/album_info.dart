@@ -46,9 +46,8 @@ class ImgDetail {
   double realHeight = 0;
   double realWidth = 0;
 
-  String toUrl(SectionDetail sectionDetail) {
-    return "http://192.168.2.12:3002/linux1000/${albumMap[sectionDetail.album]}/${sectionDetail.dirName}/${name.replaceAll(".bin", "")}";
-  }
+  String toUrl(SectionDetail sectionDetail) =>
+      "${sectionDetail.rootPath}/${sectionDetail.dirName}/$name";
 
   ImgDetail({required this.name, required this.width, required this.height});
 
