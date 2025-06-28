@@ -170,8 +170,9 @@ class RenderSliverWaterFall extends RenderSliverMultiBoxAdaptor {
         // scroll down
         scrollDown = true;
         int findFirstIndex(int previusFirstIndex) {
-          int startIndex =
-              previusFirstIndex > 0 ? previusFirstIndex - 1 : previusFirstIndex;
+          int startIndex = previusFirstIndex > 0
+              ? previusFirstIndex - 1
+              : previusFirstIndex;
           int totalLength = slots.slotItemList.length;
           for (int i = startIndex; i < totalLength; i++) {
             SlotItem slotItem = slots.slotItemList[i];
