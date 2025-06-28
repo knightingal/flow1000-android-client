@@ -34,44 +34,42 @@ class SectionContentPageState extends State<SectionContentPage> {
   SectionDetail? albumInfoList;
   SlotGroup slotGroup = SlotGroup.fromCount(1);
 
+  void initSectionContent() async {
+    SectionDetail sectionDetail = await fetchAlbumIndex();
+    Directory? directory = await getExternalStorageDirectory();
+
+    sectionDetail.rootPath = directory is Directory
+        ? "${directory.path}${Platform.pathSeparator}Download"
+        : "unknown";
+
+    for (int i = 0; i < sectionDetail.pics.length; i++) {
+      ImgDetail albumInfo = sectionDetail.pics[i];
+      double coverHeight;
+      double coverWidth;
+      if (slotGroup.slots.length == 1 && width > albumInfo.width) {
+        coverWidth = albumInfo.width.toDouble();
+        coverHeight = albumInfo.height.toDouble();
+      } else {
+        coverWidth = width / slotGroup.slots.length;
+        coverHeight = albumInfo.height * (coverWidth / albumInfo.width);
+      }
+
+      albumInfo.realHeight = coverHeight;
+      albumInfo.realWidth = coverWidth;
+
+      slotGroup.insertSlotItem(SlotItem(i, albumInfo.realHeight));
+    }
+    setState(() {
+      albumInfoList = sectionDetail;
+    });
+
+    return null;
+  }
+
   @override
   void initState() {
     super.initState();
-
-    Future<SectionDetail> futureAlbumInfoList = fetchAlbumIndex();
-    Future<Directory?> futureDirectory = getExternalStorageDirectory();
-
-    Future.wait([futureAlbumInfoList, futureDirectory]).then((onValue) {
-      SectionDetail sectionDetail = onValue[0] as SectionDetail;
-
-      Directory? directory = onValue[1] as Directory?;
-      sectionDetail.rootPath = directory is Directory
-          ? "${directory.path}${Platform.pathSeparator}Download"
-          : "unknown";
-
-      for (int i = 0; i < sectionDetail.pics.length; i++) {
-        ImgDetail albumInfo = sectionDetail.pics[i];
-        double coverHeight;
-        double coverWidth;
-        if (slotGroup.slots.length == 1 && width > albumInfo.width) {
-          coverWidth = albumInfo.width.toDouble();
-          coverHeight = albumInfo.height.toDouble();
-        } else {
-          coverWidth = width / slotGroup.slots.length;
-          coverHeight = albumInfo.height * (coverWidth / albumInfo.width);
-        }
-
-        albumInfo.realHeight = coverHeight;
-        albumInfo.realWidth = coverWidth;
-
-        slotGroup.insertSlotItem(SlotItem(i, albumInfo.realHeight));
-      }
-      setState(() {
-        albumInfoList = sectionDetail;
-      });
-
-      return null;
-    });
+    initSectionContent();
   }
 
   void subscribeAlbum() async {
