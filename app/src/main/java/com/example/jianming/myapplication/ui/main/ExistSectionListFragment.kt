@@ -24,6 +24,7 @@ import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
 import com.example.jianming.listAdapters.PicSectionListAdapter.ItemClickListener
+import com.example.jianming.myapplication.Flow1000FlutterActivity
 import com.example.jianming.myapplication.SectionImageListActivity
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
 import com.example.jianming.myapplication.ui.main.PendingFragment.Companion
@@ -82,10 +83,11 @@ class ExistSectionListFragment : Fragment(){
         pendingListView.layoutManager = mLayoutManager
         val itemClickListener = ItemClickListener {
             if (it.picSectionBean.clientStatus == PicSectionBean.ClientStatus.LOCAL) {
-                val intent = Intent(context, SectionImageListActivity::class.java)
-                    .putExtra("exist", 1)
-                    .putExtra("name", it.picSectionBean.name)
-                    .putExtra("serverIndex", it.picSectionBean.id)
+//                val intent = Intent(context, SectionImageListActivity::class.java)
+//                    .putExtra("exist", 1)
+//                    .putExtra("name", it.picSectionBean.name)
+//                    .putExtra("serverIndex", it.picSectionBean.id)
+                val intent = Flow1000FlutterActivity.createDefaultIntent(context as Context, it.picSectionBean.id)
                 startActivity(intent)
             }
         }

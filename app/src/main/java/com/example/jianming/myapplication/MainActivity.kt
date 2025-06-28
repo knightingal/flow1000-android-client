@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { _ ->
 //            startActivity(Intent(this, AboutActivity::class.java))
             startActivity(
-                Flow1000FlutterActivity.createDefaultIntent(this)
+                Flow1000FlutterActivity.createDefaultIntent(this, null)
             )
         }
     }
