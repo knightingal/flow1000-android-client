@@ -89,53 +89,53 @@ class SectionContentPageState extends State<SectionContentPage> {
       appBar = AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(albumInfoList!.title),
-        actions: <Widget>[
-          MenuAnchor(
-            childFocusNode: _buttonFocusNode,
-            menuChildren: <Widget>[
-              MenuItemButton(
-                child: Text('Detail'),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Dialog(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(albumInfoList!.dirName),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-              MenuItemButton(
-                child: Text('Subscribe'),
-                onPressed: () {
-                  subscribeAlbum();
-                },
-              ),
-            ],
-            builder:
-                (
-                  BuildContext context,
-                  MenuController controller,
-                  Widget? child,
-                ) {
-                  return IconButton(
-                    focusNode: _buttonFocusNode,
-                    icon: const Icon(Icons.menu),
-                    onPressed: () {
-                      if (controller.isOpen) {
-                        controller.close();
-                      } else {
-                        controller.open();
-                      }
-                    },
-                  );
-                },
-          ),
-        ],
+        // actions: <Widget>[
+        //   MenuAnchor(
+        //     childFocusNode: _buttonFocusNode,
+        //     menuChildren: <Widget>[
+        //       MenuItemButton(
+        //         child: Text('Detail'),
+        //         onPressed: () {
+        //           showDialog(
+        //             context: context,
+        //             builder: (BuildContext context) {
+        //               return Dialog(
+        //                 child: Padding(
+        //                   padding: const EdgeInsets.all(8.0),
+        //                   child: Text(albumInfoList!.dirName),
+        //                 ),
+        //               );
+        //             },
+        //           );
+        //         },
+        //       ),
+        //       MenuItemButton(
+        //         child: Text('Subscribe'),
+        //         onPressed: () {
+        //           subscribeAlbum();
+        //         },
+        //       ),
+        //     ],
+        //     builder:
+        //         (
+        //           BuildContext context,
+        //           MenuController controller,
+        //           Widget? child,
+        //         ) {
+        //           return IconButton(
+        //             focusNode: _buttonFocusNode,
+        //             icon: const Icon(Icons.menu),
+        //             onPressed: () {
+        //               if (controller.isOpen) {
+        //                 controller.close();
+        //               } else {
+        //                 controller.open();
+        //               }
+        //             },
+        //           );
+        //         },
+        //   ),
+        // ],
       );
       body = CustomScrollViewWrap(
         slots: slotGroup,
