@@ -99,6 +99,7 @@ android {
 
     buildTypes {
         debug {
+            signingConfig = signingConfigs.getByName("debug")
             buildConfigField("String", "PASSWORD", "\""+keystoreProperties["imgPassword"] as String+"\"")
         }
         release {
