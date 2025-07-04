@@ -10,6 +10,7 @@ Map<String, String> albumMap = {
 
 class SectionDetail {
   final String dirName;
+  // final int picPage;
   final List<ImgDetail> pics;
   final String album;
   final String title;
@@ -18,6 +19,7 @@ class SectionDetail {
 
   SectionDetail({
     required this.dirName,
+    // required this.picPage,
     required this.pics,
     required this.album,
     required this.title,
@@ -31,6 +33,7 @@ class SectionDetail {
     final String dirName = json["name"];
     return SectionDetail(
       dirName: dirName,
+      // picPage: json["picPage"],
       pics: picJson.map((e) => ImgDetail.fromJson(e)).toList(),
       album: json["album"],
       title: json["name"],

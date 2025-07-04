@@ -1,33 +1,15 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_module/section_content.dart';
+import 'package:flutter_module/album_index.dart';
 import 'package:flutter_module/db.dart';
+import 'package:flutter_module/section_content.dart';
+import 'package:flutter_module/theme.dart';
 import 'package:go_router/go_router.dart';
 
 final DB db = DB();
 
-void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // // Open the database and store the reference.
-  // final database = openDatabase(
-  //   // Set the path to the database. Note: Using the `join` function from the
-  //   // `path` package is best practice to ensure the path is correctly
-  //   // constructed for each platform.
-  //   join(await getDatabasesPath(), 'database-flow1000'),
-  //   // When the database is first created, create a table to store dogs.
-  //   // Set the version. This executes the onCreate function and provides a
-  //   // path to perform database upgrades and downgrades.
-  // );
-
-  // final db = await database;
-  // db.insert("UpdateStamp", {
-  //   "table_name": "test table",
-  //   "update_stamp": "2001-01-01",
-  // });
+void main() {
   db.init();
-
   runApp(const MyApp());
 }
 
@@ -44,10 +26,10 @@ final _router = GoRouter(
         return SectionContentPage(albumIndex: int.parse(sectionId!));
       },
     ),
-    GoRoute(
-      path: '/about_page',
-      builder: (context, state) => const AboutPage(),
-    ),
+    // GoRoute(
+    //   path: '/about_page',
+    //   builder: (context, state) => const AboutPage(),
+    // ),
   ],
 );
 
@@ -66,44 +48,11 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title, this.sectionId});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
+class MyHomePage extends StatelessWidget {
   final String title;
+  static const platform = MethodChannel('flutter/startWeb');
 
-  final int? sectionId;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  String displayText = "hello";
-
-  void _incrementCounter() {
-    log("queryPicInfoBySectionId");
-    // platform.invokeMethod<int>("getSectionId").then((pageId) {
-    //   log("pageId:$pageId");
-    db.queryPicInfoBySectionId(widget.sectionId!).then((rows) {
-      log(rows[0]["name"].toString());
-      setState(() {
-        displayText = rows[0]["name"].toString();
-      });
-    });
-    // });
-  }
-
-  // ignore: unused_field
-  static const platform = MethodChannel('flutter/flow1000');
+  const MyHomePage({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -113,57 +62,59 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              displayText,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+    return DefaultTabController(
+      length: 6,
+      child: Scaffold(
+        appBar: AppBar(
+          // TRY THIS: Try changing the color here to a specific color (to
+          // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+          // change color while the other colors stay the same.
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(title),
+          bottom: const TabBar(
+            tabs: [
+              // Tab(text: "single"),
+              Tab(text: "main"),
+              Tab(text: "1803"),
+              Tab(text: "1804"),
+              Tab(text: "1805"),
+              Tab(text: "1806"),
+              Tab(text: "1807"),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            // SinglePage(),
+            AlbumIndexPage(album: "1000"),
+            AlbumIndexPage(album: "1803"),
+            AlbumIndexPage(album: "1804"),
+            AlbumIndexPage(album: "1805"),
+            AlbumIndexPage(album: "1806"),
+            AlbumIndexPage(album: "1807"),
           ],
         ),
+        // body: AlbumGridPage(),
+        // body: AlbumContentPage(albumIndex: 5,),
+        // body: EncriptImageWidget(),
+        // body: ImageEx.network("http://192.168.2.12:3002/linux1000/encrypted/20151209003040BB-29 USS NORTH DAKOTA/011739.jpg.bin"),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // platform.invokeMethod("aboutPage");
+            // popupCoverDialog(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SectionContentPage(albumIndex: 56),
+              ),
+            );
+          },
+          tooltip: 'Increment',
+          child: const Icon(Icons.add),
+        ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-}
-
-class AboutPage extends StatelessWidget {
-  const AboutPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('About Page')),
-      body: const Center(child: Text('This is the About Page!')),
     );
   }
 }
