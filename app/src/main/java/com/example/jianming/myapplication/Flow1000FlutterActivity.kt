@@ -12,7 +12,7 @@ class Flow1000FlutterActivity : FlutterActivity() {
     companion object {
         fun createDefaultIntent(launchContext: Context, sectionId: Long?): Intent {
             return Flow1000FlutterActivity.withNewEngine()
-                .initialRoute("/section_page/${sectionId ?: 5}")
+                .initialRoute("/")
                 .build(launchContext)
         }
 
