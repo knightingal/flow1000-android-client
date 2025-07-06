@@ -1,16 +1,13 @@
 package com.example.jianming.myapplication
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import androidx.viewpager.widget.ViewPager
 import androidx.appcompat.app.AppCompatActivity
 import com.example.jianming.myapplication.ui.main.SectionsPagerAdapter
 import com.example.jianming.myapplication.databinding.ActivityMainBinding
-import io.flutter.embedding.android.FlutterActivity
 
 //import io.flutter.embedding.android.FlutterActivity
 
@@ -29,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         viewPager.adapter = sectionsPagerAdapter
         val tabs: TabLayout = binding.tabs
         tabs.setupWithViewPager(viewPager)
-        val listner = object : TabLayout.OnTabSelectedListener {
+        val listener = object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 Log.e("onTabSelected","Not yet implemented")
             }
@@ -43,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-        tabs.addOnTabSelectedListener(listner)
+        tabs.addOnTabSelectedListener(listener)
         val fab: FloatingActionButton = binding.fab
 
         fab.setOnClickListener { _ ->
