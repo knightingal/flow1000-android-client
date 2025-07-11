@@ -83,7 +83,10 @@ class ExistSectionListFragment : Fragment(){
         pendingListView.layoutManager = mLayoutManager
         val itemClickListener = ItemClickListener {
             if (it.picSectionBean.clientStatus == PicSectionBean.ClientStatus.LOCAL) {
-                val intent = Flow1000FlutterActivity.createDefaultIntent(context as Context)
+                val intent = Intent(context, SectionImageListActivity::class.java)
+                    .putExtra("exist", 1)
+                    .putExtra("name", it.picSectionBean.name)
+                    .putExtra("serverIndex", it.picSectionBean.id)
                 startActivity(intent)
             }
         }
