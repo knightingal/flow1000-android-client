@@ -10,8 +10,8 @@ private const val CHANNEL = "flutter/flow1000"
 class Flow1000FlutterActivity : FlutterActivity() {
 
     companion object {
-        fun createDefaultIntent(launchContext: Context, sectionId: Long?): Intent {
-            return Flow1000FlutterActivity.withNewEngine()
+        fun createDefaultIntent(launchContext: Context): Intent {
+            return withNewEngine()
                 .initialRoute("/")
                 .build(launchContext)
         }
