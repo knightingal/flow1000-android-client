@@ -127,11 +127,11 @@ class AlbumIndexState extends State<AlbumIndexPage> {
                           alignment: Alignment.topCenter,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12.0),
-                            child: Image.network(
+                            child: Image.file(
+                              File(albumInfoList[index].toCoverUrl()),
                               width: albumInfoList[index].realWidth,
                               height: albumInfoList[index].realHeight,
                               key: Key("image-$index"),
-                              albumInfoList[index].toCoverUrl(),
                             ),
                           ),
                         ),
