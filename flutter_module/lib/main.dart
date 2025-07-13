@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_module/album_index.dart';
 import 'package:flutter_module/db.dart';
 import 'package:flutter_module/section_content.dart';
-import 'package:flutter_module/theme.dart';
 import 'package:go_router/go_router.dart';
 
 final DB db = DB();
