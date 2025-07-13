@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_module/album_content.dart';
 import 'package:flutter_module/scroll.dart';
+import 'package:flutter_module/section_content.dart';
 import 'package:flutter_module/struct/album_info.dart';
 import 'package:http/http.dart' as http;
 
@@ -100,8 +101,9 @@ class AlbumIndexState extends State<AlbumIndexPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      AlbumContentPage(albumIndex: albumInfoList[index].index),
+                  builder: (context) => SectionContentPage(
+                    albumIndex: albumInfoList[index].index,
+                  ),
                 ),
               );
             },
