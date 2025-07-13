@@ -24,6 +24,26 @@ class DB {
     });
   }
 
+  Future<List<Map<String, Object?>>> querySectionInfoByAlbum(String album) {
+    return database.then((db) {
+      return db.query(
+        "PicSectionBean",
+        columns: [
+          "id",
+          "name",
+          "album",
+          "mtime",
+          "coverWidth",
+          "coverHeight",
+          "cover",
+          "clientStatus",
+        ],
+        where: "album=? and clientStatus=?",
+        whereArgs: [album, 'LOCAL'],
+      );
+    });
+  }
+
   Future<List<Map<String, Object?>>> querySectionInfoBySectionId(
     int sectionId,
   ) {
