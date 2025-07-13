@@ -79,10 +79,10 @@ class AlbumInfo {
   double frameHeight = 0;
   double cardWidth = 0;
   double cardHeight = 0;
+  final String rootPath;
 
   String toCoverUrl() {
-    // return "http://192.168.2.12:3002/linux1000/encrypted/$name/$cover";
-    return "http://192.168.2.12:3002/linux1000/${albumMap[album]}/$dirName/${cover.replaceAll(".bin", "")}";
+    return "$rootPath/$dirName/$cover";
   }
 
   AlbumInfo({
@@ -95,21 +95,23 @@ class AlbumInfo {
     required this.clientStatus,
     required this.title,
     required this.timeStampe,
+    required this.rootPath,
   });
 
-  factory AlbumInfo.fromJson(Map<String, dynamic> json) {
+  factory AlbumInfo.fromJson(Map<String, dynamic> json, String rootPath) {
     final String dirName = json["name"];
 
     return AlbumInfo(
-      index: json["index"],
+      index: json["id"],
       dirName: dirName,
       cover: json["cover"],
       coverWidth: json["coverWidth"],
       coverHeight: json["coverHeight"],
       album: json["album"],
       clientStatus: json["clientStatus"],
-      title: json["title"],
+      title: json["name"],
       timeStampe: json["mtime"],
+      rootPath: rootPath,
     );
   }
 }

@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_module/album_content.dart';
+import 'package:flutter_module/main.dart';
 import 'package:flutter_module/scroll.dart';
 import 'package:flutter_module/section_content.dart';
 import 'package:flutter_module/struct/album_info.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 import 'config.dart';
 import 'struct/slot.dart';
@@ -25,18 +28,18 @@ class AlbumIndexPage extends StatefulWidget {
 class AlbumIndexState extends State<AlbumIndexPage> {
   late double width;
   Future<List<AlbumInfo>> fetchAlbumIndex() async {
-    final response = await http.get(
-      Uri.parse(albumIndexUrl(album: widget.album)),
+    List<Map<String, Object?>> imgRow = await db.querySectionInfoByAlbum(
+      widget.album,
     );
-    if (response.statusCode == 200) {
-      List<dynamic> jsonArray = jsonDecode(response.body);
-      List<AlbumInfo> albumInfoList = jsonArray
-          .map((e) => AlbumInfo.fromJson(e))
-          .toList();
-      return albumInfoList;
-    } else {
-      throw Exception("Failed to load album");
-    }
+
+    Directory? directory = await getExternalStorageDirectory();
+
+    String rootPath = "${directory!.path}${Platform.pathSeparator}Download";
+
+    List<AlbumInfo> albumInfoList = imgRow
+        .map((e) => AlbumInfo.fromJson(e, rootPath))
+        .toList();
+    return albumInfoList;
   }
 
   List<AlbumInfo> albumInfoList = [];
