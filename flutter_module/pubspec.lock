@@ -9,6 +9,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.13.0"
+  blur:
+    dependency: "direct main"
+    description:
+      name: blur
+      sha256: "1318cf79c735784eda8dffc77b1085b757373d233c1c8d94dc0cfd81530a3574"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -92,10 +100,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: ac294be30ba841830cfa146e5a3b22bb09f8dc5a0fdd9ca9332b04b0bde99ebf
+      sha256: c489908a54ce2131f1d1b7cc631af9c1a06fac5ca7c449e959192089f9489431
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "15.2.4"
+    version: "16.0.0"
   http:
     dependency: "direct main"
     description:
