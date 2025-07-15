@@ -1,5 +1,6 @@
 package com.example.jianming.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -15,6 +16,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private var onExistSectionPage = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -28,15 +31,18 @@ class MainActivity : AppCompatActivity() {
         tabs.setupWithViewPager(viewPager)
         val listener = object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                Log.e("onTabSelected","Not yet implemented")
+                Log.d("onTabSelected", "tab.position:${tab?.position}")
+                onExistSectionPage = tab?.position == 1
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                Log.e("onTabUnselected","Not yet implemented")
+                Log.d("onTabUnselected", "tab.position:${tab?.position}")
+                onExistSectionPage = tab?.position == 1
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                Log.e("onTabReselected","Not yet implemented")
+                Log.d("onTabReselected", "tab.position:${tab?.position}")
+                onExistSectionPage = tab?.position == 1
             }
 
         }
@@ -44,10 +50,13 @@ class MainActivity : AppCompatActivity() {
         val fab: FloatingActionButton = binding.fab
 
         fab.setOnClickListener { _ ->
-//            startActivity(Intent(this, AboutActivity::class.java))
-            startActivity(
-                Flow1000FlutterActivity.createDefaultIntent(this)
-            )
+            if (onExistSectionPage) {
+                startActivity(Intent(this, AboutActivity::class.java))
+            } else {
+                startActivity(
+                    Flow1000FlutterActivity.createDefaultIntent(this)
+                )
+            }
         }
     }
 }
