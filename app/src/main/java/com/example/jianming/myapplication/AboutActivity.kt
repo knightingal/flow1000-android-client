@@ -25,6 +25,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.File
+import androidx.core.net.toUri
 
 
 class AboutActivity : AppCompatActivity() {
@@ -88,9 +89,7 @@ class AboutActivity : AppCompatActivity() {
                         openAPKFile()
                     } else {
                         val intent = Intent(
-                            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse(
-                                "package:$packageName"
-                            )
+                            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, "package:$packageName".toUri()
                         )
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         launcher.launch(intent)

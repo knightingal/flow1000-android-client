@@ -15,14 +15,6 @@ import java.io.IOException
 
 object ConcurrencyApkTask {
     private const val TAG = "DLImageTask"
-    fun downloadUrl(src: String, dest: File, callback: (bytes: ByteArray) -> Unit): Unit {
-        MainScope().launch {
-            val bytes = makeRequest(src, dest)
-            if (bytes != null) {
-                callback(bytes)
-            }
-        }
-    }
 
     suspend fun makeRequest(src: String, dest: File): ByteArray? {
         return withContext(Dispatchers.IO) {
