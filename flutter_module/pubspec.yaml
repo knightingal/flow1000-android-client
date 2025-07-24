@@ -33,6 +33,7 @@ dependencies:
   path_provider: ^2.1.5
   blur: ^4.0.2
   go_router: ^16.0.0
+  flutter_avif: ^3.0.0
 
 dev_dependencies:
   flutter_test:
