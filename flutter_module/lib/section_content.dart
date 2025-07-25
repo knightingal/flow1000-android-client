@@ -102,7 +102,7 @@ class SectionContentPageState extends State<SectionContentPage> {
             );
           } else {
             return Image.file(
-              File(albumInfoList!.pics[index].toUrl(albumInfoList!)),
+              File(url),
               key: Key("content-$index"),
               width: albumInfoList!.pics[index].realWidth,
               height: albumInfoList!.pics[index].realHeight,
