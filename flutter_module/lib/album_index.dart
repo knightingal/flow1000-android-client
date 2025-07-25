@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_avif/flutter_avif.dart';
 import 'package:flutter_module/main.dart';
 import 'package:flutter_module/scroll.dart';
 import 'package:flutter_module/section_content.dart';
@@ -85,6 +86,25 @@ class AlbumIndexState extends State<AlbumIndexPage> {
     });
   }
 
+  Widget _generateImageContainer(int index) {
+    var url = albumInfoList[index].toCoverUrl();
+    if (url.endsWith(".avif")) {
+      return AvifImage.file(
+        width: albumInfoList[index].realWidth,
+        height: albumInfoList[index].realHeight,
+        key: Key("image-$index"),
+        File(url),
+      );
+    } else {
+      return Image.file(
+        width: albumInfoList[index].realWidth,
+        height: albumInfoList[index].realHeight,
+        key: Key("image-$index"),
+        File(albumInfoList[index].toCoverUrl()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
@@ -123,12 +143,7 @@ class AlbumIndexState extends State<AlbumIndexPage> {
                           alignment: Alignment.topCenter,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12.0),
-                            child: Image.file(
-                              File(albumInfoList[index].toCoverUrl()),
-                              width: albumInfoList[index].realWidth,
-                              height: albumInfoList[index].realHeight,
-                              key: Key("image-$index"),
-                            ),
+                            child: _generateImageContainer(index),
                           ),
                         ),
                         Align(

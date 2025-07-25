@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_avif/flutter_avif.dart';
 import 'package:flutter_module/main.dart';
 import 'package:flutter_module/scroll.dart';
 import 'package:path_provider/path_provider.dart';
@@ -91,12 +92,22 @@ class SectionContentPageState extends State<SectionContentPage> {
       body = CustomScrollViewWrap(
         slots: slotGroup,
         builder: (BuildContext context, int index) {
-          return Image.file(
-            File(albumInfoList!.pics[index].toUrl(albumInfoList!)),
-            key: Key("content-$index"),
-            width: albumInfoList!.pics[index].realWidth,
-            height: albumInfoList!.pics[index].realHeight,
-          );
+          var url = albumInfoList!.pics[index].toUrl(albumInfoList!);
+          if (url.endsWith(".avif")) {
+            return AvifImage.file(
+              File(url),
+              key: Key("content-$index"),
+              width: albumInfoList!.pics[index].realWidth,
+              height: albumInfoList!.pics[index].realHeight,
+            );
+          } else {
+            return Image.file(
+              File(albumInfoList!.pics[index].toUrl(albumInfoList!)),
+              key: Key("content-$index"),
+              width: albumInfoList!.pics[index].realWidth,
+              height: albumInfoList!.pics[index].realHeight,
+            );
+          }
         },
         totalLength: albumInfoList!.pics.length,
       );
