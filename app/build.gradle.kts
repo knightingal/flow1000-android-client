@@ -53,7 +53,7 @@ fun Process.text(): String {
 /*
 keytool -genkey -v -keystore key.jks -alias key0 -keyalg RSA -keysize 2048 -validity 10000 -keypass xxxxxx -storepass xxxxxx
  */
-var keystorePropertiesFile = rootProject.file("keystore.properties")
+var keystorePropertiesFile = rootProject.file("/home/knightingal/source/keys/keystore.properties")
 var keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
