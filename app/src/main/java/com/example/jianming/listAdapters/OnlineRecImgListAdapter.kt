@@ -26,9 +26,7 @@ import kotlinx.coroutines.withContext
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsBytes
 
-//import okhttp3.Request
 
 class OnlineRecImgListAdapter(context: SectionImageListActivity, var sectionDetail: SectionDetail?) : RecyclerView.Adapter<OnlineRecImgListAdapter.ImgViewHolder>() {
 

@@ -39,7 +39,7 @@ class PicSectionListAdapter(
                 var isTimeStamp = true
                 try {
                     SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINESE).parse(timeStamp)
-                } catch (e: ParseException) {
+                } catch (_: ParseException) {
                     isTimeStamp = false
                 }
                 return if (isTimeStamp) sourceTitle.substring(14) else sourceTitle
@@ -96,6 +96,7 @@ class PicSectionListAdapter(
         viewHolder.deleteBtn.visibility = View.GONE
     }
 
+    @SuppressLint("SetTextI18n")
     fun renderProcessCounter(viewHolder: ViewHolder, position: Int) {
 
         val counter = ProcessCounter.getCounter(dataArray[position].picSectionBean.id)
@@ -108,6 +109,7 @@ class PicSectionListAdapter(
         }
     }
 
+    @SuppressLint("SetTextI18n")
     fun renderProcessFinish(viewHolder: ViewHolder, position: Int) {
         val counter = ProcessCounter.getCounter(dataArray[position].picSectionBean.id)
 
@@ -164,7 +166,6 @@ class PicSectionListAdapter(
         val deleteBtn: ImageView = itemView.findViewById(R.id.btn_delete)
         val textView: TextView = itemView.findViewById(R.id.pic_text_view)
         val process: TextView = itemView.findViewById(R.id.process)
-        val itemViewRef: View = itemView
         var serverIndex: Long = 0
         var position1: Int = 0
 
