@@ -57,7 +57,7 @@ class PicSectionListAdapter(
 
     init {
         val db = Room.databaseBuilder(
-            context,
+            context as Context,
             AppDataBase::class.java, "database-flow1000"
         ).allowMainThreadQueries().build()
         picSectionDao = db.picSectionDao()
@@ -85,13 +85,13 @@ class PicSectionListAdapter(
     }
 
     private fun renderExistItem(viewHolder: ViewHolder) {
-        viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer))
+        viewHolder.textView.setTextColor(context!!.getColor(R.color.md_theme_light_onPrimaryContainer))
         viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer))
         viewHolder.deleteBtn.visibility = View.VISIBLE
     }
 
     private fun renderNonExistItem(viewHolder: ViewHolder) {
-        viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurfaceVariant))
+        viewHolder.textView.setTextColor(context!!.getColor(R.color.md_theme_light_onSurfaceVariant))
         viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_surfaceVariant))
         viewHolder.deleteBtn.visibility = View.GONE
     }
@@ -138,7 +138,7 @@ class PicSectionListAdapter(
         viewHolder.position1 = viewHolder.adapterPosition
         viewHolder.deleteBtn.setOnClickListener {
             Log.d(TAG, "you clicked ${dataArray[viewHolder.adapterPosition].picSectionBean.name} delete_btn")
-            val builder = AlertDialog.Builder(context)
+            val builder = AlertDialog.Builder(context as Context)
             builder.setMessage("delete this dir?")
             builder.setTitle("")
             builder.setPositiveButton("yes") { dialog, _ ->
