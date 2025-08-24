@@ -77,7 +77,7 @@ class SectionListFragment : Fragment(){
 
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         pendingListView.layoutManager = mLayoutManager
-        val itemClickListener = PicSectionListAdapter.ItemClickListener {
+        val itemClickListener = com.example.jianming.listAdapters.ItemClickListener {
             val intent = Intent(context, SectionImageListActivity::class.java)
                 .putExtra("name", it.picSectionBean.name)
                 .putExtra("serverIndex", it.picSectionBean.id)
@@ -119,7 +119,7 @@ class SectionListFragment : Fragment(){
             downLoadService?.setRefreshListener(
                 refreshListener
             )
-            val picSectionBeanList = downLoadService?.getAllSectionList()
+            val picSectionBeanList = downLoadService?.getAllSectionList() ?: listOf()
             picSectionListAdapter.setDataArray(picSectionBeanList)
             picSectionListAdapter.notifyDataSetChanged()
 

@@ -115,7 +115,7 @@ class PendingFragment : Fragment(){
             downLoadService?.setRefreshListener(
                 refreshListener
             )
-            val picSectionBeanList = downLoadService?.getPendingSectionList()
+            val picSectionBeanList = downLoadService?.getPendingSectionList() ?: listOf()
             picSectionListAdapter.setDataArray(picSectionBeanList)
             picSectionListAdapter.notifyDataSetChanged()
 

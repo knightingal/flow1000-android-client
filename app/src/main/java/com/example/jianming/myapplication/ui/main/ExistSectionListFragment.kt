@@ -3,7 +3,6 @@ package com.example.jianming.myapplication.ui.main
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
@@ -11,10 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.jianming.beans.PicSectionBean
@@ -23,15 +20,9 @@ import com.example.jianming.dao.PicInfoDao
 import com.example.jianming.dao.PicSectionDao
 import com.example.jianming.dao.UpdataStampDao
 import com.example.jianming.listAdapters.PicSectionListAdapter
-import com.example.jianming.listAdapters.PicSectionListAdapter.ItemClickListener
-import com.example.jianming.myapplication.Flow1000FlutterActivity
-import com.example.jianming.myapplication.SectionImageListActivity
 import com.example.jianming.myapplication.databinding.FragmentPendingBinding
-import com.example.jianming.myapplication.ui.main.PendingFragment.Companion
 import com.example.jianming.services.DownloadService
 import com.example.jianming.util.AppDataBase
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import org.nanjing.knightingal.processerlib.RefreshListener
 
 class ExistSectionListFragment : Fragment(){
@@ -110,7 +101,7 @@ class ExistSectionListFragment : Fragment(){
             downLoadService?.setRefreshListener(
                 refreshListener
             )
-            val picSectionBeanList = downLoadService?.getPendingSectionList()
+            val picSectionBeanList = downLoadService?.getPendingSectionList() ?: listOf()
             picSectionListAdapter.setDataArray(picSectionBeanList)
             picSectionListAdapter.notifyDataSetChanged()
 
