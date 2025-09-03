@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -46,6 +47,7 @@ class CustomScrollViewWrap extends StatelessWidget {
     required this.slots,
     required this.builder,
     required this.totalLength,
+    this.withTitle = false,
   });
 
   final SlotGroup slots;
@@ -54,23 +56,67 @@ class CustomScrollViewWrap extends StatelessWidget {
 
   final int totalLength;
 
+  final bool withTitle;
+
   @override
   Widget build(BuildContext context) {
     const Key centerKey = ValueKey<String>('bottom-sliver-list');
 
-    return Scaffold(
-      body: CustomScrollView(
-        center: centerKey,
-        slivers: <Widget>[
-          SliverWaterFall(
-            slots,
-            key: centerKey,
-            delegate: SliverChildBuilderDelegate(
-              builder,
-              childCount: totalLength,
+    var title = SliverAppBar(
+      // title: const Text("CustomScrollView"),
+      expandedHeight: kToolbarHeight,
+      collapsedHeight: kToolbarHeight,
+      toolbarHeight: kToolbarHeight,
+      backgroundColor: Colors.transparent,
+      // foregroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Theme.of(context).colorScheme.shadow,
+      floating: true,
+      pinned: true,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              width: Theme.of(context).tabBarTheme.dividerHeight ?? 1.0,
             ),
           ),
-        ],
+        ),
+        child:
+            SizedBox.expand(
+              child: Center(
+                child: Text(
+                  "CustomScrollView",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 20.0,
+                  ),
+                ),
+              ),
+            ).frosted(
+              blur: 20.0,
+              frostColor: Theme.of(context).colorScheme.primary,
+            ),
+      ),
+    );
+    var slivers = <Widget>[];
+
+    if (withTitle) {
+      slivers.add(title);
+    }
+
+    slivers.add(
+      SliverWaterFall(
+        slots,
+        // key: centerKey,
+        delegate: SliverChildBuilderDelegate(builder, childCount: totalLength),
+      ),
+    );
+
+    return Scaffold(
+      body: CustomScrollView(
+        // center: centerKey,
+        slivers: slivers,
       ),
     );
   }
@@ -170,8 +216,9 @@ class RenderSliverWaterFall extends RenderSliverMultiBoxAdaptor {
         // scroll down
         scrollDown = true;
         int findFirstIndex(int previusFirstIndex) {
-          int startIndex =
-              previusFirstIndex > 0 ? previusFirstIndex - 1 : previusFirstIndex;
+          int startIndex = previusFirstIndex > 0
+              ? previusFirstIndex - 1
+              : previusFirstIndex;
           int totalLength = slots.slotItemList.length;
           for (int i = startIndex; i < totalLength; i++) {
             SlotItem slotItem = slots.slotItemList[i];
