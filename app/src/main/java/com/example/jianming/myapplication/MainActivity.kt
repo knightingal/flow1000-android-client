@@ -51,9 +51,9 @@ class MainActivity : AppCompatActivity() {
 
         fab.setOnClickListener { _ ->
             if (onExistSectionPage) {
-                startActivity(
-                    Flow1000FlutterActivity.createDefaultIntent(this)
-                )
+//                startActivity(
+//                    Flow1000FlutterActivity.createDefaultIntent(this)
+//                )
             } else {
                 startActivity(Intent(this, AboutActivity::class.java))
             }

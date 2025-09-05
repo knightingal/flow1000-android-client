@@ -55,20 +55,20 @@
             android:name=".PicSectionListActivity"
             android:label="@string/title_activity_pic_section_list_activity_md" />
 
-        <activity
-                android:name="com.example.jianming.myapplication.Flow1000FlutterActivity"
-                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-                android:hardwareAccelerated="true"
-                android:windowSoftInputMode="adjustResize"
-                />
+<!--        <activity-->
+<!--                android:name="com.example.jianming.myapplication.Flow1000FlutterActivity"-->
+<!--                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"-->
+<!--                android:hardwareAccelerated="true"-->
+<!--                android:windowSoftInputMode="adjustResize"-->
+<!--                />-->
 
-        <activity
-                android:name="io.flutter.embedding.android.FlutterActivity"
+<!--        <activity-->
+<!--                android:name="io.flutter.embedding.android.FlutterActivity"-->
 
-                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-                android:hardwareAccelerated="true"
-                android:windowSoftInputMode="adjustResize"
-                />
+<!--                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"-->
+<!--                android:hardwareAccelerated="true"-->
+<!--                android:windowSoftInputMode="adjustResize"-->
+<!--                />-->
 <!--        <activity-->
 <!--            android:name="io.flutter.embedding.android.FlutterActivity"-->
 <!--            android:theme="@style/AppTheme"-->
