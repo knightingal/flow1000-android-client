@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.jianming.myapplication.PicSectionListActivity">
+    tools:context="org.knightingal.flow1000.client.myapplication.PicSectionListActivity">
 
 
     <include layout="@layout/content_pic_section_list_activity_md" />

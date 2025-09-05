@@ -1,7 +1,6 @@
 package org.nanjing.knightingal.processerlib
 
-import com.example.jianming.beans.PicSectionBean
-import com.example.jianming.beans.PicSectionData
+import org.knightingal.flow1000.client.beans.PicSectionData
 
 
 interface RefreshListener {

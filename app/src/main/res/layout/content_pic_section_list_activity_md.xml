@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.jianming.myapplication.PicSectionListActivity"
+    tools:context="org.knightingal.flow1000.client.myapplication.PicSectionListActivity"
     tools:showIn="@layout/activity_pic_section_list_activity_md">
 
     <androidx.recyclerview.widget.RecyclerView

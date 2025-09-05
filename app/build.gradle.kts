@@ -79,11 +79,11 @@ android {
             storePassword = keystoreProperties["storePassword"] as String
         }
     }
-    namespace = "com.example.jianming.myapplication"
+    namespace = "org.knightingal.flow1000.client.myapplication"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.flow1000client"
+        applicationId = "org.knightingal.flow1000.client"
         minSdk = 29
         targetSdk = 34
         versionCode = versionCode()
