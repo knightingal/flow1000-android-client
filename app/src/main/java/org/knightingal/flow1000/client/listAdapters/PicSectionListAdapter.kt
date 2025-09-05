@@ -18,7 +18,6 @@ import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.dao.PicSectionDao
 import org.knightingal.flow1000.client.dao.PicInfoDao
-import com.example.client.myapplication.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*

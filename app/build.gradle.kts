@@ -79,7 +79,7 @@ android {
             storePassword = keystoreProperties["storePassword"] as String
         }
     }
-    namespace = "org.knightingal.flow1000.client.myapplication"
+    namespace = "org.knightingal.flow1000.client"
     compileSdk = 34
 
     defaultConfig {

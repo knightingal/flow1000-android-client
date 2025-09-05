@@ -13,7 +13,6 @@ import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import org.knightingal.flow1000.client.SectionDetail
-import com.example.client.myapplication.R
 import org.knightingal.flow1000.client.myapplication.SectionConfig
 import org.knightingal.flow1000.client.myapplication.SectionImageListActivity
 import org.knightingal.flow1000.client.util.Decryptor

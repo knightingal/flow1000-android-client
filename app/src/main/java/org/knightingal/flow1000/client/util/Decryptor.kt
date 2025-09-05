@@ -1,6 +1,6 @@
 package org.knightingal.flow1000.client.util
 
-import com.example.client.myapplication.BuildConfig
+import org.knightingal.flow1000.client.BuildConfig
 import java.security.InvalidAlgorithmParameterException
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
