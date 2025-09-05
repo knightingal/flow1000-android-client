@@ -193,5 +193,5 @@ dependencies {
     // flex layout
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 
-//    implementation(project(":flutter"))
+    implementation(project(":flutter"))
 }
