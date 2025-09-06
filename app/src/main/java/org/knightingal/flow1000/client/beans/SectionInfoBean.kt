@@ -15,13 +15,13 @@
  */
 package org.knightingal.flow1000.client.beans
 
-//import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 /**
  * @author Knightingal
  * @since v1.0
  */
-//@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class SectionInfoBean (
     var picPage: Long,
     var dirName: String,
