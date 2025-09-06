@@ -1,3 +1,8 @@
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.text.SimpleDateFormat
@@ -11,6 +16,15 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+buildscript {
+    dependencies {
+        classpath("com.squareup.okhttp3:okhttp:5.1.0")
+    }
+}
+
+/*
+keytool -genkey -v -keystore key.jks -alias key0 -keyalg RSA -keysize 2048 -validity 10000 -keypass xxxxxx -storepass xxxxxx
+ */
 var keystorePropertiesFile = rootProject.file("../keys/keystore.properties")
 var keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -95,6 +109,27 @@ android {
         viewBinding = true
         buildConfig = true
         dataBinding = true
+    }
+}
+
+task("releaseUpload") {
+    dependsOn("assembleRelease")
+    doLast {
+        println("do releaseUpload")
+        val target = "${project.buildDir}/outputs/apk/release/app-release.apk"
+        println(target)
+        val client:OkHttpClient = OkHttpClient().newBuilder().build();
+        val body = MultipartBody.Builder().setType(MultipartBody.FORM)
+            .addFormDataPart("file", target,
+                File(target).asRequestBody("application/octet-stream".toMediaTypeOrNull())
+            )
+            .build()
+        val request = Request.Builder()
+            .url("http://localhost:8000/apkConfig/upload")
+            .method("POST", body)
+            .build()
+        val response = client.newCall(request).execute()
+        println("${response.code.toString()}  ${response.body.string()}")
     }
 }
 
