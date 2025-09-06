@@ -112,15 +112,16 @@ android {
     }
 }
 
-task("releaseUpload") {
+tasks.register("releaseUpload", fun Task.() {
     dependsOn("assembleRelease")
     doLast {
         println("do releaseUpload")
         val target = "${project.buildDir}/outputs/apk/release/app-release.apk"
         println(target)
-        val client:OkHttpClient = OkHttpClient().newBuilder().build();
+        val client: OkHttpClient = OkHttpClient().newBuilder().build();
         val body = MultipartBody.Builder().setType(MultipartBody.FORM)
-            .addFormDataPart("file", target,
+            .addFormDataPart(
+                "file", target,
                 File(target).asRequestBody("application/octet-stream".toMediaTypeOrNull())
             )
             .build()
@@ -131,7 +132,7 @@ task("releaseUpload") {
         val response = client.newCall(request).execute()
         println("${response.code.toString()}  ${response.body.string()}")
     }
-}
+})
 
 dependencies {
 
