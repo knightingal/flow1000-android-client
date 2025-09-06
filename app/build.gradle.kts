@@ -1,4 +1,8 @@
 import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.io.BufferedReader
 import java.util.Properties
 
 plugins {
@@ -10,6 +14,30 @@ plugins {
 var keystorePropertiesFile = rootProject.file("../keys/keystore.properties")
 var keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
+fun releaseTime(): String = SimpleDateFormat("yyMMdd").format(Date())
+fun versionCode(): Int = SimpleDateFormat("yyMMdd0HH").format(Date()).toInt()
+//fun versionCode(): Int = 10
+fun commitNum(): String {
+    val resultArray = "git describe --always".execute().text().trim().split("-")
+    return resultArray[resultArray.size - 1]
+}
+
+fun String.execute(): Process {
+    val runtime = Runtime.getRuntime()
+    return runtime.exec(this)
+}
+
+fun Process.text(): String {
+    val inputStream = this.inputStream
+    val insReader = InputStreamReader(inputStream)
+    val bufReader = BufferedReader(insReader)
+    var output = ""
+    var line: String = ""
+    line = bufReader.readLine()
+    output += line
+    return output
+}
 
 android {
     namespace = "org.knightingal.flow1000.client"
@@ -34,8 +62,8 @@ android {
         applicationId = "org.knightingal.flow1000.client"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = versionCode()
+        versionName = "${releaseTime()}-${commitNum()}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {
