@@ -8,7 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.example.client.myapplication.R
+import org.knightingal.flow1000.client.R
 
 
 class YImageSlider : ViewGroup {

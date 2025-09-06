@@ -28,6 +28,7 @@ import org.knightingal.flow1000.client.services.DownloadService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.nanjing.knightingal.processerlib.RefreshListener
+import org.knightingal.flow1000.client.R
 
 class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 

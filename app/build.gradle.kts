@@ -1,70 +1,20 @@
-import com.android.build.api.dsl.ViewBinding
-import java.io.BufferedReader
 import java.io.FileInputStream
-import java.io.InputStreamReader
-import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Properties
-import okhttp3.OkHttpClient
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.asRequestBody
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp")
 }
 
-buildscript {
-    dependencies{
-
-        classpath("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
-    }
-}
-
-fun releaseTime(): String = SimpleDateFormat("yyMMdd").format(Date())
-
-fun versionCode(): Int = SimpleDateFormat("yyMMdd0HH").format(Date()).toInt()
-//fun versionCode(): Int = 10
-
-fun commitNum(): String {
-    val resultArray = "git describe --always".execute().text().trim().split("-")
-    return resultArray[resultArray.size - 1]
-}
-
-fun String.execute(): Process {
-    val runtime = Runtime.getRuntime()
-    return runtime.exec(this)
-}
-
-fun Process.text(): String {
-    val inputStream = this.inputStream
-    val insReader = InputStreamReader(inputStream)
-    val bufReader = BufferedReader(insReader)
-    var output = ""
-    var line: String = ""
-    line = bufReader.readLine()
-    output += line
-    return output
-}
-
-/*
-keytool -genkey -v -keystore key.jks -alias key0 -keyalg RSA -keysize 2048 -validity 10000 -keypass xxxxxx -storepass xxxxxx
- */
 var keystorePropertiesFile = rootProject.file("../keys/keystore.properties")
 var keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
-
-
 android {
-    buildFeatures {
-        buildConfig = true
-        viewBinding = true
-        dataBinding = true
-    }
+    namespace = "org.knightingal.flow1000.client"
+    compileSdk = 36
+
     signingConfigs {
         getByName("debug") {
             keyAlias = keystoreProperties["keyAlias"] as String
@@ -79,18 +29,15 @@ android {
             storePassword = keystoreProperties["storePassword"] as String
         }
     }
-    namespace = "org.knightingal.flow1000.client"
-    compileSdk = 34
 
     defaultConfig {
         applicationId = "org.knightingal.flow1000.client"
-        minSdk = 29
-        targetSdk = 34
-        versionCode = versionCode()
-        versionName = "${releaseTime()}-${commitNum()}"
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
         ndk {
             // Filter for architectures supported by Flutter
             abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
@@ -105,93 +52,70 @@ android {
         release {
             isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("release")
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             buildConfigField("String", "PASSWORD", "\""+keystoreProperties["imgPassword"] as String+"\"")
         }
     }
-
-
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
-
-    val viewBindingFun : ViewBinding.() -> Unit = {
-        enable = true
-    }
-    viewBinding (viewBindingFun)
-
-
-}
-
-
-task("releaseUpload") {
-    dependsOn("assembleRelease")
-    doLast {
-        println("do releaseUpload")
-        val target = "${project.buildDir}/outputs/apk/release/app-release.apk"
-        println(target)
-        val client:OkHttpClient = OkHttpClient().newBuilder().build();
-        val body = MultipartBody.Builder().setType(MultipartBody.FORM)
-            .addFormDataPart("file", target,
-                File(target).asRequestBody("application/octet-stream".toMediaTypeOrNull())
-            )
-            .build()
-        val request = Request.Builder()
-            .url("http://localhost:8000/apkConfig/upload")
-            .method("POST", body)
-            .build()
-        val response = client.newCall(request).execute()
-        println("${response.code.toString()}  ${response.body.string()}")
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+        dataBinding = true
     }
 }
-
-
 
 dependencies {
 
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.module.kotlin)
 
-    val jacksonVersion = "2.15.4"
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation( "com.google.code.gson:gson:2.11.0")
+    implementation(libs.gson)
 
-    implementation("com.google.guava:guava:33.0.0-android")
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.10.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.okhttp)
 
-    val ktorVersion="3.1.3"
-    implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
-
-    val roomVersion = "2.5.1"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    ksp("androidx.room:room-compiler:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    implementation("androidx.room:room-rxjava2:$roomVersion")
-    implementation("androidx.room:room-rxjava3:$roomVersion")
-    implementation("androidx.room:room-guava:$roomVersion")
-    testImplementation("androidx.room:room-testing:$roomVersion")
-    implementation("androidx.room:room-paging:$roomVersion")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-
-    // flex layout
-    implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation(libs.guava)
+    implementation(libs.flexbox)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.room.runtime)
+    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
+    // See Add the KSP plugin to your project
+    ksp(libs.androidx.room.compiler)
+    // If this project only uses Java source, use the Java annotationProcessor
+    // No additional plugins are necessary
+    annotationProcessor(libs.androidx.room.compiler)
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation(libs.androidx.room.ktx)
+//    // optional - RxJava2 support for Room
+//    implementation(libs.androidx.room.rxjava2)
+//    // optional - RxJava3 support for Room
+//    implementation(libs.androidx.room.rxjava3)
+//    // optional - Guava support for Room, including Optional and ListenableFuture
+//    implementation(libs.androidx.room.guava)
+    // optional - Test helpers
+    testImplementation(libs.androidx.room.testing)
+    // optional - Paging 3 Integration
+    implementation(libs.androidx.room.paging)
 
     implementation(project(":flutter"))
+
+    // android default dependencies
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+
+
 }

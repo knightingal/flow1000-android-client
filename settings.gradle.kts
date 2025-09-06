@@ -12,7 +12,13 @@ pluginManagement {
         maven{
             url=uri ("https://storage.googleapis.com/download.flutter.io")
         }
-        google()
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
         mavenCentral()
         gradlePluginPortal()
     }
@@ -35,17 +41,12 @@ dependencyResolutionManagement {
         }
         google()
         mavenCentral()
-
         maven("$storageUrl/download.flutter.io")
-
     }
 }
 
 rootProject.name = "flow1000-client"
-include(":app" )
-// Include the host app project. Assumed existing content.
-// Replace "flutter_module" with whatever package_name you supplied when you ran:
-// `$ flutter create -t module [package_name]
-val filePath = "${settingsDir.parentFile}/flutter_module/.android/include_flutter.groovy"
+include(":app")
+
+val filePath = settingsDir.parentFile.toString() + "/flutter_module/.android/include_flutter.groovy"
 apply(from = File(filePath))
- 

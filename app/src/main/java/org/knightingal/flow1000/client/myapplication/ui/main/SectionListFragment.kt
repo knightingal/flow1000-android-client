@@ -24,7 +24,7 @@ import org.knightingal.flow1000.client.dao.UpdataStampDao
 import org.knightingal.flow1000.client.listAdapters.ItemClickListener
 import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
 import org.knightingal.flow1000.client.myapplication.SectionImageListActivity
-import com.example.client.myapplication.databinding.FragmentPendingBinding
+import org.knightingal.flow1000.client.databinding.FragmentPendingBinding
 import org.knightingal.flow1000.client.services.DownloadService
 import org.knightingal.flow1000.client.util.AppDataBase
 import org.nanjing.knightingal.processerlib.RefreshListener

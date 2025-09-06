@@ -8,6 +8,7 @@ import com.google.android.material.tabs.TabLayout
 import androidx.viewpager.widget.ViewPager
 import androidx.appcompat.app.AppCompatActivity
 import org.knightingal.flow1000.client.myapplication.ui.main.SectionsPagerAdapter
+import org.knightingal.flow1000.client.databinding.ActivityMainBinding
 
 //import io.flutter.embedding.android.FlutterActivity
 

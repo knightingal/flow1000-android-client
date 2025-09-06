@@ -1,6 +1,8 @@
+*.iml
 .gradle
 /local.properties
 /.idea/workspace.xml
+/.idea/caches
 /.idea/libraries
 /.idea/gradle.xml
 /.idea/misc.xml
@@ -10,11 +12,16 @@
 /.idea/modules.xml
 /.idea/dbnavigator.xml
 /.idea/jarRepositories.xml
-/.idea/caches
 /.idea/codeStyles/Project.xml
 .idea/
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
 .DS_Store
 */build
-*.iml
 keystore.properties
 app/debug
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties

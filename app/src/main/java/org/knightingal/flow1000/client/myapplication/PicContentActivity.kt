@@ -1,10 +1,10 @@
 package org.knightingal.flow1000.client.myapplication
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import org.nanking.knightingal.kslideviewlib.YImageSlider
 import org.nanking.knightingal.kslideviewlib.YImageSlider.ImgChangeListener
+import org.knightingal.flow1000.client.R
 
 class PicContentActivity : Activity(), ImgChangeListener {
     var mImageSlider: YImageSlider? = null
@@ -43,12 +43,12 @@ class PicContentActivity : Activity(), ImgChangeListener {
     var index: Int = 0
 
 
-    override fun onBackPressed() {
-        val intent = Intent()
-        intent.putExtra("position", index)
-        setResult(RESULT_OK, intent)
-        super.onBackPressed()
-    }
+//    override fun onBackPressed() {
+//        val intent = Intent()
+//        intent.putExtra("position", index)
+//        setResult(RESULT_OK, intent)
+//        super.onBackPressed()
+//    }
 
     override fun onGetBackImg(yImageSlider: YImageSlider): String {
         index = (index + imgArray!!.size) % imgArray!!.size

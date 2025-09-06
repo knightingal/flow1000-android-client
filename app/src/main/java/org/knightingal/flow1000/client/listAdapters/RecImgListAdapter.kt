@@ -12,8 +12,8 @@ import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import org.knightingal.flow1000.client.beans.PicInfoBean
-import com.example.client.myapplication.R
 import org.knightingal.flow1000.client.myapplication.SectionImageListActivity
+import org.knightingal.flow1000.client.R
 import com.google.common.io.Files
 import java.io.File
 import java.io.IOException

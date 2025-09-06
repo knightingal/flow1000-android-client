@@ -5,6 +5,7 @@ import SERVER_PORT
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
@@ -14,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import org.knightingal.flow1000.client.Tasks.ConcurrencyApkTask
@@ -25,6 +27,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.File
 import androidx.core.net.toUri
+import org.knightingal.flow1000.client.R
 
 
 class AboutActivity : AppCompatActivity() {
@@ -34,6 +37,7 @@ class AboutActivity : AppCompatActivity() {
     private lateinit var launcher: ActivityResultLauncher<Intent>
 
     private lateinit var apkFile: File
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)

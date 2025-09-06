@@ -21,6 +21,7 @@ import org.knightingal.flow1000.client.dao.PicInfoDao
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import org.knightingal.flow1000.client.R
 
 fun interface ItemClickListener {
     fun onItemClick(picSectionData: PicSectionData)

@@ -27,6 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.knightingal.flow1000.client.R
 
 class SectionImageListActivity : AppCompatActivity(){
 
