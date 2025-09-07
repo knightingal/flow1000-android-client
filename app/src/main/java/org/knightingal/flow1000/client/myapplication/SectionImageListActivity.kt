@@ -12,12 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import com.google.gson.Gson
 import org.knightingal.flow1000.client.SectionDetail
 import org.knightingal.flow1000.client.listAdapters.OnlineRecImgListAdapter
 import org.knightingal.flow1000.client.util.AppDataBase
 import org.knightingal.flow1000.client.listAdapters.RecImgListAdapter
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+//import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+//import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -88,9 +89,9 @@ class SectionImageListActivity : AppCompatActivity(){
                     val client = HttpClient(CIO)
                     val response: HttpResponse = client.get(url)
                     val body: String = response.body()
-                    val mapper = jacksonObjectMapper()
+//                    val mapper = jacksonObjectMapper()
                     try {
-                        val sectionDetail = mapper.readValue<SectionDetail>(body)
+                        val sectionDetail = Gson().fromJson(body, SectionDetail::class.java)
                         withContext(Dispatchers.Main) {
 
                             val sectionConfig = getSectionConfig(sectionDetail.album)

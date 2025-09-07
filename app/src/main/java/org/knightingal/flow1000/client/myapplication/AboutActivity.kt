@@ -21,12 +21,13 @@ import androidx.core.content.FileProvider
 import org.knightingal.flow1000.client.Tasks.ConcurrencyApkTask
 import org.knightingal.flow1000.client.Tasks.ConcurrencyJsonApiTask
 import org.knightingal.flow1000.client.beans.ApkConfig
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+//import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+//import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.File
 import androidx.core.net.toUri
+import com.google.gson.Gson
 import org.knightingal.flow1000.client.R
 
 
@@ -74,12 +75,12 @@ class AboutActivity : AppCompatActivity() {
             throw RuntimeException(e)
         }
 
-        val mapper = jacksonObjectMapper()
+//        val mapper = jacksonObjectMapper()
         imageView.setOnClickListener {
             val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/apkConfig/newest/package/${packageName}"
             MainScope().launch {
                 val respBody = ConcurrencyJsonApiTask.makeRequest(pendingUrl)
-                val apkConfig: ApkConfig = mapper.readValue(respBody)
+                val apkConfig: ApkConfig = Gson().fromJson(respBody, ApkConfig::class.java)
                 Log.d("about", apkConfig.toString())
                 if (apkConfig.versionCode > versionCode) {
                     Toast.makeText(this@AboutActivity, "you have newer apk", Toast.LENGTH_LONG).show()

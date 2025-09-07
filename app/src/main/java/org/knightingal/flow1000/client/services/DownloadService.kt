@@ -9,6 +9,7 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.room.Room
+import com.google.gson.Gson
 import org.knightingal.flow1000.client.Tasks.ConcurrencyJsonApiTask
 import org.knightingal.flow1000.client.beans.ImgDetail
 import org.knightingal.flow1000.client.beans.PicInfoBean
@@ -25,8 +26,8 @@ import org.knightingal.flow1000.client.myapplication.getSectionConfig
 import org.knightingal.flow1000.client.util.Decryptor
 import org.knightingal.flow1000.client.util.FileUtil.getSectionStorageDir
 import org.knightingal.flow1000.client.util.TimeUtil
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+//import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+//import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -99,10 +100,10 @@ class DownloadService : Service() {
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
         ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
-            val mapper = jacksonObjectMapper()
+//            val mapper = jacksonObjectMapper()
             db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
-                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
+                val picSectionBeanList = Gson().fromJson(allBody, Array<PicSectionBean>::class.java)
                 updateStampDao.update(updateStamp)
                 picSectionBeanList.forEach { picSectionDao.insert(it) }
             }
@@ -118,7 +119,7 @@ class DownloadService : Service() {
 
     fun startDownloadSectionList() {
         thread {
-            val mapper = jacksonObjectMapper()
+//            val mapper = jacksonObjectMapper()
             val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
             val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
             Log.d("startDownloadWebPage", stringUrl)
@@ -131,7 +132,7 @@ class DownloadService : Service() {
 
             db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
-                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(body)
+                val picSectionBeanList = Gson().fromJson(body, Array<PicSectionBean>::class.java)
                 updateStampDao.update(updateStamp)
                 picSectionBeanList.forEach { picSectionDao.insert(it) }
             }
@@ -143,7 +144,7 @@ class DownloadService : Service() {
                 response.body()
             }
 
-            var picSectionBeanList: List<PicSectionBean> = mapper.readValue(picIndexResp)
+            var picSectionBeanList = Gson().fromJson(picIndexResp, Array<PicSectionBean>::class.java).toList()
             pendingSectionBeanList = mutableListOf()
 
             db.runInTransaction {
@@ -237,12 +238,12 @@ class DownloadService : Service() {
     private fun sectionExecuting(pendingSectionData: PicSectionData) {
         val sectionConfig = getSectionConfig(pendingSectionData.picSectionBean.album)
         val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=${pendingSectionData.picSectionBean.id}"
-        val mapper = jacksonObjectMapper()
+//        val mapper = jacksonObjectMapper()
         val client = HttpClient(CIO)
         val picContentResp: String = runBlocking {
             client.get(url).body()
         }
-        val sectionInfoBean = mapper.readValue<SectionInfoBean>(picContentResp)
+        val sectionInfoBean = Gson().fromJson(picContentResp, SectionInfoBean::class.java)
         if (ProcessCounter.initCounter(pendingSectionData.picSectionBean.id, sectionInfoBean.pics.size) != null) {
             return
         }

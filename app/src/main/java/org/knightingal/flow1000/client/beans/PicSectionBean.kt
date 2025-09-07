@@ -2,17 +2,19 @@ package org.knightingal.flow1000.client.beans
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.google.gson.annotations.SerializedName
+
+//import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+//import com.fasterxml.jackson.annotation.JsonProperty
 
 @Entity
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 data class PicSectionBean (
-    @JsonProperty("name")
+    @SerializedName("name")
     var name: String,
 
     @PrimaryKey
-    @JsonProperty("index")
+    @SerializedName("index")
     var id: Long = 0,
 
     var exist: Int = 0,

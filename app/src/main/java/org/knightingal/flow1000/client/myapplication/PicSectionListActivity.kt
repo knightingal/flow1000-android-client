@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room.databaseBuilder
+import com.google.gson.Gson
 import org.knightingal.flow1000.client.Tasks.ConcurrencyJsonApiTask
 import org.knightingal.flow1000.client.util.AppDataBase
 import org.knightingal.flow1000.client.util.NetworkUtil
@@ -25,8 +26,8 @@ import org.knightingal.flow1000.client.dao.PicInfoDao
 import org.knightingal.flow1000.client.dao.UpdataStampDao
 import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
 import org.knightingal.flow1000.client.services.DownloadService
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+//import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+//import com.fasterxml.jackson.module.kotlin.readValue
 import org.nanjing.knightingal.processerlib.RefreshListener
 import org.knightingal.flow1000.client.R
 
@@ -122,11 +123,11 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
         ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
-            val mapper = jacksonObjectMapper()
+//            val mapper = jacksonObjectMapper()
             db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
                 updataStampDao.update(updateStamp)
-                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(allBody)
+                val picSectionBeanList = Gson().fromJson(allBody, Array<PicSectionBean>::class.java)
                 picSectionBeanList.forEach { picSectionDao.insert(it) }
             }
 
@@ -134,7 +135,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
             val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
             ConcurrencyJsonApiTask.startGet(pendingUrl) { pendingBody ->
-                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
+                val picSectionBeanList = Gson().fromJson(pendingBody, Array<PicSectionBean>::class.java)
                 if (picSectionBeanList.isNotEmpty()) {
                     picSectionBeanList.forEach {
                         picSectionDao.update(it)
@@ -144,7 +145,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
             }
             val localUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=LOCAL"
             ConcurrencyJsonApiTask.startGet(localUrl) { pendingBody ->
-                val picSectionBeanList: List<PicSectionBean> = mapper.readValue(pendingBody)
+                val picSectionBeanList = Gson().fromJson(pendingBody, Array<PicSectionBean>::class.java)
                 if (picSectionBeanList.isNotEmpty()) {
                     picSectionBeanList.forEach {
                         val existSection = picSectionDao.getByInnerIndex(it.id)
