@@ -136,8 +136,8 @@ tasks.register("releaseUpload", fun Task.() {
 
 dependencies {
 
-    implementation(libs.jackson.databind)
-    implementation(libs.jackson.module.kotlin)
+//    implementation(libs.jackson.databind)
+//    implementation(libs.jackson.module.kotlin)
 
     implementation(libs.gson)
 
