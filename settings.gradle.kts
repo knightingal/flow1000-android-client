@@ -48,5 +48,5 @@ dependencyResolutionManagement {
 rootProject.name = "flow1000-client"
 include(":app")
 
-val filePath = settingsDir.parentFile.toString() + "/flutter_module/.android/include_flutter.groovy"
+val filePath = settingsDir.parentFile.toString() + "/flow1000_client_flutter_module/.android/include_flutter.groovy"
 apply(from = File(filePath))
