@@ -1,4 +1,4 @@
-package org.knightingal.flow1000.client.Tasks
+package org.knightingal.flow1000.client.task
 
 import android.util.Log
 import io.ktor.client.HttpClient

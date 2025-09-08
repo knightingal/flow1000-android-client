@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room.databaseBuilder
 import com.google.gson.Gson
-import org.knightingal.flow1000.client.Tasks.ConcurrencyJsonApiTask
+import org.knightingal.flow1000.client.task.ConcurrencyJsonApiTask
 import org.knightingal.flow1000.client.util.AppDataBase
 import org.knightingal.flow1000.client.util.NetworkUtil
 import org.knightingal.flow1000.client.util.TimeUtil

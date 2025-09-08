@@ -10,7 +10,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.room.Room
 import com.google.gson.Gson
-import org.knightingal.flow1000.client.Tasks.ConcurrencyJsonApiTask
+import org.knightingal.flow1000.client.task.ConcurrencyJsonApiTask
 import org.knightingal.flow1000.client.beans.ImgDetail
 import org.knightingal.flow1000.client.beans.PicInfoBean
 import org.knightingal.flow1000.client.util.AppDataBase

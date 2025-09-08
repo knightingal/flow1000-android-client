@@ -1,4 +1,4 @@
-package org.knightingal.flow1000.client.Tasks
+package org.knightingal.flow1000.client.task
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

@@ -18,8 +18,8 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
-import org.knightingal.flow1000.client.Tasks.ConcurrencyApkTask
-import org.knightingal.flow1000.client.Tasks.ConcurrencyJsonApiTask
+import org.knightingal.flow1000.client.task.ConcurrencyApkTask
+import org.knightingal.flow1000.client.task.ConcurrencyJsonApiTask
 import org.knightingal.flow1000.client.beans.ApkConfig
 //import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 //import com.fasterxml.jackson.module.kotlin.readValue
