@@ -20,7 +20,7 @@ import androidx.room.Room
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.dao.PicInfoDao
 import org.knightingal.flow1000.client.dao.PicSectionDao
-import org.knightingal.flow1000.client.dao.UpdataStampDao
+import org.knightingal.flow1000.client.dao.UpdateStampDao
 import org.knightingal.flow1000.client.listAdapters.ItemClickListener
 import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
 import org.knightingal.flow1000.client.myapplication.SectionImageListActivity
@@ -41,7 +41,7 @@ class SectionListFragment : Fragment(){
 
     private lateinit var picInfoDao: PicInfoDao
 
-    private lateinit var updateStampDao: UpdataStampDao
+    private lateinit var updateStampDao: UpdateStampDao
     private lateinit var db: AppDataBase
     private val binding get() = _binding!!
 

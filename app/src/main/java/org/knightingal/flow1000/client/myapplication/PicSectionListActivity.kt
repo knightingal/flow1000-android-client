@@ -23,7 +23,7 @@ import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.beans.UpdateStamp
 import org.knightingal.flow1000.client.dao.PicSectionDao
 import org.knightingal.flow1000.client.dao.PicInfoDao
-import org.knightingal.flow1000.client.dao.UpdataStampDao
+import org.knightingal.flow1000.client.dao.UpdateStampDao
 import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
 import org.knightingal.flow1000.client.services.DownloadService
 //import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -42,7 +42,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
     private lateinit var picInfoDao: PicInfoDao
 
-    private lateinit var updataStampDao: UpdataStampDao
+    private lateinit var updateStampDao: UpdateStampDao
 
 
     private lateinit var picSectionListAdapter: PicSectionListAdapter
@@ -64,7 +64,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
         picSectionDao = db.picSectionDao()
         picInfoDao = db.picInfoDao()
-        updataStampDao = db.updateStampDao()
+        updateStampDao = db.updateStampDao()
 
         setContentView(R.layout.activity_pic_section_list_activity_md)
 
@@ -119,14 +119,14 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     }
 
     private fun startDownloadPicIndex() {
-        val updateStamp = updataStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
+        val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
         Log.d("startDownloadWebPage", stringUrl)
         ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
 //            val mapper = jacksonObjectMapper()
             db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
-                updataStampDao.update(updateStamp)
+                updateStampDao.update(updateStamp)
                 val picSectionBeanList = Gson().fromJson(allBody, Array<PicSectionBean>::class.java)
                 picSectionBeanList.forEach { picSectionDao.insert(it) }
             }

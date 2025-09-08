@@ -11,7 +11,7 @@ import org.knightingal.flow1000.client.beans.UpdateStamp
 
 
 @Dao
-interface UpdataStampDao {
+interface UpdateStampDao {
     @Query("select * from UpdateStamp where table_name = :tableName")
     fun getUpdateStampByTableName(tableName: String):UpdateStamp?
 

@@ -20,7 +20,7 @@ import org.knightingal.flow1000.client.beans.SectionInfoBean
 import org.knightingal.flow1000.client.beans.UpdateStamp
 import org.knightingal.flow1000.client.dao.PicSectionDao
 import org.knightingal.flow1000.client.dao.PicInfoDao
-import org.knightingal.flow1000.client.dao.UpdataStampDao
+import org.knightingal.flow1000.client.dao.UpdateStampDao
 import org.knightingal.flow1000.client.myapplication.SectionConfig
 import org.knightingal.flow1000.client.myapplication.getSectionConfig
 import org.knightingal.flow1000.client.util.Decryptor
@@ -61,7 +61,7 @@ class DownloadService : Service() {
 
     private lateinit var db: AppDataBase
     private lateinit var picSectionDao : PicSectionDao
-    private lateinit var updateStampDao: UpdataStampDao
+    private lateinit var updateStampDao: UpdateStampDao
     private lateinit var picInfoDao : PicInfoDao
 
 

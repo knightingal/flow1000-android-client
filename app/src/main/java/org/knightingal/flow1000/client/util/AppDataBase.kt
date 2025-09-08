@@ -7,7 +7,7 @@ import org.knightingal.flow1000.client.beans.PicInfoBean
 import org.knightingal.flow1000.client.beans.UpdateStamp
 import org.knightingal.flow1000.client.dao.PicSectionDao
 import org.knightingal.flow1000.client.dao.PicInfoDao
-import org.knightingal.flow1000.client.dao.UpdataStampDao
+import org.knightingal.flow1000.client.dao.UpdateStampDao
 
 @Database(entities = [UpdateStamp::class, PicSectionBean::class, PicInfoBean::class], version = 2, exportSchema = false)
 abstract class AppDataBase : RoomDatabase() {
@@ -16,5 +16,5 @@ abstract class AppDataBase : RoomDatabase() {
 
     abstract fun picInfoDao(): PicInfoDao
 
-    abstract fun updateStampDao(): UpdataStampDao
+    abstract fun updateStampDao(): UpdateStampDao
 }
