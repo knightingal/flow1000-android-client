@@ -1,7 +1,7 @@
 package org.knightingal.flow1000.client.listAdapters
 
-import SERVER_IP
-import SERVER_PORT
+import org.knightingal.flow1000.client.util.SERVER_IP
+import org.knightingal.flow1000.client.util.SERVER_PORT
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Build

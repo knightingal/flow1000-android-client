@@ -1,7 +1,7 @@
 package org.knightingal.flow1000.client.myapplication
 
-import SERVER_IP
-import SERVER_PORT
+import org.knightingal.flow1000.client.util.SERVER_IP
+import org.knightingal.flow1000.client.util.SERVER_PORT
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Intent
