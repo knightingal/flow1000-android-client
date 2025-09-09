@@ -1,8 +1,8 @@
 package org.knightingal.flow1000.client.myapplication
 
-class SectionConfig(var name: String, var encryped: Boolean, var baseUrl: String,) ;
+class SectionConfig(var name: String, var encrypted: Boolean, var baseUrl: String)
 
-val SECTION_CONFIG_MAP: Map<String, SectionConfig> = initSectionConfig();
+val SECTION_CONFIG_MAP: Map<String, SectionConfig> = initSectionConfig()
 
 fun initSectionConfig(): Map<String, SectionConfig> {
     // TODO: so joke, the album config is hard coded here!!!
@@ -14,7 +14,7 @@ fun initSectionConfig(): Map<String, SectionConfig> {
         "1805" to SectionConfig("1805", false, "1805"),
         "1806" to SectionConfig("1806", false, "1806"),
         "1807" to SectionConfig("1807", false, "1807"),
-    );
+    )
 }
 
 fun getSectionConfig(name: String?) : SectionConfig {

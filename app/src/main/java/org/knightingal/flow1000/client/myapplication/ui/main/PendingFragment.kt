@@ -104,7 +104,7 @@ class PendingFragment : Fragment(){
     var downLoadService: DownloadService? = null
     var serviceBound = false
 
-    val autoStart = true;
+    val autoStart = true
 
     private val conn: ServiceConnection = object : ServiceConnection {
         @SuppressLint("NotifyDataSetChanged")

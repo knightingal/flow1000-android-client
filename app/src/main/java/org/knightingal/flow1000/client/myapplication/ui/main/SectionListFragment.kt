@@ -93,8 +93,8 @@ class SectionListFragment : Fragment(){
 
     override fun onPause() {
         super.onPause()
-        downLoadService?.removeRefreshListener(refreshListener)
-        downLoadService = null
+        downLoadService.removeRefreshListener(refreshListener)
+//        downLoadService = null
         context?.unbindService(conn)
     }
 
@@ -106,7 +106,7 @@ class SectionListFragment : Fragment(){
         )
     }
 
-    var downLoadService: DownloadService? = null
+    lateinit var downLoadService: DownloadService
     var serviceBound = false
 
     private val conn: ServiceConnection = object : ServiceConnection {
@@ -115,20 +115,20 @@ class SectionListFragment : Fragment(){
             Log.d(TAG, "onServiceConnected")
             serviceBound = true
             downLoadService = (binder as DownloadService.LocalBinder).getService()
-            downLoadService?.setRefreshListener(
+            downLoadService.setRefreshListener(
                 refreshListener
             )
-            val picSectionBeanList = downLoadService?.getAllSectionList() ?: listOf()
+            val picSectionBeanList = downLoadService.getAllSectionList()
             picSectionListAdapter.setDataArray(picSectionBeanList)
             picSectionListAdapter.notifyDataSetChanged()
 
-            downLoadService?.fetchAllSectionList()
+            downLoadService.fetchAllSectionList()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
             Log.d(TAG, "onServiceDisconnected")
-            downLoadService?.setRefreshListener(null)
-            downLoadService = null
+            downLoadService.setRefreshListener(null)
+//            downLoadService = null
             serviceBound = false
         }
     }
@@ -148,7 +148,7 @@ class SectionListFragment : Fragment(){
 
         @SuppressLint("NotifyDataSetChanged")
         override fun notifyListReady() {
-            val pendingSectionList = downLoadService!!.getAllSectionList()
+            val pendingSectionList = downLoadService.getAllSectionList()
             picSectionListAdapter.setDataArray(pendingSectionList)
             picSectionListAdapter.notifyDataSetChanged()
         }

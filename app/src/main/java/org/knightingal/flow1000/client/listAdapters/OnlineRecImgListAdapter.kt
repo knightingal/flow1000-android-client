@@ -34,7 +34,7 @@ class OnlineRecImgListAdapter(context: SectionImageListActivity, var sectionDeta
     private val screamWidth : Int = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager)
         .currentWindowMetrics.bounds.width()
 
-    lateinit var sectionConfig:SectionConfig;
+    lateinit var sectionConfig: SectionConfig
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImgViewHolder {

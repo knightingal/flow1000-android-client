@@ -53,7 +53,7 @@ class PicSectionListAdapter(
     private val picSectionDao: PicSectionDao
     private val picInfoDao: PicInfoDao
     private var displayProcessCount: Boolean = false
-    private var itemClickListener: ItemClickListener? = null
+    private lateinit var itemClickListener: ItemClickListener
 
     init {
         val db = Room.databaseBuilder(
@@ -68,7 +68,7 @@ class PicSectionListAdapter(
         this.displayProcessCount = displayProcessCount
     }
 
-    fun setItemClickListener(itemClickListener: ItemClickListener?) {
+    fun setItemClickListener(itemClickListener: ItemClickListener) {
         this.itemClickListener = itemClickListener
     }
 
@@ -174,7 +174,7 @@ class PicSectionListAdapter(
         }
 
         override fun onClick(v: View?) {
-            itemClickListener?.onItemClick(dataArray[position1])
+            itemClickListener.onItemClick(dataArray[position1])
         }
     }
 

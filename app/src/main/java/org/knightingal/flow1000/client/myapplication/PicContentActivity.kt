@@ -27,7 +27,7 @@ class PicContentActivity : Activity(), ImgChangeListener {
         imageSlider.imgChangeListener = this
         imgArray = intent.getStringArrayExtra("imgArray")
         position = intent.getIntExtra("position", 0)
-        if (imgArray != null && imgArray!!.size != 0) {
+        if (imgArray != null && imgArray!!.isNotEmpty()) {
             index = position
         }
         imageSlider.setHideLeftSrc(index)
@@ -57,7 +57,7 @@ class PicContentActivity : Activity(), ImgChangeListener {
     }
 
     override fun onGetNextImg(yImageSlider: YImageSlider): String {
-        index = index % imgArray!!.size
+        index %= imgArray!!.size
         index++
         return getImgSrcByIndex(index + 1)
     }
@@ -69,9 +69,5 @@ class PicContentActivity : Activity(), ImgChangeListener {
 
     fun getImgSrcByIndex(index: Int): String {
         return getImgByIndex((index + imgArray!!.size) % imgArray!!.size)
-    }
-
-    companion object {
-        private const val TAG = "PicContentActivity"
     }
 }
