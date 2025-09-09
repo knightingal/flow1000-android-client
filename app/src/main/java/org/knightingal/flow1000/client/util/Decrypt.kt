@@ -11,7 +11,7 @@ import javax.crypto.NoSuchPaddingException
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-object Decryptor {
+object Decrypt {
     fun decrypt(encrypted: ByteArray?): ByteArray {
         val iv = "2017041621251234".toByteArray()
         val key = BuildConfig.PASSWORD.toByteArray()

@@ -23,7 +23,7 @@ import org.knightingal.flow1000.client.dao.PicInfoDao
 import org.knightingal.flow1000.client.dao.UpdateStampDao
 import org.knightingal.flow1000.client.myapplication.SectionConfig
 import org.knightingal.flow1000.client.myapplication.getSectionConfig
-import org.knightingal.flow1000.client.util.Decryptor
+import org.knightingal.flow1000.client.util.Decrypt
 import org.knightingal.flow1000.client.util.FileUtil.getSectionStorageDir
 import org.knightingal.flow1000.client.util.TimeUtil
 //import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -186,9 +186,9 @@ class DownloadService : Service() {
 
     private fun processImgItem(pic: ImgDetail, sectionInfoBean: SectionInfoBean, sectionConfig: SectionConfig, latch: CountDownLatch) {
         val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encryped) pic.name else pic.name}"
+                "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encrypted) pic.name else pic.name}"
         imageThreadPool.execute {
-            imgExecuting(imgUrl, pic, sectionInfoBean.id, sectionInfoBean.dirName, sectionConfig.encryped, latch)
+            imgExecuting(imgUrl, pic, sectionInfoBean.id, sectionInfoBean.dirName, sectionConfig.encrypted, latch)
         }
     }
 
@@ -202,7 +202,7 @@ class DownloadService : Service() {
         val options: BitmapFactory.Options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
         if (encrypted) {
-            bytes = Decryptor.decrypt(bytes)
+            bytes = Decrypt.decrypt(bytes)
         }
         val directory =
             getSectionStorageDir(applicationContext, dirName)

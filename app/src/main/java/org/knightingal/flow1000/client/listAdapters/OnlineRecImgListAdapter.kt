@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.knightingal.flow1000.client.SectionDetail
 import org.knightingal.flow1000.client.myapplication.SectionConfig
 import org.knightingal.flow1000.client.myapplication.SectionImageListActivity
-import org.knightingal.flow1000.client.util.Decryptor
+import org.knightingal.flow1000.client.util.Decrypt
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import kotlinx.coroutines.Dispatchers
@@ -72,8 +72,8 @@ class OnlineRecImgListAdapter(context: SectionImageListActivity, var sectionDeta
                 val response: HttpResponse = client.get(imgUrl)
                 var content: ByteArray = response.body()
 
-                if (sectionConfig.encryped) {
-                    content = Decryptor.decrypt(content)
+                if (sectionConfig.encrypted) {
+                    content = Decrypt.decrypt(content)
                 }
                 if (holder.imgName.equals(imgName)) {
                     withContext(Dispatchers.Main) {
