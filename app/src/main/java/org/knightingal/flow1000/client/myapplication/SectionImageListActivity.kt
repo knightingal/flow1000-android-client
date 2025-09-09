@@ -108,9 +108,9 @@ class SectionImageListActivity : AppCompatActivity(){
 
     }
 
-    fun startPicContentActivity(imgs: Array<String?>?, position: Int) {
+    fun startPicContentActivity(imgList: Array<String?>?, position: Int) {
         val intent = Intent(this, PicContentActivity::class.java)
-        intent.putExtra("imgArray", imgs)
+        intent.putExtra("imgArray", imgList)
         intent.putExtra("position", position)
         launcher.launch(intent)
     }

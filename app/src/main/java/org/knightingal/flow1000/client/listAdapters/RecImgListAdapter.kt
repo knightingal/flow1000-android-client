@@ -65,19 +65,15 @@ class RecImgListAdapter(private val context: SectionImageListActivity, private v
         }
         holder.img.setOnClickListener {
             Log.d("Activity4List", dataArray[position].absolutePath!!)
-            val imgs = arrayOfNulls<String>(dataArray.size)
+            val imgList = arrayOfNulls<String>(dataArray.size)
             for (i in dataArray.indices) {
-                imgs[i] = dataArray[i].absolutePath
+                imgList[i] = dataArray[i].absolutePath
             }
-            context.startPicContentActivity(imgs, position)
+            context.startPicContentActivity(imgList, position)
         }
 
     }
     class ImgViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val img: ImageView
-        init {
-            img = itemView.findViewById(R.id.img)
-        }
-
+        val img: ImageView = itemView.findViewById(R.id.img)
     }
 }

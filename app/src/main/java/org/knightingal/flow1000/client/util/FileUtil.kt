@@ -6,7 +6,7 @@ import android.util.Log
 import java.io.File
 
 /**
- * Created by Jianming on 2015/4/28.
+ * Created by Knightingal on 2015/4/28.
  */
 object FileUtil {
     private const val TAG = "FileUtil"
