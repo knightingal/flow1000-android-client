@@ -22,7 +22,6 @@ import org.knightingal.flow1000.client.dao.PicSectionDao
 import org.knightingal.flow1000.client.dao.PicInfoDao
 import org.knightingal.flow1000.client.dao.UpdateStampDao
 import org.knightingal.flow1000.client.myapplication.SectionConfig
-import org.knightingal.flow1000.client.myapplication.getSectionConfig
 import org.knightingal.flow1000.client.util.Decrypt
 import org.knightingal.flow1000.client.util.FileUtil.getSectionStorageDir
 import org.knightingal.flow1000.client.util.TimeUtil
@@ -37,6 +36,7 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.knightingal.flow1000.client.myapplication.SectionConfig.Companion.getSectionConfig
 import org.nanjing.knightingal.processerlib.RefreshListener
 import java.io.File
 import java.io.FileOutputStream
