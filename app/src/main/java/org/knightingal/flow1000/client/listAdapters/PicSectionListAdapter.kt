@@ -23,19 +23,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import org.knightingal.flow1000.client.R
 
-fun interface ItemClickListener {
-    fun onItemClick(picSectionData: PicSectionData)
-}
-
-class PicSectionListAdapter(
-    private val context: Context?
-) : RecyclerView.Adapter<PicSectionListAdapter.ViewHolder>() {
-
-
+class PicSectionListAdapter(private val context: Context) : RecyclerView.Adapter<PicSectionListAdapter.ViewHolder>() {
     companion object {
         private fun formatTitle(sourceTitle: String): String {
             if (sourceTitle.length > 14) {
-                val timeStamp = sourceTitle.substring(0, 14)
+                val timeStamp = sourceTitle.take(14)
                 var isTimeStamp = true
                 try {
                     SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINESE).parse(timeStamp)
@@ -57,7 +49,7 @@ class PicSectionListAdapter(
 
     init {
         val db = Room.databaseBuilder(
-            context as Context,
+            context,
             AppDataBase::class.java, "database-flow1000"
         ).allowMainThreadQueries().build()
         picSectionDao = db.picSectionDao()
@@ -85,13 +77,13 @@ class PicSectionListAdapter(
     }
 
     private fun renderExistItem(viewHolder: ViewHolder) {
-        viewHolder.textView.setTextColor(context!!.getColor(R.color.md_theme_light_onPrimaryContainer))
+        viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onPrimaryContainer))
         viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_primaryContainer))
         viewHolder.deleteBtn.visibility = View.VISIBLE
     }
 
     private fun renderNonExistItem(viewHolder: ViewHolder) {
-        viewHolder.textView.setTextColor(context!!.getColor(R.color.md_theme_light_onSurfaceVariant))
+        viewHolder.textView.setTextColor(context.getColor(R.color.md_theme_light_onSurfaceVariant))
         viewHolder.itemView.setBackgroundColor(context.getColor(R.color.md_theme_light_surfaceVariant))
         viewHolder.deleteBtn.visibility = View.GONE
     }
@@ -140,7 +132,7 @@ class PicSectionListAdapter(
         viewHolder.position1 = viewHolder.adapterPosition
         viewHolder.deleteBtn.setOnClickListener {
             Log.d(TAG, "you clicked ${dataArray[viewHolder.adapterPosition].picSectionBean.name} delete_btn")
-            val builder = AlertDialog.Builder(context as Context)
+            val builder = AlertDialog.Builder(context)
             builder.setMessage("delete this dir?")
             builder.setTitle("")
             builder.setPositiveButton("yes") { dialog, _ ->

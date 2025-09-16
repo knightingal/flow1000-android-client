@@ -2,7 +2,6 @@ package org.knightingal.flow1000.client.myapplication.ui.main
 
 import android.annotation.SuppressLint
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
@@ -51,7 +50,7 @@ class PendingFragment : Fragment(){
         pageViewModel = ViewModelProvider(this)[PageViewModel::class.java]
 
         db = Room.databaseBuilder(
-            (context as Context).applicationContext,
+            requireContext().applicationContext,
             AppDataBase::class.java, "database-flow1000"
         ).allowMainThreadQueries().build()
 
@@ -78,7 +77,7 @@ class PendingFragment : Fragment(){
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         pendingListView.layoutManager = mLayoutManager
 
-        picSectionListAdapter = PicSectionListAdapter(context)
+        picSectionListAdapter = PicSectionListAdapter(requireContext())
         picSectionListAdapter.setDataArray(picSectionDataList)
         picSectionListAdapter.setDisplayProcessCount(true)
         pendingListView.adapter = picSectionListAdapter
@@ -90,12 +89,12 @@ class PendingFragment : Fragment(){
         super.onPause()
         downLoadService?.removeRefreshListener(refreshListener)
         downLoadService = null
-        context?.unbindService(conn)
+        requireContext().unbindService(conn)
     }
 
     override fun onStart() {
         super.onStart()
-        context?.bindService(
+        requireContext().bindService(
             Intent(context, DownloadService::class.java), conn,
             AppCompatActivity.BIND_AUTO_CREATE
         )

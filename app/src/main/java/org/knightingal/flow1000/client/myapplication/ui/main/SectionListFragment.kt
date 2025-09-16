@@ -83,7 +83,7 @@ class SectionListFragment : Fragment(){
                 .putExtra("exist", it.picSectionBean.exist)
             startActivity(intent)
         }
-        picSectionListAdapter = PicSectionListAdapter(context)
+        picSectionListAdapter = PicSectionListAdapter(requireContext())
         picSectionListAdapter.setDataArray(picSectionDataList)
         picSectionListAdapter.setItemClickListener(itemClickListener)
         pendingListView.adapter = picSectionListAdapter
