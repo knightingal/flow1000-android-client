@@ -18,7 +18,7 @@ plugins {
 
 buildscript {
     dependencies {
-        classpath("com.squareup.okhttp3:okhttp:5.1.0")
+        classpath(libs.okhttp)
     }
 }
 
@@ -38,8 +38,9 @@ fun commitNum(): String {
 }
 
 fun String.execute(): Process {
-    val runtime = Runtime.getRuntime()
-    return runtime.exec(this)
+//    val runtime = Runtime.getRuntime()
+//    return runtime.exec(this)
+    return ProcessBuilder(this).start()
 }
 
 fun Process.text(): String {
