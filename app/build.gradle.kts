@@ -38,9 +38,8 @@ fun commitNum(): String {
 }
 
 fun String.execute(): Process {
-//    val runtime = Runtime.getRuntime()
-//    return runtime.exec(this)
-    return ProcessBuilder(this).start()
+    val runtime = Runtime.getRuntime()
+    return runtime.exec(this)
 }
 
 fun Process.text(): String {
