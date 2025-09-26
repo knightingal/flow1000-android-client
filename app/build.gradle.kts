@@ -48,8 +48,7 @@ fun Process.text(): String {
     val insReader = InputStreamReader(inputStream)
     val bufReader = BufferedReader(insReader)
     var output = ""
-    var line: String = ""
-    line = bufReader.readLine()
+    val line = bufReader.readLine()
     output += line
     return output
 }
@@ -119,7 +118,7 @@ tasks.register("releaseUpload", fun Task.() {
         println("do releaseUpload")
         val target = "${project.buildDir}/outputs/apk/release/app-release.apk"
         println(target)
-        val client: OkHttpClient = OkHttpClient().newBuilder().build();
+        val client: OkHttpClient = OkHttpClient().newBuilder().build()
         val body = MultipartBody.Builder().setType(MultipartBody.FORM)
             .addFormDataPart(
                 "file", target,
@@ -131,7 +130,7 @@ tasks.register("releaseUpload", fun Task.() {
             .method("POST", body)
             .build()
         val response = client.newCall(request).execute()
-        println("${response.code.toString()}  ${response.body.string()}")
+        println("${response.code}  ${response.body.string()}")
     }
 })
 
