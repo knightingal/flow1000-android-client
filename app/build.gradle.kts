@@ -39,7 +39,8 @@ fun commitNum(): String {
 
 fun String.execute(): Process {
     val runtime = Runtime.getRuntime()
-    return runtime.exec(this)
+    val command = arrayOf("/bin/bash", "-c", this)
+    return runtime.exec(command)
 }
 
 fun Process.text(): String {
