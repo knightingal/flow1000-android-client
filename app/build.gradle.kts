@@ -116,7 +116,7 @@ tasks.register("releaseUpload", fun Task.() {
     dependsOn("assembleRelease")
     doLast {
         println("do releaseUpload")
-        val target = "${project.buildDir}/outputs/apk/release/app-release.apk"
+        val target = "${layout.buildDirectory.get()}/outputs/apk/release/app-release.apk"
         println(target)
         val client: OkHttpClient = OkHttpClient().newBuilder().build()
         val body = MultipartBody.Builder().setType(MultipartBody.FORM)
