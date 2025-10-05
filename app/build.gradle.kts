@@ -25,13 +25,20 @@ buildscript {
 /*
 keytool -genkey -v -keystore key.jks -alias key0 -keyalg RSA -keysize 2048 -validity 10000 -keypass xxxxxx -storepass xxxxxx
  */
-var keystorePropertiesFile = rootProject.file("../keys/keystore.properties")
 var keystoreProperties = Properties()
-keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+if (rootProject.file("../keys/keystore.properties").exists()) {
+    var keystorePropertiesFile = rootProject.file("../keys/keystore.properties")
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+} else {
+    keystoreProperties["keyAlias"] = "0"
+    keystoreProperties["keyPassword"] = "password"
+    keystoreProperties["storeFile"] = "key.jsk"
+    keystoreProperties["storePassword"] = "password"
+    keystoreProperties["imgPassword"] = "password"
+}
 
 fun releaseTime(): String = SimpleDateFormat("yyMMdd").format(Date())
 fun versionCode(): Int = SimpleDateFormat("yyMMdd0HH").format(Date()).toInt()
-//fun versionCode(): Int = 10
 fun commitNum(): String {
     val resultArray = "git describe --always".execute().text().trim().split("-")
     return resultArray[resultArray.size - 1]
@@ -135,16 +142,10 @@ tasks.register("releaseUpload", fun Task.() {
 })
 
 dependencies {
-
-//    implementation(libs.jackson.databind)
-//    implementation(libs.jackson.module.kotlin)
-
     implementation(libs.gson)
-
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.okhttp)
-
     implementation(libs.guava)
     implementation(libs.flexbox)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -157,12 +158,6 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation(libs.androidx.room.ktx)
-//    // optional - RxJava2 support for Room
-//    implementation(libs.androidx.room.rxjava2)
-//    // optional - RxJava3 support for Room
-//    implementation(libs.androidx.room.rxjava3)
-//    // optional - Guava support for Room, including Optional and ListenableFuture
-//    implementation(libs.androidx.room.guava)
     // optional - Test helpers
     testImplementation(libs.androidx.room.testing)
     // optional - Paging 3 Integration
