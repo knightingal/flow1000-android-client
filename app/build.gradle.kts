@@ -38,7 +38,7 @@ if (rootProject.file("../keys/keystore.properties").exists()) {
 }
 
 fun releaseTime(): String = SimpleDateFormat("yyMMdd").format(Date())
-fun versionCode(): Int = SimpleDateFormat("yyMMdd0HH").format(Date()).toInt()
+fun versionCode(): Int = SimpleDateFormat("yyMMddHHmm").format(Date()).toInt()
 fun commitNum(): String {
     val resultArray = "git describe --always".execute().text().trim().split("-")
     return resultArray[resultArray.size - 1]
