@@ -119,9 +119,8 @@ android {
     }
 }
 
-tasks.register("releaseUpload", fun Task.() {
-    dependsOn("assembleRelease")
-    doLast {
+class ReleaseUploadLastAction : Action<Task> {
+    override fun execute(t: Task) {
         println("do releaseUpload")
         val target = "${layout.buildDirectory.get()}/outputs/apk/release/app-release.apk"
         println(target)
@@ -139,7 +138,20 @@ tasks.register("releaseUpload", fun Task.() {
         val response = client.newCall(request).execute()
         println("${response.code}  ${response.body.string()}")
     }
-})
+}
+
+val releaseUploadLastAction = ReleaseUploadLastAction()
+
+class ReleaseUploadAction : Action<Task> {
+    override fun execute(t: Task) {
+        t.dependsOn("assembleRelease")
+        t.doLast(releaseUploadLastAction)
+    }
+}
+
+val releaseUploadAction = ReleaseUploadAction()
+
+tasks.register("releaseUpload", releaseUploadAction)
 
 dependencies {
     implementation(libs.gson)
