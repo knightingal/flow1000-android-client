@@ -1,7 +1,5 @@
 package org.knightingal.flow1000.client.myapplication
 
-import org.knightingal.flow1000.client.util.SERVER_IP
-import org.knightingal.flow1000.client.util.SERVER_PORT
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,14 +19,14 @@ import androidx.core.content.FileProvider
 import org.knightingal.flow1000.client.task.ConcurrencyApkTask
 import org.knightingal.flow1000.client.task.ConcurrencyJsonApiTask
 import org.knightingal.flow1000.client.beans.ApkConfig
-//import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-//import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.File
 import androidx.core.net.toUri
 import com.google.gson.Gson
 import org.knightingal.flow1000.client.R
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
 
 class AboutActivity : AppCompatActivity() {

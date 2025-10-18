@@ -1,7 +1,5 @@
 package org.knightingal.flow1000.client.listAdapters
 
-import org.knightingal.flow1000.client.util.SERVER_IP
-import org.knightingal.flow1000.client.util.SERVER_PORT
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Build
@@ -26,6 +24,8 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import org.knightingal.flow1000.client.R
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
 
 class OnlineRecImgListAdapter(context: SectionImageListActivity, var sectionDetail: SectionDetail?) : RecyclerView.Adapter<OnlineRecImgListAdapter.ImgViewHolder>() {

@@ -1,7 +1,5 @@
 package org.knightingal.flow1000.client.services
 
-import org.knightingal.flow1000.client.util.SERVER_IP
-import org.knightingal.flow1000.client.util.SERVER_PORT
 import android.app.Service
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -37,6 +35,8 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.knightingal.flow1000.client.myapplication.SectionConfig.Companion.getSectionConfig
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 import org.nanjing.knightingal.processerlib.RefreshListener
 import java.io.File
 import java.io.FileOutputStream

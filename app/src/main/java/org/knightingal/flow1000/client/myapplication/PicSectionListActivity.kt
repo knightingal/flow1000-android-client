@@ -1,7 +1,5 @@
 package org.knightingal.flow1000.client.myapplication
 
-import org.knightingal.flow1000.client.util.SERVER_IP
-import org.knightingal.flow1000.client.util.SERVER_PORT
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Intent
@@ -26,10 +24,10 @@ import org.knightingal.flow1000.client.dao.PicInfoDao
 import org.knightingal.flow1000.client.dao.UpdateStampDao
 import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
 import org.knightingal.flow1000.client.services.DownloadService
-//import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-//import com.fasterxml.jackson.module.kotlin.readValue
 import org.nanjing.knightingal.processerlib.RefreshListener
 import org.knightingal.flow1000.client.R
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
 class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 

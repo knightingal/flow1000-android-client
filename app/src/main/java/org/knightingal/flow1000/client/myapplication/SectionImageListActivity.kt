@@ -1,7 +1,5 @@
 package org.knightingal.flow1000.client.myapplication
 
-import org.knightingal.flow1000.client.util.SERVER_IP
-import org.knightingal.flow1000.client.util.SERVER_PORT
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -17,8 +15,6 @@ import org.knightingal.flow1000.client.SectionDetail
 import org.knightingal.flow1000.client.listAdapters.OnlineRecImgListAdapter
 import org.knightingal.flow1000.client.util.AppDataBase
 import org.knightingal.flow1000.client.listAdapters.RecImgListAdapter
-//import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-//import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -30,6 +26,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.myapplication.SectionConfig.Companion.getSectionConfig
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
 class SectionImageListActivity : AppCompatActivity(){
 
