@@ -143,7 +143,7 @@ class PicSectionListAdapter(private val context: Context) : RecyclerView.Adapter
                 picSectionData.exist = 0
                 picSectionDao.update(picSectionData)
 
-                postDeleteSection(viewHolder.serverIndex)
+//                postDeleteSection(viewHolder.serverIndex)
                 dialog.dismiss()
                 notifyDataSetChanged()
             }
