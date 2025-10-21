@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
@@ -136,16 +137,17 @@ class PicSectionListAdapter(private val context: Context) : RecyclerView.Adapter
             builder.setMessage("delete this dir?")
             builder.setTitle("")
             builder.setPositiveButton("yes") { dialog, _ ->
-                FileUtil.removeDir(context, dataArray[viewHolder.adapterPosition].picSectionBean.name)
-                val picSectionData = dataArray[position].picSectionBean
+                // FileUtil.removeDir(context, dataArray[viewHolder.adapterPosition].picSectionBean.name)
+                // val picSectionData = dataArray[position].picSectionBean
 
-                picInfoDao.deleteBySectionInnerIndex(viewHolder.serverIndex)
-                picSectionData.exist = 0
-                picSectionDao.update(picSectionData)
+                // picInfoDao.deleteBySectionInnerIndex(viewHolder.serverIndex)
+                // picSectionData.exist = 0
+                // picSectionDao.update(picSectionData)
 
-//                postDeleteSection(viewHolder.serverIndex)
+                //  postDeleteSection(viewHolder.serverIndex)
+                Toast.makeText(context, "not supported yet", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
-                notifyDataSetChanged()
+                // notifyDataSetChanged()
             }
             builder.setNegativeButton("no") { dialog, _ -> dialog.dismiss() }
             builder.create().show()
