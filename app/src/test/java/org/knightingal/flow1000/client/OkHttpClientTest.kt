@@ -14,7 +14,11 @@ import kotlinx.coroutines.withContext
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import okhttp3.internal.wait
+import okio.Okio
+import okio.buffer
+import okio.source
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -23,7 +27,15 @@ class OkHttpClientTest {
     @Test
     fun clientTest() = runBlocking{
         launch {
-            val client = OkHttpClient()
+            val client = OkHttpClient.Builder()
+                .addNetworkInterceptor { chain ->
+                    val originResponse = chain.proceed(chain.request())
+                    val body = originResponse.body!!
+                    val wrappedBody = ResponseBodyListener(body)
+                    println("content length ${wrappedBody.contentLength()}")
+                    originResponse.newBuilder().body(wrappedBody).build()
+                }
+                .build()
             val request = Request
                 .Builder()
                 .url("http://localhost:8082")
@@ -47,4 +59,26 @@ class OkHttpClientTest {
         Unit
 
     }
+}
+
+class ResponseBodyListener(val origin: okhttp3.ResponseBody): okhttp3.ResponseBody() {
+    override fun contentLength(): Long {
+        val contentLength = origin.contentLength()
+        println("content length: $contentLength")
+
+        return contentLength
+    }
+
+    override fun contentType(): okhttp3.MediaType? {
+        return origin.contentType()
+    }
+
+    override fun source(): okio.BufferedSource {
+        val source = origin.source()
+        val readByteArray = source.readByteArray()
+        println("read bytes size: ${readByteArray.size}")
+        return readByteArray.inputStream().source().buffer()
+
+    }
+
 }
