@@ -16,6 +16,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.internal.wait
+import okio.Buffer
+import okio.BufferedSource
+import okio.ForwardingSource
 import okio.Okio
 import okio.buffer
 import okio.source
@@ -73,12 +76,22 @@ class ResponseBodyListener(val origin: okhttp3.ResponseBody): okhttp3.ResponseBo
         return origin.contentType()
     }
 
-    override fun source(): okio.BufferedSource {
-        val source = origin.source()
-        val readByteArray = source.readByteArray()
-        println("read bytes size: ${readByteArray.size}")
-        return readByteArray.inputStream().source().buffer()
+    private var bufferedSource: BufferedSource? = null
 
+    override fun source(): BufferedSource {
+        if (bufferedSource ==null) {
+            bufferedSource = source(origin.source()).buffer()
+        }
+        return bufferedSource!!
+    }
+
+    private fun source(source: okio.Source): okio.Source {
+        return object : ForwardingSource(source) {
+            override fun read(sink: Buffer, byteCount: Long): Long {
+                val bytesread = super.read(sink, byteCount)
+                return bytesread
+            }
+        }
     }
 
 }
