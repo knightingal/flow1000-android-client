@@ -2,27 +2,16 @@ package org.knightingal.flow1000.client
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.request.get
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
-import okhttp3.internal.wait
 import okio.Buffer
 import okio.BufferedSource
 import okio.ForwardingSource
-import okio.Okio
 import okio.buffer
-import okio.source
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class OkHttpClientTest {
@@ -41,10 +30,10 @@ class OkHttpClientTest {
                 .build()
             val request = Request
                 .Builder()
-                .url("http://localhost:8082")
+                .url("http://192.168.2.12:3002/apks/org.nanking.flow1000_admin_251018015_251018-b4f5af1.apk")
                 .build()
-            val body = client.newCall(request).execute().body!!.string()
-            println(body)
+            val body = client.newCall(request).execute().body!!.bytes()
+//            println(body)
 
         }
         Unit
@@ -64,7 +53,17 @@ class OkHttpClientTest {
     }
 }
 
+class ByteCounter(val totalBytes: Long) {
+    var bytesReadSoFar: Long = 0
+    fun update(bytesRead: Long) {
+        bytesReadSoFar += bytesRead
+        val progress = bytesReadSoFar * 100 / totalBytes
+        println("download progress: $progress% ($bytesReadSoFar/$totalBytes)")
+    }
+}
+
 class ResponseBodyListener(val origin: okhttp3.ResponseBody): okhttp3.ResponseBody() {
+    val byteCounter = ByteCounter(contentLength())
     override fun contentLength(): Long {
         val contentLength = origin.contentLength()
         println("content length: $contentLength")
@@ -88,8 +87,12 @@ class ResponseBodyListener(val origin: okhttp3.ResponseBody): okhttp3.ResponseBo
     private fun source(source: okio.Source): okio.Source {
         return object : ForwardingSource(source) {
             override fun read(sink: Buffer, byteCount: Long): Long {
-                val bytesread = super.read(sink, byteCount)
-                return bytesread
+                val bytesRead = super.read(sink, byteCount)
+                println("bytesRead: $bytesRead")
+                if (bytesRead >= 0) {
+                    byteCounter.update(bytesRead)
+                }
+                return bytesRead
             }
         }
     }
