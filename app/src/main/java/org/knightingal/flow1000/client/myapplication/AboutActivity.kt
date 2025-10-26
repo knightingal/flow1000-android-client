@@ -85,7 +85,7 @@ class AboutActivity : AppCompatActivity() {
                     val directory = File(this@AboutActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "apk")
                     apkFile = File(directory, apkConfig.apkName)
                     directory.mkdirs()
-                    ConcurrencyApkTask.makeRequest(apkConfig.downloadUrl, apkFile)
+                    ConcurrencyApkTask.downloadToFile(apkConfig.downloadUrl, apkFile)
 
                     if (getPackageManager().canRequestPackageInstalls()) {
                         openAPKFile()
