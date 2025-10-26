@@ -77,7 +77,7 @@ class AboutActivity : AppCompatActivity() {
         imageView.setOnClickListener {
             val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/apkConfig/newest/package/${packageName}"
             MainScope().launch {
-                val respBody = ConcurrencyJsonApiTask.makeRequest(pendingUrl)
+                val respBody = ConcurrencyJsonApiTask.makeRequestProcessed(pendingUrl)
                 val apkConfig: ApkConfig = Gson().fromJson(respBody, ApkConfig::class.java)
                 Log.d("about", apkConfig.toString())
                 if (apkConfig.versionCode > versionCode) {
