@@ -31,6 +31,10 @@ import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
 class AboutActivity : AppCompatActivity() {
 
+    public interface DownloadCounterListener {
+        fun update(current: Long, max: Long)
+    }
+
     private var versionCode: Long = 0
 
     private lateinit var launcher: ActivityResultLauncher<Intent>
@@ -61,8 +65,6 @@ class AboutActivity : AppCompatActivity() {
             }
         }
 
-
-
         try {
             val packageInfo = packageManager.getPackageInfo(packageName, 0)
             val versionName = packageInfo.versionName
@@ -85,7 +87,10 @@ class AboutActivity : AppCompatActivity() {
                     val directory = File(this@AboutActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "apk")
                     apkFile = File(directory, apkConfig.apkName)
                     directory.mkdirs()
-                    ConcurrencyApkTask.downloadToFile(apkConfig.downloadUrl, apkFile)
+                    ConcurrencyApkTask.downloadToFile(apkConfig.downloadUrl, apkFile, object : DownloadCounterListener {
+                        override fun update(current: Long, max: Long) {
+                        }
+                    })
 
                     if (getPackageManager().canRequestPackageInstalls()) {
                         openAPKFile()

@@ -16,6 +16,7 @@ import okio.Buffer
 import okio.BufferedSource
 import okio.ForwardingSource
 import okio.buffer
+import org.knightingal.flow1000.client.myapplication.AboutActivity
 
 //import okhttp3.MediaType.Companion.toMediaType
 //import okhttp3.Request
@@ -52,34 +53,20 @@ object ConcurrencyJsonApiTask {
         }
     }
 
-    suspend fun makeRequestProcessed(url: String): String {
-        return withContext(Dispatchers.IO) {
-            val client = HttpClient(OkHttp) {
-                engine {
-                    addNetworkInterceptor { chain ->
-                        val originalResponse: Response = chain.proceed(chain.request())
-                        val body = originalResponse.body
-                        val wrappedBody = ResponseBodyListener(body!!)
-                        originalResponse.newBuilder().body(wrappedBody).build()
-                    }
-                }
-            }
-            client.get(url).body()
-        }
-    }
 }
 
-class ByteCounter(val totalBytes: Long) {
+class ByteCounter(val totalBytes: Long, val listener: AboutActivity.DownloadCounterListener) {
     var bytesReadSoFar: Long = 0
     fun update(bytesRead: Long) {
         bytesReadSoFar += bytesRead
         val progress = bytesReadSoFar * 100 / totalBytes
         println("download progress: $progress% ($bytesReadSoFar/$totalBytes)")
+        listener.update(bytesReadSoFar, totalBytes)
     }
 }
 
-class ResponseBodyListener(val origin: okhttp3.ResponseBody): okhttp3.ResponseBody() {
-    val byteCounter = ByteCounter(contentLength())
+class ResponseBodyListener(val origin: okhttp3.ResponseBody, listener: AboutActivity.DownloadCounterListener): okhttp3.ResponseBody() {
+    val byteCounter = ByteCounter(contentLength(), listener)
 
     override fun contentLength(): Long {
         return origin.contentLength() ?: 0

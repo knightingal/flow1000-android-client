@@ -9,6 +9,7 @@ import io.ktor.client.request.get
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Response
+import org.knightingal.flow1000.client.myapplication.AboutActivity
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -16,21 +17,21 @@ import java.io.IOException
 object ConcurrencyApkTask {
     private const val TAG = "DLImageTask"
 
-    private fun makeClient() : HttpClient = HttpClient(OkHttp) {
+    private fun makeClient(listener: AboutActivity.DownloadCounterListener) : HttpClient = HttpClient(OkHttp) {
             engine {
                 addNetworkInterceptor { chain ->
                     val originalResponse: Response = chain.proceed(chain.request())
                     val body = originalResponse.body
-                    val wrappedBody = ResponseBodyListener(body!!)
+                    val wrappedBody = ResponseBodyListener(body!!, listener)
                     originalResponse.newBuilder().body(wrappedBody).build()
                 }
             }
         }
 
-    suspend fun downloadToFile(src: String, dest: File) {
+    suspend fun downloadToFile(src: String, dest: File, listener: AboutActivity.DownloadCounterListener) {
         return withContext(Dispatchers.IO) {
             Log.d(TAG, "start download $src")
-            val client = makeClient()
+            val client = makeClient(listener)
             while (true) {
                 try {
                     val bytes: ByteArray = client.get(src).body()
