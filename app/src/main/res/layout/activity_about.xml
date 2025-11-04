@@ -19,13 +19,26 @@
         android:id="@+id/image_view_logo"
         android:layout_marginTop="72dp" />
 
+    <ProgressBar
+            android:id="@+id/download_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:progress="50"
+            android:max="100"
+            android:indeterminate="false"
+
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:layout_below="@+id/image_view_logo"
+    />
+
     <TextView
             android:id="@+id/version_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="20230101"
             android:layout_marginTop="16dp"
-            android:layout_below="@+id/image_view_logo"
+            android:layout_below="@+id/download_progress"
             android:layout_centerHorizontal="true"
             />
     <TextView
