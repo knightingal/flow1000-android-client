@@ -19,18 +19,22 @@
         android:id="@+id/image_view_logo"
         android:layout_marginTop="72dp" />
 
-    <ProgressBar
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/download_progress"
+            android:layout_below="@+id/image_view_logo"
+            android:layout_marginTop="16dp"
+            style="@style/Widget.Material3Expressive.LinearProgressIndicator.Wavy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:progress="50"
-            android:max="100"
-            android:indeterminate="false"
+            tools:progress="45"
 
+            tools:max="100"
+            app:trackStopIndicatorSize="8dp"
+            app:trackCornerRadius="4dp"
+            app:trackThickness="8dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:layout_below="@+id/image_view_logo"
-    />
+            android:indeterminate="false" />
 
     <TextView
             android:id="@+id/version_code"
