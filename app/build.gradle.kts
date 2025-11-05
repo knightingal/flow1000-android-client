@@ -8,6 +8,7 @@ import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.io.BufferedReader
+import java.util.GregorianCalendar
 import java.util.Properties
 
 plugins {
@@ -37,8 +38,8 @@ if (rootProject.file("../keys/keystore.properties").exists()) {
     keystoreProperties["imgPassword"] = "password"
 }
 
-fun releaseTime(): String = SimpleDateFormat("yyMMdd").format(Date())
-fun versionCode(): Int = SimpleDateFormat("yyMMdd0HH").format(Date()).toInt()
+fun releaseTime(): String = SimpleDateFormat("yyMMddHHmm").format(Date())
+fun versionCode(): Int = ((Date().time - GregorianCalendar(2025, 0, 1, 0, 0, 0).time.time) / 1000).toInt()
 fun commitNum(): String {
     val resultArray = "git describe --always".execute().text().trim().split("-")
     return resultArray[resultArray.size - 1]
