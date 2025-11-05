@@ -9,6 +9,7 @@ import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -47,6 +48,7 @@ class AboutActivity : AppCompatActivity() {
         val versionCodeText = findViewById<TextView>(R.id.version_code)
         val versionNameText = findViewById<TextView>(R.id.version_name)
         val imageView = findViewById<ImageView>(R.id.image_view_logo)
+        val downloadProgress = findViewById<ProgressBar>(R.id.download_progress)
         val packageManager = packageManager
 
 
@@ -89,6 +91,10 @@ class AboutActivity : AppCompatActivity() {
                     directory.mkdirs()
                     ConcurrencyApkTask.downloadToFile(apkConfig.downloadUrl, apkFile, object : DownloadCounterListener {
                         override fun update(current: Long, max: Long) {
+                            runOnUiThread {
+                                downloadProgress.max = 100
+                                downloadProgress.progress = (100 * current / max).toInt()
+                            }
                         }
                     })
 
