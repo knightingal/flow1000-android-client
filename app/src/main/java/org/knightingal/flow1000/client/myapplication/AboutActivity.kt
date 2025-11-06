@@ -83,7 +83,7 @@ class AboutActivity : AppCompatActivity() {
             MainScope().launch {
                 val respBody = ConcurrencyJsonApiTask.makeRequest(pendingUrl)
                 val apkConfig: ApkConfig = Gson().fromJson(respBody, ApkConfig::class.java)
-                Log.d("about", apkConfig.toString())
+                Log.d(this.javaClass.simpleName, "newest package $apkConfig")
                 if (apkConfig.versionCode > versionCode) {
                     Toast.makeText(this@AboutActivity, "you have newer apk", Toast.LENGTH_LONG).show()
                     val directory = File(this@AboutActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "apk")

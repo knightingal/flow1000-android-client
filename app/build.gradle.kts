@@ -84,8 +84,8 @@ android {
         applicationId = "org.knightingal.flow1000.client"
         minSdk = 26
         targetSdk = 36
-        versionCode = versionCode()
         versionName = "${releaseTime()}-${commitNum()}"
+        versionCode = versionCode()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {
