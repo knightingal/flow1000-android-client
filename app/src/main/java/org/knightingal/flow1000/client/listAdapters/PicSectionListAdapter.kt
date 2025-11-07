@@ -26,7 +26,7 @@ import org.knightingal.flow1000.client.R
 
 class PicSectionListAdapter(private val context: Context) : RecyclerView.Adapter<PicSectionListAdapter.ViewHolder>() {
     companion object {
-        private fun formatTitle(sourceTitle: String): String {
+        public fun formatTitle(sourceTitle: String): String {
             if (sourceTitle.length > 14) {
                 val timeStamp = sourceTitle.take(14)
                 var isTimeStamp = true
