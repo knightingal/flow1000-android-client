@@ -39,7 +39,15 @@ if (rootProject.file("../keys/keystore.properties").exists()) {
 }
 
 fun releaseTime(): String = SimpleDateFormat("yyMMddHHmm").format(Date())
-fun versionCode(): Int = ((Date().time - GregorianCalendar(2025, 0, 1, 0, 0, 0).time.time) / 1000).toInt()
+fun versionCode(): Int {
+    val taskNames = gradle.startParameter.taskNames
+    val isDebugBuild = taskNames.any { it.contains("debug", true) || it.contains("Debug") }
+    return if (isDebugBuild) {
+        1
+    } else {
+        ((Date().time - GregorianCalendar(2025, 0, 1, 0, 0, 0).time.time) / 1000).toInt()
+    }
+}
 fun commitNum(): String {
     val resultArray = "git describe --always".execute().text().trim().split("-")
     return resultArray[resultArray.size - 1]
