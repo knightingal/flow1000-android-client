@@ -29,6 +29,7 @@ import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
+@Deprecated(message = "Not used")
 class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
     companion object {
