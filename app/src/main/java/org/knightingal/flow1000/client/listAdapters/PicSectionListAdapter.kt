@@ -23,22 +23,10 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import org.knightingal.flow1000.client.R
+import org.knightingal.flow1000.client.util.TimeUtil
 
 class PicSectionListAdapter(private val context: Context) : RecyclerView.Adapter<PicSectionListAdapter.ViewHolder>() {
     companion object {
-        public fun formatTitle(sourceTitle: String): String {
-            if (sourceTitle.length > 14) {
-                val timeStamp = sourceTitle.take(14)
-                var isTimeStamp = true
-                try {
-                    SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINESE).parse(timeStamp)
-                } catch (_: ParseException) {
-                    isTimeStamp = false
-                }
-                return if (isTimeStamp) sourceTitle.substring(14) else sourceTitle
-            }
-            return sourceTitle
-        }
         private const val TAG = "PicSectionListAdapter"
     }
 
@@ -120,7 +108,7 @@ class PicSectionListAdapter(private val context: Context) : RecyclerView.Adapter
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         dataArray[position].position = position
 
-        viewHolder.textView.text = formatTitle(dataArray[viewHolder.adapterPosition].picSectionBean.name)
+        viewHolder.textView.text = TimeUtil.formatTitle(dataArray[viewHolder.adapterPosition].picSectionBean.name)
         val clientStatus = dataArray[viewHolder.adapterPosition].picSectionBean.clientStatus
         if (clientStatus == PicSectionBean.ClientStatus.LOCAL && !displayProcessCount) {
             renderExistItem(viewHolder)

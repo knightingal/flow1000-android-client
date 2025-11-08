@@ -34,7 +34,6 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter.Companion.formatTitle
 import org.knightingal.flow1000.client.myapplication.SectionConfig.Companion.getSectionConfig
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
@@ -106,7 +105,7 @@ class DownloadService : Service() {
                 val picSectionBeanList = Gson().fromJson(allBody, Array<PicSectionBean>::class.java)
                 updateStampDao.update(updateStamp)
                 picSectionBeanList.forEach {
-                    it.name = formatTitle(it.name)
+                    it.name = TimeUtil.formatTitle(it.name)
                     picSectionDao.insert(it)
                 }
             }
@@ -191,7 +190,7 @@ class DownloadService : Service() {
         val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
                 "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encrypted) pic.name else pic.name}"
         imageThreadPool.execute {
-            imgExecuting(imgUrl, pic, sectionInfoBean.id, formatTitle(sectionInfoBean.dirName), sectionConfig.encrypted, latch)
+            imgExecuting(imgUrl, pic, sectionInfoBean.id, TimeUtil.formatTitle(sectionInfoBean.dirName), sectionConfig.encrypted, latch)
         }
     }
 
