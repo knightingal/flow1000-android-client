@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -92,6 +93,11 @@ class AboutActivity : AppCompatActivity() {
                     ConcurrencyApkTask.downloadToFile(apkConfig.downloadUrl, apkFile, object : DownloadCounterListener {
                         override fun update(current: Long, max: Long) {
                             runOnUiThread {
+                                if (current < max) {
+                                    downloadProgress.visibility = View.VISIBLE
+                                } else {
+                                    downloadProgress.visibility = View.GONE
+                                }
                                 downloadProgress.max = 100
                                 downloadProgress.progress = (100 * current / max).toInt()
                             }

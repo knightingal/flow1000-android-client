@@ -24,11 +24,12 @@
             android:id="@+id/download_progress"
             android:layout_below="@+id/image_view_logo"
             android:layout_marginTop="16dp"
-            style="@style/Widget.Material3Expressive.LinearProgressIndicator.Wavy"
+            style="@style/Widget.Material3Expressive.LinearProgressIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:progress="45"
-
+            android:visibility="gone"
+            tools:visibility="visible"
             tools:max="100"
             app:trackStopIndicatorSize="8dp"
             app:trackCornerRadius="4dp"
@@ -41,8 +42,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="20230101"
-            android:layout_marginTop="16dp"
-            android:layout_below="@+id/download_progress"
+            android:layout_marginTop="32dp"
+            android:layout_below="@+id/image_view_logo"
             android:layout_centerHorizontal="true"
             />
     <TextView
