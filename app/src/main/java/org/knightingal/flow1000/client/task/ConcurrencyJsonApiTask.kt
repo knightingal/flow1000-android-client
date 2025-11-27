@@ -1,11 +1,5 @@
 package org.knightingal.flow1000.client.task
 
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -19,7 +13,6 @@ import okio.BufferedSource
 import okio.ForwardingSource
 import okio.buffer
 import org.knightingal.flow1000.client.myapplication.AboutActivity
-import org.knightingal.flow1000.client.task.ConcurrencyApkTask.makeClient
 
 //import okhttp3.MediaType.Companion.toMediaType
 //import okhttp3.Request
