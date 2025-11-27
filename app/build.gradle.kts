@@ -164,9 +164,10 @@ tasks.register("releaseUpload", releaseUploadAction)
 
 dependencies {
     implementation(libs.gson)
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.okhttp)
+    implementation(libs.okhttp)
+//    implementation(libs.ktor.client.core)
+//    implementation(libs.ktor.client.cio)
+//    implementation(libs.ktor.client.okhttp)
     implementation(libs.guava)
     implementation(libs.flexbox)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
