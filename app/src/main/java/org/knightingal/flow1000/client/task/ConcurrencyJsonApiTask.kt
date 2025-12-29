@@ -11,15 +11,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import okio.Buffer
 import okio.BufferedSource
 import okio.ForwardingSource
 import okio.buffer
 import org.knightingal.flow1000.client.myapplication.AboutActivity
-import org.knightingal.flow1000.client.task.ConcurrencyApkTask.makeClient
 
 //import okhttp3.MediaType.Companion.toMediaType
 //import okhttp3.Request
@@ -50,9 +47,9 @@ object ConcurrencyJsonApiTask {
 
     suspend fun makeRequest(url: String): String {
         return withContext(Dispatchers.IO) {
-            val client = OkHttpClient.Builder().build()
-            val request = Request.Builder().url(url).build()
-            client.newCall(request).execute().body.string()
+            val client = HttpClient(CIO)
+            val response: HttpResponse = client.get(url)
+            response.body()
         }
     }
 
@@ -72,7 +69,7 @@ class ResponseBodyListener(val origin: okhttp3.ResponseBody, listener: AboutActi
     val byteCounter = ByteCounter(contentLength(), listener)
 
     override fun contentLength(): Long {
-        return origin.contentLength()
+        return origin.contentLength() ?: 0
     }
 
     private var bufferedSource: BufferedSource? = null
