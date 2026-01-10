@@ -27,6 +27,7 @@ import java.io.File
 import androidx.core.net.toUri
 import com.google.gson.Gson
 import org.knightingal.flow1000.client.R
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.PROTOCOL_PREFIX
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
@@ -80,7 +81,7 @@ class AboutActivity : AppCompatActivity() {
 
 //        val mapper = jacksonObjectMapper()
         imageView.setOnClickListener {
-            val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/apkConfig/newest/package/${packageName}"
+            val pendingUrl = "${PROTOCOL_PREFIX}://${SERVER_IP}:${SERVER_PORT}/apkConfig/newest/package/${packageName}"
             MainScope().launch {
                 val respBody = ConcurrencyJsonApiTask.makeRequest(pendingUrl)
                 val apkConfig: ApkConfig = Gson().fromJson(respBody, ApkConfig::class.java)
