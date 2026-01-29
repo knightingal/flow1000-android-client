@@ -14,14 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import org.knightingal.flow1000.client.services.ProcessCounter
 import org.knightingal.flow1000.client.util.AppDataBase
-import org.knightingal.flow1000.client.util.FileUtil
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.dao.PicSectionDao
 import org.knightingal.flow1000.client.dao.PicInfoDao
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.*
 import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.util.TimeUtil
 
@@ -81,7 +77,7 @@ class PicSectionListAdapter(private val context: Context) : RecyclerView.Adapter
     fun renderProcessCounter(viewHolder: ViewHolder, position: Int) {
 
         val counter = ProcessCounter.getCounter(dataArray[position].picSectionBean.id)
-        val clientStatus = dataArray[viewHolder.adapterPosition].picSectionBean.clientStatus
+        val clientStatus = dataArray[viewHolder.bindingAdapterPosition].picSectionBean.clientStatus
         if (counter != null) {
             viewHolder.process.text = "${counter.getProcess()}/${counter.max}"
             viewHolder.process.visibility = View.VISIBLE
@@ -94,7 +90,7 @@ class PicSectionListAdapter(private val context: Context) : RecyclerView.Adapter
     fun renderProcessFinish(viewHolder: ViewHolder, position: Int) {
         val counter = ProcessCounter.getCounter(dataArray[position].picSectionBean.id)
 
-        val clientStatus = dataArray[viewHolder.adapterPosition].picSectionBean.clientStatus
+        val clientStatus = dataArray[viewHolder.bindingAdapterPosition].picSectionBean.clientStatus
         if (counter != null) {
             Log.d(TAG, "set ${dataArray[position].picSectionBean.name} finish")
             viewHolder.process.text = "${counter.max}/${counter.max}"
@@ -108,8 +104,8 @@ class PicSectionListAdapter(private val context: Context) : RecyclerView.Adapter
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         dataArray[position].position = position
 
-        viewHolder.textView.text = TimeUtil.formatTitle(dataArray[viewHolder.adapterPosition].picSectionBean.name)
-        val clientStatus = dataArray[viewHolder.adapterPosition].picSectionBean.clientStatus
+        viewHolder.textView.text = TimeUtil.formatTitle(dataArray[viewHolder.bindingAdapterPosition].picSectionBean.name)
+        val clientStatus = dataArray[viewHolder.bindingAdapterPosition].picSectionBean.clientStatus
         if (clientStatus == PicSectionBean.ClientStatus.LOCAL && !displayProcessCount) {
             renderExistItem(viewHolder)
         } else {
@@ -117,25 +113,16 @@ class PicSectionListAdapter(private val context: Context) : RecyclerView.Adapter
         }
         renderProcessCounter(viewHolder, position)
 
-        viewHolder.serverIndex = dataArray[viewHolder.adapterPosition].picSectionBean.id
-        viewHolder.position1 = viewHolder.adapterPosition
+        viewHolder.serverIndex = dataArray[viewHolder.bindingAdapterPosition].picSectionBean.id
+        viewHolder.position1 = viewHolder.bindingAdapterPosition
         viewHolder.deleteBtn.setOnClickListener {
-            Log.d(TAG, "you clicked ${dataArray[viewHolder.adapterPosition].picSectionBean.name} delete_btn")
+            Log.d(TAG, "you clicked ${dataArray[viewHolder.bindingAdapterPosition].picSectionBean.name} delete_btn")
             val builder = AlertDialog.Builder(context)
             builder.setMessage("delete this dir?")
             builder.setTitle("")
             builder.setPositiveButton("yes") { dialog, _ ->
-                // FileUtil.removeDir(context, dataArray[viewHolder.adapterPosition].picSectionBean.name)
-                // val picSectionData = dataArray[position].picSectionBean
-
-                // picInfoDao.deleteBySectionInnerIndex(viewHolder.serverIndex)
-                // picSectionData.exist = 0
-                // picSectionDao.update(picSectionData)
-
-                //  postDeleteSection(viewHolder.serverIndex)
                 Toast.makeText(context, "not supported yet", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
-                // notifyDataSetChanged()
             }
             builder.setNegativeButton("no") { dialog, _ -> dialog.dismiss() }
             builder.create().show()
