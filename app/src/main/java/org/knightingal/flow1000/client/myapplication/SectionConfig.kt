@@ -14,6 +14,7 @@ class SectionConfig(var name: String, var encrypted: Boolean, var baseUrl: Strin
                 "1805" to SectionConfig("1805", false, "1805"),
                 "1806" to SectionConfig("1806", false, "1806"),
                 "1807" to SectionConfig("1807", false, "1807"),
+                "1808" to SectionConfig("1808", false, "1808"),
             )
         }
 
