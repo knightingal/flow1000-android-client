@@ -42,16 +42,31 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class DownloadService : Service() {
+    class SectionThread: Thread {
+        constructor(r: Runnable) : super(r) {
+        }
+    }
+
+    class SectionThreadFactory : ThreadFactory {
+        override fun newThread(r: Runnable): Thread {
+            val thread = SectionThread(r)
+            thread.name = "SectionThread-${thread.id}"
+            return thread
+        }
+    }
+
+
     companion object {
         var refreshListener: MutableSet<RefreshListener> = mutableSetOf()
         var pendingSectionBeanList: MutableList<PicSectionData> = mutableListOf()
         val sectionThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(2, 2, 30, TimeUnit.SECONDS,
-            LinkedBlockingQueue())
+            LinkedBlockingQueue(), SectionThreadFactory())
         val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(10, 10, 30, TimeUnit.SECONDS,
             LinkedBlockingQueue())
 
@@ -121,7 +136,6 @@ class DownloadService : Service() {
 
     fun startDownloadSectionList() {
         thread {
-//            val mapper = jacksonObjectMapper()
             val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
             val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
             Log.d("startDownloadWebPage", stringUrl)
