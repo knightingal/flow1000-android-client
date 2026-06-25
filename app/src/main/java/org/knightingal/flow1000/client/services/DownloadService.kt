@@ -49,7 +49,14 @@ import kotlin.concurrent.thread
 
 class DownloadService : Service() {
     class SectionThread: Thread {
-        constructor(r: Runnable) : super(r) {
+
+        val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(10, 10, 30, TimeUnit.SECONDS,
+            LinkedBlockingQueue())
+
+        constructor(r: Runnable) : super(r)
+
+        fun finalize() {
+            imageThreadPool.shutdown()
         }
     }
 
@@ -67,8 +74,8 @@ class DownloadService : Service() {
         var pendingSectionBeanList: MutableList<PicSectionData> = mutableListOf()
         val sectionThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(2, 2, 30, TimeUnit.SECONDS,
             LinkedBlockingQueue(), SectionThreadFactory())
-        val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(10, 10, 30, TimeUnit.SECONDS,
-            LinkedBlockingQueue())
+//        val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(10, 10, 30, TimeUnit.SECONDS,
+//            LinkedBlockingQueue())
 
     }
 
@@ -203,7 +210,8 @@ class DownloadService : Service() {
     private fun processImgItem(pic: ImgDetail, sectionInfoBean: SectionInfoBean, sectionConfig: SectionConfig, latch: CountDownLatch) {
         val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
                 "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encrypted) pic.name else pic.name}"
-        imageThreadPool.execute {
+        val thread = Thread.currentThread() as SectionThread
+        thread.imageThreadPool.execute {
             imgExecuting(imgUrl, pic, sectionInfoBean.id, TimeUtil.formatTitle(sectionInfoBean.dirName), sectionConfig.encrypted, latch)
         }
     }
