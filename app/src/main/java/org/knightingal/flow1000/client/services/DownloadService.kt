@@ -23,8 +23,6 @@ import org.knightingal.flow1000.client.myapplication.SectionConfig
 import org.knightingal.flow1000.client.util.Decrypt
 import org.knightingal.flow1000.client.util.FileUtil.getSectionStorageDir
 import org.knightingal.flow1000.client.util.TimeUtil
-//import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-//import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -50,8 +48,13 @@ import kotlin.concurrent.thread
 class DownloadService : Service() {
     class SectionThread: Thread {
 
-        val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(10, 10, 30, TimeUnit.SECONDS,
-            LinkedBlockingQueue())
+        val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(
+            10,
+            10,
+            30,
+            TimeUnit.SECONDS,
+            LinkedBlockingQueue()
+        )
 
         constructor(r: Runnable) : super(r)
 
@@ -72,8 +75,14 @@ class DownloadService : Service() {
     companion object {
         var refreshListener: MutableSet<RefreshListener> = mutableSetOf()
         var pendingSectionBeanList: MutableList<PicSectionData> = mutableListOf()
-        val sectionThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(2, 2, 30, TimeUnit.SECONDS,
-            LinkedBlockingQueue(), SectionThreadFactory())
+        val sectionThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(
+            2,
+            2,
+            30,
+            TimeUnit.SECONDS,
+            LinkedBlockingQueue(),
+            SectionThreadFactory()
+        )
 //        val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(10, 10, 30, TimeUnit.SECONDS,
 //            LinkedBlockingQueue())
 
