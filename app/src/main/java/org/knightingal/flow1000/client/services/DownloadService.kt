@@ -7,7 +7,6 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.room.Room
 import com.google.gson.Gson
 import org.knightingal.flow1000.client.task.ConcurrencyJsonApiTask
@@ -89,9 +88,6 @@ class DownloadService : Service() {
             LinkedBlockingQueue(),
             SectionThreadFactory()
         )
-//        val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(10, 10, 30, TimeUnit.SECONDS,
-//            LinkedBlockingQueue())
-
     }
 
     private val binder: IBinder = LocalBinder()
