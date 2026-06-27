@@ -4,8 +4,10 @@ import android.app.Service
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.room.Room
 import com.google.gson.Gson
 import org.knightingal.flow1000.client.task.ConcurrencyJsonApiTask
@@ -66,7 +68,11 @@ class DownloadService : Service() {
     class SectionThreadFactory : ThreadFactory {
         override fun newThread(r: Runnable): Thread {
             val thread = SectionThread(r)
-            thread.name = "SectionThread-${thread.id}"
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                thread.name = "SectionThread-${thread.threadId()}"
+            } else {
+                thread.name = "SectionThread-${thread.id}"
+            }
             return thread
         }
     }
