@@ -43,6 +43,8 @@
                 android:name=".myapplication.AboutActivity"
                 android:exported="true"
                 android:label="@string/title_activity_setting"/>
+        <activity android:name=".myapplication.StableDiffusionRepoActivity"
+                android:label="@string/title_activity_stable_diffusion_repo"/>
 
         <service
                 android:name=".services.DownloadService"

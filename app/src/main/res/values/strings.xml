@@ -31,6 +31,7 @@
     <string name="title_activity_file_training">FileTrainingActivity</string>
     <string name="title_activity_pic_list_acivity">PicListAcivity</string>
     <string name="title_activity_setting">SettingActivity</string>
+    <string name="title_activity_stable_diffusion_repo">StableDiffusionRepoActivity</string>
     <string name="open">open</string>
     <string name="close">close</string>
     <string name="title_activity_timestamp">TimestampActivity</string>
