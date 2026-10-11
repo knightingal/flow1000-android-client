@@ -18,6 +18,8 @@ class MainActivity : AppCompatActivity() {
 
     private var onExistSectionPage = false
 
+    private var tabPosition = 0;
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,16 +34,19 @@ class MainActivity : AppCompatActivity() {
         val listener = object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 Log.d("onTabSelected", "tab.position:${tab?.position}")
+                tabPosition = tab?.position ?: 0
                 onExistSectionPage = tab?.position == 1
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 Log.d("onTabUnselected", "tab.position:${tab?.position}")
+                tabPosition = tab?.position ?: 0
                 onExistSectionPage = tab?.position == 1
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 Log.d("onTabReselected", "tab.position:${tab?.position}")
+                tabPosition = tab?.position ?: 0
                 onExistSectionPage = tab?.position == 1
             }
 
@@ -50,10 +55,12 @@ class MainActivity : AppCompatActivity() {
         val fab: FloatingActionButton = binding.fab
 
         fab.setOnClickListener { _ ->
-            if (onExistSectionPage) {
+            if (tabPosition == 1) {
                 startActivity(
                     Flow1000FlutterActivity.createDefaultIntent(this)
                 )
+            } else if (tabPosition == 0) {
+                startActivity(Intent(this, StableDiffusionRepoActivity::class.java))
             } else {
                 startActivity(Intent(this, AboutActivity::class.java))
             }
