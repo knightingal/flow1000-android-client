@@ -22,6 +22,11 @@
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
         <activity
+                android:name=".myapplication.EmptyActivity"
+                android:exported="false"
+                android:label="@string/title_activity_empty"
+                android:theme="@style/AppTheme"/>
+        <activity
                 android:name=".myapplication.MainActivity"
                 android:exported="true"
                 android:icon="@drawable/app_icon"
