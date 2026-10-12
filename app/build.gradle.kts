@@ -197,7 +197,7 @@ dependencies {
     // optional - Paging 3 Integration
     implementation(libs.androidx.room.paging)
 
-    implementation(project(":flutter"))
+//    implementation(project(":flutter"))
 
     // android default dependencies
     implementation(libs.androidx.core.ktx)

@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- Include next permission if you want to allow UIL to cache images on SD card -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission
+            android:name="android.permission.READ_MEDIA_IMAGES"/> <!-- Include next permission if you want to allow UIL to cache images on SD card -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera.autofocus"/>
 
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.FLASHLIGHT"/>
 
     <application
             android:name=".myapplication.App"
@@ -48,23 +49,19 @@
                 android:name=".myapplication.AboutActivity"
                 android:exported="true"
                 android:label="@string/title_activity_setting"/>
-        <activity android:name=".myapplication.StableDiffusionRepoActivity"
+        <activity
+                android:name=".myapplication.StableDiffusionRepoActivity"
                 android:label="@string/title_activity_stable_diffusion_repo"/>
 
         <service
                 android:name=".services.DownloadService"
                 android:enabled="true"
-                android:exported="true"/>
+                />
 
         <activity
                 android:name=".myapplication.PicSectionListActivity"
                 android:label="@string/title_activity_pic_section_list_activity_md"/>
-        <activity
-             android:name=".myapplication.Flow1000FlutterActivity"
-             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-             android:hardwareAccelerated="true"
-             android:windowSoftInputMode="adjustResize"
-        />
+
         <provider
                 android:name="androidx.core.content.FileProvider"
                 android:authorities="com.example.flow1000client.file_provider"

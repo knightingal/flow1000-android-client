@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import org.knightingal.flow1000.client.myapplication.ui.main.SectionsPagerAdapter
 import org.knightingal.flow1000.client.databinding.ActivityMainBinding
 
-//import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -56,9 +55,9 @@ class MainActivity : AppCompatActivity() {
 
         fab.setOnClickListener { _ ->
             if (tabPosition == 1) {
-                startActivity(
-                    Flow1000FlutterActivity.createDefaultIntent(this)
-                )
+//                startActivity(
+//                    Flow1000FlutterActivity.createDefaultIntent(this)
+//                )
             } else if (tabPosition == 0) {
                 startActivity(Intent(this, StableDiffusionRepoActivity::class.java))
             } else {
