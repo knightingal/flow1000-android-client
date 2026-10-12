@@ -90,7 +90,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "org.knightingal.flow1000.client"
+        applicationId = "org.knightingal.flow1000.client.debug"
         minSdk = 26
         targetSdk = 36
         versionName = "${releaseTime()}-${commitNum()}"

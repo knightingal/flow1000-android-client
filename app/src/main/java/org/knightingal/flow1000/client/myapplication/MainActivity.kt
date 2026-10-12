@@ -54,14 +54,16 @@ class MainActivity : AppCompatActivity() {
         val fab: FloatingActionButton = binding.fab
 
         fab.setOnClickListener { _ ->
-            if (tabPosition == 1) {
-//                startActivity(
-//                    Flow1000FlutterActivity.createDefaultIntent(this)
-//                )
-            } else if (tabPosition == 0) {
-                startActivity(Intent(this, StableDiffusionRepoActivity::class.java))
-            } else {
-                startActivity(Intent(this, AboutActivity::class.java))
+            when (tabPosition) {
+                1 -> {
+                    startActivity(Intent(this, EmptyActivity::class.java))
+                }
+                0 -> {
+                    startActivity(Intent(this, StableDiffusionRepoActivity::class.java))
+                }
+                else -> {
+                    startActivity(Intent(this, AboutActivity::class.java))
+                }
             }
         }
     }
