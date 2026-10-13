@@ -5,13 +5,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.magnifier
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -47,37 +53,48 @@ class TabMainActivity : ComponentActivity() {
         val startDestination = Destination.SONGS
         var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
 
-        Scaffold(modifier = modifier) { contentPadding ->
-            PrimaryTabRow(selectedTabIndex = selectedDestination, modifier = Modifier.padding(contentPadding)) {
-                Destination.entries.forEachIndexed { index, destination ->
-                    Tab(
-                        selected = selectedDestination == index,
-                        onClick = {
-                            navController.navigate(route = destination.route)
-                            selectedDestination = index
-                        },
-                        text = {
-                            Text(
-                                text = destination.label,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    )
+        Scaffold(modifier = modifier, topBar = {
+            TopAppBar(
+                title = { Text("Flow1000 Client") }
+            )
+        }) { contentPadding ->
+            Column {
+                PrimaryTabRow(selectedTabIndex = selectedDestination, modifier = Modifier.padding(contentPadding)) {
+                    Destination.entries.forEachIndexed { index, destination ->
+                        Tab(
+                            selected = selectedDestination == index,
+                            onClick = {
+                                navController.navigate(route = destination.route)
+                                selectedDestination = index
+                            },
+                            text = {
+                                Text(
+                                    text = destination.label,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        )
+                    }
                 }
+                AppNavHost(navController, startDestination, modifier = Modifier.fillMaxSize())
+
             }
-            AppNavHost(navController, startDestination)
         }
     }
 
 
     @Composable
-    fun SongsScreen() {
+    fun AllListScreen(modifier: Modifier) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier,
             contentAlignment = Alignment.Center
         ) {
-            Text("Songs Screen")
+            LazyColumn {
+                items(100) { index ->
+                    Text("Item #$index")
+                }
+            }
         }
     }
 
@@ -105,15 +122,16 @@ class TabMainActivity : ComponentActivity() {
         val route: String,
         val label: String,
     ) {
-        SONGS("songs", "Songs"),
-        ALBUM("album", "Album"),
-        PLAYLISTS("playlist", "Playlist")
+        SONGS("allList", "All"),
+        ALBUM("existList", "Exist"),
+        PLAYLISTS("pendingList", "Pending"),
     }
 
     @Composable
     fun AppNavHost(
         navController: NavHostController,
         startDestination: Destination,
+        modifier: Modifier
     ) {
         NavHost(
             navController,
@@ -122,7 +140,7 @@ class TabMainActivity : ComponentActivity() {
             Destination.entries.forEach { destination ->
                 composable(destination.route) {
                     when (destination) {
-                        Destination.SONGS -> SongsScreen()
+                        Destination.SONGS -> AllListScreen(modifier)
                         Destination.ALBUM -> AlbumScreen()
                         Destination.PLAYLISTS -> PlaylistScreen()
                     }
