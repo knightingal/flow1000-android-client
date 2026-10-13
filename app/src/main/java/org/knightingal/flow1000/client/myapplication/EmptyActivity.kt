@@ -27,9 +27,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-//import androidx.navigation.compose.NavHost
-//import androidx.navigation.compose.composable
-//import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
 
 class EmptyActivity : ComponentActivity() {
@@ -107,27 +107,27 @@ fun AppNavHost(
     startDestination: Destination,
     modifier: Modifier = Modifier
 ) {
-//    NavHost(
-//        navController,
-//        startDestination = startDestination.route
-//    ) {
-//        Destination.entries.forEach { destination ->
-//            composable(destination.route) {
-//                when (destination) {
-//                    Destination.SONGS -> SongsScreen()
-//                    Destination.ALBUM -> AlbumScreen()
-//                    Destination.PLAYLISTS -> PlaylistScreen()
-//                }
-//            }
-//        }
-//    }
+    NavHost(
+        navController,
+        startDestination = startDestination.route
+    ) {
+        Destination.entries.forEach { destination ->
+            composable(destination.route) {
+                when (destination) {
+                    Destination.SONGS -> SongsScreen()
+                    Destination.ALBUM -> AlbumScreen()
+                    Destination.PLAYLISTS -> PlaylistScreen()
+                }
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun NavigationTabExample(modifier: Modifier = Modifier) {
-//    val navController = rememberNavController()
+    val navController = rememberNavController()
     val startDestination = Destination.SONGS
     var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
 
@@ -137,7 +137,7 @@ fun NavigationTabExample(modifier: Modifier = Modifier) {
                 Tab(
                     selected = selectedDestination == index,
                     onClick = {
-//                        navController.navigate(route = destination.route)
+                        navController.navigate(route = destination.route)
                         selectedDestination = index
                     },
                     text = {
@@ -150,6 +150,6 @@ fun NavigationTabExample(modifier: Modifier = Modifier) {
                 )
             }
         }
-//        AppNavHost(navController, startDestination)
+        AppNavHost(navController, startDestination)
     }
 }
