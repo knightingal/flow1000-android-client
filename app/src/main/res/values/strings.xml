@@ -80,5 +80,6 @@
         dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
     <string name="title_activity_empty">EmptyActivity</string>
+    <string name="title_activity_tab_main">TabMainActivity</string>
 
 </resources>
