@@ -39,151 +39,152 @@ import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientThem
 
 class TabMainActivity : ComponentActivity() {
 
-    private lateinit var picSectionDao: PicSectionDao
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  private lateinit var picSectionDao: PicSectionDao
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        picSectionDao = App.db.picSectionDao()
+    picSectionDao = App.db.picSectionDao()
 
-        val allPicSectionBeanList = picSectionDao.getAll().toList()
-            .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
+    val allPicSectionBeanList = picSectionDao.getAll().toList()
+      .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
 
-        enableEdgeToEdge()
-        setContent {
-            Flow1000clientTheme {
-                NavigationTab(modifier = Modifier.fillMaxSize(), allPicSectionBeanList)
-            }
-        }
+    enableEdgeToEdge()
+    setContent {
+      Flow1000clientTheme {
+        NavigationTab(modifier = Modifier.fillMaxSize(), allPicSectionBeanList)
+      }
     }
+  }
 
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun NavigationTab(modifier: Modifier = Modifier, allPicSectionBeanList: List<PicSectionData>) {
-        val navController = rememberNavController()
-        val startDestination = Destination.SONGS
-        var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
+  @OptIn(ExperimentalMaterial3Api::class)
+  @Composable
+  fun NavigationTab(modifier: Modifier = Modifier, allPicSectionBeanList: List<PicSectionData>) {
+    val navController = rememberNavController()
+    val startDestination = Destination.SONGS
+    var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
 
-        Scaffold(modifier = modifier, topBar = {
-            TopAppBar(
-                title = { Text("Flow1000 Client") }
+    Scaffold(modifier = modifier, topBar = {
+      TopAppBar(
+        title = { Text("Flow1000 Client") }
+      )
+    }) { contentPadding ->
+      Column(modifier = Modifier.padding(contentPadding)) {
+        PrimaryTabRow(selectedTabIndex = selectedDestination) {
+          Destination.entries.forEachIndexed { index, destination ->
+            Tab(
+              selected = selectedDestination == index,
+              onClick = {
+                navController.navigate(route = destination.route)
+                selectedDestination = index
+              },
+              text = {
+                Text(
+                  text = destination.label,
+                  maxLines = 2,
+                  overflow = TextOverflow.Ellipsis
+                )
+              }
             )
-        }) { contentPadding ->
-            Column(modifier = Modifier.padding(contentPadding)) {
-                PrimaryTabRow(selectedTabIndex = selectedDestination) {
-                    Destination.entries.forEachIndexed { index, destination ->
-                        Tab(
-                            selected = selectedDestination == index,
-                            onClick = {
-                                navController.navigate(route = destination.route)
-                                selectedDestination = index
-                            },
-                            text = {
-                                Text(
-                                    text = destination.label,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        )
-                    }
-                }
-                AppNavHost(navController, startDestination, allPicSectionBeanList)
-
-            }
+          }
         }
+        AppNavHost(navController, startDestination, allPicSectionBeanList)
+
+      }
     }
+  }
 
 
-    @Composable
-    fun AllListScreen(allPicSectionBeanList: List<PicSectionData>) {
-        Box(
-            contentAlignment = Alignment.Center
-        ) {
-            LazyColumn {
-                items(allPicSectionBeanList) { picSectionData ->
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(picSectionData.picSectionBean.name, modifier = Modifier.padding(16.dp))
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun AlbumScreen() {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Album Screen")
-        }
-    }
-
-    @Composable
-    fun PlaylistScreen() {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Playlist Screen")
-        }
-    }
-
-    enum class Destination(
-        val route: String,
-        val label: String,
+  @Composable
+  fun AllListScreen(allPicSectionBeanList: List<PicSectionData>) {
+    Box(
+      contentAlignment = Alignment.Center
     ) {
-        SONGS("allList", "All"),
-        ALBUM("existList", "Exist"),
-        PLAYLISTS("pendingList", "Pending"),
-    }
-
-    @Composable
-    fun AppNavHost(
-        navController: NavHostController,
-        startDestination: Destination,
-        allPicSectionBeanList: List<PicSectionData>
-    ) {
-        NavHost(
-            navController,
-            startDestination = startDestination.route
-        ) {
-            Destination.entries.forEach { destination ->
-                composable(destination.route) {
-                    when (destination) {
-                        Destination.SONGS -> AllListScreen(allPicSectionBeanList)
-                        Destination.ALBUM -> AlbumScreen()
-                        Destination.PLAYLISTS -> PlaylistScreen()
-                    }
-                }
-            }
+      LazyColumn {
+        items(allPicSectionBeanList) { picSectionData ->
+          Box(
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            Text(picSectionData.picSectionBean.name, modifier = Modifier.padding(16.dp))
+          }
         }
+      }
     }
+  }
 
-    @Preview(showBackground = true, showSystemUi = true)
-    @Composable
-    fun NavigationTabPreview() {
-        val previewList = listOf(
-            PicSectionData(
-                PicSectionBean(
-                    name = "Section 1",
-                    id = 0,
-                    clientStatus = PicSectionBean.ClientStatus.PENDING
-                ),
-                totalCount = 0
-            ),
-            PicSectionData(
-                PicSectionBean(
-                    name = "Section 2",
-                    id = 1,
-                    clientStatus = PicSectionBean.ClientStatus.PENDING
-                ), totalCount = 0
-            )
-        )
-
-        NavigationTab(modifier = Modifier.fillMaxSize(), previewList)
+  @Composable
+  fun AlbumScreen() {
+    Box(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center
+    ) {
+      Text("Album Screen")
     }
+  }
+
+  @Composable
+  fun PlaylistScreen() {
+    Box(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center
+    ) {
+      Text("Playlist Screen")
+    }
+  }
+
+  enum class Destination(
+    val route: String,
+    val label: String,
+  ) {
+    SONGS("allList", "All"),
+    ALBUM("existList", "Exist"),
+    PLAYLISTS("pendingList", "Pending"),
+  }
+
+  @Composable
+  fun AppNavHost(
+    navController: NavHostController,
+    startDestination: Destination,
+    allPicSectionBeanList: List<PicSectionData>
+  ) {
+    NavHost(
+      navController,
+      startDestination = startDestination.route
+    ) {
+      Destination.entries.forEach { destination ->
+        composable(destination.route) {
+          when (destination) {
+            Destination.SONGS -> AllListScreen(allPicSectionBeanList)
+            Destination.ALBUM -> AlbumScreen()
+            Destination.PLAYLISTS -> PlaylistScreen()
+          }
+        }
+      }
+    }
+  }
+
+  @Preview(showBackground = true, showSystemUi = true)
+  @Composable
+  fun NavigationTabPreview() {
+    val previewList = listOf(
+      PicSectionData(
+        PicSectionBean(
+          name = "Section 1",
+          id = 0,
+          clientStatus = PicSectionBean.ClientStatus.PENDING
+        ),
+        totalCount = 0
+      ),
+      PicSectionData(
+        PicSectionBean(
+          name = "Section 2",
+          id = 1,
+          clientStatus = PicSectionBean.ClientStatus.PENDING
+        ),
+        totalCount = 0
+      )
+    )
+
+    NavigationTab(modifier = Modifier.fillMaxSize(), previewList)
+  }
 }
