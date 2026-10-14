@@ -4,14 +4,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -31,6 +39,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.dao.PicSectionDao
@@ -48,10 +57,12 @@ class TabMainActivity : ComponentActivity() {
     val allPicSectionBeanList = picSectionDao.getAll().toList()
       .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
 
+    val existSectionBean: List<PicSectionBean> = picSectionDao.getAllExistByAlbum("1808");
+
     enableEdgeToEdge()
     setContent {
       Flow1000clientTheme {
-        NavigationTab(modifier = Modifier.fillMaxSize(), allPicSectionBeanList)
+        NavigationTab(modifier = Modifier.fillMaxSize(), allPicSectionBeanList, existSectionBean)
       }
     }
   }
@@ -59,7 +70,7 @@ class TabMainActivity : ComponentActivity() {
 
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
-  fun NavigationTab(modifier: Modifier = Modifier, allPicSectionBeanList: List<PicSectionData>) {
+  fun NavigationTab(modifier: Modifier = Modifier, allPicSectionBeanList: List<PicSectionData>, existSectionBean: List<PicSectionBean>) {
     val navController = rememberNavController()
     val startDestination = Destination.SONGS
     var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
@@ -88,7 +99,7 @@ class TabMainActivity : ComponentActivity() {
             )
           }
         }
-        AppNavHost(navController, startDestination, allPicSectionBeanList)
+        AppNavHost(navController, startDestination, allPicSectionBeanList, existSectionBean)
 
       }
     }
@@ -98,6 +109,7 @@ class TabMainActivity : ComponentActivity() {
   @Composable
   fun AllListScreen(allPicSectionBeanList: List<PicSectionData>) {
     Box(
+      modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
     ) {
       LazyColumn {
@@ -112,14 +124,49 @@ class TabMainActivity : ComponentActivity() {
     }
   }
 
+  @OptIn(ExperimentalSharedTransitionApi::class)
   @Composable
-  fun AlbumScreen() {
+  fun ExistListScreen(existSectionBean: List<PicSectionBean>) {
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
     ) {
-      Text("Album Screen")
+      val lazyStaggeredGridState = rememberLazyStaggeredGridState()
+      LazyVerticalStaggeredGrid(
+        state = lazyStaggeredGridState,
+        columns = StaggeredGridCells.Fixed(2),
+        verticalItemSpacing = 4.dp,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp, vertical = 0.dp),
+      ) {
+        items(existSectionBean) { picSectionBean ->
+          Box(
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            AlbumCoverCard(
+              albumCover = ExistAlbumCover(
+                name = picSectionBean.name,
+                coverWidth = picSectionBean.coverWidth,
+                coverHeight = picSectionBean.coverHeight,
+                cover = picSectionBean.cover ?: ""
+              )
+            )
+          }
+        }
+      }
     }
+  }
+
+  @Serializable
+  class ExistAlbumCover(
+    override val name: String,
+    val coverWidth: Int,
+    val coverHeight: Int,
+    val cover: String,
+  ): CardCover<String> {
+    override val width: Int = coverWidth
+    override val height: Int = coverHeight
+    override val coverUri: String = "/${name}/${cover}"
   }
 
   @Composable
@@ -145,7 +192,8 @@ class TabMainActivity : ComponentActivity() {
   fun AppNavHost(
     navController: NavHostController,
     startDestination: Destination,
-    allPicSectionBeanList: List<PicSectionData>
+    allPicSectionBeanList: List<PicSectionData>,
+    existSectionBean: List<PicSectionBean>
   ) {
     NavHost(
       navController,
@@ -155,7 +203,7 @@ class TabMainActivity : ComponentActivity() {
         composable(destination.route) {
           when (destination) {
             Destination.SONGS -> AllListScreen(allPicSectionBeanList)
-            Destination.ALBUM -> AlbumScreen()
+            Destination.ALBUM -> ExistListScreen(existSectionBean)
             Destination.PLAYLISTS -> PlaylistScreen()
           }
         }
@@ -185,6 +233,6 @@ class TabMainActivity : ComponentActivity() {
       )
     )
 
-    NavigationTab(modifier = Modifier.fillMaxSize(), previewList)
+    NavigationTab(modifier = Modifier.fillMaxSize(), previewList, emptyList())
   }
 }
