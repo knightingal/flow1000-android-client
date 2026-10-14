@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { _ ->
             when (tabPosition) {
                 1 -> {
-                    startActivity(Intent(this, EmptyActivity::class.java))
+                    startActivity(Intent(this, TabMainActivity::class.java))
                 }
                 0 -> {
                     startActivity(Intent(this, StableDiffusionRepoActivity::class.java))
