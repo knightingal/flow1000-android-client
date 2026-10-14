@@ -6,12 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.magnifier
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
@@ -27,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -46,7 +45,7 @@ class TabMainActivity : ComponentActivity() {
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    @Preview(showBackground = true)
+    @Preview(showBackground = true, showSystemUi = true)
     @Composable
     fun NavigationTabExample(modifier: Modifier = Modifier) {
         val navController = rememberNavController()
@@ -58,8 +57,8 @@ class TabMainActivity : ComponentActivity() {
                 title = { Text("Flow1000 Client") }
             )
         }) { contentPadding ->
-            Column {
-                PrimaryTabRow(selectedTabIndex = selectedDestination, modifier = Modifier.padding(contentPadding)) {
+            Column(modifier = Modifier.padding(contentPadding)) {
+                PrimaryTabRow(selectedTabIndex = selectedDestination) {
                     Destination.entries.forEachIndexed { index, destination ->
                         Tab(
                             selected = selectedDestination == index,
@@ -77,7 +76,7 @@ class TabMainActivity : ComponentActivity() {
                         )
                     }
                 }
-                AppNavHost(navController, startDestination, modifier = Modifier.fillMaxSize())
+                AppNavHost(navController, startDestination)
 
             }
         }
@@ -85,14 +84,17 @@ class TabMainActivity : ComponentActivity() {
 
 
     @Composable
-    fun AllListScreen(modifier: Modifier) {
+    fun AllListScreen() {
         Box(
-            modifier = modifier,
             contentAlignment = Alignment.Center
         ) {
             LazyColumn {
                 items(100) { index ->
-                    Text("Item #$index")
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text("Item #$index", modifier = Modifier.padding(16.dp))
+                    }
                 }
             }
         }
@@ -131,7 +133,6 @@ class TabMainActivity : ComponentActivity() {
     fun AppNavHost(
         navController: NavHostController,
         startDestination: Destination,
-        modifier: Modifier
     ) {
         NavHost(
             navController,
@@ -140,7 +141,7 @@ class TabMainActivity : ComponentActivity() {
             Destination.entries.forEach { destination ->
                 composable(destination.route) {
                     when (destination) {
-                        Destination.SONGS -> AllListScreen(modifier)
+                        Destination.SONGS -> AllListScreen()
                         Destination.ALBUM -> AlbumScreen()
                         Destination.PLAYLISTS -> PlaylistScreen()
                     }
