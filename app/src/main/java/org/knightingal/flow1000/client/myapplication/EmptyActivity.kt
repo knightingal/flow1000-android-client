@@ -1,5 +1,7 @@
 package org.knightingal.flow1000.client.myapplication
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +26,11 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -135,6 +142,14 @@ fun ImageContentInCard(
                 painter = painterResource(cardCover.coverUri as Int),
                 contentDescription = null,
             )
+
+//        val mb: Bitmap = BitmapFactory.decodeFile("damp.jpg")
+//        Image(
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            bitmap = mb.asImageBitmap(),
+//            contentDescription = null,
+//        )
     }
 }
 
