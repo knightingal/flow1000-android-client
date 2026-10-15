@@ -34,10 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
@@ -56,7 +52,7 @@ class TabMainActivity : ComponentActivity() {
     val allPicSectionBeanList = picSectionDao.getAll().toList()
       .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
 
-    val existSectionBean: List<PicSectionBean> = picSectionDao.getAllExistByAlbum("1000");
+    val existSectionBean: List<PicSectionBean> = picSectionDao.getAllExistByAlbum("1000")
 
     enableEdgeToEdge()
     setContent {
@@ -70,7 +66,6 @@ class TabMainActivity : ComponentActivity() {
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   fun NavigationTab(modifier: Modifier = Modifier, allPicSectionBeanList: List<PicSectionData>, existSectionBean: List<PicSectionBean>) {
-    val navController = rememberNavController()
     val startDestination = Destination.SONGS
     var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
 
@@ -85,7 +80,6 @@ class TabMainActivity : ComponentActivity() {
             Tab(
               selected = selectedDestination == index,
               onClick = {
-                navController.navigate(route = destination.route)
                 selectedDestination = index
               },
               text = {
@@ -98,7 +92,7 @@ class TabMainActivity : ComponentActivity() {
             )
           }
         }
-        AppNavHost(navController, startDestination, allPicSectionBeanList, existSectionBean)
+        AppNavHost(selectedDestination, allPicSectionBeanList, existSectionBean)
 
       }
     }
@@ -180,34 +174,23 @@ class TabMainActivity : ComponentActivity() {
   }
 
   enum class Destination(
-    val route: String,
     val label: String,
   ) {
-    SONGS("allList", "All"),
-    ALBUM("existList", "Exist"),
-    PLAYLISTS("pendingList", "Pending"),
+    SONGS("All"),
+    ALBUM("Exist"),
+    PLAYLISTS("Pending"),
   }
 
   @Composable
   fun AppNavHost(
-    navController: NavHostController,
-    startDestination: Destination,
+    selectedDestination: Int,
     allPicSectionBeanList: List<PicSectionData>,
     existSectionBean: List<PicSectionBean>
   ) {
-    NavHost(
-      navController,
-      startDestination = startDestination.route
-    ) {
-      Destination.entries.forEach { destination ->
-        composable(destination.route) {
-          when (destination) {
-            Destination.SONGS -> AllListScreen(allPicSectionBeanList)
-            Destination.ALBUM -> ExistListScreen(existSectionBean)
-            Destination.PLAYLISTS -> PlaylistScreen()
-          }
-        }
-      }
+    when (selectedDestination) {
+      Destination.SONGS.ordinal -> AllListScreen(allPicSectionBeanList)
+      Destination.ALBUM.ordinal -> ExistListScreen(existSectionBean)
+      Destination.PLAYLISTS.ordinal -> PlaylistScreen()
     }
   }
 
