@@ -85,7 +85,7 @@ fun AlbumCoverCard(
     val modifier = if (sharedTransitionScope != null) {
         with(sharedTransitionScope) {
             Modifier.sharedElement(
-                state = sharedTransitionScope.rememberSharedContentState(albumCover.coverUri as String),
+                sharedContentState = sharedTransitionScope.rememberSharedContentState(albumCover.coverUri as String),
                 animatedVisibilityScope = animatedContentScope!!
             )
         }
