@@ -1,8 +1,7 @@
 package org.knightingal.flow1000.client.myapplication
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,16 +25,14 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
+import java.io.File
 
 class EmptyActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,20 +133,23 @@ fun ImageContentInCard(
                     / cardCover.height.toFloat()
         )
     ) {
+        if (cardCover.coverUri is Int) {
             Image(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 painter = painterResource(cardCover.coverUri as Int),
                 contentDescription = null,
             )
-
-//        val mb: Bitmap = BitmapFactory.decodeFile("damp.jpg")
-//        Image(
-//            modifier = Modifier
-//                .fillMaxSize(),
-//            bitmap = mb.asImageBitmap(),
-//            contentDescription = null,
-//        )
+        } else if (cardCover.coverUri is String) {
+            val imageFile = File(
+                LocalContext.current.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+                cardCover.coverUri as String
+            )
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = imageFile,
+                contentDescription = null,
+            )
+        }
     }
 }
 
