@@ -8,6 +8,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -133,9 +134,10 @@ class TabMainActivity : ComponentActivity() {
       LazyVerticalStaggeredGrid(
         state = lazyStaggeredGridState,
         columns = StaggeredGridCells.Fixed(2),
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
         verticalItemSpacing = 4.dp,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp, vertical = 0.dp),
+        modifier = Modifier.fillMaxSize(),
       ) {
         items(existSectionBean) { picSectionBean ->
           Box(
