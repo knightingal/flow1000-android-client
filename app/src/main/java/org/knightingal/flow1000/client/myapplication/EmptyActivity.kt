@@ -207,15 +207,15 @@ fun AutoAdvancePager(pageItems: List<Color>, modifier: Modifier = Modifier) {
         // Stop auto-advancing when pager is dragged or one of the pages is pressed
         val autoAdvance = !pagerIsDragged && !pageIsPressed
 
-        if (autoAdvance) {
-            LaunchedEffect(pagerState, pageInteractionSource) {
-                while (true) {
-                    delay(2000.milliseconds)
-                    val nextPage = (pagerState.currentPage + 1) % pageItems.size
-                    pagerState.animateScrollToPage(nextPage)
-                }
-            }
-        }
+//        if (autoAdvance) {
+//            LaunchedEffect(pagerState, pageInteractionSource) {
+//                while (true) {
+//                    delay(2000.milliseconds)
+//                    val nextPage = (pagerState.currentPage + 1) % pageItems.size
+//                    pagerState.animateScrollToPage(nextPage)
+//                }
+//            }
+//        }
 
         HorizontalPager(
             state = pagerState
