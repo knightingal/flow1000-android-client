@@ -36,7 +36,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -49,11 +48,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import kotlinx.coroutines.delay
 import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
 import java.io.File
-import kotlin.time.Duration.Companion.milliseconds
 
 class EmptyActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

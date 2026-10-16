@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
@@ -92,7 +94,8 @@ class TabMainActivity : ComponentActivity() {
             )
           }
         }
-        AppNavHost(selectedDestination, allPicSectionBeanList, existSectionBean)
+//        AppNavHost(selectedDestination, allPicSectionBeanList, existSectionBean)
+        AdvancePager(allPicSectionBeanList, existSectionBean)
 
       }
     }
@@ -193,6 +196,31 @@ class TabMainActivity : ComponentActivity() {
       Destination.PLAYLISTS.ordinal -> PlaylistScreen()
     }
   }
+
+
+  @Composable
+  fun AdvancePager(
+    allPicSectionBeanList: List<PicSectionData>,
+    existSectionBean: List<PicSectionBean>,
+    modifier: Modifier = Modifier) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      val pagerState = rememberPagerState(pageCount = { 3 })
+
+      HorizontalPager(
+        state = pagerState
+      ) { page ->
+        if (page == 0) {
+          AllListScreen(allPicSectionBeanList = allPicSectionBeanList)
+        } else if (page == 1) {
+          ExistListScreen(existSectionBean = existSectionBean)
+        } else if (page == 2) {
+          PlaylistScreen()
+        }
+      }
+    }
+  }
+
+
 
   @Preview(showBackground = true, showSystemUi = true)
   @Composable
