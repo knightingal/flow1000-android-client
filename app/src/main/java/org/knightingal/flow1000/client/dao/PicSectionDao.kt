@@ -28,6 +28,9 @@ interface PicSectionDao {
     @Query("select * from PicSectionBean where clientStatus = 'LOCAL'")
     fun getAllExist(): List<PicSectionBean>
 
+    @Query("select * from PicSectionBean where clientStatus = 'LOCAL' and album = :album" + " limit 1 offset 0")
+    fun getExistAlbumCover(album: String): PicSectionBean
+
     @Query("select * from PicSectionBean where clientStatus = 'LOCAL' and album = :album")
     fun getAllExistByAlbum(album: String): List<PicSectionBean>
 
