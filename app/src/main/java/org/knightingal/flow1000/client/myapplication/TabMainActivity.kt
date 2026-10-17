@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryTabRow
@@ -27,15 +28,13 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
@@ -68,21 +67,23 @@ class TabMainActivity : ComponentActivity() {
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   fun NavigationTab(modifier: Modifier = Modifier, allPicSectionBeanList: List<PicSectionData>, existSectionBean: List<PicSectionBean>) {
-    val startDestination = Destination.SONGS
-    var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
-
     Scaffold(modifier = modifier, topBar = {
       TopAppBar(
         title = { Text("Flow1000 Client") }
       )
     }) { contentPadding ->
       Column(modifier = Modifier.padding(contentPadding)) {
-        PrimaryTabRow(selectedTabIndex = selectedDestination) {
+
+        val pagerState = rememberPagerState(pageCount = { 3 })
+        val coroutineScope = rememberCoroutineScope()
+        PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
           Destination.entries.forEachIndexed { index, destination ->
             Tab(
-              selected = selectedDestination == index,
+              selected = pagerState.currentPage == index,
               onClick = {
-                selectedDestination = index
+                coroutineScope.launch {
+                  pagerState.animateScrollToPage(index)
+                }
               },
               text = {
                 Text(
@@ -94,8 +95,7 @@ class TabMainActivity : ComponentActivity() {
             )
           }
         }
-//        AppNavHost(selectedDestination, allPicSectionBeanList, existSectionBean)
-        AdvancePager(allPicSectionBeanList, existSectionBean)
+        AdvancePager(pagerState, allPicSectionBeanList, existSectionBean)
 
       }
     }
@@ -200,21 +200,18 @@ class TabMainActivity : ComponentActivity() {
 
   @Composable
   fun AdvancePager(
+    pagerState: PagerState,
     allPicSectionBeanList: List<PicSectionData>,
     existSectionBean: List<PicSectionBean>,
-    modifier: Modifier = Modifier) {
+  ) {
     Box(modifier = Modifier.fillMaxSize()) {
-      val pagerState = rememberPagerState(pageCount = { 3 })
-
       HorizontalPager(
         state = pagerState
       ) { page ->
-        if (page == 0) {
-          AllListScreen(allPicSectionBeanList = allPicSectionBeanList)
-        } else if (page == 1) {
-          ExistListScreen(existSectionBean = existSectionBean)
-        } else if (page == 2) {
-          PlaylistScreen()
+        when (page) {
+          0 -> AllListScreen(allPicSectionBeanList = allPicSectionBeanList)
+          1 -> ExistListScreen(existSectionBean = existSectionBean)
+          2 -> PlaylistScreen()
         }
       }
     }
@@ -245,5 +242,34 @@ class TabMainActivity : ComponentActivity() {
     )
 
     NavigationTab(modifier = Modifier.fillMaxSize(), previewList, emptyList())
+  }
+
+  @Preview(showBackground = true, showSystemUi = true)
+  @Composable
+  fun NavHostPreview() {
+
+    val previewList = listOf(
+      PicSectionData(
+        PicSectionBean(
+          name = "Section 1",
+          id = 0,
+          clientStatus = PicSectionBean.ClientStatus.PENDING
+        ),
+        totalCount = 0
+      ),
+      PicSectionData(
+        PicSectionBean(
+          name = "Section 2",
+          id = 1,
+          clientStatus = PicSectionBean.ClientStatus.PENDING
+        ),
+        totalCount = 0
+      )
+    )
+    AppNavHost(
+      selectedDestination = Destination.SONGS.ordinal,
+      allPicSectionBeanList = previewList,
+      existSectionBean = emptyList()
+    )
   }
 }
