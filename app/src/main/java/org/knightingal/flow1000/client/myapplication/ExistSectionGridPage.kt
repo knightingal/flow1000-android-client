@@ -1,5 +1,6 @@
 package org.knightingal.flow1000.client.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.dao.PicSectionDao
@@ -44,6 +46,7 @@ class ExistSectionGridPage : ComponentActivity() {
   @OptIn(ExperimentalSharedTransitionApi::class)
   @Composable
   fun ExistAlbumCoverScreen(albumCoverList: List<PicSectionBean>) {
+    val context = LocalContext.current
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
@@ -68,7 +71,14 @@ class ExistSectionGridPage : ComponentActivity() {
                 coverHeight = picSectionBean.coverHeight,
                 cover = picSectionBean.cover ?: ""
               )
-            )
+            ) {
+              context.startActivity(
+                Intent(context, SectionImageListPage::class.java).apply {
+                  putExtra("sectionId", picSectionBean.id)
+                  putExtra("sectionName", picSectionBean.name)
+                }
+              )
+            }
           }
         }
       }
