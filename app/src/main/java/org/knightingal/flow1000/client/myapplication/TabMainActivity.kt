@@ -55,7 +55,7 @@ class TabMainActivity : ComponentActivity() {
     val allPicSectionBeanList = picSectionDao.getAll().toList()
       .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
 
-    val existAlbumCoverList: List<PicSectionBean> = listOf<String>(
+    val existAlbumCoverList: List<PicSectionBean> = listOf(
       "1000", "1803", "1804", "1805",
       "1806", "1807", "1808"
     ).map { albumName ->
