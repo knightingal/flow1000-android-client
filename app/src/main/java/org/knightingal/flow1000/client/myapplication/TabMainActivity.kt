@@ -1,5 +1,6 @@
 package org.knightingal.flow1000.client.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,12 +55,17 @@ class TabMainActivity : ComponentActivity() {
     val allPicSectionBeanList = picSectionDao.getAll().toList()
       .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
 
-    val existSectionBean: List<PicSectionBean> = picSectionDao.getAllExistByAlbum("1000")
+    val existAlbumCoverList: List<PicSectionBean> = listOf<String>(
+      "1000", "1803", "1804", "1805",
+      "1806", "1807", "1808"
+    ).map { albumName ->
+      picSectionDao.getExistAlbumCover(albumName)
+    }
 
     enableEdgeToEdge()
     setContent {
       Flow1000clientTheme {
-        NavigationTab(modifier = Modifier.fillMaxSize(), allPicSectionBeanList, existSectionBean)
+        NavigationTab(modifier = Modifier.fillMaxSize(), allPicSectionBeanList, existAlbumCoverList)
       }
     }
   }
@@ -66,7 +73,11 @@ class TabMainActivity : ComponentActivity() {
 
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
-  fun NavigationTab(modifier: Modifier = Modifier, allPicSectionBeanList: List<PicSectionData>, existSectionBean: List<PicSectionBean>) {
+  fun NavigationTab(
+    modifier: Modifier = Modifier,
+    allPicSectionBeanList: List<PicSectionData>,
+    existAlbumCoverList: List<PicSectionBean>
+  ) {
     Scaffold(modifier = modifier, topBar = {
       TopAppBar(
         title = { Text("Flow1000 Client") }
@@ -95,7 +106,7 @@ class TabMainActivity : ComponentActivity() {
             )
           }
         }
-        AdvancePager(pagerState, allPicSectionBeanList, existSectionBean)
+        AdvancePager(pagerState, allPicSectionBeanList, existAlbumCoverList)
 
       }
     }
@@ -122,7 +133,8 @@ class TabMainActivity : ComponentActivity() {
 
   @OptIn(ExperimentalSharedTransitionApi::class)
   @Composable
-  fun ExistListScreen(existSectionBean: List<PicSectionBean>) {
+  fun ExistAlbumCoverScreen(albumCoverList: List<PicSectionBean>) {
+    val context = LocalContext.current
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
@@ -136,7 +148,7 @@ class TabMainActivity : ComponentActivity() {
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.fillMaxSize(),
       ) {
-        items(existSectionBean) { picSectionBean ->
+        items(albumCoverList) { picSectionBean ->
           Box(
             modifier = Modifier.fillMaxWidth(),
           ) {
@@ -147,7 +159,13 @@ class TabMainActivity : ComponentActivity() {
                 coverHeight = picSectionBean.coverHeight,
                 cover = picSectionBean.cover ?: ""
               )
-            )
+            ) {
+              context.startActivity(
+                Intent(context, ExistSectionGridPage::class.java).apply {
+                  putExtra("album", picSectionBean.album)
+                }
+              )
+            }
           }
         }
       }
@@ -192,7 +210,7 @@ class TabMainActivity : ComponentActivity() {
   ) {
     when (selectedDestination) {
       Destination.SONGS.ordinal -> AllListScreen(allPicSectionBeanList)
-      Destination.ALBUM.ordinal -> ExistListScreen(existSectionBean)
+      Destination.ALBUM.ordinal -> ExistAlbumCoverScreen(albumCoverList = existSectionBean)
       Destination.PLAYLISTS.ordinal -> PlaylistScreen()
     }
   }
@@ -202,7 +220,7 @@ class TabMainActivity : ComponentActivity() {
   fun AdvancePager(
     pagerState: PagerState,
     allPicSectionBeanList: List<PicSectionData>,
-    existSectionBean: List<PicSectionBean>,
+    existAlbumCoverList: List<PicSectionBean>,
   ) {
     Box(modifier = Modifier.fillMaxSize()) {
       HorizontalPager(
@@ -210,7 +228,7 @@ class TabMainActivity : ComponentActivity() {
       ) { page ->
         when (page) {
           0 -> AllListScreen(allPicSectionBeanList = allPicSectionBeanList)
-          1 -> ExistListScreen(existSectionBean = existSectionBean)
+          1 -> ExistAlbumCoverScreen(albumCoverList = existAlbumCoverList)
           2 -> PlaylistScreen()
         }
       }
