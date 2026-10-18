@@ -19,7 +19,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,30 +57,41 @@ class SectionImageListPage : ComponentActivity() {
     }
   }
 
+  @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   fun ExistAlbumCoverScreen(sectionName: String, picList: List<PicInfoBean>) {
-    Box(
-      modifier = Modifier.fillMaxSize(),
-      contentAlignment = Alignment.Center
-    ) {
-      val lazyStaggeredGridState = rememberLazyListState()
-      LazyColumn (
-        state = lazyStaggeredGridState,
-        contentPadding = PaddingValues(horizontal = 2.dp, vertical = 2.dp),
-        modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp)
+    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
+      TopAppBar(
+        title = { Text(sectionName) },
+        colors = topAppBarColors(
+          containerColor = MaterialTheme.colorScheme.primaryContainer,
+          titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+      )
+    }) { contentPadding ->
+      Box(
+        modifier = Modifier.fillMaxSize().padding(contentPadding),
+        contentAlignment = Alignment.Center
       ) {
-        items(picList) { picInfoBean ->
-          Box(
-            modifier = Modifier.fillMaxWidth(),
-          ) {
-            FitSizeImageCard(
-              cardCover = ExistAlbumCover(
-                name = sectionName,
-                coverWidth = picInfoBean.width,
-                coverHeight = picInfoBean.height,
-                cover = picInfoBean.name
+        val lazyStaggeredGridState = rememberLazyListState()
+        LazyColumn(
+          state = lazyStaggeredGridState,
+          contentPadding = PaddingValues(horizontal = 2.dp, vertical = 2.dp),
+          modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp)
+        ) {
+          items(picList) { picInfoBean ->
+            Box(
+              modifier = Modifier.fillMaxWidth(),
+            ) {
+              FitSizeImageCard(
+                cardCover = ExistAlbumCover(
+                  name = sectionName,
+                  coverWidth = picInfoBean.width,
+                  coverHeight = picInfoBean.height,
+                  cover = picInfoBean.name
+                )
               )
-            )
+            }
           }
         }
       }

@@ -11,10 +11,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,41 +50,52 @@ class ExistSectionGridPage : ComponentActivity() {
     }
   }
 
-  @OptIn(ExperimentalSharedTransitionApi::class)
+  @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
   @Composable
   fun ExistAlbumCoverScreen(albumCoverList: List<PicSectionBean>) {
     val context = LocalContext.current
-    Box(
-      modifier = Modifier.fillMaxSize(),
-      contentAlignment = Alignment.Center
-    ) {
-      val lazyStaggeredGridState = rememberLazyStaggeredGridState()
-      LazyVerticalStaggeredGrid(
-        state = lazyStaggeredGridState,
-        columns = StaggeredGridCells.Fixed(2),
-        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
-        verticalItemSpacing = 4.dp,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.fillMaxSize(),
+
+    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
+      TopAppBar(
+        title = { Text(albumCoverList[0].album ?: "") },
+        colors = topAppBarColors(
+          containerColor = MaterialTheme.colorScheme.primaryContainer,
+          titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+      )
+    }) { contentPadding ->
+      Box(
+        modifier = Modifier.fillMaxSize().padding(contentPadding),
+        contentAlignment = Alignment.Center
       ) {
-        items(albumCoverList) { picSectionBean ->
-          Box(
-            modifier = Modifier.fillMaxWidth(),
-          ) {
-            AlbumCoverCard(
-              albumCover = ExistAlbumCover(
-                name = picSectionBean.name,
-                coverWidth = picSectionBean.coverWidth,
-                coverHeight = picSectionBean.coverHeight,
-                cover = picSectionBean.cover ?: ""
-              )
+        val lazyStaggeredGridState = rememberLazyStaggeredGridState()
+        LazyVerticalStaggeredGrid(
+          state = lazyStaggeredGridState,
+          columns = StaggeredGridCells.Fixed(2),
+          contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+          verticalItemSpacing = 4.dp,
+          horizontalArrangement = Arrangement.spacedBy(4.dp),
+          modifier = Modifier.fillMaxSize(),
+        ) {
+          items(albumCoverList) { picSectionBean ->
+            Box(
+              modifier = Modifier.fillMaxWidth(),
             ) {
-              context.startActivity(
-                Intent(context, SectionImageListPage::class.java).apply {
-                  putExtra("sectionId", picSectionBean.id)
-                  putExtra("sectionName", picSectionBean.name)
-                }
-              )
+              AlbumCoverCard(
+                albumCover = ExistAlbumCover(
+                  name = picSectionBean.name,
+                  coverWidth = picSectionBean.coverWidth,
+                  coverHeight = picSectionBean.coverHeight,
+                  cover = picSectionBean.cover ?: ""
+                )
+              ) {
+                context.startActivity(
+                  Intent(context, SectionImageListPage::class.java).apply {
+                    putExtra("sectionId", picSectionBean.id)
+                    putExtra("sectionName", picSectionBean.name)
+                  }
+                )
+              }
             }
           }
         }
