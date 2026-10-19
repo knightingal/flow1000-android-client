@@ -34,6 +34,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.knightingal.flow1000.client.myapplication.SectionConfig.Companion.getSectionConfig
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.IMAGE_PORT
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 import org.nanjing.knightingal.processerlib.RefreshListener
@@ -131,7 +132,7 @@ class DownloadService : Service() {
     fun fetchAllSectionList() {
         val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
-        Log.d("startDownloadWebPage", stringUrl)
+        Log.d("fetchAllSectionList", stringUrl)
         ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
             db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
@@ -139,6 +140,7 @@ class DownloadService : Service() {
                 updateStampDao.update(updateStamp)
                 picSectionBeanList.forEach {
                     it.name = TimeUtil.formatTitle(it.name)
+                    it.cover = replaceImgNameWithPng(it.cover ?: "")
                     picSectionDao.insert(it)
                 }
             }
@@ -156,7 +158,7 @@ class DownloadService : Service() {
         thread {
             val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
             val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
-            Log.d("startDownloadWebPage", stringUrl)
+            Log.d("startDownloadSectionList", stringUrl)
 
             val client = HttpClient(CIO)
             val body: String = runBlocking {
@@ -168,7 +170,10 @@ class DownloadService : Service() {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
                 val picSectionBeanList = Gson().fromJson(body, Array<PicSectionBean>::class.java)
                 updateStampDao.update(updateStamp)
-                picSectionBeanList.forEach { picSectionDao.insert(it) }
+                picSectionBeanList.forEach {
+                    it.cover = replaceImgNameWithPng(it.cover ?: "")
+                    picSectionDao.insert(it)
+                }
             }
             allPicSectionBeanList = picSectionDao.getAll().toList().map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
             val pendingUrl =
@@ -218,9 +223,10 @@ class DownloadService : Service() {
         }
     }
 
+
     private fun processImgItem(pic: ImgDetail, sectionInfoBean: SectionInfoBean, sectionConfig: SectionConfig, latch: CountDownLatch) {
-        val imgUrl = "http://${SERVER_IP}:${SERVER_PORT}" +
-                "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${if (sectionConfig.encrypted) pic.name else pic.name}"
+        val imgUrl = "http://${SERVER_IP}:${IMAGE_PORT}" +
+                "/linux1000/${sectionConfig.baseUrl}/${sectionInfoBean.dirName}/${replaceImgNameWithPng(pic.name)}"
         val thread = Thread.currentThread() as SectionThread
         thread.imageThreadPool.execute {
             imgExecuting(imgUrl, pic, sectionInfoBean.id, TimeUtil.formatTitle(sectionInfoBean.dirName), sectionConfig.encrypted, latch)
@@ -241,7 +247,7 @@ class DownloadService : Service() {
         }
         val directory =
             getSectionStorageDir(applicationContext, dirName)
-        val dest = File(directory, pic.name)
+        val dest = File(directory, replaceImgNameWithPng(pic.name))
         val fileOutputStream = FileOutputStream(dest, false)
         fileOutputStream.write(bytes)
         fileOutputStream.close()
@@ -251,7 +257,7 @@ class DownloadService : Service() {
         val absolutePath = dest.absolutePath
         val picInfoBean = PicInfoBean(
             pic.id,
-            pic.name,
+            replaceImgNameWithPng(pic.name),
             sectionId,
             absolutePath,
             height,
@@ -314,3 +320,9 @@ class DownloadService : Service() {
 }
 
 
+fun replaceImgNameWithPng(name: String): String {
+    return name
+        // for there is bug in image component, it can not load avif image,
+        // so I have to convert avif to png in server side and change the name here
+        .replace(".avif", ".avif.png")
+}

@@ -26,6 +26,7 @@ import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
 import org.knightingal.flow1000.client.services.DownloadService
 import org.nanjing.knightingal.processerlib.RefreshListener
 import org.knightingal.flow1000.client.R
+import org.knightingal.flow1000.client.services.replaceImgNameWithPng
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
@@ -120,14 +121,17 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     private fun startDownloadPicIndex() {
         val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
-        Log.d("startDownloadWebPage", stringUrl)
+        Log.d("startDownloadPicIndex", stringUrl)
         ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
 //            val mapper = jacksonObjectMapper()
             db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
                 updateStampDao.update(updateStamp)
                 val picSectionBeanList = Gson().fromJson(allBody, Array<PicSectionBean>::class.java)
-                picSectionBeanList.forEach { picSectionDao.insert(it) }
+                picSectionBeanList.forEach {
+                    it.cover = replaceImgNameWithPng(it.cover ?: "")
+                    picSectionDao.insert(it)
+                }
             }
 
             refreshFrontPage.invoke()
