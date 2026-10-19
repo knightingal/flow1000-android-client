@@ -58,9 +58,9 @@ class TabMainActivity : ComponentActivity() {
     val existAlbumCoverList: List<PicSectionBean> = listOf(
       "1000", "1803", "1804", "1805",
       "1806", "1807", "1808"
-    ).map { albumName ->
+    ).mapNotNull { albumName ->
       picSectionDao.getExistAlbumCover(albumName)
-    }
+    }.map { it }
 
     enableEdgeToEdge()
     setContent {
