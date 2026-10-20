@@ -36,6 +36,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.beans.PicSectionBean
@@ -78,36 +81,41 @@ class TabMainActivity : ComponentActivity() {
     allPicSectionBeanList: List<PicSectionData>,
     existAlbumCoverList: List<PicSectionBean>
   ) {
-    Scaffold(modifier = modifier, topBar = {
-      TopAppBar(
-        title = { Text("Flow1000 Client") }
-      )
-    }) { contentPadding ->
-      Column(modifier = Modifier.padding(contentPadding)) {
-
-        val pagerState = rememberPagerState(pageCount = { 3 })
-        val coroutineScope = rememberCoroutineScope()
-        PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
-          Destination.entries.forEachIndexed { index, destination ->
-            Tab(
-              selected = pagerState.currentPage == index,
-              onClick = {
-                coroutineScope.launch {
-                  pagerState.animateScrollToPage(index)
-                }
-              },
-              text = {
-                Text(
-                  text = destination.label,
-                  maxLines = 2,
-                  overflow = TextOverflow.Ellipsis
+    val navController = rememberNavController()
+    NavHost(
+      navController, startDestination = "flow1000Home",
+    ) {
+      composable("flow1000Home") {
+        Scaffold(modifier = modifier, topBar = {
+          TopAppBar(
+            title = { Text("Flow1000 Client") }
+          )
+        }) { contentPadding ->
+          Column(modifier = Modifier.padding(contentPadding)) {
+            val pagerState = rememberPagerState(pageCount = { 3 })
+            val coroutineScope = rememberCoroutineScope()
+            PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
+              Destination.entries.forEachIndexed { index, destination ->
+                Tab(
+                  selected = pagerState.currentPage == index,
+                  onClick = {
+                    coroutineScope.launch {
+                      pagerState.animateScrollToPage(index)
+                    }
+                  },
+                  text = {
+                    Text(
+                      text = destination.label,
+                      maxLines = 2,
+                      overflow = TextOverflow.Ellipsis
+                    )
+                  }
                 )
               }
-            )
+            }
+            AdvancePager(pagerState, allPicSectionBeanList, existAlbumCoverList)
           }
         }
-        AdvancePager(pagerState, allPicSectionBeanList, existAlbumCoverList)
-
       }
     }
   }
