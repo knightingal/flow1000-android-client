@@ -13,7 +13,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose)
 }
@@ -72,7 +71,11 @@ fun Process.text(): String {
 
 android {
     namespace = "org.knightingal.flow1000.client"
-    compileSdk = 36
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     signingConfigs {
         getByName("debug") {
@@ -92,7 +95,7 @@ android {
     defaultConfig {
         applicationId = "org.knightingal.flow1000.client.debug"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionName = "${releaseTime()}-${commitNum()}"
         versionCode = versionCode()
 
@@ -118,9 +121,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
     }
     buildFeatures {
         viewBinding = true
@@ -215,6 +215,8 @@ dependencies {
     implementation(libs.io.coil.kt.coil3.coil.compose)
 //    implementation("io.coil-kt.coil3:coil-network-okhttp:3.4.0")
 
+    implementation("io.github.awxkee:avif-coder:3.0.0") // or any version above picker from release tags
+    implementation("io.github.awxkee:avif-coder-coil:3.0.0") // or any version above picker from release tags
 
 
 }
