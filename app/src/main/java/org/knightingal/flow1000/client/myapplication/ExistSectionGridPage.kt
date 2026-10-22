@@ -29,7 +29,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.dao.PicSectionDao
-import org.knightingal.flow1000.client.myapplication.TabMainActivity.ExistAlbumCover
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
 
 class ExistSectionGridPage : ComponentActivity() {
