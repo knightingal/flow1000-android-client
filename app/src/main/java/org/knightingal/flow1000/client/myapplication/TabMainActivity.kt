@@ -162,7 +162,7 @@ class TabMainActivity : ComponentActivity() {
           ) {
             AlbumCoverCard(
               albumCover = ExistAlbumCover(
-                name = picSectionBean.name,
+                name = picSectionBean.album ?: "",
                 coverWidth = picSectionBean.coverWidth,
                 coverHeight = picSectionBean.coverHeight,
                 cover = picSectionBean.cover ?: ""
