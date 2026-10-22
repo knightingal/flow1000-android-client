@@ -47,7 +47,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import com.github.awxkee.avifcoil.decoder.HeifDecoder
 import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
 import java.io.File
@@ -162,7 +164,13 @@ fun ImageContentInCard(
                 LocalContext.current.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
                 cardCover.coverUri as String
             )
+            val imageLoader = ImageLoader.Builder(LocalContext.current)
+                .components {
+                    add(HeifDecoder.Factory())
+                }
+                .build()
             AsyncImage(
+                imageLoader = imageLoader,
                 modifier = Modifier.fillMaxSize(),
                 model = imageFile,
                 contentDescription = null,

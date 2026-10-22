@@ -324,5 +324,5 @@ fun replaceImgNameWithPng(name: String): String {
     return name
         // for there is bug in image component, it can not load avif image,
         // so I have to convert avif to png in server side and change the name here
-        .replace(".avif", ".avif.png")
+//        .replace(".avif", ".avif.png")
 }

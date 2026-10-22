@@ -4,7 +4,7 @@ class EnvArgs {
     companion object {
         const val SERVER_IP = "192.168.2.12"
         const val SERVER_PORT = "3002"
-        const val IMAGE_PORT = "8082"
+        const val IMAGE_PORT = "3002"
         const val PROTOCOL_PREFIX = "http:"
     }
 }
