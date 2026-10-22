@@ -40,7 +40,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.dao.PicSectionDao
@@ -180,17 +179,6 @@ class TabMainActivity : ComponentActivity() {
     }
   }
 
-  @Serializable
-  class ExistAlbumCover(
-    override val name: String,
-    val coverWidth: Int,
-    val coverHeight: Int,
-    val cover: String,
-  ): CardCover<String> {
-    override val width: Int = coverWidth
-    override val height: Int = coverHeight
-    override val coverUri: String = "/${name}/${cover}"
-  }
 
   @Composable
   fun PlaylistScreen() {

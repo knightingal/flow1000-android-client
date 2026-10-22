@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import org.knightingal.flow1000.client.beans.PicInfoBean
 import org.knightingal.flow1000.client.dao.PicInfoDao
 import org.knightingal.flow1000.client.dao.PicSectionDao
-import org.knightingal.flow1000.client.myapplication.TabMainActivity.ExistAlbumCover
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
 
 class SectionImageListPage : ComponentActivity() {
