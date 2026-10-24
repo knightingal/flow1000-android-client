@@ -1,10 +1,6 @@
 package org.knightingal.flow1000.client.myapplication
 
 import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,36 +23,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import org.knightingal.flow1000.client.beans.PicSectionBean
-import org.knightingal.flow1000.client.dao.PicSectionDao
-import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
+import kotlinx.serialization.Serializable
 
-class ExistSectionGridPage : ComponentActivity() {
-
-  private lateinit var picSectionDao: PicSectionDao
-
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    picSectionDao = App.db.picSectionDao()
-    val existSectionList = picSectionDao.getAllExistByAlbum(intent.getStringExtra("album") ?: "1000")
-    enableEdgeToEdge()
-    setContent {
-      Flow1000clientTheme {
-        ExistAlbumCoverScreen(albumCoverList = existSectionList)
-      }
-    }
-  }
+@Serializable
+data class ExistAlbumCoverScreenRoute(val album: String)
 
   @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
   @Composable
-  fun ExistAlbumCoverScreen(albumCoverList: List<PicSectionBean>) {
+  fun ExistAlbumCoverScreen(album: String) {
+    val picSectionDao = App.db.picSectionDao()
+    val existSectionList = picSectionDao.getAllExistByAlbum(album)
     val context = LocalContext.current
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
       TopAppBar(
-        title = { Text(albumCoverList[0].album ?: "") },
+        title = { Text(album) },
         colors = topAppBarColors(
           containerColor = MaterialTheme.colorScheme.primaryContainer,
           titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -76,7 +57,7 @@ class ExistSectionGridPage : ComponentActivity() {
           horizontalArrangement = Arrangement.spacedBy(4.dp),
           modifier = Modifier.fillMaxSize(),
         ) {
-          items(albumCoverList) { picSectionBean ->
+          items(existSectionList) { picSectionBean ->
             Box(
               modifier = Modifier.fillMaxWidth(),
             ) {
@@ -101,4 +82,3 @@ class ExistSectionGridPage : ComponentActivity() {
       }
     }
   }
-}

@@ -1,6 +1,5 @@
 package org.knightingal.flow1000.client.myapplication
 
-import android.content.Intent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,148 +27,147 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.myapplication.TabMainActivity.Destination
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TabMainScreen(
-  modifier: Modifier = Modifier,
-) {
-  val picSectionDao = App.db.picSectionDao()
+class TabMainScreen(val navController: NavHostController) {
 
-  val allPicSectionBeanList = picSectionDao.getAll().toList()
-    .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
+  @OptIn(ExperimentalMaterial3Api::class)
+  @Composable
+  fun MainScreen(
+    modifier: Modifier = Modifier,
+  ) {
+    val picSectionDao = App.db.picSectionDao()
 
-  val existAlbumCoverList: List<PicSectionBean> = listOf(
-    "1000", "1803", "1804", "1805",
-    "1806", "1807", "1808"
-  ).mapNotNull { albumName ->
-    picSectionDao.getExistAlbumCover(albumName)
-  }.map { it }
+    val allPicSectionBeanList = picSectionDao.getAll().toList()
+      .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
 
-  Scaffold(modifier = modifier, topBar = {
-    TopAppBar(
-      title = { Text("Flow1000 Client") }
-    )
-  }) { contentPadding ->
-    Column(modifier = Modifier.padding(contentPadding)) {
-      val pagerState = rememberPagerState(pageCount = { 3 })
-      val coroutineScope = rememberCoroutineScope()
-      PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
-        Destination.entries.forEachIndexed { index, destination ->
-          Tab(
-            selected = pagerState.currentPage == index,
-            onClick = {
-              coroutineScope.launch {
-                pagerState.animateScrollToPage(index)
+    val existAlbumCoverList: List<PicSectionBean> = listOf(
+      "1000", "1803", "1804", "1805",
+      "1806", "1807", "1808"
+    ).mapNotNull { albumName ->
+      picSectionDao.getExistAlbumCover(albumName)
+    }.map { it }
+
+    Scaffold(modifier = modifier, topBar = {
+      TopAppBar(
+        title = { Text("Flow1000 Client") }
+      )
+    }) { contentPadding ->
+      Column(modifier = Modifier.padding(contentPadding)) {
+        val pagerState = rememberPagerState(pageCount = { 3 })
+        val coroutineScope = rememberCoroutineScope()
+        PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
+          Destination.entries.forEachIndexed { index, destination ->
+            Tab(
+              selected = pagerState.currentPage == index,
+              onClick = {
+                coroutineScope.launch {
+                  pagerState.animateScrollToPage(index)
+                }
+              },
+              text = {
+                Text(
+                  text = destination.label,
+                  maxLines = 2,
+                  overflow = TextOverflow.Ellipsis
+                )
               }
-            },
-            text = {
-              Text(
-                text = destination.label,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-              )
-            }
-          )
+            )
+          }
         }
-      }
-      AdvancePager(pagerState, allPicSectionBeanList, existAlbumCoverList)
-    }
-  }
-}
-
-@Composable
-fun AdvancePager(
-  pagerState: PagerState,
-  allPicSectionBeanList: List<PicSectionData>,
-  existAlbumCoverList: List<PicSectionBean>,
-) {
-  Box(modifier = Modifier.fillMaxSize()) {
-    HorizontalPager(
-      state = pagerState
-    ) { page ->
-      when (page) {
-        0 -> AllListScreen(allPicSectionBeanList = allPicSectionBeanList)
-        1 -> ExistAlbumCoverScreen(albumCoverList = existAlbumCoverList)
-        2 -> PlaylistScreen()
+        AdvancePager(pagerState, allPicSectionBeanList, existAlbumCoverList)
       }
     }
   }
-}
 
-@Composable
-fun AllListScreen(allPicSectionBeanList: List<PicSectionData>) {
-  Box(
-    modifier = Modifier.fillMaxSize(),
-    contentAlignment = Alignment.Center
+  @Composable
+  fun AdvancePager(
+    pagerState: PagerState,
+    allPicSectionBeanList: List<PicSectionData>,
+    existAlbumCoverList: List<PicSectionBean>,
   ) {
-    LazyColumn {
-      items(allPicSectionBeanList) { picSectionData ->
-        Box(
-          modifier = Modifier.fillMaxWidth(),
-        ) {
-          Text(picSectionData.picSectionBean.name, modifier = Modifier.padding(16.dp))
+    Box(modifier = Modifier.fillMaxSize()) {
+      HorizontalPager(
+        state = pagerState
+      ) { page ->
+        when (page) {
+          0 -> AllListScreen(allPicSectionBeanList = allPicSectionBeanList)
+          1 -> ExistAlbumCoverTab(albumCoverList = existAlbumCoverList)
+          2 -> PlaylistScreen()
         }
       }
     }
   }
-}
 
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-fun ExistAlbumCoverScreen(albumCoverList: List<PicSectionBean>) {
-  val context = LocalContext.current
-  Box(
-    modifier = Modifier.fillMaxSize(),
-    contentAlignment = Alignment.Center
-  ) {
-    val lazyStaggeredGridState = rememberLazyStaggeredGridState()
-    LazyVerticalStaggeredGrid(
-      state = lazyStaggeredGridState,
-      columns = StaggeredGridCells.Fixed(2),
-      contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
-      verticalItemSpacing = 4.dp,
-      horizontalArrangement = Arrangement.spacedBy(4.dp),
+  @Composable
+  fun AllListScreen(allPicSectionBeanList: List<PicSectionData>) {
+    Box(
       modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center
     ) {
-      items(albumCoverList) { picSectionBean ->
-        Box(
-          modifier = Modifier.fillMaxWidth(),
-        ) {
-          AlbumCoverCard(
-            albumCover = ExistAlbumCover(
-              name = picSectionBean.name,
-              coverWidth = picSectionBean.coverWidth,
-              coverHeight = picSectionBean.coverHeight,
-              cover = picSectionBean.cover ?: ""
-            )
+      LazyColumn {
+        items(allPicSectionBeanList) { picSectionData ->
+          Box(
+            modifier = Modifier.fillMaxWidth(),
           ) {
-            context.startActivity(
-              Intent(context, ExistSectionGridPage::class.java).apply {
-                putExtra("album", picSectionBean.album)
-              }
-            )
+            Text(picSectionData.picSectionBean.name, modifier = Modifier.padding(16.dp))
           }
         }
       }
     }
   }
-}
 
-
-@Composable
-fun PlaylistScreen() {
-  Box(
-    modifier = Modifier.fillMaxSize(),
-    contentAlignment = Alignment.Center
-  ) {
-    Text("Playlist Screen")
+  @OptIn(ExperimentalSharedTransitionApi::class)
+  @Composable
+  fun ExistAlbumCoverTab(albumCoverList: List<PicSectionBean>) {
+    Box(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center
+    ) {
+      val lazyStaggeredGridState = rememberLazyStaggeredGridState()
+      LazyVerticalStaggeredGrid(
+        state = lazyStaggeredGridState,
+        columns = StaggeredGridCells.Fixed(2),
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+        verticalItemSpacing = 4.dp,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        items(albumCoverList) { picSectionBean ->
+          Box(
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            AlbumCoverCard(
+              albumCover = ExistAlbumCover(
+                name = picSectionBean.name,
+                coverWidth = picSectionBean.coverWidth,
+                coverHeight = picSectionBean.coverHeight,
+                cover = picSectionBean.cover ?: ""
+              )
+            ) {
+              navController.navigate(ExistAlbumCoverScreenRoute(album = picSectionBean.album!!))
+            }
+          }
+        }
+      }
+    }
   }
+
+
+  @Composable
+  fun PlaylistScreen() {
+    Box(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center
+    ) {
+      Text("Playlist Screen")
+    }
+  }
+
 }

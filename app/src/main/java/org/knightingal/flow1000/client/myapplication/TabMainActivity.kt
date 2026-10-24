@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
@@ -33,14 +35,17 @@ class TabMainActivity : ComponentActivity() {
   fun NavigationTab(
     modifier: Modifier = Modifier,
   ) {
-    val navController = rememberNavController()
+    val navController: NavHostController = rememberNavController()
     NavHost(
       navController, startDestination = "flow1000Home",
     ) {
       composable("flow1000Home") {
-        TabMainScreen(
+        TabMainScreen(navController).MainScreen(
           modifier = modifier,
         )
+      }
+      composable<ExistAlbumCoverScreenRoute> {
+        ExistAlbumCoverScreen(it.toRoute<ExistAlbumCoverScreenRoute>().album)
       }
     }
   }
@@ -63,9 +68,9 @@ class TabMainActivity : ComponentActivity() {
     existSectionBean: List<PicSectionBean>
   ) {
     when (selectedDestination) {
-      Destination.SONGS.ordinal -> AllListScreen(allPicSectionBeanList)
-      Destination.ALBUM.ordinal -> ExistAlbumCoverScreen(albumCoverList = existSectionBean)
-      Destination.PLAYLISTS.ordinal -> PlaylistScreen()
+      Destination.SONGS.ordinal -> ExistAlbumCoverScreen("1000")
+      Destination.ALBUM.ordinal -> ExistAlbumCoverScreen("1000")
+      Destination.PLAYLISTS.ordinal -> ExistAlbumCoverScreen("1000")
     }
   }
 
