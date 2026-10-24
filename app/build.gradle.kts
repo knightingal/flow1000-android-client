@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.android.application)
     id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose)
+    kotlin("plugin.serialization") version "2.3.10"
 }
 
 buildscript {
