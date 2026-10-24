@@ -151,7 +151,7 @@ class TabMainScreen(val navController: NavHostController) {
                 cover = picSectionBean.cover ?: ""
               )
             ) {
-              navController.navigate(ExistAlbumCoverScreenRoute(album = picSectionBean.album!!))
+              navController.navigate(ExistSectionGridPage.ExistAlbumCoverScreenRoute(album = picSectionBean.album!!))
             }
           }
         }

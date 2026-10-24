@@ -23,10 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class ExistAlbumCoverScreenRoute(val album: String)
+class ExistSectionGridPage(val navController: NavHostController) {
+  @Serializable
+  data class ExistAlbumCoverScreenRoute(val album: String)
 
   @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
   @Composable
@@ -82,3 +84,4 @@ data class ExistAlbumCoverScreenRoute(val album: String)
       }
     }
   }
+}

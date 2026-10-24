@@ -44,14 +44,12 @@ class TabMainActivity : ComponentActivity() {
           modifier = modifier,
         )
       }
-      composable<ExistAlbumCoverScreenRoute> {
-        ExistAlbumCoverScreen(it.toRoute<ExistAlbumCoverScreenRoute>().album)
+      composable<ExistSectionGridPage.ExistAlbumCoverScreenRoute> {
+        ExistSectionGridPage(navController)
+          .ExistAlbumCoverScreen(it.toRoute<ExistSectionGridPage.ExistAlbumCoverScreenRoute>().album)
       }
     }
   }
-
-
-
 
   enum class Destination(
     val label: String,
@@ -59,76 +57,5 @@ class TabMainActivity : ComponentActivity() {
     SONGS("All"),
     ALBUM("Exist"),
     PLAYLISTS("Pending"),
-  }
-
-  @Composable
-  fun AppNavHost(
-    selectedDestination: Int,
-    allPicSectionBeanList: List<PicSectionData>,
-    existSectionBean: List<PicSectionBean>
-  ) {
-    when (selectedDestination) {
-      Destination.SONGS.ordinal -> ExistAlbumCoverScreen("1000")
-      Destination.ALBUM.ordinal -> ExistAlbumCoverScreen("1000")
-      Destination.PLAYLISTS.ordinal -> ExistAlbumCoverScreen("1000")
-    }
-  }
-
-
-
-
-
-  @Preview(showBackground = true, showSystemUi = true)
-  @Composable
-  fun NavigationTabPreview() {
-//    val previewList = listOf(
-//      PicSectionData(
-//        PicSectionBean(
-//          name = "Section 1",
-//          id = 0,
-//          clientStatus = PicSectionBean.ClientStatus.PENDING
-//        ),
-//        totalCount = 0
-//      ),
-//      PicSectionData(
-//        PicSectionBean(
-//          name = "Section 2",
-//          id = 1,
-//          clientStatus = PicSectionBean.ClientStatus.PENDING
-//        ),
-//        totalCount = 0
-//      )
-//    )
-
-    NavigationTab(modifier = Modifier.fillMaxSize())
-  }
-
-  @Preview(showBackground = true, showSystemUi = true)
-  @Composable
-  fun NavHostPreview() {
-
-    val previewList = listOf(
-      PicSectionData(
-        PicSectionBean(
-          name = "Section 1",
-          id = 0,
-          clientStatus = PicSectionBean.ClientStatus.PENDING
-        ),
-        totalCount = 0
-      ),
-      PicSectionData(
-        PicSectionBean(
-          name = "Section 2",
-          id = 1,
-          clientStatus = PicSectionBean.ClientStatus.PENDING
-        ),
-        totalCount = 0
-      )
-    )
-    AppNavHost(
-      selectedDestination = Destination.SONGS.ordinal,
-      allPicSectionBeanList = previewList,
-      existSectionBean = emptyList()
-    )
   }
 }
