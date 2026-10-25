@@ -1,6 +1,5 @@
 package org.knightingal.flow1000.client.myapplication
 
-import android.content.Intent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,6 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.serialization.Serializable
@@ -35,7 +33,6 @@ class ExistSectionGridPage(val navController: NavHostController) {
   fun ExistAlbumCoverScreen(album: String) {
     val picSectionDao = App.db.picSectionDao()
     val existSectionList = picSectionDao.getAllExistByAlbum(album)
-    val context = LocalContext.current
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
       TopAppBar(
@@ -71,12 +68,10 @@ class ExistSectionGridPage(val navController: NavHostController) {
                   cover = picSectionBean.cover ?: ""
                 )
               ) {
-                context.startActivity(
-                  Intent(context, SectionImageListPage::class.java).apply {
-                    putExtra("sectionId", picSectionBean.id)
-                    putExtra("sectionName", picSectionBean.name)
-                  }
-                )
+                navController.navigate(SectionImageListPage.SectionImageListScreenRoute(
+                  sectionName = picSectionBean.name,
+                  sectionId = picSectionBean.id
+                ))
               }
             }
           }

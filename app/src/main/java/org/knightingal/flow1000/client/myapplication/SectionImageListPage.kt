@@ -1,9 +1,5 @@
 package org.knightingal.flow1000.client.myapplication
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -30,35 +26,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.beans.PicInfoBean
-import org.knightingal.flow1000.client.dao.PicInfoDao
-import org.knightingal.flow1000.client.dao.PicSectionDao
-import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
 
-class SectionImageListPage : ComponentActivity() {
+class SectionImageListPage(val navController: NavHostController)  {
 
-  private lateinit var picSectionDao: PicSectionDao
-  private lateinit var picInfoDao: PicInfoDao
-
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    picSectionDao = App.db.picSectionDao()
-    picInfoDao = App.db.picInfoDao()
-    val picList: List<PicInfoBean> = picInfoDao.queryBySectionInnerIndex(intent.getLongExtra("sectionId", 1))
-    val sectionName: String = intent.getStringExtra("sectionName") ?: ""
-    enableEdgeToEdge()
-    setContent {
-      Flow1000clientTheme {
-        ExistAlbumCoverScreen(sectionName = sectionName, picList = picList)
-      }
-    }
-  }
+  @Serializable
+  data class SectionImageListScreenRoute(val sectionName: String, val sectionId: Long)
 
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
-  fun ExistAlbumCoverScreen(sectionName: String, picList: List<PicInfoBean>) {
+  fun SectionImageListScreen(sectionName: String, sectionId: Long) {
+    val picInfoDao = App.db.picInfoDao()
+    val picList: List<PicInfoBean> = picInfoDao.queryBySectionInnerIndex(sectionId)
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
       TopAppBar(
         title = { Text(sectionName) },

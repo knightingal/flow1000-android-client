@@ -7,14 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import org.knightingal.flow1000.client.beans.PicSectionBean
-import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
 
 
@@ -47,6 +44,14 @@ class TabMainActivity : ComponentActivity() {
       composable<ExistSectionGridPage.ExistAlbumCoverScreenRoute> {
         ExistSectionGridPage(navController)
           .ExistAlbumCoverScreen(it.toRoute<ExistSectionGridPage.ExistAlbumCoverScreenRoute>().album)
+      }
+      composable<SectionImageListPage.SectionImageListScreenRoute> {
+        val route = it.toRoute<SectionImageListPage.SectionImageListScreenRoute>()
+        SectionImageListPage(navController)
+          .SectionImageListScreen(
+            route.sectionName,
+            route.sectionId
+          )
       }
     }
   }
