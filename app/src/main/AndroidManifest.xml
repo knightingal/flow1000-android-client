@@ -28,12 +28,6 @@
                 android:label="@string/title_activity_empty"
                 android:theme="@style/AppTheme"/>
         <activity
-                android:name=".myapplication.SectionImageListPage"
-                android:exported="true"
-                android:label="@string/title_activity_tab_main"
-                android:icon="@drawable/app_icon"
-                android:theme="@style/AppTheme"/>
-        <activity
                 android:name=".myapplication.TabMainActivity"
                 android:exported="true"
                 android:label="@string/title_activity_tab_main"
