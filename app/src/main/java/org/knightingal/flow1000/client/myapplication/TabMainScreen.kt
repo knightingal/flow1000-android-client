@@ -1,6 +1,8 @@
 package org.knightingal.flow1000.client.myapplication
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +37,12 @@ import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.myapplication.TabMainActivity.Destination
 
-class TabMainScreen(val navController: NavHostController) {
+@OptIn(ExperimentalSharedTransitionApi::class)
+class TabMainScreen(
+  val navController: NavHostController,
+  val sharedTransitionScope: SharedTransitionScope,
+  val animatedContentScope: AnimatedContentScope
+) {
 
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
@@ -144,6 +151,8 @@ class TabMainScreen(val navController: NavHostController) {
             modifier = Modifier.fillMaxWidth(),
           ) {
             AlbumCoverCard(
+              sharedTransitionScope = sharedTransitionScope,
+              animatedContentScope = animatedContentScope,
               albumCover = ExistAlbumCover(
                 name = picSectionBean.name,
                 coverWidth = picSectionBean.coverWidth,

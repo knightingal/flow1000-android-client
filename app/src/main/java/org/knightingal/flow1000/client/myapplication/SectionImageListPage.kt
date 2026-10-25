@@ -1,5 +1,8 @@
 package org.knightingal.flow1000.client.myapplication
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -30,7 +33,12 @@ import androidx.navigation.NavHostController
 import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.beans.PicInfoBean
 
-class SectionImageListPage(val navController: NavHostController)  {
+@OptIn(ExperimentalSharedTransitionApi::class)
+class SectionImageListPage(
+  val navController: NavHostController,
+  val sharedTransitionScope: SharedTransitionScope,
+  val animatedContentScope: AnimatedContentScope
+) {
 
   @Serializable
   data class SectionImageListScreenRoute(val sectionName: String, val sectionId: Long)
@@ -64,6 +72,8 @@ class SectionImageListPage(val navController: NavHostController)  {
               modifier = Modifier.fillMaxWidth(),
             ) {
               FitSizeImageCard(
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope,
                 cardCover = ExistAlbumCover(
                   name = sectionName,
                   coverWidth = picInfoBean.width,
@@ -82,6 +92,8 @@ class SectionImageListPage(val navController: NavHostController)  {
   @Composable
   fun FitSizeImageCard(
     cardCover: CardCover<*>,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedContentScope: AnimatedContentScope? = null,
   ) {
     BoxWithConstraints(
       modifier = Modifier
@@ -98,18 +110,42 @@ class SectionImageListPage(val navController: NavHostController)  {
         maxWidth
       }
 
-      Card(
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-        colors = CardColors(
-          contentColor = MaterialTheme.colorScheme.onSurface,
-          containerColor = MaterialTheme.colorScheme.surface,
-          disabledContainerColor = Color.LightGray,
-          disabledContentColor = Color.LightGray,
-        ),
-        modifier = Modifier.width(targetWidth.dp).wrapContentSize(),
-      ) {
-        ImageContentInCard(cardCover)
+      if (sharedTransitionScope != null) {
+        with(sharedTransitionScope) {
+          Card(
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+            colors = CardColors(
+              contentColor = MaterialTheme.colorScheme.onSurface,
+              containerColor = MaterialTheme.colorScheme.surface,
+              disabledContainerColor = Color.LightGray,
+              disabledContentColor = Color.LightGray,
+            ),
+            modifier = Modifier
+              .sharedElement(
+                sharedContentState = sharedTransitionScope.rememberSharedContentState(cardCover.coverUri as String),
+                animatedVisibilityScope = animatedContentScope!!
+              )
+              .width(targetWidth.dp).wrapContentSize(),
+          ) {
+            ImageContentInCard(cardCover)
+          }
+        }
+      } else {
+        Card(
+          border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+          colors = CardColors(
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            containerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = Color.LightGray,
+            disabledContentColor = Color.LightGray,
+          ),
+          modifier = Modifier.width(targetWidth.dp).wrapContentSize(),
+        ) {
+          ImageContentInCard(cardCover)
+        }
+
       }
+
     }
   }
 

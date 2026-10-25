@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,31 +30,43 @@ class TabMainActivity : ComponentActivity() {
     }
   }
 
+  @OptIn(ExperimentalSharedTransitionApi::class)
   @Composable
   fun NavigationTab(
     modifier: Modifier = Modifier,
   ) {
-    val navController: NavHostController = rememberNavController()
-    NavHost(
-      navController, startDestination = "flow1000Home",
-    ) {
-      composable("flow1000Home") {
-        TabMainScreen(navController).MainScreen(
-          modifier = modifier,
-        )
-      }
-      composable<ExistSectionGridPage.ExistAlbumCoverScreenRoute> {
-        ExistSectionGridPage(navController)
-          .ExistAlbumCoverScreen(it.toRoute<ExistSectionGridPage.ExistAlbumCoverScreenRoute>().album)
-      }
-      composable<SectionImageListPage.SectionImageListScreenRoute> {
-        val route = it.toRoute<SectionImageListPage.SectionImageListScreenRoute>()
-        SectionImageListPage(navController)
-          .SectionImageListScreen(
-            route.sectionName,
-            route.sectionId
+    SharedTransitionLayout {
+      val navController: NavHostController = rememberNavController()
+      NavHost(
+        navController, startDestination = "flow1000Home",
+      ) {
+        composable("flow1000Home") {
+          TabMainScreen(navController,
+            this@SharedTransitionLayout,
+            this@composable
+          ).MainScreen(
+            modifier = modifier,
           )
+        }
+        composable<ExistSectionGridPage.ExistAlbumCoverScreenRoute> {
+          ExistSectionGridPage(navController,
+            this@SharedTransitionLayout,
+            this@composable
+          ).ExistAlbumCoverScreen(it.toRoute<ExistSectionGridPage.ExistAlbumCoverScreenRoute>().album)
+        }
+        composable<SectionImageListPage.SectionImageListScreenRoute> {
+          val route = it.toRoute<SectionImageListPage.SectionImageListScreenRoute>()
+          SectionImageListPage(navController,
+            this@SharedTransitionLayout,
+            this@composable
+          )
+            .SectionImageListScreen(
+              route.sectionName,
+              route.sectionId
+            )
+        }
       }
+
     }
   }
 

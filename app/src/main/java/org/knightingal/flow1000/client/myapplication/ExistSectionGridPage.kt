@@ -1,6 +1,8 @@
 package org.knightingal.flow1000.client.myapplication
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,7 +26,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.serialization.Serializable
 
-class ExistSectionGridPage(val navController: NavHostController) {
+@OptIn(ExperimentalSharedTransitionApi::class)
+class ExistSectionGridPage(
+  val navController: NavHostController,
+  val sharedTransitionScope: SharedTransitionScope,
+  val animatedContentScope: AnimatedContentScope
+) {
   @Serializable
   data class ExistAlbumCoverScreenRoute(val album: String)
 
@@ -61,6 +68,8 @@ class ExistSectionGridPage(val navController: NavHostController) {
               modifier = Modifier.fillMaxWidth(),
             ) {
               AlbumCoverCard(
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope,
                 albumCover = ExistAlbumCover(
                   name = picSectionBean.name,
                   coverWidth = picSectionBean.coverWidth,
