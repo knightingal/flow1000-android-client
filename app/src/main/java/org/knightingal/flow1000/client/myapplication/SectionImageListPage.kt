@@ -92,8 +92,8 @@ class SectionImageListPage(
   @Composable
   fun FitSizeImageCard(
     cardCover: CardCover<*>,
-    sharedTransitionScope: SharedTransitionScope? = null,
-    animatedContentScope: AnimatedContentScope? = null,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
   ) {
     BoxWithConstraints(
       modifier = Modifier
@@ -109,28 +109,7 @@ class SectionImageListPage(
       } else {
         maxWidth
       }
-
-      if (sharedTransitionScope != null) {
-        with(sharedTransitionScope) {
-          Card(
-            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-            colors = CardColors(
-              contentColor = MaterialTheme.colorScheme.onSurface,
-              containerColor = MaterialTheme.colorScheme.surface,
-              disabledContainerColor = Color.LightGray,
-              disabledContentColor = Color.LightGray,
-            ),
-            modifier = Modifier
-              .sharedElement(
-                sharedContentState = sharedTransitionScope.rememberSharedContentState(cardCover.coverUri as String),
-                animatedVisibilityScope = animatedContentScope!!
-              )
-              .width(targetWidth.dp).wrapContentSize(),
-          ) {
-            ImageContentInCard(cardCover)
-          }
-        }
-      } else {
+      with(sharedTransitionScope) {
         Card(
           border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
           colors = CardColors(
@@ -139,13 +118,16 @@ class SectionImageListPage(
             disabledContainerColor = Color.LightGray,
             disabledContentColor = Color.LightGray,
           ),
-          modifier = Modifier.width(targetWidth.dp).wrapContentSize(),
+          modifier = Modifier
+            .sharedElement(
+              sharedContentState = sharedTransitionScope.rememberSharedContentState(cardCover.coverUri as String),
+              animatedVisibilityScope = animatedContentScope
+            )
+            .width(targetWidth.dp).wrapContentSize(),
         ) {
           ImageContentInCard(cardCover)
         }
-
       }
-
     }
   }
 
