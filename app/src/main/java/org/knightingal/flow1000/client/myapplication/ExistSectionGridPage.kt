@@ -51,7 +51,14 @@ class ExistSectionGridPage(
       )
     }) { contentPadding ->
       Box(
-        modifier = Modifier.fillMaxSize().padding(contentPadding),
+        modifier = with(sharedTransitionScope) {
+          Modifier
+            .sharedElement(
+              sharedContentState = sharedTransitionScope.rememberSharedContentState("album_$album"),
+              animatedVisibilityScope = animatedContentScope!!
+            )
+            .padding(contentPadding)
+        },
         contentAlignment = Alignment.Center
       ) {
         val lazyStaggeredGridState = rememberLazyStaggeredGridState()

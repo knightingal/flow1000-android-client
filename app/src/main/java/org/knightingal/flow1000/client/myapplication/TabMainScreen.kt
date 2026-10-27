@@ -158,7 +158,8 @@ class TabMainScreen(
                 coverWidth = picSectionBean.coverWidth,
                 coverHeight = picSectionBean.coverHeight,
                 cover = picSectionBean.cover ?: ""
-              )
+              ),
+              sharedKey = "album_${picSectionBean.album}"
             ) {
               navController.navigate(ExistSectionGridPage.ExistAlbumCoverScreenRoute(album = picSectionBean.album!!))
             }
