@@ -4,6 +4,8 @@ import android.os.Environment
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -53,9 +55,11 @@ fun AlbumCoverCard(
 ) {
   val modifier = if (sharedTransitionScope != null && sharedKey != null) {
     with(sharedTransitionScope) {
-      Modifier.sharedElement(
+      Modifier.sharedBounds(
         sharedContentState = sharedTransitionScope.rememberSharedContentState(sharedKey),
-        animatedVisibilityScope = animatedContentScope!!
+        animatedVisibilityScope = animatedContentScope!!,
+        enter = fadeIn(),
+        exit = fadeOut(),
       )
     }
   } else {

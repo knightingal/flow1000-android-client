@@ -3,6 +3,8 @@ package org.knightingal.flow1000.client.myapplication
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -53,9 +55,11 @@ class ExistSectionGridPage(
       Box(
         modifier = with(sharedTransitionScope) {
           Modifier
-            .sharedElement(
+            .sharedBounds(
               sharedContentState = sharedTransitionScope.rememberSharedContentState("album_$album"),
-              animatedVisibilityScope = animatedContentScope!!
+              animatedVisibilityScope = animatedContentScope!!,
+              enter = fadeIn(),
+              exit = fadeOut(),
             )
             .padding(contentPadding)
         },
