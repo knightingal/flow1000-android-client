@@ -124,25 +124,11 @@ fun ImageContentInCard(
         LocalContext.current.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
         coverUri
       )
-      if (coverUri.endsWith(".avif")) {
-        val imageLoader = ImageLoader.Builder(LocalContext.current)
-          .components {
-            add(HeifDecoder.Factory())
-          }
-          .build()
-        AsyncImage(
-          imageLoader = imageLoader,
-          modifier = Modifier.fillMaxSize(),
-          model = imageFile,
-          contentDescription = null,
-        )
-      } else {
-        AsyncImage(
-          modifier = Modifier.fillMaxSize(),
-          model = imageFile,
-          contentDescription = null,
-        )
-      }
+      AsyncImage(
+        modifier = Modifier.fillMaxSize(),
+        model = imageFile,
+        contentDescription = null,
+      )
     }
   }
 }

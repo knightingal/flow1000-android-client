@@ -4,12 +4,24 @@ import android.app.Application
 import android.os.Environment
 import android.util.Log
 import androidx.room.Room.databaseBuilder
+import coil3.ImageLoader
+import coil3.PlatformContext
 import org.knightingal.flow1000.client.beans.UpdateStamp
 import org.knightingal.flow1000.client.util.AppDataBase
 import org.knightingal.flow1000.client.util.CrashHandler
 import java.io.File
+import coil3.SingletonImageLoader
+import com.github.awxkee.avifcoil.decoder.HeifDecoder
 
-class App : Application() {
+class App : Application(), SingletonImageLoader.Factory {
+    override fun newImageLoader(context: PlatformContext): ImageLoader {
+        return ImageLoader.Builder(context)
+            .components {
+                add(HeifDecoder.Factory())
+            }
+            .build()
+    }
+
     override fun onCreate() {
         super.onCreate()
         db = databaseBuilder(
