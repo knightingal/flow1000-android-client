@@ -3,6 +3,8 @@ package org.knightingal.flow1000.client.myapplication
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -58,8 +60,18 @@ class SectionImageListPage(
       )
     }) { contentPadding ->
       Box(
-        modifier = Modifier.fillMaxSize().padding(contentPadding),
-        contentAlignment = Alignment.Center
+        modifier = with(sharedTransitionScope) {
+          Modifier
+            .sharedBounds(
+              sharedContentState = sharedTransitionScope.rememberSharedContentState("section_$sectionId"),
+              animatedVisibilityScope = animatedContentScope!!,
+              enter = fadeIn(),
+              exit = fadeOut(),
+            )
+            .padding(contentPadding)
+        },
+
+        contentAlignment = Alignment.Center,
       ) {
         val lazyStaggeredGridState = rememberLazyListState()
         LazyColumn(
