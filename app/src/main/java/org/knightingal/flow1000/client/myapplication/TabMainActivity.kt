@@ -73,8 +73,8 @@ class TabMainActivity : ComponentActivity() {
   enum class Destination(
     val label: String,
   ) {
-    SONGS("All"),
-    ALBUM("Exist"),
-    PLAYLISTS("Pending"),
+    ALL("All"),
+    Exist("Exist"),
+    Pending("Pending"),
   }
 }
