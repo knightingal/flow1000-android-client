@@ -56,7 +56,7 @@ class TabMainActivity : ComponentActivity() {
         }
         composable<SectionImageListPage.SectionImageListScreenRoute> {
           val route = it.toRoute<SectionImageListPage.SectionImageListScreenRoute>()
-          SectionImageListPage(navController,
+          SectionImageListPage(
             this@SharedTransitionLayout,
             this@composable
           )

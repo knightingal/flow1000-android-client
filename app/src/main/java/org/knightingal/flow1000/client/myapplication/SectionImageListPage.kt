@@ -30,14 +30,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.beans.PicInfoBean
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 class SectionImageListPage(
-  val navController: NavHostController,
   val sharedTransitionScope: SharedTransitionScope,
   val animatedContentScope: AnimatedContentScope
 ) {
@@ -52,7 +51,7 @@ class SectionImageListPage(
     val picList: List<PicInfoBean> = picInfoDao.queryBySectionInnerIndex(sectionId)
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
       TopAppBar(
-        title = { Text(sectionName) },
+        title = { Text(sectionName, overflow = TextOverflow.Ellipsis) },
         colors = topAppBarColors(
           containerColor = MaterialTheme.colorScheme.primaryContainer,
           titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -64,7 +63,7 @@ class SectionImageListPage(
           Modifier
             .sharedBounds(
               sharedContentState = sharedTransitionScope.rememberSharedContentState("section_$sectionId"),
-              animatedVisibilityScope = animatedContentScope!!,
+              animatedVisibilityScope = animatedContentScope,
               enter = fadeIn(),
               exit = fadeOut(),
             )
