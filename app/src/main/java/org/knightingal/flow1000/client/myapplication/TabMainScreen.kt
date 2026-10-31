@@ -26,16 +26,21 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.myapplication.TabMainActivity.Destination
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 class TabMainScreen(
@@ -114,6 +119,21 @@ class TabMainScreen(
 
   @Composable
   fun AllListScreen(allPicSectionBeanList: List<PicSectionData>) {
+
+    val initMap: Map<Long, Int> = mapOf (1L to 1, 2L to 2, 3L to 3)
+
+    val progressionState: MutableMap<Long, Int> = remember { mutableStateMapOf() }
+
+    progressionState.putAll(initMap)
+
+    LaunchedEffect(progressionState) {
+      while (true) {
+        delay(1.seconds)
+        val currV = progressionState[1L] ?: 0
+        progressionState[1L] = currV + 1
+      }
+    }
+
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
@@ -123,7 +143,8 @@ class TabMainScreen(
           Box(
             modifier = Modifier.fillMaxWidth(),
           ) {
-            Text(picSectionData.picSectionBean.name, modifier = Modifier.padding(16.dp))
+            val progression = progressionState[picSectionData.picSectionBean.id]
+            Text(picSectionData.picSectionBean.name + ": " + progression, modifier = Modifier.padding(16.dp))
           }
         }
       }
