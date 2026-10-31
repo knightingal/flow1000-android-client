@@ -51,7 +51,7 @@ class SectionImageListPage(
     val picList: List<PicInfoBean> = picInfoDao.queryBySectionInnerIndex(sectionId)
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
       TopAppBar(
-        title = { Text(sectionName, overflow = TextOverflow.Ellipsis) },
+        title = { Text(sectionName, overflow = TextOverflow.Ellipsis, maxLines = 1) },
         colors = topAppBarColors(
           containerColor = MaterialTheme.colorScheme.primaryContainer,
           titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
