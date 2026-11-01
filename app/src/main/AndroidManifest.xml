@@ -71,6 +71,11 @@
                 android:enabled="true"
                 />
 
+        <service
+                android:name=".services.SimpleService"
+                android:enabled="true"
+        />
+
         <activity
                 android:name=".myapplication.PicSectionListActivity"
                 android:label="@string/title_activity_pic_section_list_activity_md"/>
