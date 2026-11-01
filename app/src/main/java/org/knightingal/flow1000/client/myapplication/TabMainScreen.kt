@@ -1,5 +1,6 @@
 package org.knightingal.flow1000.client.myapplication
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -26,21 +27,20 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.myapplication.TabMainActivity.Destination
-import kotlin.time.Duration.Companion.seconds
+import org.knightingal.flow1000.client.services.SimpleService
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 class TabMainScreen(
@@ -119,6 +119,7 @@ class TabMainScreen(
 
   @Composable
   fun AllListScreen(allPicSectionBeanList: List<PicSectionData>) {
+    val ctx = LocalContext.current
 
     val initMap: Map<Long, Int> = mapOf (1L to 1, 2L to 2, 3L to 3)
 
@@ -126,13 +127,26 @@ class TabMainScreen(
 
     progressionState.putAll(initMap)
 
-    LaunchedEffect(progressionState) {
-      while (true) {
-        delay(1.seconds)
-        val currV = progressionState[1L] ?: 0
-        progressionState[1L] = currV + 1
-      }
-    }
+    ctx.bindService(Intent(ctx, SimpleService::class.java),
+      object : android.content.ServiceConnection {
+        override fun onServiceConnected(name: android.content.ComponentName?, service: android.os.IBinder?) {
+          val binder = service as SimpleService.LocalBinder
+          val simpleService = binder.getService()
+          simpleService.notifyListener = object : SimpleService.NotifyListener {
+            override fun onNotify() {
+              val currV = progressionState[1L] ?: 0
+              progressionState[1L] = currV + 1
+            }
+          }
+          simpleService.startWork()
+        }
+
+        override fun onServiceDisconnected(name: android.content.ComponentName?) {
+          // Handle service disconnection if needed
+        }
+      },
+      android.content.Context.BIND_AUTO_CREATE
+    )
 
     Box(
       modifier = Modifier.fillMaxSize(),
