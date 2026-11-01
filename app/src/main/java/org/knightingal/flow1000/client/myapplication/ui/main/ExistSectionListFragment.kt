@@ -71,20 +71,6 @@ class ExistSectionListFragment : Fragment() {
         pendingListView = binding.listViewPending
         pendingListView.setHasFixedSize(true)
 
-//        val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
-//        pendingListView.layoutManager = mLayoutManager
-//        val itemClickListener = ItemClickListener {
-//            if (it.picSectionBean.clientStatus == PicSectionBean.ClientStatus.LOCAL) {
-//                val intent = Intent(context, SectionImageListActivity::class.java)
-//                    .putExtra("exist", 1)
-//                    .putExtra("name", it.picSectionBean.name)
-//                    .putExtra("serverIndex", it.picSectionBean.id)
-//                startActivity(intent)
-//            }
-//        }
-//        picSectionListAdapter = PicSectionListAdapter(context)
-//        picSectionListAdapter.setItemClickListener(itemClickListener)
-//        pendingListView.adapter = picSectionListAdapter
 
         return root
     }
@@ -120,15 +106,6 @@ class ExistSectionListFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        super.onStart()
-//        context?.bindService(
-//            Intent(context, DownloadService::class.java), conn,
-//            AppCompatActivity.BIND_AUTO_CREATE
-//        )
-//
-//        picSectionDataList = picSectionDao.getByClientStatus(PicSectionBean.ClientStatus.LOCAL).map { bean -> PicSectionData(bean, 0) }
-//        picSectionListAdapter.setDataArray(picSectionDataList)
-//        picSectionListAdapter.notifyDataSetChanged()
     }
 
 
