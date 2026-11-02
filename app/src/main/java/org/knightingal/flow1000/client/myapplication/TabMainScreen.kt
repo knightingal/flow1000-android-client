@@ -185,35 +185,6 @@ class TabMainScreen(
 
   @Composable
   fun AllListScreen(allPicSectionBeanList: List<PicSectionData>) {
-    val ctx = LocalContext.current
-
-    val initMap: Map<Long, Int> = mapOf (1L to 1, 2L to 2, 3L to 3)
-
-    val progressionState: MutableMap<Long, Int> = remember { mutableStateMapOf() }
-
-    progressionState.putAll(initMap)
-
-    ctx.bindService(Intent(ctx, SimpleService::class.java),
-      object : android.content.ServiceConnection {
-        override fun onServiceConnected(name: android.content.ComponentName?, service: android.os.IBinder?) {
-          val binder = service as SimpleService.LocalBinder
-          val simpleService = binder.getService()
-          simpleService.notifyListener = object : SimpleService.NotifyListener {
-            override fun onNotify(i: Int, c: String) {
-              val currV = progressionState[1L] ?: 0
-              progressionState[1L] = currV + 1
-            }
-          }
-          simpleService.startWork()
-        }
-
-        override fun onServiceDisconnected(name: android.content.ComponentName?) {
-          // Handle service disconnection if needed
-        }
-      },
-      android.content.Context.BIND_AUTO_CREATE
-    )
-
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
@@ -223,8 +194,7 @@ class TabMainScreen(
           Box(
             modifier = Modifier.fillMaxWidth(),
           ) {
-            val progression = progressionState[picSectionData.picSectionBean.id]
-            Text(picSectionData.picSectionBean.name + ": " + progression, modifier = Modifier.padding(16.dp))
+            Text(picSectionData.picSectionBean.name, modifier = Modifier.padding(16.dp))
           }
         }
       }
