@@ -21,6 +21,11 @@ class SimpleService : Service() {
     return binder
   }
 
+  override fun onUnbind(intent: Intent?): Boolean {
+    Log.d("SimpleService", "onUnbind called")
+    return super.onUnbind(intent)
+  }
+
   inner class LocalBinder : Binder() {
     fun getService(): SimpleService = this@SimpleService
   }
