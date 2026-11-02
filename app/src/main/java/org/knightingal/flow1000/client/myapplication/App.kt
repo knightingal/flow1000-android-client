@@ -1,6 +1,7 @@
 package org.knightingal.flow1000.client.myapplication
 
 import android.app.Application
+import android.content.Intent
 import android.os.Environment
 import android.util.Log
 import androidx.room.Room.databaseBuilder
@@ -12,6 +13,7 @@ import org.knightingal.flow1000.client.util.CrashHandler
 import java.io.File
 import coil3.SingletonImageLoader
 import com.github.awxkee.avifcoil.decoder.HeifDecoder
+import org.knightingal.flow1000.client.services.SimpleService
 
 class App : Application(), SingletonImageLoader.Factory {
     override fun newImageLoader(context: PlatformContext): ImageLoader {
@@ -31,6 +33,7 @@ class App : Application(), SingletonImageLoader.Factory {
         initDB()
         clearDownloadPath()
         Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this))
+        startService(Intent(this, SimpleService::class.java))
     }
 
     companion object {
