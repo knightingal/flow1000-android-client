@@ -26,7 +26,7 @@ class SimpleService : Service() {
   }
 
   interface NotifyListener {
-    fun onNotify()
+    fun onNotify(index: Int, message: String)
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -55,7 +55,7 @@ class SimpleService : Service() {
 
     fun inc() {
       value++
-      notifyListener?.onNotify()
+      notifyListener?.onNotify(index, "NotifyEntity $index incremented to $value")
     }
 
     suspend fun startUp() {

@@ -133,7 +133,7 @@ class TabMainScreen(
           val binder = service as SimpleService.LocalBinder
           val simpleService = binder.getService()
           simpleService.notifyListener = object : SimpleService.NotifyListener {
-            override fun onNotify() {
+            override fun onNotify(i: Int, c: String) {
               val currV = progressionState[1L] ?: 0
               progressionState[1L] = currV + 1
             }
