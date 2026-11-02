@@ -1,6 +1,11 @@
 package org.knightingal.flow1000.client.myapplication
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
+import android.os.IBinder
+import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -27,6 +32,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,6 +54,66 @@ class TabMainScreen(
   val sharedTransitionScope: SharedTransitionScope,
   val animatedContentScope: AnimatedContentScope
 ) {
+
+  @OptIn(ExperimentalMaterial3Api::class)
+  @Composable
+  fun ServiceBindScreen() {
+    val ctx = LocalContext.current
+
+    val progressionState: MutableMap<Int, String> = remember { mutableStateMapOf() }
+
+    DisposableEffect(Unit) {
+      var simpleService: SimpleService? = null
+      val conn = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+          val binder = service as SimpleService.LocalBinder
+          simpleService = binder.getService()
+          simpleService?.notifyListener = object : SimpleService.NotifyListener {
+            override fun onNotify(index: Int, message: String) {
+              // Handle the notification from the service
+              progressionState[index] = message
+            }
+          }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+          // Handle service disconnection if needed
+          Log.d("TabMainScreen", "Service disconnected")
+          simpleService?.notifyListener = null
+          simpleService = null
+        }
+      }
+
+      ctx.bindService(Intent(ctx, SimpleService::class.java),
+        conn,
+        Context.BIND_AUTO_CREATE
+      )
+
+      onDispose {
+        Log.d("TabMainScreen", "Unbinding service")
+        ctx.unbindService(conn)
+      }
+    }
+
+    Scaffold(
+      modifier = Modifier.fillMaxSize(),
+      topBar = { TopAppBar(title = { Text("Service Bind Screen") }) }
+    ) { contentPadding ->
+      Box(
+        modifier = Modifier.padding(contentPadding),
+        contentAlignment = Alignment.Center
+      ) {
+        LazyColumn {
+          items(SimpleService.TASK_COUNT) { index ->
+            Text(
+              "$index: ${progressionState[index] ?: "Not started"}",
+              modifier = Modifier.fillMaxWidth().padding(16.dp)
+            )
+          }
+        }
+      }
+    }
+  }
 
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
