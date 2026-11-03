@@ -1,14 +1,20 @@
 package org.knightingal.flow1000.client.services
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.knightingal.flow1000.client.R
 import kotlin.time.Duration.Companion.seconds
 
 class SimpleService : Service() {
@@ -36,6 +42,29 @@ class SimpleService : Service() {
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     Log.d("SimpleService", "onStartCommand called")
+    val name = "flow1000"
+    val descriptionText = "SimpleService is running"
+    val importance = NotificationManager.IMPORTANCE_DEFAULT
+    val channel = NotificationChannel("CHANNEL_ID", name, importance).apply {
+      description = descriptionText
+    }
+    // Register the channel with the system.
+    val notificationManager: NotificationManager =
+      getSystemService(NotificationManager::class.java) as NotificationManager
+    notificationManager.createNotificationChannel(channel)
+
+    val notification = NotificationCompat.Builder(this, "CHANNEL_ID")
+      .setSmallIcon(R.drawable.app_icon)
+      // Create the notification to display while the service is running
+      .build()
+
+    ServiceCompat.startForeground(
+      /* service = */ this,
+      /* id = */ 100, // Cannot be 0
+      /* notification = */ notification,
+      /* foregroundServiceType = */
+      ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+    )
     startWork()
     return START_STICKY
   }

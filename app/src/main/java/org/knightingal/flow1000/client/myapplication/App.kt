@@ -33,7 +33,6 @@ class App : Application(), SingletonImageLoader.Factory {
         initDB()
         clearDownloadPath()
         Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this))
-        startService(Intent(this, SimpleService::class.java))
     }
 
     companion object {
