@@ -25,7 +25,6 @@ import org.knightingal.flow1000.client.dao.UpdateStampDao
 import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
 import org.nanjing.knightingal.processerlib.RefreshListener
 import org.knightingal.flow1000.client.R
-import org.knightingal.flow1000.client.services.replaceImgNameWithPng
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
@@ -128,7 +127,6 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
                 updateStampDao.update(updateStamp)
                 val picSectionBeanList = Gson().fromJson(allBody, Array<PicSectionBean>::class.java)
                 picSectionBeanList.forEach {
-                    it.cover = replaceImgNameWithPng(it.cover ?: "")
                     picSectionDao.insert(it)
                 }
             }
