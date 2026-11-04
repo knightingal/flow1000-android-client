@@ -22,7 +22,6 @@ import org.knightingal.flow1000.client.dao.PicSectionDao
 import org.knightingal.flow1000.client.dao.UpdateStampDao
 import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
 import org.knightingal.flow1000.client.databinding.FragmentPendingBinding
-import org.knightingal.flow1000.client.services.DownloadService
 import org.knightingal.flow1000.client.util.AppDataBase
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch

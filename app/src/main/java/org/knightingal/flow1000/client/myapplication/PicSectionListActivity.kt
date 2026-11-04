@@ -23,7 +23,6 @@ import org.knightingal.flow1000.client.dao.PicSectionDao
 import org.knightingal.flow1000.client.dao.PicInfoDao
 import org.knightingal.flow1000.client.dao.UpdateStampDao
 import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
-import org.knightingal.flow1000.client.services.DownloadService
 import org.nanjing.knightingal.processerlib.RefreshListener
 import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.services.replaceImgNameWithPng
