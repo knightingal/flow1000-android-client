@@ -46,6 +46,7 @@ import kotlinx.coroutines.launch
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.myapplication.TabMainActivity.Destination
+import org.knightingal.flow1000.client.services.DownloadService
 import org.knightingal.flow1000.client.services.SimpleService
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -63,28 +64,28 @@ class TabMainScreen(
     val progressionState: MutableMap<Int, String> = remember { mutableStateMapOf() }
 
     DisposableEffect(Unit) {
-      var simpleService: SimpleService? = null
+      var downloadService: DownloadService? = null
       val conn = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-          val binder = service as SimpleService.LocalBinder
-          simpleService = binder.getService()
-          simpleService?.notifyListener = object : SimpleService.NotifyListener {
-            override fun onNotify(index: Int, message: String) {
-              // Handle the notification from the service
-              progressionState[index] = message
-            }
-          }
+          val binder = service as DownloadService.LocalBinder
+          downloadService = binder.getService()
+//          simpleService?.notifyListener = object : SimpleService.NotifyListener {
+//            override fun onNotify(index: Int, message: String) {
+//              // Handle the notification from the service
+//              progressionState[index] = message
+//            }
+//          }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
           // Handle service disconnection if needed
           Log.d("TabMainScreen", "Service disconnected")
-          simpleService?.notifyListener = null
-          simpleService = null
+//          simpleService?.notifyListener = null
+          downloadService = null
         }
       }
 
-      ctx.bindService(Intent(ctx, SimpleService::class.java),
+      ctx.bindService(Intent(ctx, DownloadService::class.java),
         conn,
         Context.BIND_AUTO_CREATE
       )

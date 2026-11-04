@@ -9,6 +9,7 @@ import androidx.viewpager.widget.ViewPager
 import androidx.appcompat.app.AppCompatActivity
 import org.knightingal.flow1000.client.myapplication.ui.main.SectionsPagerAdapter
 import org.knightingal.flow1000.client.databinding.ActivityMainBinding
+import org.knightingal.flow1000.client.services.DownloadService
 import org.knightingal.flow1000.client.services.SimpleService
 
 
@@ -68,6 +69,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        startForegroundService(Intent(this, SimpleService::class.java))
+        startForegroundService(Intent(this, DownloadService::class.java))
     }
 }
