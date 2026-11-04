@@ -1,12 +1,17 @@
 package org.knightingal.flow1000.client.services
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import androidx.room.Room
 import com.google.gson.Gson
 import org.knightingal.flow1000.client.task.ConcurrencyJsonApiTask
@@ -33,6 +38,7 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.myapplication.SectionConfig.Companion.getSectionConfig
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.IMAGE_PORT
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
@@ -48,6 +54,40 @@ import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class DownloadService : Service() {
+
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d("DownloadService", "onStartCommand called")
+        val name = "flow1000"
+        val descriptionText = "DownloadService is running"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel("CHANNEL_ID", name, importance).apply {
+            description = descriptionText
+        }
+        // Register the channel with the system.
+        val notificationManager: NotificationManager =
+            getSystemService(NotificationManager::class.java) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+
+        val notification = NotificationCompat.Builder(this, "CHANNEL_ID")
+            .setSmallIcon(R.drawable.app_icon)
+            .build()
+
+        ServiceCompat.startForeground(
+            this,
+            100, // Cannot be 0
+            notification,
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+        )
+        startWork()
+        return START_STICKY
+    }
+
+    fun startWork() {
+
+    }
+
+
     class SectionThread: Thread {
 
         val imageThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(
