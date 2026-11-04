@@ -77,30 +77,30 @@ class ExistSectionListFragment : Fragment() {
 
     private var serviceBound = false
 
-    private var downLoadService: DownloadService? = null
-
-    private val conn: ServiceConnection = object : ServiceConnection {
-        @SuppressLint("NotifyDataSetChanged")
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-            Log.d(TAG, "onServiceConnected")
-            serviceBound = true
-            downLoadService = (binder as DownloadService.LocalBinder).getService()
-            downLoadService?.setRefreshListener(
-                refreshListener
-            )
-            val picSectionBeanList = downLoadService?.getPendingSectionList() ?: listOf()
-            picSectionListAdapter.setDataArray(picSectionBeanList)
-            picSectionListAdapter.notifyDataSetChanged()
-
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            Log.d(TAG, "onServiceDisconnected")
-            downLoadService?.setRefreshListener(null)
-            downLoadService = null
-            serviceBound = false
-        }
-    }
+//    private var downLoadService: DownloadService? = null
+//
+//    private val conn: ServiceConnection = object : ServiceConnection {
+//        @SuppressLint("NotifyDataSetChanged")
+//        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+//            Log.d(TAG, "onServiceConnected")
+//            serviceBound = true
+//            downLoadService = (binder as DownloadService.LocalBinder).getService()
+//            downLoadService?.setRefreshListener(
+//                refreshListener
+//            )
+//            val picSectionBeanList = downLoadService?.getPendingSectionList() ?: listOf()
+//            picSectionListAdapter.setDataArray(picSectionBeanList)
+//            picSectionListAdapter.notifyDataSetChanged()
+//
+//        }
+//
+//        override fun onServiceDisconnected(name: ComponentName) {
+//            Log.d(TAG, "onServiceDisconnected")
+//            downLoadService?.setRefreshListener(null)
+//            downLoadService = null
+//            serviceBound = false
+//        }
+//    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onStart() {

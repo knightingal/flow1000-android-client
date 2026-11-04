@@ -81,41 +81,41 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
 
     }
 
-    var downLoadService: DownloadService? = null
+//    var downLoadService: DownloadService? = null
 
     var isBound = false
-    private val conn: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-            Log.d(TAG, "onServiceConnected")
-            isBound = true
-            downLoadService = (binder as DownloadService.LocalBinder).getService()
-            downLoadService!!.setRefreshListener(
-                this@PicSectionListActivity
-            )
-            if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this@PicSectionListActivity)) {
-                startDownloadPicIndex()
-            } else {
-                refreshFrontPage.invoke()
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            Log.d(TAG, "onServiceDisconnected")
-            downLoadService = null
-            isBound = false
-        }
-    }
+//    private val conn: ServiceConnection = object : ServiceConnection {
+//        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+//            Log.d(TAG, "onServiceConnected")
+//            isBound = true
+//            downLoadService = (binder as DownloadService.LocalBinder).getService()
+//            downLoadService!!.setRefreshListener(
+//                this@PicSectionListActivity
+//            )
+//            if (isNotExistItemShown && NetworkUtil.isNetworkAvailable(this@PicSectionListActivity)) {
+//                startDownloadPicIndex()
+//            } else {
+//                refreshFrontPage.invoke()
+//            }
+//        }
+//
+//        override fun onServiceDisconnected(name: ComponentName) {
+//            Log.d(TAG, "onServiceDisconnected")
+//            downLoadService = null
+//            isBound = false
+//        }
+//    }
 
     override fun onPause() {
         super.onPause()
-        downLoadService?.removeRefreshListener(this)
-        downLoadService = null
-        unbindService(conn)
+//        downLoadService?.removeRefreshListener(this)
+//        downLoadService = null
+//        unbindService(conn)
     }
 
     override fun onStart() {
         super.onStart()
-        bindService(Intent(this, DownloadService::class.java), conn, BIND_AUTO_CREATE)
+//        bindService(Intent(this, DownloadService::class.java), conn, BIND_AUTO_CREATE)
     }
 
     private fun startDownloadPicIndex() {

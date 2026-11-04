@@ -93,45 +93,45 @@ class SectionListFragment : Fragment(){
 
     override fun onPause() {
         super.onPause()
-        downLoadService.removeRefreshListener(refreshListener)
+//        downLoadService.removeRefreshListener(refreshListener)
 //        downLoadService = null
-        context?.unbindService(conn)
+//        context?.unbindService(conn)
     }
 
     override fun onStart() {
         super.onStart()
-        context?.bindService(
-            Intent(context, DownloadService::class.java), conn,
-            AppCompatActivity.BIND_AUTO_CREATE
-        )
+//        context?.bindService(
+//            Intent(context, DownloadService::class.java), conn,
+//            AppCompatActivity.BIND_AUTO_CREATE
+//        )
     }
 
-    lateinit var downLoadService: DownloadService
+//    lateinit var downLoadService: DownloadService
     var serviceBound = false
 
-    private val conn: ServiceConnection = object : ServiceConnection {
-        @SuppressLint("NotifyDataSetChanged")
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-            Log.d(TAG, "onServiceConnected")
-            serviceBound = true
-            downLoadService = (binder as DownloadService.LocalBinder).getService()
-            downLoadService.setRefreshListener(
-                refreshListener
-            )
-            val picSectionBeanList = downLoadService.getAllSectionList()
-            picSectionListAdapter.setDataArray(picSectionBeanList)
-            picSectionListAdapter.notifyDataSetChanged()
-
-            downLoadService.fetchAllSectionList()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            Log.d(TAG, "onServiceDisconnected")
-            downLoadService.setRefreshListener(null)
-//            downLoadService = null
-            serviceBound = false
-        }
-    }
+//    private val conn: ServiceConnection = object : ServiceConnection {
+//        @SuppressLint("NotifyDataSetChanged")
+//        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+//            Log.d(TAG, "onServiceConnected")
+//            serviceBound = true
+//            downLoadService = (binder as DownloadService.LocalBinder).getService()
+//            downLoadService.setRefreshListener(
+//                refreshListener
+//            )
+//            val picSectionBeanList = downLoadService.getAllSectionList()
+//            picSectionListAdapter.setDataArray(picSectionBeanList)
+//            picSectionListAdapter.notifyDataSetChanged()
+//
+//            downLoadService.fetchAllSectionList()
+//        }
+//
+//        override fun onServiceDisconnected(name: ComponentName) {
+//            Log.d(TAG, "onServiceDisconnected")
+//            downLoadService.setRefreshListener(null)
+////            downLoadService = null
+//            serviceBound = false
+//        }
+//    }
 
     private val refreshListener: RefreshListener = object : RefreshListener {
         @SuppressLint("SetTextI18n")
@@ -148,9 +148,9 @@ class SectionListFragment : Fragment(){
 
         @SuppressLint("NotifyDataSetChanged")
         override fun notifyListReady() {
-            val pendingSectionList = downLoadService.getAllSectionList()
-            picSectionListAdapter.setDataArray(pendingSectionList)
-            picSectionListAdapter.notifyDataSetChanged()
+//            val pendingSectionList = downLoadService.getAllSectionList()
+//            picSectionListAdapter.setDataArray(pendingSectionList)
+//            picSectionListAdapter.notifyDataSetChanged()
         }
 
 
