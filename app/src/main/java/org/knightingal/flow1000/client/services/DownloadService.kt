@@ -35,6 +35,8 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -84,7 +86,7 @@ class DownloadService : Service() {
     }
 
     fun startWork() {
-
+        startDownloadSectionList()
     }
 
 
@@ -180,7 +182,7 @@ class DownloadService : Service() {
                 updateStampDao.update(updateStamp)
                 picSectionBeanList.forEach {
                     it.name = TimeUtil.formatTitle(it.name)
-                    picSectionDao.insert(it)
+                    picSectionDao.insert(it )
                 }
             }
 
@@ -194,16 +196,14 @@ class DownloadService : Service() {
     }
 
     fun startDownloadSectionList() {
-        thread {
+        CoroutineScope(Dispatchers.IO).launch {
             val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
             val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
             Log.d("startDownloadSectionList", stringUrl)
 
             val client = HttpClient(CIO)
-            val body: String = runBlocking {
-                val response: HttpResponse = client.get(stringUrl)
-                response.body()
-            }
+            val response: HttpResponse = client.get(stringUrl)
+            val body: String = response.body()
 
             db.runInTransaction {
                 updateStamp.updateStamp = TimeUtil.currentTimeFormat()
@@ -216,10 +216,8 @@ class DownloadService : Service() {
             allPicSectionBeanList = picSectionDao.getAll().toList().map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
             val pendingUrl =
                 "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
-            val picIndexResp: String = runBlocking {
-                val response: HttpResponse = client.get(pendingUrl)
-                response.body()
-            }
+            val pendingResponse: HttpResponse = client.get(pendingUrl)
+            val picIndexResp: String = pendingResponse.body()
 
             var picSectionBeanList = Gson().fromJson(picIndexResp, Array<PicSectionBean>::class.java).toList()
             pendingSectionBeanList = mutableListOf()
@@ -317,7 +315,6 @@ class DownloadService : Service() {
     private fun sectionExecuting(pendingSectionData: PicSectionData) {
         val sectionConfig = getSectionConfig(pendingSectionData.picSectionBean.album)
         val url = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=${pendingSectionData.picSectionBean.id}"
-//        val mapper = jacksonObjectMapper()
         val client = HttpClient(CIO)
         val picContentResp: String = runBlocking {
             client.get(url).body()
