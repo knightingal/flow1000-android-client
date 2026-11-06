@@ -25,6 +25,7 @@ import org.knightingal.flow1000.client.databinding.FragmentPendingBinding
 import org.knightingal.flow1000.client.util.AppDataBase
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.nanjing.knightingal.processerlib.RefreshListener
 
 
@@ -154,10 +155,10 @@ class PendingFragment : Fragment(){
         }
 
         @SuppressLint("NotifyDataSetChanged")
-        override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
+        override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
 
-            picSectionListAdapter.setDataArray(picSectionBeanList)
-            picSectionListAdapter.notifyDataSetChanged()
+//            picSectionListAdapter.setDataArray(picSectionBeanList)
+//            picSectionListAdapter.notifyDataSetChanged()
         }
 
         @SuppressLint("NotifyDataSetChanged")

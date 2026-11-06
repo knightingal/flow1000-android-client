@@ -114,7 +114,7 @@ class ExistSectionListFragment : Fragment() {
         }
 
         @SuppressLint("NotifyDataSetChanged")
-        override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
+        override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
         }
 
         @SuppressLint("NotifyDataSetChanged")

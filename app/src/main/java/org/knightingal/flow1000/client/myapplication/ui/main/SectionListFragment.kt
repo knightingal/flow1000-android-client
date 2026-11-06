@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.dao.PicInfoDao
 import org.knightingal.flow1000.client.dao.PicSectionDao
@@ -139,10 +140,10 @@ class SectionListFragment : Fragment(){
         }
 
         @SuppressLint("NotifyDataSetChanged")
-        override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
+        override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
 
-            picSectionListAdapter.setDataArray(picSectionBeanList)
-            picSectionListAdapter.notifyDataSetChanged()
+//            picSectionListAdapter.setDataArray(picSectionBeanList)
+//            picSectionListAdapter.notifyDataSetChanged()
         }
 
         @SuppressLint("NotifyDataSetChanged")

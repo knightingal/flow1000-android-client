@@ -219,7 +219,10 @@ class DownloadService : Service() {
             val pendingResponse: HttpResponse = client.get(pendingUrl)
             val picIndexResp: String = pendingResponse.body()
 
-            var picSectionBeanList = Gson().fromJson(picIndexResp, Array<PicSectionBean>::class.java).toList()
+            var picSectionBeanList :List<PicSectionBean> = Gson().fromJson(picIndexResp, Array<PicSectionBean>::class.java).toList()
+            refreshListener.forEach {
+                it.doRefreshList(picSectionBeanList)
+            }
             pendingSectionBeanList = mutableListOf()
 
             db.runInTransaction {
