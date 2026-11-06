@@ -16,6 +16,9 @@ interface PicSectionDao {
     @Query("select * from PicSectionBean")
     fun getAll(): List<PicSectionBean>
 
+    @Query("select * from PicSectionBean where clientStatus = 'LOCAL' or clientStatus = 'PENDING'")
+    fun getAllPending(): List<PicSectionBean>
+
     @Update
     fun update(picSectionData: PicSectionBean)
 
