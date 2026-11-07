@@ -18,6 +18,12 @@ object ProcessCounter {
         }
     }
 
+    fun getAllCounter(): Map<Long, Int> {
+        synchronized(ProcessCounter) {
+            return counter.toMap().mapValues { it.value.getProcess() }
+        }
+    }
+
     fun getCounter(id: Long): Counter? {
         synchronized(ProcessCounter) {
             val counter1 = counter[id]
