@@ -244,11 +244,23 @@ class TabMainScreen(
 
   @Composable
   fun PendingListScreen() {
+    val pendingList = remember { mutableStateListOf<PicSectionBean>() }
+    val ctx = LocalContext.current
+    val progressMap = remember { mutableStateMapOf<Long, Int>() } // Map to hold progress for each sectionId
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
     ) {
-      Text("Playlist Screen")
+      LazyColumn {
+        items(pendingList) { picSectionBean ->
+          Box(
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            val counter: Int? = progressMap[picSectionBean.id]
+            Text("${counter ?: ""} ${picSectionBean.name}", modifier = Modifier.padding(16.dp))
+          }
+        }
+      }
     }
   }
 
