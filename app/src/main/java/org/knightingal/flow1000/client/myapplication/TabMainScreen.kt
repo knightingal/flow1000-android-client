@@ -178,7 +178,7 @@ class TabMainScreen(
         when (page) {
           0 -> AllListScreen(allPicSectionBeanList = allPicSectionBeanList)
           1 -> ExistAlbumCoverTab(albumCoverList = existAlbumCoverList)
-          2 -> PlaylistScreen()
+          2 -> PendingListScreen()
         }
       }
     }
@@ -243,7 +243,7 @@ class TabMainScreen(
 
 
   @Composable
-  fun PlaylistScreen() {
+  fun PendingListScreen() {
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
