@@ -210,6 +210,7 @@ class DownloadService : Service() {
                 val picSectionBeanList = Gson().fromJson(body, Array<PicSectionBean>::class.java)
                 updateStampDao.update(updateStamp)
                 picSectionBeanList.forEach {
+                    it.name = TimeUtil.formatTitle(it.name)
                     picSectionDao.insert(it)
                 }
             }
