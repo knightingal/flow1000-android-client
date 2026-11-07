@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,7 +48,9 @@ import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.myapplication.TabMainActivity.Destination
 import org.knightingal.flow1000.client.services.DownloadService
+import org.knightingal.flow1000.client.services.ProcessCounter
 import org.knightingal.flow1000.client.services.SimpleService
+import org.nanjing.knightingal.processerlib.RefreshListener
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 class TabMainScreen(
@@ -69,18 +72,33 @@ class TabMainScreen(
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
           val binder = service as DownloadService.LocalBinder
           downloadService = binder.getService()
-//          simpleService?.notifyListener = object : SimpleService.NotifyListener {
-//            override fun onNotify(index: Int, message: String) {
-//              // Handle the notification from the service
-//              progressionState[index] = message
-//            }
-//          }
+          downloadService?.setRefreshListener(object : RefreshListener {
+            override fun doRefreshProcess(sectionId: Long, finish: Boolean) {
+              Log.d("TabMainScreen", "doRefreshProcess: sectionId=$sectionId, finish=$finish")
+              // Update the progressionState map with the new progress
+              val progressMessage = if (finish) {
+                "Finished"
+              } else {
+                "In Progress"
+              }
+              progressionState[sectionId.toInt()] = progressMessage
+            }
+
+            override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
+              Log.d("TabMainScreen", "doRefreshList: picSectionBeanList size=${picSectionBeanList.size}")
+            }
+
+            override fun notifyListReady() {
+              Log.d("TabMainScreen", "notifyListReady called")
+            }
+
+
+          })
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
           // Handle service disconnection if needed
           Log.d("TabMainScreen", "Service disconnected")
-//          simpleService?.notifyListener = null
           downloadService = null
         }
       }
@@ -123,7 +141,7 @@ class TabMainScreen(
   ) {
     val picSectionDao = App.db.picSectionDao()
 
-    val allPicSectionBeanList = picSectionDao.getAll().toList()
+    val allPicSectionBeanList = picSectionDao.getAll()
       .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
 
     val existAlbumCoverList: List<PicSectionBean> = listOf(
@@ -247,6 +265,58 @@ class TabMainScreen(
     val pendingList = remember { mutableStateListOf<PicSectionBean>() }
     val ctx = LocalContext.current
     val progressMap = remember { mutableStateMapOf<Long, Int>() } // Map to hold progress for each sectionId
+
+    DisposableEffect(Unit) {
+      var downloadService: DownloadService? = null
+
+      val listener = object : RefreshListener {
+        override fun doRefreshProcess(sectionId: Long, finish: Boolean) {
+          Log.d("TabMainScreen", "doRefreshProcess: sectionId=$sectionId, finish=$finish")
+          val counter = ProcessCounter.getCounter(sectionId)
+          if (counter != null) {
+            progressMap[sectionId] = counter!!.getProcess()
+          }
+        }
+
+        override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
+          Log.d("TabMainScreen", "doRefreshList: picSectionBeanList size=${picSectionBeanList.size}")
+          pendingList.clear()
+          pendingList.addAll(picSectionBeanList)
+        }
+
+        override fun notifyListReady() {
+          Log.d("TabMainScreen", "notifyListReady called")
+        }
+      }
+
+      val conn = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+          val binder = service as DownloadService.LocalBinder
+          downloadService = binder.getService()
+
+          pendingList.addAll(downloadService?.getPendingSectionList() ?: emptyList())
+          downloadService?.setRefreshListener(listener)
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+          // Handle service disconnection if needed
+          Log.d("TabMainScreen", "Service disconnected")
+          downloadService?.removeRefreshListener(listener)
+          downloadService = null
+        }
+      }
+
+      ctx.bindService(Intent(ctx, DownloadService::class.java),
+        conn,
+        Context.BIND_AUTO_CREATE
+      )
+
+      onDispose {
+        Log.d("TabMainScreen", "Unbinding service")
+        ctx.unbindService(conn)
+      }
+    }
+
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
