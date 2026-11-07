@@ -222,10 +222,6 @@ class DownloadService : Service() {
             val picIndexResp: String = pendingResponse.body()
 
             var picSectionBeanList :List<PicSectionBean> = Gson().fromJson(picIndexResp, Array<PicSectionBean>::class.java).toList()
-            pendingSectionBean.addAll(picSectionBeanList)
-            refreshListener.forEach {
-                it.doRefreshList(picSectionBeanList)
-            }
             pendingSectionBeanList = mutableListOf()
 
             db.runInTransaction {
@@ -329,6 +325,7 @@ class DownloadService : Service() {
         if (ProcessCounter.initCounter(pendingSectionData.picSectionBean.id, sectionInfoBean.pics.size) != null) {
             return
         }
+        pendingSectionData.totalCount = sectionInfoBean.pics.size
         Log.d("DownloadService", "download section $url")
         picInfoDao.deleteBySectionInnerIndex(pendingSectionData.picSectionBean.id)
         val latch = CountDownLatch(sectionInfoBean.pics.size)
