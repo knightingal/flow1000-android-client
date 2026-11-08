@@ -231,6 +231,10 @@ class DownloadService : Service() {
             }
 
             pendingSectionBeanList.addAll(picSectionBeanList.map { PicSectionData(it, 0).apply { this.process = 0 } })
+            refreshListener.forEach {
+                it.doRefreshList(pendingSectionBeanList)
+            }
+
             pendingSectionBeanList.sortBy { it.picSectionBean.id }
             db.runInTransaction {
                 pendingSectionBeanList.forEach {
@@ -337,7 +341,7 @@ class DownloadService : Service() {
             pendingSectionData.picSectionBean.id,
             PicSectionBean.ClientStatus.LOCAL
         )
-        ProcessCounter.remove(pendingSectionData.picSectionBean.id)
+//        ProcessCounter.remove(pendingSectionData.picSectionBean.id)
     }
 
     fun getPendingSectionList(): List<PicSectionData> {
