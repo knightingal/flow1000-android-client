@@ -122,7 +122,6 @@ class DownloadService : Service() {
 
     companion object {
         var refreshListener: MutableSet<RefreshListener> = mutableSetOf()
-        var pendingSectionBean: MutableList<PicSectionBean> = mutableListOf()
         var pendingSectionBeanList: MutableList<PicSectionData> = mutableListOf()
         val sectionThreadPool: ThreadPoolExecutor = ThreadPoolExecutor(
             2,
@@ -341,8 +340,8 @@ class DownloadService : Service() {
         ProcessCounter.remove(pendingSectionData.picSectionBean.id)
     }
 
-    fun getPendingSectionList(): List<PicSectionBean> {
-        return pendingSectionBean
+    fun getPendingSectionList(): List<PicSectionData> {
+        return pendingSectionBeanList
     }
 
     fun getAllSectionList(): List<PicSectionData> {

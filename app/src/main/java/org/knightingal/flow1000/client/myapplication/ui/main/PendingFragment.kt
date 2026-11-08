@@ -155,7 +155,7 @@ class PendingFragment : Fragment(){
         }
 
         @SuppressLint("NotifyDataSetChanged")
-        override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
+        override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
 
 //            picSectionListAdapter.setDataArray(picSectionBeanList)
 //            picSectionListAdapter.notifyDataSetChanged()

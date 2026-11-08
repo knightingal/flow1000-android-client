@@ -84,7 +84,7 @@ class TabMainScreen(
               progressionState[sectionId.toInt()] = progressMessage
             }
 
-            override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
+            override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
               Log.d("TabMainScreen", "doRefreshList: picSectionBeanList size=${picSectionBeanList.size}")
             }
 
@@ -262,7 +262,7 @@ class TabMainScreen(
 
   @Composable
   fun PendingListScreen() {
-    val pendingList = remember { mutableStateListOf<PicSectionBean>() }
+    val pendingList = remember { mutableStateListOf<PicSectionData>() }
     val ctx = LocalContext.current
     val progressMap = remember { mutableStateMapOf<Long, Int>() } // Map to hold progress for each sectionId
 
@@ -278,7 +278,7 @@ class TabMainScreen(
           }
         }
 
-        override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
+        override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
           Log.d("TabMainScreen", "doRefreshList: picSectionBeanList size=${picSectionBeanList.size}")
           pendingList.clear()
           pendingList.addAll(picSectionBeanList)
@@ -294,8 +294,9 @@ class TabMainScreen(
           val binder = service as DownloadService.LocalBinder
           downloadService = binder.getService()
 
-          pendingList.addAll(downloadService?.getPendingSectionList() ?: emptyList())
           downloadService?.setRefreshListener(listener)
+          progressMap.putAll(ProcessCounter.getAllCounter())
+          pendingList.addAll(downloadService?.getPendingSectionList() ?: emptyList())
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -322,12 +323,16 @@ class TabMainScreen(
       contentAlignment = Alignment.Center
     ) {
       LazyColumn {
-        items(pendingList) { picSectionBean ->
+        items(pendingList) { picSectionData ->
           Box(
             modifier = Modifier.fillMaxWidth(),
           ) {
-            val counter: Int? = progressMap[picSectionBean.id]
-            Text("${counter ?: ""} ${picSectionBean.name}", modifier = Modifier.padding(16.dp))
+            val counter: Int? = progressMap[picSectionData.picSectionBean.id]
+            Text(
+              "${counter ?: ""}/${picSectionData.totalCount}- ${picSectionData.picSectionBean.name}", modifier = Modifier.padding(16.dp),
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis
+            )
           }
         }
       }

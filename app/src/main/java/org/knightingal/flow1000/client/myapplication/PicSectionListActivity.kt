@@ -174,7 +174,7 @@ class PicSectionListActivity : AppCompatActivity(), RefreshListener {
     override fun doRefreshProcess(sectionId: Long, finish: Boolean) {
     }
 
-    override fun doRefreshList(picSectionBeanList: List<PicSectionBean>) {
+    override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
         TODO("Not yet implemented")
     }
 
