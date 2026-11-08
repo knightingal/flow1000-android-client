@@ -67,7 +67,7 @@ class TabMainScreen(
     val progressionState: MutableMap<Int, String> = remember { mutableStateMapOf() }
 
     DisposableEffect(Unit) {
-      var downloadService: DownloadService? = null
+      var downloadService: DownloadService?
       val conn = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
           val binder = service as DownloadService.LocalBinder
@@ -274,7 +274,7 @@ class TabMainScreen(
           Log.d("TabMainScreen", "doRefreshProcess: sectionId=$sectionId, finish=$finish")
           val counter = ProcessCounter.getCounter(sectionId)
           if (counter != null) {
-            progressMap[sectionId] = counter!!.getProcess()
+            progressMap[sectionId] = counter.getProcess()
           }
         }
 
