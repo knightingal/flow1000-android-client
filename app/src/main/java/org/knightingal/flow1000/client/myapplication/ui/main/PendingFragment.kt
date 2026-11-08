@@ -1,16 +1,9 @@
 package org.knightingal.flow1000.client.myapplication.ui.main
 
-import android.annotation.SuppressLint
-import android.content.ComponentName
-import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,17 +16,8 @@ import org.knightingal.flow1000.client.dao.UpdateStampDao
 import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
 import org.knightingal.flow1000.client.databinding.FragmentPendingBinding
 import org.knightingal.flow1000.client.util.AppDataBase
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import org.knightingal.flow1000.client.beans.PicSectionBean
-import org.nanjing.knightingal.processerlib.RefreshListener
-
-
 
 class PendingFragment : Fragment(){
-    companion object {
-        private const val TAG = "PendingFragment"
-    }
     private lateinit var pageViewModel: PageViewModel
     private var _binding: FragmentPendingBinding? = null
 
@@ -83,91 +67,5 @@ class PendingFragment : Fragment(){
         pendingListView.adapter = picSectionListAdapter
 
         return root
-    }
-
-    override fun onPause() {
-        super.onPause()
-//        downLoadService?.removeRefreshListener(refreshListener)
-//        downLoadService = null
-        // requireContext().unbindService(conn)
-    }
-
-    override fun onStart() {
-        super.onStart()
-//        requireContext().bindService(
-//            Intent(context, DownloadService::class.java), conn,
-//            AppCompatActivity.BIND_AUTO_CREATE
-//        )
-    }
-
-//    var downLoadService: DownloadService? = null
-    var serviceBound = false
-
-    val autoStart = true
-
-//    private val conn: ServiceConnection = object : ServiceConnection {
-//        @SuppressLint("NotifyDataSetChanged")
-//        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-//            Log.d(TAG, "onServiceConnected")
-//            serviceBound = true
-//            downLoadService = (binder as DownloadService.LocalBinder).getService()
-//            downLoadService?.setRefreshListener(
-//                refreshListener
-//            )
-//            val picSectionBeanList = downLoadService?.getPendingSectionList() ?: listOf()
-//            picSectionListAdapter.setDataArray(picSectionBeanList)
-//            picSectionListAdapter.notifyDataSetChanged()
-//
-//            if (autoStart) {
-//                downLoadService?.startDownloadSectionList()
-//            }
-//        }
-//
-//        override fun onServiceDisconnected(name: ComponentName) {
-//            Log.d(TAG, "onServiceDisconnected")
-//            downLoadService?.setRefreshListener(null)
-//            downLoadService = null
-//            serviceBound = false
-//        }
-//    }
-
-    private val refreshListener: RefreshListener = object : RefreshListener {
-        @SuppressLint("SetTextI18n")
-        override fun doRefreshProcess(sectionId:Long, finish: Boolean) {
-
-//            val pendingSectionList = downLoadService!!.getPendingSectionList()
-//            val pendingSection = pendingSectionList.find { section -> section.picSectionBean.id == sectionId }
-//            val realPosition = pendingSectionList.indexOf(pendingSection)
-
-
-//            MainScope().launch {
-//                val viewHolder =
-//                    pendingListView.findViewHolderForAdapterPosition(realPosition) as PicSectionListAdapter.ViewHolder?
-//
-//                if (viewHolder != null) {
-//                    if (finish) {
-//                        picSectionListAdapter.renderProcessFinish(viewHolder, realPosition)
-//                    } else {
-//                        picSectionListAdapter.renderProcessCounter(viewHolder, realPosition)
-//                    }
-//                }
-//            }
-        }
-
-        @SuppressLint("NotifyDataSetChanged")
-        override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
-
-//            picSectionListAdapter.setDataArray(picSectionBeanList)
-//            picSectionListAdapter.notifyDataSetChanged()
-        }
-
-        @SuppressLint("NotifyDataSetChanged")
-        override fun notifyListReady() {
-//            val pendingSectionList = downLoadService!!.getPendingSectionList()
-//            picSectionListAdapter.setDataArray(pendingSectionList)
-//            picSectionListAdapter.notifyDataSetChanged()
-        }
-
-
     }
 }

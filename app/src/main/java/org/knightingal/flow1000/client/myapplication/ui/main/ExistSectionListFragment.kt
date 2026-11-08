@@ -1,12 +1,8 @@
 package org.knightingal.flow1000.client.myapplication.ui.main
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,21 +10,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
-import org.knightingal.flow1000.client.beans.PicSectionBean
-import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.dao.PicInfoDao
 import org.knightingal.flow1000.client.dao.PicSectionDao
 import org.knightingal.flow1000.client.dao.UpdateStampDao
-import org.knightingal.flow1000.client.listAdapters.PicSectionListAdapter
 import org.knightingal.flow1000.client.databinding.FragmentPendingBinding
 import org.knightingal.flow1000.client.util.AppDataBase
-import org.nanjing.knightingal.processerlib.RefreshListener
 
 class ExistSectionListFragment : Fragment() {
-
-    companion object {
-        private const val TAG = "ExistSectionListFragment"
-    }
 
     private lateinit var pageViewModel: PageViewModel
     private var _binding: FragmentPendingBinding? = null
@@ -55,10 +43,6 @@ class ExistSectionListFragment : Fragment() {
         updateStampDao = db.updateStampDao()
     }
 
-    private lateinit var picSectionListAdapter: PicSectionListAdapter
-
-    private var picSectionDataList: List<PicSectionData> = listOf()
-
     private lateinit var pendingListView: RecyclerView
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,32 +58,6 @@ class ExistSectionListFragment : Fragment() {
         return root
     }
 
-    private var serviceBound = false
-
-//    private var downLoadService: DownloadService? = null
-//
-//    private val conn: ServiceConnection = object : ServiceConnection {
-//        @SuppressLint("NotifyDataSetChanged")
-//        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-//            Log.d(TAG, "onServiceConnected")
-//            serviceBound = true
-//            downLoadService = (binder as DownloadService.LocalBinder).getService()
-//            downLoadService?.setRefreshListener(
-//                refreshListener
-//            )
-//            val picSectionBeanList = downLoadService?.getPendingSectionList() ?: listOf()
-//            picSectionListAdapter.setDataArray(picSectionBeanList)
-//            picSectionListAdapter.notifyDataSetChanged()
-//
-//        }
-//
-//        override fun onServiceDisconnected(name: ComponentName) {
-//            Log.d(TAG, "onServiceDisconnected")
-//            downLoadService?.setRefreshListener(null)
-//            downLoadService = null
-//            serviceBound = false
-//        }
-//    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onStart() {
@@ -108,21 +66,4 @@ class ExistSectionListFragment : Fragment() {
     }
 
 
-    private val refreshListener: RefreshListener = object : RefreshListener {
-        @SuppressLint("SetTextI18n")
-        override fun doRefreshProcess(sectionId: Long, finish: Boolean) {
-        }
-
-        @SuppressLint("NotifyDataSetChanged")
-        override fun doRefreshList(picSectionBeanList: List<PicSectionData>) {
-        }
-
-        @SuppressLint("NotifyDataSetChanged")
-        override fun notifyListReady() {
-            picSectionDataList = picSectionDao.getByClientStatus(PicSectionBean.ClientStatus.LOCAL)
-                .map { bean -> PicSectionData(bean, 0) }
-            picSectionListAdapter.setDataArray(picSectionDataList)
-            picSectionListAdapter.notifyDataSetChanged()
-        }
-    }
 }
