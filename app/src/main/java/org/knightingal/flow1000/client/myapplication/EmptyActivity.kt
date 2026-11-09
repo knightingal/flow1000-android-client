@@ -132,7 +132,6 @@ fun PendingItem(text: String, process: Int, total: Int) {
             shrink(0f)
         })
     }
-//    }
 }
 
 @Composable
