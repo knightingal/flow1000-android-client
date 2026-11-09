@@ -218,6 +218,7 @@ dependencies {
 
     implementation("io.github.awxkee:avif-coder:3.0.0") // or any version above picker from release tags
     implementation("io.github.awxkee:avif-coder-coil:3.0.0") // or any version above picker from release tags
+    implementation(libs.androidx.compose.foundation.layout)
 
 
 }

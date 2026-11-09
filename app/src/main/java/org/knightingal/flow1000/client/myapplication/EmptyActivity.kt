@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.FlexBox
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
@@ -119,6 +121,28 @@ fun PagerIndicator(pageCount: Int, currentPageIndex: Int, modifier: Modifier = M
 }
 
 @Preview
+@Composable
+fun PendingItem(text: String, process: Int, total: Int) {
+    FlexBox(Modifier.fillMaxWidth().padding(8.dp), config = {
+        gap(8.dp)
+    }) {
+        Text(text = text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.flex {
+            shrink(1f)
+        })
+        Text(text = "$process/$total", modifier = Modifier.flex {
+            shrink(0f)
+        })
+    }
+//    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun PendingItemPreview() {
+    Flow1000clientTheme {
+        PendingItem("Sample Text, Sample Text, Sample Text, Sample Text", 5, 10)
+    }
+}
 @Composable
 private fun AutoAdvancePagerPreview() {
     val pageItems: List<Color> = listOf(
