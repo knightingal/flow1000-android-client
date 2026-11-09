@@ -120,7 +120,6 @@ fun PagerIndicator(pageCount: Int, currentPageIndex: Int, modifier: Modifier = M
     }
 }
 
-@Preview
 @Composable
 fun PendingItem(text: String, process: Int, total: Int) {
     FlexBox(Modifier.fillMaxWidth().padding(8.dp), config = {
@@ -142,14 +141,4 @@ fun PendingItemPreview() {
     Flow1000clientTheme {
         PendingItem("Sample Text, Sample Text, Sample Text, Sample Text", 5, 10)
     }
-}
-@Composable
-private fun AutoAdvancePagerPreview() {
-    val pageItems: List<Color> = listOf(
-        Color.Red,
-        Color.Gray,
-        Color.Green,
-        Color.White
-    )
-    AutoAdvancePager(pageItems = pageItems)
 }
