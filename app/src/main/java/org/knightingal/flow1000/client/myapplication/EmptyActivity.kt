@@ -51,13 +51,20 @@ fun PendingItem(text: String, process: Int, total: Int) {
     FlexBox(Modifier.fillMaxWidth().padding(8.dp), config = {
         gap(8.dp)
     }) {
-        Text(text = text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.flex {
-            shrink(1f)
-            alignSelf (FlexAlignSelf.Center)
-        })
+        Text(
+            text = text,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.flex {
+                shrink(1f)
+                grow(1f)
+                alignSelf (FlexAlignSelf.Center)
+            }
+        )
         CircularProgressIndicator(
             progress = {process.toFloat() / total.toFloat()} ,
             modifier = Modifier.flex {
+                grow(0f)
                 shrink(0f)
             }.size(24.dp)
         )

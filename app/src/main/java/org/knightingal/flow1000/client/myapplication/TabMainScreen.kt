@@ -327,11 +327,25 @@ class TabMainScreen(
           Box(
             modifier = Modifier.fillMaxWidth(),
           ) {
-            val counter: Int? = progressMap[picSectionData.picSectionBean.id]
-            Text(
-              "${counter ?: ""}/${picSectionData.totalCount}- ${picSectionData.picSectionBean.name}", modifier = Modifier.padding(16.dp),
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis
+            var counter: Int? = progressMap[picSectionData.picSectionBean.id]
+            var totalCount = picSectionData.totalCount
+            if (totalCount == null) {
+              totalCount = 0
+            }
+            if (totalCount == 0) {
+              counter = 0
+              totalCount = 1
+            }
+            if (counter == null) {
+              counter = 0
+            }
+            if (totalCount <= counter) {
+              counter = totalCount
+            }
+            PendingItem(
+              text = picSectionData.picSectionBean.name,
+              process = counter,
+              total = totalCount
             )
           }
         }
