@@ -73,6 +73,7 @@ class DownloadService : Service() {
 
         val notification = NotificationCompat.Builder(this, "CHANNEL_ID")
             .setSmallIcon(R.drawable.app_icon)
+            .setContentText("DownloadService is running")
             .build()
 
         ServiceCompat.startForeground(
