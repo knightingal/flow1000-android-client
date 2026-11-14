@@ -230,7 +230,12 @@ class DownloadService : Service() {
                 }
             }
 
-            pendingSectionBeanList.addAll(picSectionBeanList.map { PicSectionData(it, 0).apply { this.process = 0 } })
+            pendingSectionBeanList.addAll(picSectionBeanList.map {
+                PicSectionData(it, 0).apply {
+                    this.process = 0
+                    this.picSectionBean.name = TimeUtil.formatTitle(this.picSectionBean.name)
+                }
+            })
             refreshListener.forEach {
                 it.doRefreshList(pendingSectionBeanList)
             }
