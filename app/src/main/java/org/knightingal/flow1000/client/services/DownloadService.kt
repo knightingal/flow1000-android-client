@@ -140,8 +140,6 @@ class DownloadService : Service() {
     private lateinit var updateStampDao: UpdateStampDao
     private lateinit var picInfoDao : PicInfoDao
 
-
-
     fun setRefreshListener(refreshListener: RefreshListener?) {
         if (refreshListener != null) {
             DownloadService.refreshListener.add(refreshListener)
@@ -169,31 +167,6 @@ class DownloadService : Service() {
         updateStampDao = db.updateStampDao()
     }
     private var allPicSectionBeanList:List<PicSectionData> = listOf()
-
-
-    fun fetchAllSectionList() {
-        val updateStamp = updateStampDao.getUpdateStampByTableName("PIC_ALBUM_BEAN") as UpdateStamp
-        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?time_stamp=${updateStamp.updateStamp}"
-        Log.d("fetchAllSectionList", stringUrl)
-        ConcurrencyJsonApiTask.startGet(stringUrl) { allBody ->
-            db.runInTransaction {
-                updateStamp.updateStamp = TimeUtil.currentTimeFormat()
-                val picSectionBeanList = Gson().fromJson(allBody, Array<PicSectionBean>::class.java)
-                updateStampDao.update(updateStamp)
-                picSectionBeanList.forEach {
-                    it.name = TimeUtil.formatTitle(it.name)
-                    picSectionDao.insert(it )
-                }
-            }
-
-            allPicSectionBeanList = picSectionDao.getAll().toList()
-                .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
-            refreshListener.forEach {
-                it.notifyListReady()
-            }
-        }
-
-    }
 
     fun startDownloadSectionList() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -258,7 +231,6 @@ class DownloadService : Service() {
         }
     }
 
-
     private fun processPendingSectionItem(pendingSectionData: PicSectionData) {
         val clientStatus = picSectionDao.getByServerIndex(pendingSectionData.picSectionBean.id).clientStatus
         if (clientStatus == PicSectionBean.ClientStatus.LOCAL) {
@@ -268,7 +240,6 @@ class DownloadService : Service() {
             sectionExecuting(pendingSectionData)
         }
     }
-
 
     private fun processImgItem(pic: ImgDetail, sectionInfoBean: SectionInfoBean, sectionConfig: SectionConfig, latch: CountDownLatch) {
         val imgUrl = "http://${SERVER_IP}:${IMAGE_PORT}" +
@@ -346,15 +317,10 @@ class DownloadService : Service() {
             pendingSectionData.picSectionBean.id,
             PicSectionBean.ClientStatus.LOCAL
         )
-//        ProcessCounter.remove(pendingSectionData.picSectionBean.id)
     }
 
     fun getPendingSectionList(): List<PicSectionData> {
         return pendingSectionBeanList
-    }
-
-    fun getAllSectionList(): List<PicSectionData> {
-        return allPicSectionBeanList
     }
 
     inner class LocalBinder : Binder() {
@@ -362,7 +328,6 @@ class DownloadService : Service() {
             return this@DownloadService
         }
     }
-
 }
 
 
