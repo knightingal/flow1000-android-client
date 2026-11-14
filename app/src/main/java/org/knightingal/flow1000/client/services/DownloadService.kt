@@ -53,7 +53,6 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
 
 class DownloadService : Service() {
 
@@ -188,7 +187,11 @@ class DownloadService : Service() {
                     picSectionDao.insert(it)
                 }
             }
-            allPicSectionBeanList = picSectionDao.getAll().toList().map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
+            allPicSectionBeanList = picSectionDao.getAll().toList().map {
+                bean -> PicSectionData(bean, 0).apply {
+                    this.process = 0
+                }
+            }
             val pendingUrl =
                 "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
             val pendingResponse: HttpResponse = client.get(pendingUrl)
