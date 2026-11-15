@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
@@ -42,6 +43,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
@@ -49,7 +57,11 @@ import org.knightingal.flow1000.client.myapplication.TabMainActivity.Destination
 import org.knightingal.flow1000.client.services.DownloadService
 import org.knightingal.flow1000.client.services.ProcessCounter
 import org.knightingal.flow1000.client.services.SimpleService
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 import org.nanjing.knightingal.processerlib.RefreshListener
+import kotlin.String
+import kotlin.text.replace
 
 class TabMainScreen(
   val navController: NavHostController,
@@ -197,17 +209,57 @@ class TabMainScreen(
   }
 
   @Composable
-  fun AllListScreen(allPicSectionBeanList: List<PicSectionData>) {
+  fun AllListScreen() {
+    val albumConfigListState = remember { mutableStateListOf<AlbumConfig>() }
+
+    LaunchedEffect(Unit) {
+      CoroutineScope(Dispatchers.IO).launch {
+        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/albumConfig/list"
+        val client = HttpClient(CIO)
+        val response: String = client.get(stringUrl).body()
+        val albumConfigList = Gson().fromJson(response, Array<AlbumConfig>::class.java)
+        albumConfigListState.addAll(albumConfigList)
+      }
+    }
+
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
     ) {
-      LazyColumn {
-        items(allPicSectionBeanList) { picSectionData ->
+
+      val lazyStaggeredGridState = rememberLazyStaggeredGridState()
+      LazyVerticalStaggeredGrid(
+        state = lazyStaggeredGridState,
+        columns = StaggeredGridCells.Fixed(2),
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+        verticalItemSpacing = 4.dp,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        items(albumConfigListState) { albumConfig ->
           Box(
             modifier = Modifier.fillMaxWidth(),
           ) {
-            Text(picSectionData.picSectionBean.name, modifier = Modifier.padding(16.dp))
+            val coverUri = "http://${SERVER_IP}:${SERVER_PORT}/linux1000/${
+              albumConfig.sourcePath
+            }/${
+              albumConfig.coverSection.dirName
+            }/${
+              albumConfig.coverSection.cover.replace(".bin", "")
+            }"
+            AlbumCoverCard(
+              sharedTransitionScope = sharedTransitionScope,
+              animatedContentScope = animatedContentScope,
+              albumCover = OnlineAlbumCover(
+                name = albumConfig.name,
+                coverWidth = albumConfig.coverSection.coverWidth,
+                coverHeight = albumConfig.coverSection.coverHeight,
+                coverUri = coverUri
+              ),
+              sharedKey = "album_config_${albumConfig.name}"
+            ) {
+//              navController.navigate(ExistSectionGridPage.ExistAlbumCoverScreenRoute(album = picSectionBean.album!!))
+            }
           }
         }
       }
@@ -342,5 +394,21 @@ class TabMainScreen(
       }
     }
   }
-
 }
+
+class AlbumConfig(
+  val id: Long,
+  val name: String,
+  val sourcePath: String,
+  val coverSection: Flow1000Section,
+)
+
+class Flow1000Section(
+  val id: Long,
+  val name: String,
+  val dirName: String,
+  val cover: String,
+  val album: String,
+  val coverWidth: Int,
+  val coverHeight: Int,
+)
