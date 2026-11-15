@@ -7,7 +7,6 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,7 +51,6 @@ import org.knightingal.flow1000.client.services.ProcessCounter
 import org.knightingal.flow1000.client.services.SimpleService
 import org.nanjing.knightingal.processerlib.RefreshListener
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 class TabMainScreen(
   val navController: NavHostController,
   val sharedTransitionScope: SharedTransitionScope,
@@ -141,9 +139,6 @@ class TabMainScreen(
   ) {
     val picSectionDao = App.db.picSectionDao()
 
-    val allPicSectionBeanList = picSectionDao.getAll()
-      .map { bean -> PicSectionData(bean, 0).apply { this.process = 0 } }
-
     val existAlbumCoverList: List<PicSectionBean> = listOf(
       "1000", "1803", "1804", "1805",
       "1806", "1807", "1808"
@@ -178,7 +173,7 @@ class TabMainScreen(
             )
           }
         }
-        AdvancePager(pagerState, allPicSectionBeanList, existAlbumCoverList)
+        AdvancePager(pagerState, existAlbumCoverList)
       }
     }
   }
@@ -186,7 +181,6 @@ class TabMainScreen(
   @Composable
   fun AdvancePager(
     pagerState: PagerState,
-    allPicSectionBeanList: List<PicSectionData>,
     existAlbumCoverList: List<PicSectionBean>,
   ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -194,7 +188,7 @@ class TabMainScreen(
         state = pagerState
       ) { page ->
         when (page) {
-          0 -> AllListScreen(allPicSectionBeanList = allPicSectionBeanList)
+          0 -> AllListScreen()
           1 -> ExistAlbumCoverTab(albumCoverList = existAlbumCoverList)
           2 -> PendingListScreen()
         }
@@ -220,7 +214,6 @@ class TabMainScreen(
     }
   }
 
-  @OptIn(ExperimentalSharedTransitionApi::class)
   @Composable
   fun ExistAlbumCoverTab(albumCoverList: List<PicSectionBean>) {
     Box(
@@ -329,9 +322,6 @@ class TabMainScreen(
           ) {
             var counter: Int? = progressMap[picSectionData.picSectionBean.id]
             var totalCount = picSectionData.totalCount
-            if (totalCount == null) {
-              totalCount = 0
-            }
             if (totalCount == 0) {
               counter = 0
               totalCount = 1
