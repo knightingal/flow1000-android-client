@@ -43,6 +43,7 @@ flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbo
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 io-coil-kt-coil3-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilKtCoilComposeVersion" }
+io-coil-kt-coil3-coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilKtCoilComposeVersion" }
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jacksonVersion" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

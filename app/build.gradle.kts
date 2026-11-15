@@ -214,7 +214,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.io.coil.kt.coil3.coil.compose)
-//    implementation("io.coil-kt.coil3:coil-network-okhttp:3.4.0")
+    implementation(libs.io.coil.kt.coil3.coil.network.okhttp)
 
     implementation("io.github.awxkee:avif-coder:3.0.0") // or any version above picker from release tags
     implementation("io.github.awxkee:avif-coder-coil:3.0.0") // or any version above picker from release tags
