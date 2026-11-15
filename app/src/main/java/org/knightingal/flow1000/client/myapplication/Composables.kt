@@ -119,16 +119,26 @@ fun ImageContentInCard(
         contentDescription = null,
       )
     } else if (cardCover.coverUri is String) {
-      val coverUri = cardCover.coverUri as String
-      val imageFile = File(
-        LocalContext.current.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-        coverUri
-      )
-      AsyncImage(
-        modifier = Modifier.fillMaxSize(),
-        model = imageFile,
-        contentDescription = null,
-      )
+      if ((cardCover.coverUri as String).startsWith("http://")) {
+        val coverUri = cardCover.coverUri as String
+        AsyncImage(
+          modifier = Modifier.fillMaxSize(),
+          model = coverUri,
+          contentDescription = null,
+        )
+
+      } else {
+        val coverUri = cardCover.coverUri as String
+        val imageFile = File(
+          LocalContext.current.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+          coverUri
+        )
+        AsyncImage(
+          modifier = Modifier.fillMaxSize(),
+          model = imageFile,
+          contentDescription = null,
+        )
+      }
     }
   }
 }
@@ -164,4 +174,14 @@ class ExistAlbumCover(
   override val width: Int = coverWidth
   override val height: Int = coverHeight
   override val coverUri: String = "/${name}/${cover}"
+}
+
+class OnlineAlbumCover(
+  override val name: String,
+  coverWidth: Int,
+  coverHeight: Int,
+  override val coverUri: String,
+) : CardCover<String> {
+  override val width: Int = coverWidth
+  override val height: Int = coverHeight
 }
