@@ -59,14 +59,24 @@ class TabMainActivity : ComponentActivity() {
           SectionImageListPage(
             this@SharedTransitionLayout,
             this@composable
-          )
-            .SectionImageListScreen(
+          ).SectionImageListScreen(
               route.sectionName,
               route.sectionId
             )
         }
+        composable<OnlineSectionGridPage.OnlineSectionGridScreenRoute> {
+          val route = it.toRoute<OnlineSectionGridPage.OnlineSectionGridScreenRoute>()
+          OnlineSectionGridPage(navController = navController,
+            this@SharedTransitionLayout,
+            this@composable
+          ).OnlineSectionGridScreen(
+            Flow1000AlbumPageParam(
+              route.album,
+              route.albumSourcePath
+            )
+          )
+        }
       }
-
     }
   }
 
