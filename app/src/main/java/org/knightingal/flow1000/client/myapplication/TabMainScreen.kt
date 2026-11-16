@@ -258,7 +258,10 @@ class TabMainScreen(
               ),
               sharedKey = "album_config_${albumConfig.name}"
             ) {
-//              navController.navigate(ExistSectionGridPage.ExistAlbumCoverScreenRoute(album = picSectionBean.album!!))
+              navController.navigate(OnlineSectionGridPage.OnlineSectionGridScreenRoute(
+                album = albumConfig.name,
+                albumSourcePath = albumConfig.sourcePath
+              ))
             }
           }
         }
