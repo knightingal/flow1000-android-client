@@ -30,7 +30,6 @@ class TabMainActivity : ComponentActivity() {
     }
   }
 
-  @OptIn(ExperimentalSharedTransitionApi::class)
   @Composable
   fun NavigationTab(
     modifier: Modifier = Modifier,
@@ -74,6 +73,17 @@ class TabMainActivity : ComponentActivity() {
               route.album,
               route.albumSourcePath
             )
+          )
+        }
+        composable<OnlineSectionImageListPage.OnlineSectionImageListScreenRoute> {
+          val route = it.toRoute<OnlineSectionImageListPage.OnlineSectionImageListScreenRoute>()
+          OnlineSectionImageListPage(
+            this@SharedTransitionLayout,
+            this@composable
+          ).SectionImageListScreen(
+            name = route.sectionName,
+            id = route.sectionId,
+            albumSourcePath = route.albumSourcePath
           )
         }
       }
