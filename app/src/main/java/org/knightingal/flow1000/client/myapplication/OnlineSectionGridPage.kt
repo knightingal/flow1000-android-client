@@ -116,6 +116,13 @@ class OnlineSectionGridPage(
               appendContent = {
               }
             ) {
+              navController.navigate(
+                route = OnlineSectionImageListPage.OnlineSectionImageListScreenRoute(
+                  picIndex.name,
+                  picIndex.index,
+                  albumConfig.albumSourcePath
+                )
+              )
             }
           }
         }
