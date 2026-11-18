@@ -38,9 +38,6 @@ import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
-@Serializable
-data class Flow1000AlbumPageParam(val name: String, val albumSourcePath: String)
-
 class OnlineSectionGridPage(
   val navController: NavHostController,
   val sharedTransitionScope: SharedTransitionScope,
@@ -51,12 +48,15 @@ class OnlineSectionGridPage(
 
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
-  fun OnlineSectionGridScreen(albumConfig: Flow1000AlbumPageParam) {
+  fun OnlineSectionGridScreen(
+    album: String,
+    albumSourcePath: String
+  ) {
     // Implementation for the online section grid screen
     val pinIndexList = remember { mutableStateListOf<PicIndexItem>() }
     LaunchedEffect(Unit) {
       CoroutineScope(Dispatchers.IO).launch {
-        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?album=${albumConfig.name}"
+        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?album=${album}"
         val client = HttpClient(CIO)
         val response: String = client.get(stringUrl).body()
         val picIndexList1 = Gson().fromJson(response, Array<PicIndexItem>::class.java)
@@ -68,7 +68,7 @@ class OnlineSectionGridPage(
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
       TopAppBar(
-        title = { Text(albumConfig.name) },
+        title = { Text(album) },
         colors = topAppBarColors(
           containerColor = MaterialTheme.colorScheme.primaryContainer,
           titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -79,8 +79,8 @@ class OnlineSectionGridPage(
         modifier = with(sharedTransitionScope) {
           Modifier
             .sharedBounds(
-              sharedContentState = sharedTransitionScope.rememberSharedContentState("album_${albumConfig.name}"),
-              animatedVisibilityScope = animatedContentScope!!,
+              sharedContentState = sharedTransitionScope.rememberSharedContentState("album_${album}"),
+              animatedVisibilityScope = animatedContentScope,
               enter = fadeIn(),
               exit = fadeOut(),
             )
@@ -104,7 +104,7 @@ class OnlineSectionGridPage(
               name = picIndex.name,
               width = picIndex.coverWidth,
               height = picIndex.coverHeight,
-              coverUri = "http://${SERVER_IP}:${SERVER_PORT}/linux1000/${albumConfig.albumSourcePath}/${picIndex.name}/${
+              coverUri = "http://${SERVER_IP}:${SERVER_PORT}/linux1000/${albumSourcePath}/${picIndex.name}/${
                 picIndex.cover.replace(".bin", "")
               }"
             )
@@ -120,7 +120,7 @@ class OnlineSectionGridPage(
                 route = OnlineSectionImageListPage.OnlineSectionImageListScreenRoute(
                   picIndex.name,
                   picIndex.index,
-                  albumConfig.albumSourcePath
+                  albumSourcePath
                 )
               )
             }
