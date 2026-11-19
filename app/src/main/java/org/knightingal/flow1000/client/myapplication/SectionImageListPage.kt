@@ -85,7 +85,7 @@ class SectionImageListPage(
               FitSizeImageCard(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
-                cardCover = ExistAlbumCover(
+                cardCover = SectionCover(
                   name = sectionName,
                   coverWidth = picInfoBean.width,
                   coverHeight = picInfoBean.height,

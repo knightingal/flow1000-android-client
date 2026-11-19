@@ -163,7 +163,7 @@ fun AlbumCoverCardEditPreview() {
 }
 
 @Serializable
-class ExistAlbumCover(
+class SectionCover(
   override val name: String,
   val coverWidth: Int,
   val coverHeight: Int,
@@ -172,6 +172,20 @@ class ExistAlbumCover(
   override val width: Int = coverWidth
   override val height: Int = coverHeight
   override val coverUri: String = "/${name}/${cover}"
+}
+
+@Serializable
+class ExistAlbumCover(
+  override val name: String,
+  val coverWidth: Int,
+  val coverHeight: Int,
+  val cover: String,
+) : CardCover<String> {
+  override val width: Int = coverWidth
+  override val height: Int = coverHeight
+//  override val coverUri: String = "/${name}/${cover}"
+  override val coverUri: String
+    get() = cover
 }
 
 class OnlineAlbumCover(

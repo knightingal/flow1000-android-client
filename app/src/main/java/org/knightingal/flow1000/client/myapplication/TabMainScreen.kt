@@ -292,10 +292,10 @@ class TabMainScreen(
               sharedTransitionScope = sharedTransitionScope,
               animatedContentScope = animatedContentScope,
               albumCover = ExistAlbumCover(
-                name = picSectionBean.name,
+                name = picSectionBean.album ?: "",
                 coverWidth = picSectionBean.coverWidth,
                 coverHeight = picSectionBean.coverHeight,
-                cover = picSectionBean.cover ?: ""
+                cover = "${picSectionBean.name}/${picSectionBean.cover ?: ""}"
               ),
               sharedKey = "album_${picSectionBean.album}"
             ) {

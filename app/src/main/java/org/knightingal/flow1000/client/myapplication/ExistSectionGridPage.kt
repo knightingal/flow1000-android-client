@@ -82,7 +82,7 @@ class ExistSectionGridPage(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
                 sharedKey = "section_${picSectionBean.id}",
-                albumCover = ExistAlbumCover(
+                albumCover = SectionCover(
                   name = picSectionBean.name,
                   coverWidth = picSectionBean.coverWidth,
                   coverHeight = picSectionBean.coverHeight,
