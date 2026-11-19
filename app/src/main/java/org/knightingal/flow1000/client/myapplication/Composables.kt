@@ -83,7 +83,6 @@ fun AlbumCoverCard(
       OutlinedTextField(
         readOnly = true,
         colors = TextFieldDefaults.colors(
-
           errorIndicatorColor = Color.Transparent,
           focusedIndicatorColor = Color.Transparent,
           unfocusedIndicatorColor = Color.Transparent,
@@ -119,8 +118,8 @@ fun ImageContentInCard(
         contentDescription = null,
       )
     } else if (cardCover.coverUri is String) {
-      if ((cardCover.coverUri as String).startsWith("http://")) {
-        val coverUri = cardCover.coverUri as String
+      val coverUri = cardCover.coverUri as String
+      if (coverUri.startsWith("http://")) {
         AsyncImage(
           modifier = Modifier.fillMaxSize(),
           model = coverUri,
@@ -128,7 +127,6 @@ fun ImageContentInCard(
         )
 
       } else {
-        val coverUri = cardCover.coverUri as String
         val imageFile = File(
           LocalContext.current.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
           coverUri

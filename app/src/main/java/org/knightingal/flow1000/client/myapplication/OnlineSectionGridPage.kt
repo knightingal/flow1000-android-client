@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -98,8 +99,7 @@ class OnlineSectionGridPage(
           horizontalArrangement = Arrangement.spacedBy(4.dp),
           modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp, vertical = 0.dp),
         ) {
-          items(pinIndexList.size) { index ->
-            val picIndex = pinIndexList[index]
+          items(pinIndexList) { picIndex ->
             val cover = OnlineSectionCover(
               name = picIndex.name,
               width = picIndex.coverWidth,
@@ -139,10 +139,10 @@ class OnlineSectionCover (
 )
 : CardCover<String>
 
-
 enum class ClientStatus {
   NONE, PENDING, LOCAL
 }
+
 class PicIndexItem(
   val index: Long,
   val name: String,
