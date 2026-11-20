@@ -42,13 +42,12 @@ interface CardCover<T> {
   val name: String
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AlbumCoverCard(
   albumCover: CardCover<*>,
   sharedTransitionScope: SharedTransitionScope? = null,
   animatedContentScope: AnimatedContentScope? = null,
-  appendContent: () -> Unit = {},
+  appendContent: @Composable () -> Unit = {},
   edit: Boolean = false,
   sharedKey: String? = null,
   onClick: () -> Unit = {},

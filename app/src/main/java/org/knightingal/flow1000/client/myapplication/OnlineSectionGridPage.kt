@@ -7,13 +7,19 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -114,6 +120,20 @@ class OnlineSectionGridPage(
               animatedContentScope = animatedContentScope,
               edit = false,
               appendContent = {
+                Row {
+                  IconButton(onClick = {}) {
+                    val iconVec = if (picIndex.clientStatus == ClientStatus.NONE)
+                      Icons.Outlined.FavoriteBorder
+                    else
+                      Icons.Outlined.Favorite
+                    Icon(
+                      imageVector = iconVec,
+                      contentDescription = null,
+                      tint = MaterialTheme.colorScheme.onSurface
+                    )
+                  }
+
+                }
               }
             ) {
               navController.navigate(
