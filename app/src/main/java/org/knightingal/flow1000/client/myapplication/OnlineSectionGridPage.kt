@@ -1,5 +1,6 @@
 package org.knightingal.flow1000.client.myapplication
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
@@ -38,6 +39,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
+import io.ktor.client.request.post
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,6 +55,20 @@ class OnlineSectionGridPage(
   @Serializable
   data class OnlineSectionGridScreenRoute(val album: String, val albumSourcePath: String)
 
+  suspend fun subscribeSectionById(id: Long) {
+    val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/downloadSection?id=${id}"
+    val client = HttpClient(CIO)
+    val response: String = client.post(stringUrl).body()
+    Log.d("OnlineSectionGridPage", "subscribeSectionById response: $response")
+  }
+
+  suspend fun fetchSectionIndexList(album: String): List<PicIndexItem> {
+    val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?album=${album}"
+    val client = HttpClient(CIO)
+    val response: String = client.get(stringUrl).body()
+    return Gson().fromJson(response, Array<PicIndexItem>::class.java).toList()
+  }
+
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   fun OnlineSectionGridScreen(
@@ -63,15 +79,9 @@ class OnlineSectionGridPage(
     val pinIndexList = remember { mutableStateListOf<PicIndexItem>() }
     LaunchedEffect(Unit) {
       CoroutineScope(Dispatchers.IO).launch {
-        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?album=${album}"
-        val client = HttpClient(CIO)
-        val response: String = client.get(stringUrl).body()
-        val picIndexList1 = Gson().fromJson(response, Array<PicIndexItem>::class.java)
-        pinIndexList.addAll(picIndexList1)
+        pinIndexList.addAll(fetchSectionIndexList(album))
       }
     }
-
-
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
       TopAppBar(
@@ -121,7 +131,15 @@ class OnlineSectionGridPage(
               edit = false,
               appendContent = {
                 Row {
-                  IconButton(onClick = {}) {
+                  IconButton(onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                      subscribeSectionById(picIndex.index)
+                      fetchSectionIndexList(album).let { newList ->
+                        pinIndexList.clear()
+                        pinIndexList.addAll(newList)
+                      }
+                    }
+                  }) {
                     val iconVec = if (picIndex.clientStatus == ClientStatus.NONE)
                       Icons.Outlined.FavoriteBorder
                     else

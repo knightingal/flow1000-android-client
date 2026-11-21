@@ -192,8 +192,7 @@ class DownloadService : Service() {
                     this.process = 0
                 }
             }
-            val pendingUrl =
-                "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
+            val pendingUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?client_status=PENDING"
             val pendingResponse: HttpResponse = client.get(pendingUrl)
             val picIndexResp: String = pendingResponse.body()
 
