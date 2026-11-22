@@ -44,6 +44,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
@@ -62,11 +63,11 @@ class OnlineSectionGridPage(
     Log.d("OnlineSectionGridPage", "subscribeSectionById response: $response")
   }
 
-  suspend fun fetchSectionIndexList(album: String): List<PicIndexItem> {
+  suspend fun fetchSectionIndexList(album: String): List<PicSectionBean> {
     val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?album=${album}"
     val client = HttpClient(CIO)
     val response: String = client.get(stringUrl).body()
-    return Gson().fromJson(response, Array<PicIndexItem>::class.java).toList()
+    return Gson().fromJson(response, Array<PicSectionBean>::class.java).toList()
   }
 
   @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +77,7 @@ class OnlineSectionGridPage(
     albumSourcePath: String
   ) {
     // Implementation for the online section grid screen
-    val pinIndexList = remember { mutableStateListOf<PicIndexItem>() }
+    val pinIndexList = remember { mutableStateListOf<PicSectionBean>() }
     LaunchedEffect(Unit) {
       CoroutineScope(Dispatchers.IO).launch {
         pinIndexList.addAll(fetchSectionIndexList(album))
@@ -121,7 +122,7 @@ class OnlineSectionGridPage(
               width = picIndex.coverWidth,
               height = picIndex.coverHeight,
               coverUri = "http://${SERVER_IP}:${SERVER_PORT}/linux1000/${albumSourcePath}/${picIndex.name}/${
-                picIndex.cover.replace(".bin", "")
+                picIndex.cover?.replace(".bin", "")
               }"
             )
             AlbumCoverCard(
@@ -133,14 +134,14 @@ class OnlineSectionGridPage(
                 Row {
                   IconButton(onClick = {
                     CoroutineScope(Dispatchers.IO).launch {
-                      subscribeSectionById(picIndex.index)
+                      subscribeSectionById(picIndex.id)
                       fetchSectionIndexList(album).let { newList ->
                         pinIndexList.clear()
                         pinIndexList.addAll(newList)
                       }
                     }
                   }) {
-                    val iconVec = if (picIndex.clientStatus == ClientStatus.NONE)
+                    val iconVec = if (picIndex.clientStatus == PicSectionBean.ClientStatus.NONE)
                       Icons.Outlined.FavoriteBorder
                     else
                       Icons.Outlined.Favorite
@@ -157,7 +158,7 @@ class OnlineSectionGridPage(
               navController.navigate(
                 route = OnlineSectionImageListPage.OnlineSectionImageListScreenRoute(
                   picIndex.name,
-                  picIndex.index,
+                  picIndex.id,
                   albumSourcePath
                 )
               )
@@ -174,18 +175,4 @@ class OnlineSectionCover (
   override val width: Int,
   override val height: Int,
   override val coverUri: String
-)
-: CardCover<String>
-
-enum class ClientStatus {
-  NONE, PENDING, LOCAL
-}
-
-class PicIndexItem(
-  val index: Long,
-  val name: String,
-  val coverWidth: Int,
-  val coverHeight: Int,
-  val cover: String,
-  val clientStatus: ClientStatus,
-)
+): CardCover<String>
