@@ -165,11 +165,12 @@ class OnlineSectionImageListPage(
       }
     }
   }
+
+  class OnlineImageCard(
+    override val name: String,
+    override val width: Int,
+    override val height: Int,
+    override val coverUri: String
+  ) : CardCover<String>
 }
 
-class OnlineImageCard(
-  override val name: String,
-  override val width: Int,
-  override val height: Int,
-  override val coverUri: String
-) : CardCover<String>
