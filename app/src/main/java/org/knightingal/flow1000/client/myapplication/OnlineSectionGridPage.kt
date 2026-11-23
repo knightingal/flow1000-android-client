@@ -168,11 +168,11 @@ class OnlineSectionGridPage(
       }
     }
   }
-}
 
-class OnlineSectionCover (
-  override val name: String,
-  override val width: Int,
-  override val height: Int,
-  override val coverUri: String
-): CardCover<String>
+  class OnlineSectionCover (
+    override val name: String,
+    override val width: Int,
+    override val height: Int,
+    override val coverUri: String
+  ): CardCover<String>
+}
