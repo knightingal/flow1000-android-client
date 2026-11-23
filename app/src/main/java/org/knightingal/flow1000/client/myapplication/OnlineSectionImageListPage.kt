@@ -43,6 +43,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import org.knightingal.flow1000.client.beans.ImgDetail
+import org.knightingal.flow1000.client.beans.SectionInfoBean
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
@@ -57,7 +59,7 @@ class OnlineSectionImageListPage(
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   fun SectionImageListScreen(name: String, id: Long, albumSourcePath: String) {
-    val picList: MutableList<ImgInSectionDetail> = remember { mutableStateListOf() } // Placeholder for actual data retrieval
+    val picList: MutableList<ImgDetail> = remember { mutableStateListOf() } // Placeholder for actual data retrieval
 
     LaunchedEffect(Unit) {
 
@@ -65,7 +67,7 @@ class OnlineSectionImageListPage(
         val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=$id"
         val client = HttpClient(CIO)
         val response: String = client.get(stringUrl).body()
-        val sectionDetail = Gson().fromJson(response, SectionDetail::class.java)
+        val sectionDetail = Gson().fromJson(response, SectionInfoBean::class.java)
         picList.addAll(sectionDetail.pics)
       }
     }
@@ -171,20 +173,3 @@ class OnlineImageCard(
   override val height: Int,
   override val coverUri: String
 ) : CardCover<String>
-
-
-class SectionDetail (
-  val dirName: String,
-  val pics: List<ImgInSectionDetail>,
-  val album: String,
-  val title: String,
-  val clientStatus: ClientStatus,
-)
-
-@Serializable
-class ImgInSectionDetail(
-  val id: Long,
-  val name: String,
-  val width: Int,
-  val height: Int
-)
