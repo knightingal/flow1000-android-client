@@ -1,5 +1,10 @@
 package org.knightingal.flow1000.client.myapplication
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.IBinder
 import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.SharedTransitionScope
@@ -32,6 +37,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
@@ -45,6 +51,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.beans.PicSectionBean
+import org.knightingal.flow1000.client.beans.PicSectionData
+import org.knightingal.flow1000.client.services.DownloadService
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.PROTOCOL_PREFIX
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
@@ -57,14 +66,37 @@ class OnlineSectionGridPage(
   data class OnlineSectionGridScreenRoute(val album: String, val albumSourcePath: String)
 
   suspend fun subscribeSectionById(id: Long) {
-    val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/downloadSection?id=${id}"
+    val stringUrl = "${PROTOCOL_PREFIX}//${SERVER_IP}:${SERVER_PORT}/local1000/downloadSection?id=${id}"
     val client = HttpClient(CIO)
     val response: String = client.post(stringUrl).body()
     Log.d("OnlineSectionGridPage", "subscribeSectionById response: $response")
   }
 
+  fun scheduleDownloadSectionTask(ctx: Context, picSectionBean: PicSectionBean) {
+    Log.d("OnlineSectionGridPage", "scheduleDownloadSectionTask: picSectionBean id=${picSectionBean.id}, name=${picSectionBean.name}")
+
+    val conn = object : ServiceConnection {
+      override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        Log.d("OnlineSectionGridScreen", "Service connected")
+        val binder = service as DownloadService.LocalBinder
+        val downloadService = binder.getService()
+        downloadService.processPendingSectionItem(PicSectionData(picSectionBean, totalCount = 0))
+        ctx.unbindService(this)
+      }
+
+      override fun onServiceDisconnected(name: ComponentName?) {
+        Log.d("OnlineSectionGridScreen", "Service disconnected")
+      }
+    }
+
+    ctx.bindService(Intent(ctx, DownloadService::class.java),
+      conn,
+      Context.BIND_AUTO_CREATE
+    )
+  }
+
   suspend fun fetchSectionIndexList(album: String): List<PicSectionBean> {
-    val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?album=${album}"
+    val stringUrl = "${PROTOCOL_PREFIX}//${SERVER_IP}:${SERVER_PORT}/local1000/picIndexAjax?album=${album}"
     val client = HttpClient(CIO)
     val response: String = client.get(stringUrl).body()
     return Gson().fromJson(response, Array<PicSectionBean>::class.java).toList()
@@ -76,7 +108,7 @@ class OnlineSectionGridPage(
     album: String,
     albumSourcePath: String
   ) {
-    // Implementation for the online section grid screen
+    val ctx = LocalContext.current
     val pinIndexList = remember { mutableStateListOf<PicSectionBean>() }
     LaunchedEffect(Unit) {
       CoroutineScope(Dispatchers.IO).launch {
@@ -121,7 +153,7 @@ class OnlineSectionGridPage(
               name = picIndex.name,
               width = picIndex.coverWidth,
               height = picIndex.coverHeight,
-              coverUri = "http://${SERVER_IP}:${SERVER_PORT}/linux1000/${albumSourcePath}/${picIndex.name}/${
+              coverUri = "${PROTOCOL_PREFIX}//${SERVER_IP}:${SERVER_PORT}/linux1000/${albumSourcePath}/${picIndex.name}/${
                 picIndex.cover?.replace(".bin", "")
               }"
             )
@@ -133,6 +165,7 @@ class OnlineSectionGridPage(
               appendContent = {
                 Row {
                   IconButton(onClick = {
+                    scheduleDownloadSectionTask(ctx, picIndex)
                     CoroutineScope(Dispatchers.IO).launch {
                       subscribeSectionById(picIndex.id)
                       fetchSectionIndexList(album).let { newList ->

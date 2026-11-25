@@ -234,10 +234,14 @@ class DownloadService : Service() {
         }
     }
 
-    private fun processPendingSectionItem(pendingSectionData: PicSectionData) {
+    fun processPendingSectionItem(pendingSectionData: PicSectionData) {
         val clientStatus = picSectionDao.getByServerIndex(pendingSectionData.picSectionBean.id).clientStatus
         if (clientStatus == PicSectionBean.ClientStatus.LOCAL) {
             return
+        }
+        pendingSectionBeanList.add(pendingSectionData)
+        refreshListener.forEach {
+            it.doRefreshList(pendingSectionBeanList)
         }
         sectionThreadPool.execute {
             sectionExecuting(pendingSectionData)
