@@ -51,6 +51,7 @@ import io.ktor.client.request.get
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.knightingal.flow1000.client.beans.AlbumConfig
 import org.knightingal.flow1000.client.beans.PicSectionBean
 import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.myapplication.TabMainActivity.Destination
@@ -399,19 +400,3 @@ class TabMainScreen(
   }
 }
 
-class AlbumConfig(
-  val id: Long,
-  val name: String,
-  val sourcePath: String,
-  val coverSection: Flow1000Section,
-)
-
-class Flow1000Section(
-  val id: Long,
-  val name: String,
-  val dirName: String,
-  val cover: String,
-  val album: String,
-  val coverWidth: Int,
-  val coverHeight: Int,
-)
