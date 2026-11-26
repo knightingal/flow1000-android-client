@@ -1,18 +1,14 @@
 package org.knightingal.flow1000.client.dao
 
-
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-
 import org.knightingal.flow1000.client.beans.PicSectionBean
-
 
 @Dao
 interface PicSectionDao {
-
     @Query("select * from PicSectionBean")
     fun getAll(): List<PicSectionBean>
 

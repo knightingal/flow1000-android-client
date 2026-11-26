@@ -1,18 +1,13 @@
 package org.knightingal.flow1000.client.dao
 
-
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-
 import org.knightingal.flow1000.client.beans.PicInfoBean
-
-
 
 @Dao
 interface PicInfoDao {
-
     @Insert
     fun insert(picInfoBean: PicInfoBean)
 

@@ -1,14 +1,11 @@
 package org.knightingal.flow1000.client.dao
 
-
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-
 import org.knightingal.flow1000.client.beans.UpdateStamp
-
 
 @Dao
 interface UpdateStampDao {
