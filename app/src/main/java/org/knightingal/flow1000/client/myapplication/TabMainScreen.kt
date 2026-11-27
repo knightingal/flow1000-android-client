@@ -57,7 +57,7 @@ import org.knightingal.flow1000.client.beans.PicSectionData
 import org.knightingal.flow1000.client.myapplication.TabMainActivity.Destination
 import org.knightingal.flow1000.client.services.DownloadService
 import org.knightingal.flow1000.client.services.ProcessCounter
-import org.knightingal.flow1000.client.services.SimpleService
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.PROTOCOL_PREFIX
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 import org.nanjing.knightingal.processerlib.RefreshListener
@@ -74,14 +74,6 @@ class TabMainScreen(
   fun MainScreen(
     modifier: Modifier = Modifier,
   ) {
-    val picSectionDao = App.db.picSectionDao()
-
-    val existAlbumCoverList: List<PicSectionBean> = listOf(
-      "1000", "1803", "1804", "1805",
-      "1806", "1807", "1808"
-    ).mapNotNull { albumName ->
-      picSectionDao.getExistAlbumCover(albumName)
-    }.map { it }
 
     Scaffold(modifier = modifier, topBar = {
       TopAppBar(
@@ -110,7 +102,7 @@ class TabMainScreen(
             )
           }
         }
-        AdvancePager(pagerState, existAlbumCoverList)
+        AdvancePager(pagerState)
       }
     }
   }
@@ -118,7 +110,6 @@ class TabMainScreen(
   @Composable
   fun AdvancePager(
     pagerState: PagerState,
-    existAlbumCoverList: List<PicSectionBean>,
   ) {
     Box(modifier = Modifier.fillMaxSize()) {
       HorizontalPager(
@@ -126,7 +117,7 @@ class TabMainScreen(
       ) { page ->
         when (page) {
           0 -> AllListScreen()
-          1 -> ExistAlbumCoverTab(albumCoverList = existAlbumCoverList)
+          1 -> ExistAlbumCoverTab()
           2 -> PendingListScreen()
         }
       }
@@ -139,7 +130,7 @@ class TabMainScreen(
 
     LaunchedEffect(Unit) {
       CoroutineScope(Dispatchers.IO).launch {
-        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/albumConfig/list"
+        val stringUrl = "${PROTOCOL_PREFIX}//${SERVER_IP}:${SERVER_PORT}/local1000/albumConfig/list"
         val client = HttpClient(CIO)
         val response: String = client.get(stringUrl).body()
         val albumConfigList = Gson().fromJson(response, Array<AlbumConfig>::class.java)
@@ -165,7 +156,7 @@ class TabMainScreen(
           Box(
             modifier = Modifier.fillMaxWidth(),
           ) {
-            val coverUri = "http://${SERVER_IP}:${SERVER_PORT}/linux1000/${
+            val coverUri = "${PROTOCOL_PREFIX}//${SERVER_IP}:${SERVER_PORT}/linux1000/${
               albumConfig.sourcePath
             }/${
               albumConfig.coverSection.dirName
@@ -195,7 +186,16 @@ class TabMainScreen(
   }
 
   @Composable
-  fun ExistAlbumCoverTab(albumCoverList: List<PicSectionBean>) {
+  fun ExistAlbumCoverTab() {
+
+    val picSectionDao = App.db.picSectionDao()
+
+    val albumCoverList: List<PicSectionBean> = listOf(
+      "1000", "1803", "1804", "1805",
+      "1806", "1807", "1808"
+    ).mapNotNull { albumName ->
+      picSectionDao.getExistAlbumCover(albumName)
+    }.map { it }
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
@@ -231,7 +231,6 @@ class TabMainScreen(
       }
     }
   }
-
 
   @Composable
   fun PendingListScreen() {
@@ -293,7 +292,7 @@ class TabMainScreen(
 
     Box(
       modifier = Modifier.fillMaxSize(),
-      contentAlignment = Alignment.Center
+      contentAlignment = Alignment.TopCenter
     ) {
       LazyColumn {
         items(pendingList) { picSectionData ->
