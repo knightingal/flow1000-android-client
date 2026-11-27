@@ -45,6 +45,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.beans.ImgDetail
 import org.knightingal.flow1000.client.beans.SectionInfoBean
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.PROTOCOL_PREFIX
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_IP
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.SERVER_PORT
 
@@ -64,7 +65,7 @@ class OnlineSectionImageListPage(
     LaunchedEffect(Unit) {
 
       CoroutineScope(Dispatchers.IO).launch {
-        val stringUrl = "http://${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=$id"
+        val stringUrl = "${PROTOCOL_PREFIX}//${SERVER_IP}:${SERVER_PORT}/local1000/picDetailAjax?id=$id"
         val client = HttpClient(CIO)
         val response: String = client.get(stringUrl).body()
         val sectionDetail = Gson().fromJson(response, SectionInfoBean::class.java)
@@ -113,7 +114,9 @@ class OnlineSectionImageListPage(
                   name = name,
                   width = picInfoBean.width,
                   height = picInfoBean.height,
-                  coverUri = "http://${SERVER_IP}:${SERVER_PORT}/linux1000/${albumSourcePath}/${name}/${picInfoBean.name.replace(".bin", "")}"
+                  coverUri = "${PROTOCOL_PREFIX}//${SERVER_IP}:${SERVER_PORT}/linux1000/${albumSourcePath}/${name}/${
+                    picInfoBean.name.replace(".bin", "")
+                  }"
                 )
               )
             }

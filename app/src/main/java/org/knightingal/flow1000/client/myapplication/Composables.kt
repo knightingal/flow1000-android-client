@@ -2,7 +2,6 @@ package org.knightingal.flow1000.client.myapplication
 
 import android.os.Environment
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,12 +31,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.ImageLoader
 import coil3.compose.AsyncImage
-import com.github.awxkee.avifcoil.decoder.HeifDecoder
 import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
+import org.knightingal.flow1000.client.util.EnvArgs.Companion.PROTOCOL_PREFIX
 import java.io.File
 
 interface CardCover<T> {
@@ -123,7 +121,7 @@ fun ImageContentInCard(
       )
     } else if (cardCover.coverUri is String) {
       val coverUri = cardCover.coverUri as String
-      if (coverUri.startsWith("http://")) {
+      if (coverUri.startsWith("${PROTOCOL_PREFIX}//")) {
         AsyncImage(
           modifier = Modifier.fillMaxSize(),
           model = coverUri,
@@ -145,7 +143,6 @@ fun ImageContentInCard(
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 @Preview
 fun AlbumCoverCardEditPreview() {
