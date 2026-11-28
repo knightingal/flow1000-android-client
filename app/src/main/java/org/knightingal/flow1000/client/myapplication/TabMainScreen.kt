@@ -190,10 +190,9 @@ class TabMainScreen(
 
     val picSectionDao = App.db.picSectionDao()
 
-    val albumCoverList: List<PicSectionBean> = listOf(
-      "1000", "1803", "1804", "1805",
-      "1806", "1807", "1808"
-    ).mapNotNull { albumName ->
+    val albumNameList = picSectionDao.groupAlbum()
+
+    val albumCoverList: List<PicSectionBean> = albumNameList.mapNotNull { albumName ->
       picSectionDao.getExistAlbumCover(albumName)
     }.map { it }
     Box(
