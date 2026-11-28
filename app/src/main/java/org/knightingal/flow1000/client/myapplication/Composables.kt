@@ -3,6 +3,12 @@ package org.knightingal.flow1000.client.myapplication
 import android.os.Environment
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
@@ -16,22 +22,49 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.TabIndicatorScope
+import androidx.compose.material3.TabPosition
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.node.LayoutModifierNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.Dp.Companion
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastFold
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.util.fastMap
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
@@ -223,3 +256,308 @@ fun PendingItem(text: String, process: Int, total: Int) {
     )
   }
 }
+
+@ExperimentalMaterial3Api
+@Composable
+fun PrimaryTabRowExt(
+  selectedTabIndex: Int,
+  modifier: Modifier = Modifier,
+  containerColor: Color = TabRowDefaults.primaryContainerColor,
+  contentColor: Color = TabRowDefaults.primaryContentColor,
+  indicator: @Composable TabIndicatorScopeExt.() -> Unit = {
+    TabRowDefaults.PrimaryIndicator(
+      modifier = Modifier.tabIndicatorOffset(selectedTabIndex, matchContentSize = true),
+      width = Dp.Unspecified,
+    )
+  },
+  divider: @Composable () -> Unit = @Composable { HorizontalDivider() },
+  tabs: @Composable () -> Unit
+) {
+  TabRowImplExt(modifier, containerColor, contentColor, indicator, divider, tabs)
+}
+
+internal interface TabPositionsHolder {
+  fun setTabPositions(positions: List<TabPositionExt>)
+}
+
+private val TabRowIndicatorSpec: AnimationSpec<Dp> =
+  tween(durationMillis = 250, easing = FastOutSlowInEasing)
+
+internal class TabIndicatorOffsetNode(
+  var tabPositionsState: State<List<TabPositionExt>>,
+  var selectedTabIndex: Int,
+  var followContentSize: Boolean
+) : Modifier.Node(), LayoutModifierNode {
+
+  private var offsetAnimatable: Animatable<Dp, AnimationVector1D>? = null
+  private var widthAnimatable: Animatable<Dp, AnimationVector1D>? = null
+  private var initialOffset: Dp? = null
+  private var initialWidth: Dp? = null
+
+  override fun MeasureScope.measure(
+    measurable: Measurable,
+    constraints: Constraints
+  ): MeasureResult {
+    if (tabPositionsState.value.isEmpty()) {
+      return layout(0, 0) {}
+    }
+
+    val currentTabWidth =
+      if (followContentSize) {
+        tabPositionsState.value[selectedTabIndex].contentWidth
+      } else {
+        tabPositionsState.value[selectedTabIndex].width
+      }
+
+    if (initialWidth != null) {
+      val widthAnim =
+        widthAnimatable
+          ?: Animatable(initialWidth!!, Dp.VectorConverter).also { widthAnimatable = it }
+
+      if (currentTabWidth != widthAnim.targetValue) {
+        coroutineScope.launch { widthAnim.animateTo(currentTabWidth, TabRowIndicatorSpec) }
+      }
+    } else {
+      initialWidth = currentTabWidth
+    }
+
+    val indicatorOffset = tabPositionsState.value[selectedTabIndex].left
+
+    if (initialOffset != null) {
+      val offsetAnim =
+        offsetAnimatable
+          ?: Animatable(initialOffset!!, Dp.VectorConverter).also {
+            offsetAnimatable = it
+          }
+
+      if (indicatorOffset != offsetAnim.targetValue) {
+        coroutineScope.launch { offsetAnim.animateTo(indicatorOffset, TabRowIndicatorSpec) }
+      }
+    } else {
+      initialOffset = indicatorOffset
+    }
+
+    val offset = offsetAnimatable?.value ?: indicatorOffset
+
+    val width = widthAnimatable?.value ?: currentTabWidth
+
+    val placeable =
+      measurable.measure(
+        constraints.copy(minWidth = width.roundToPx(), maxWidth = width.roundToPx())
+      )
+
+    return layout(placeable.width, placeable.height) { placeable.place(offset.roundToPx(), 0) }
+  }
+}
+
+internal data class TabIndicatorModifier(
+  val tabPositionsState: State<List<TabPositionExt>>,
+  val selectedTabIndex: Int,
+  val followContentSize: Boolean,
+) : ModifierNodeElement<TabIndicatorOffsetNode>() {
+
+  override fun create(): TabIndicatorOffsetNode {
+    return TabIndicatorOffsetNode(
+      tabPositionsState = tabPositionsState,
+      selectedTabIndex = selectedTabIndex,
+      followContentSize = followContentSize,
+    )
+  }
+
+  override fun update(node: TabIndicatorOffsetNode) {
+    node.tabPositionsState = tabPositionsState
+    node.selectedTabIndex = selectedTabIndex
+    node.followContentSize = followContentSize
+  }
+
+  override fun InspectorInfo.inspectableProperties() {
+    // Show nothing in the inspector.
+  }
+}
+
+@Immutable
+class TabPositionExt internal constructor(val left: Dp, val width: Dp, val contentWidth: Dp) {
+
+  val right: Dp
+    get() = left + width
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is TabPositionExt) return false
+
+    if (left != other.left) return false
+    if (width != other.width) return false
+    if (contentWidth != other.contentWidth) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = left.hashCode()
+    result = 31 * result + width.hashCode()
+    result = 31 * result + contentWidth.hashCode()
+    return result
+  }
+
+  override fun toString(): String {
+    return "TabPositionExt(left=$left, right=$right, width=$width, contentWidth=$contentWidth)"
+  }
+}
+
+@ExperimentalMaterial3Api
+interface TabIndicatorScopeExt {
+
+  /**
+   * A layout modifier that provides tab positions, this can be used to animate and layout a
+   * TabIndicator depending on size, position, and content size of each Tab.
+   *
+   * @sample androidx.compose.material3.samples.FancyAnimatedIndicatorWithModifier
+   */
+  fun Modifier.tabIndicatorLayout(
+    measure:
+    MeasureScope.(
+      Measurable,
+      Constraints,
+      List<TabPositionExt>,
+    ) -> MeasureResult
+  ): Modifier
+
+  /**
+   * A Modifier that follows the default offset and animation
+   *
+   * @param selectedTabIndex the index of the current selected tab
+   * @param matchContentSize this modifier can also animate the width of the indicator \ to match
+   *   the content size of the tab.
+   */
+  fun Modifier.tabIndicatorOffset(
+    selectedTabIndex: Int,
+    matchContentSize: Boolean = false
+  ): Modifier
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TabRowImplExt(
+  modifier: Modifier,
+  containerColor: Color,
+  contentColor: Color,
+  indicator: @Composable TabIndicatorScopeExt.() -> Unit,
+  divider: @Composable () -> Unit,
+  tabs: @Composable () -> Unit
+) {
+  Surface(
+    modifier = modifier.selectableGroup(),
+    color = containerColor,
+    contentColor = contentColor
+  ) {
+    val scope = remember {
+      object : TabIndicatorScopeExt, TabPositionsHolder {
+
+        val tabPositions = mutableStateOf<(List<TabPositionExt>)>(listOf())
+
+        override fun Modifier.tabIndicatorLayout(
+          measure:
+          MeasureScope.(
+            Measurable,
+            Constraints,
+            List<TabPositionExt>,
+          ) -> MeasureResult
+        ): Modifier =
+          this.layout { measurable: Measurable, constraints: Constraints ->
+            measure(
+              measurable,
+              constraints,
+              tabPositions.value,
+            )
+          }
+
+        override fun Modifier.tabIndicatorOffset(
+          selectedTabIndex: Int,
+          matchContentSize: Boolean
+        ): Modifier =
+          this.then(
+            TabIndicatorModifier(tabPositions, selectedTabIndex, matchContentSize)
+          )
+
+        override fun setTabPositions(positions: List<TabPositionExt>) {
+          tabPositions.value = positions
+        }
+      }
+    }
+
+    Layout(
+      modifier = Modifier.fillMaxWidth(),
+      contents =
+        listOf(
+          tabs,
+          divider,
+          { scope.indicator() },
+        )
+    ) { (tabMeasurables, dividerMeasurables, indicatorMeasurables), constraints ->
+      val tabRowWidth = constraints.maxWidth
+      val tabCount = tabMeasurables.size
+      var tabWidth = 0
+      if (tabCount > 0) {
+        tabWidth = (tabRowWidth / tabCount)
+      }
+      val tabRowHeight =
+        tabMeasurables.fastFold(initial = 0) { max, curr ->
+          maxOf(curr.maxIntrinsicHeight(tabWidth), max)
+        }
+
+      scope.setTabPositions(
+        List(tabCount) { index ->
+          var contentWidth =
+            minOf(tabMeasurables[index].maxIntrinsicWidth(tabRowHeight), tabWidth)
+              .toDp()
+          contentWidth -= HorizontalTextPadding * 2
+          // Enforce minimum touch target of 24.dp
+          val indicatorWidth = maxOf(contentWidth, 24.dp)
+
+          TabPositionExt(tabWidth.toDp() * index, tabWidth.toDp(), indicatorWidth)
+        }
+      )
+
+      val tabPlaceables =
+        tabMeasurables.fastMap {
+          it.measure(
+            constraints.copy(
+              minWidth = tabWidth,
+              maxWidth = tabWidth,
+              minHeight = tabRowHeight,
+              maxHeight = tabRowHeight,
+            )
+          )
+        }
+
+      val dividerPlaceables =
+        dividerMeasurables.fastMap { it.measure(constraints.copy(minHeight = 0)) }
+
+      val indicatorPlaceables =
+        indicatorMeasurables.fastMap {
+          it.measure(
+            constraints.copy(
+              minWidth = tabWidth,
+              maxWidth = tabWidth,
+              minHeight = 0,
+              maxHeight = tabRowHeight
+            )
+          )
+        }
+
+      layout(tabRowWidth, tabRowHeight) {
+        tabPlaceables.fastForEachIndexed { index, placeable ->
+          placeable.placeRelative(index * tabWidth, 0)
+        }
+
+        dividerPlaceables.fastForEach { placeable ->
+          placeable.placeRelative(0, tabRowHeight - placeable.height)
+        }
+
+        indicatorPlaceables.fastForEach { it.placeRelative(0, tabRowHeight - it.height) }
+      }
+    }
+  }
+}
+
+internal val HorizontalTextPadding = 16.dp

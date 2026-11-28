@@ -83,7 +83,7 @@ class TabMainScreen(
       Column(modifier = Modifier.padding(contentPadding)) {
         val pagerState = rememberPagerState(pageCount = { 3 })
         val coroutineScope = rememberCoroutineScope()
-        PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
+        PrimaryTabRowExt(selectedTabIndex = pagerState.currentPage) {
           Destination.entries.forEachIndexed { index, destination ->
             Tab(
               selected = pagerState.currentPage == index,
