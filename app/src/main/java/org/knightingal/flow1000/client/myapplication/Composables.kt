@@ -310,13 +310,12 @@ internal class TabIndicatorOffsetNode(
     val highWidth = tabPositionsState.value[high].contentWidth
     val indicatorWidth = lowWidth + ((highWidth - lowWidth) * percentage)
 
-    val currentTabWidth = indicatorWidth
-
-    val indicatorOffset = tabPositionsState.value[selectedTabIndex].left
+    val lowOffset = tabPositionsState.value[low].left
+    val highOffset = tabPositionsState.value[high].left
+    val indicatorOffset = lowOffset + ((highOffset - lowOffset) * percentage)
 
     val offset: Dp = indicatorOffset
-
-    val width: Dp = currentTabWidth
+    val width: Dp = indicatorWidth
 
     val placeable =
       measurable.measure(
