@@ -1,5 +1,6 @@
 package org.knightingal.flow1000.client.myapplication
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -69,6 +70,7 @@ class TabMainScreen(
   val sharedTransitionScope: SharedTransitionScope,
   val animatedContentScope: AnimatedContentScope
 ) {
+  @SuppressLint("FrequentlyChangingValue")
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
   fun MainScreen(
@@ -81,9 +83,10 @@ class TabMainScreen(
       )
     }) { contentPadding ->
       Column(modifier = Modifier.padding(contentPadding)) {
-        val pagerState = rememberPagerState(pageCount = { 3 })
+        val pagerState: PagerState = rememberPagerState(pageCount = { 3 })
+//        Log.d("TabMainScreen", "pagerState.currentPage: ${pagerState.currentPage}, pagerState.currentPageOffsetFraction: ${pagerState.currentPageOffsetFraction}")
         val coroutineScope = rememberCoroutineScope()
-        PrimaryTabRowExt(selectedTabIndex = pagerState.currentPage) {
+        PrimaryTabRowExt(selectedTabIndex = pagerState.currentPage, pageOffsetFraction = pagerState.currentPageOffsetFraction) {
           Destination.entries.forEachIndexed { index, destination ->
             Tab(
               selected = pagerState.currentPage == index,

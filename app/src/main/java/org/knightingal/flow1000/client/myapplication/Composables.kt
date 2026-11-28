@@ -1,6 +1,7 @@
 package org.knightingal.flow1000.client.myapplication
 
 import android.os.Environment
+import android.util.Log
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
@@ -70,6 +71,7 @@ import org.knightingal.flow1000.client.R
 import org.knightingal.flow1000.client.myapplication.ui.theme.Flow1000clientTheme
 import org.knightingal.flow1000.client.util.EnvArgs.Companion.PROTOCOL_PREFIX
 import java.io.File
+import kotlin.math.roundToInt
 
 interface CardCover<T> {
   val width: Int
@@ -261,12 +263,13 @@ fun PendingItem(text: String, process: Int, total: Int) {
 @Composable
 fun PrimaryTabRowExt(
   selectedTabIndex: Int,
+  pageOffsetFraction: Float = 0f,
   modifier: Modifier = Modifier,
   containerColor: Color = TabRowDefaults.primaryContainerColor,
   contentColor: Color = TabRowDefaults.primaryContentColor,
   indicator: @Composable TabIndicatorScopeExt.() -> Unit = {
     TabRowDefaults.PrimaryIndicator(
-      modifier = Modifier.tabIndicatorOffset(selectedTabIndex, matchContentSize = true),
+      modifier = Modifier.tabIndicatorOffset(selectedTabIndex, pageOffsetFraction, matchContentSize = true),
       width = Dp.Unspecified,
     )
   },
@@ -280,19 +283,12 @@ internal interface TabPositionsHolder {
   fun setTabPositions(positions: List<TabPositionExt>)
 }
 
-private val TabRowIndicatorSpec: AnimationSpec<Dp> =
-  tween(durationMillis = 250, easing = FastOutSlowInEasing)
-
 internal class TabIndicatorOffsetNode(
   var tabPositionsState: State<List<TabPositionExt>>,
   var selectedTabIndex: Int,
+  var pageOffsetFraction: Float,
   var followContentSize: Boolean
 ) : Modifier.Node(), LayoutModifierNode {
-
-  private var offsetAnimatable: Animatable<Dp, AnimationVector1D>? = null
-  private var widthAnimatable: Animatable<Dp, AnimationVector1D>? = null
-  private var initialOffset: Dp? = null
-  private var initialWidth: Dp? = null
 
   override fun MeasureScope.measure(
     measurable: Measurable,
@@ -301,58 +297,47 @@ internal class TabIndicatorOffsetNode(
     if (tabPositionsState.value.isEmpty()) {
       return layout(0, 0) {}
     }
-
-    val currentTabWidth =
-      if (followContentSize) {
-        tabPositionsState.value[selectedTabIndex].contentWidth
-      } else {
-        tabPositionsState.value[selectedTabIndex].width
-      }
-
-    if (initialWidth != null) {
-      val widthAnim =
-        widthAnimatable
-          ?: Animatable(initialWidth!!, Dp.VectorConverter).also { widthAnimatable = it }
-
-      if (currentTabWidth != widthAnim.targetValue) {
-        coroutineScope.launch { widthAnim.animateTo(currentTabWidth, TabRowIndicatorSpec) }
-      }
-    } else {
-      initialWidth = currentTabWidth
+    Log.d("TabIndicatorOffsetNode", "selectedTabIndex: $selectedTabIndex, pageOffsetFraction: $pageOffsetFraction")
+    val progress: Float = selectedTabIndex + pageOffsetFraction
+    val low = progress.toInt()
+    var high = low + 1
+    if (high >= tabPositionsState.value.size) {
+      high = low
     }
+    val percentage: Float = progress - low
+
+    val lowWidth = tabPositionsState.value[low].contentWidth
+    val highWidth = tabPositionsState.value[high].contentWidth
+    val indicatorWidth = lowWidth + ((highWidth - lowWidth) * percentage)
+
+    val currentTabWidth = indicatorWidth
 
     val indicatorOffset = tabPositionsState.value[selectedTabIndex].left
 
-    if (initialOffset != null) {
-      val offsetAnim =
-        offsetAnimatable
-          ?: Animatable(initialOffset!!, Dp.VectorConverter).also {
-            offsetAnimatable = it
-          }
+    val offset: Dp = indicatorOffset
 
-      if (indicatorOffset != offsetAnim.targetValue) {
-        coroutineScope.launch { offsetAnim.animateTo(indicatorOffset, TabRowIndicatorSpec) }
-      }
-    } else {
-      initialOffset = indicatorOffset
-    }
-
-    val offset = offsetAnimatable?.value ?: indicatorOffset
-
-    val width = widthAnimatable?.value ?: currentTabWidth
+    val width: Dp = currentTabWidth
 
     val placeable =
       measurable.measure(
         constraints.copy(minWidth = width.roundToPx(), maxWidth = width.roundToPx())
       )
 
-    return layout(placeable.width, placeable.height) { placeable.place(offset.roundToPx(), 0) }
+    val result = layout(
+      width = placeable.width,
+      height = placeable.height,
+      placementBlock = {
+        placeable.place(offset.roundToPx(), 0)
+      }
+    )
+    return result
   }
 }
 
 internal data class TabIndicatorModifier(
   val tabPositionsState: State<List<TabPositionExt>>,
   val selectedTabIndex: Int,
+  val pageOffsetFraction: Float,
   val followContentSize: Boolean,
 ) : ModifierNodeElement<TabIndicatorOffsetNode>() {
 
@@ -360,6 +345,7 @@ internal data class TabIndicatorModifier(
     return TabIndicatorOffsetNode(
       tabPositionsState = tabPositionsState,
       selectedTabIndex = selectedTabIndex,
+      pageOffsetFraction = pageOffsetFraction,
       followContentSize = followContentSize,
     )
   }
@@ -367,6 +353,7 @@ internal data class TabIndicatorModifier(
   override fun update(node: TabIndicatorOffsetNode) {
     node.tabPositionsState = tabPositionsState
     node.selectedTabIndex = selectedTabIndex
+    node.pageOffsetFraction = pageOffsetFraction
     node.followContentSize = followContentSize
   }
 
@@ -431,6 +418,7 @@ interface TabIndicatorScopeExt {
    */
   fun Modifier.tabIndicatorOffset(
     selectedTabIndex: Int,
+    pageOffsetFraction: Float,
     matchContentSize: Boolean = false
   ): Modifier
 }
@@ -473,10 +461,11 @@ private fun TabRowImplExt(
 
         override fun Modifier.tabIndicatorOffset(
           selectedTabIndex: Int,
+          pageOffsetFraction: Float,
           matchContentSize: Boolean
         ): Modifier =
           this.then(
-            TabIndicatorModifier(tabPositions, selectedTabIndex, matchContentSize)
+            TabIndicatorModifier(tabPositions, selectedTabIndex, pageOffsetFraction, matchContentSize)
           )
 
         override fun setTabPositions(positions: List<TabPositionExt>) {
